@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class brgy_unit extends Model
 {
     //
+    protected $primaryKey = 'id';
     protected $fillable = [
         'brgy_unit'
     ];

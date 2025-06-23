@@ -1,0 +1,50 @@
+
+
+.action-icon{
+    height: 30px;
+    width: 30px;
+}
+.action-icon.remove-icon{
+    border: 4px solid red;
+    border-radius: 10px;
+}
+.health-worker-img{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+.remove-icon-con,
+.edit-icon-con{
+    width: 50px;
+    height: 50px;
+}
+.remove-icon-con:hover{
+    border-radius: 10px;
+    background-color: rgba(255,0,0,0.1);
+}
+.edit-icon-con:hover{
+    border-radius: 10px;
+    background-color: rgba(83, 192, 130,0.1);
+}
+
+.pop-up {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white; /* or keep bg-black if preferred */
+    z-index: 1050; /* above other content */
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 8px;
+ 
+}
+
+
+form{
+    box-shadow: 0 0 3px 2px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    background-color: white;
+}

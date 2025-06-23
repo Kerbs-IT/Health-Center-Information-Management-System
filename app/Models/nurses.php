@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class nurses extends Model
 {
     //
+    protected $primaryKey = 'user_id'; // if the column is not the same like in 'user' table id and 'nurse' user_id
+    protected $keyType = 'int'; 
     protected $fillable = [
         'user_id',
         'first_name',

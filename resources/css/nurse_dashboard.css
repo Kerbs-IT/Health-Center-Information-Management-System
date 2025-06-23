@@ -1,0 +1,39 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+.dashboard-icons{
+    width: 100px;
+    height: 100px;
+    padding: 20px;     
+    display: flex;
+    align-items: center;
+    color: #53c082;
+    background-color: rgb(83, 192, 130,0.2);
+    border-radius: 10px;
+}
+.item{
+    display: inline-block;
+    min-width: 250px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 0 3px 1px rgba(0,0,0,0.2);
+
+}
+#myChart{
+   background-color: white;
+   border-radius: 10px;
+}
+#myPieChart{
+    background-color: white;
+   border-radius: 10px;
+   height: 100%;
+   width: 100%;
+}
+.recent-post-text{
+    font-size: 15px;
+    font-weight:400;
+}
