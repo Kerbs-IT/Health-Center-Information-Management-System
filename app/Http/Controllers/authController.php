@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Auth;
 
 class authController extends Controller
 {
@@ -35,11 +36,13 @@ class authController extends Controller
             'first_name' => 'required',
             'middle_initial' => ['required','max:2'],
             'last_name' => ['required'],
-    
             'department' => 'required_if:role,nurse',
             'assigned_area' => 'required_if:role,staff',
+            'recovery_question' => ['required'],
+            'recovery_answer' => ['required']
         ]);
 
+        $data['recovery_answer'] = Hash::make($data['recovery_answer']);
        $data['password'] = Hash::make($data['password']);
        $newUser = User::create($data);
 
@@ -66,7 +69,7 @@ class authController extends Controller
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                 'address_id' => $address -> address_id,
                 'department_id' => $data['department'],
-                'profile_image' => 'images/default_profile.png',
+                'profile_image' => 'images/profile_images/default_profile.png',
                 'age' => null,
                 'date_of_birth' => null,
                 'sex' => null,
@@ -87,7 +90,7 @@ class authController extends Controller
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                 'assigned_area_id' => $data['assigned_area'],
                 'address_id' => $address -> address_id,
-                'profile_image' => 'images/default_profile.png',
+                'profile_image' => 'images/profile_images/default_profile.png',
                 'age' => null,
                 'date_of_birth' => null,
                 'sex' => null,
@@ -101,6 +104,141 @@ class authController extends Controller
        Alert::success('Congrats', 'Registration Succesfully');
 
         return redirect() -> route('register') -> with('reg_success',true);
+
+    }
+
+    public function update(Request $request){
+        $user = Auth::user();
+        $data = $request -> validate([
+            'first_name' => 'sometimes|nullable|string',
+            'last_name' => 'sometimes|nullable|string',
+            'middle_initial' => 'sometimes|nullable|string',
+            'age' => 'sometimes|nullable|numeric',
+            'date_of_birth' => 'sometimes|nullable|date',
+            'sex' => 'sometimes|nullable|string',
+            'civil_status' => 'sometimes|nullable|string',
+            'contact_number' => 'sometimes|nullable|digits_between:7,12',
+            'nationality' => 'sometimes|nullable|string',
+            'username' => 'required',
+            'email' => ['required','email'],
+            'street' => 'sometimes|nullable|string',
+            'region' => 'sometimes|nullable|string',
+            'province' => 'sometimes|nullable|numeric',
+            'city' => 'sometimes|nullable|numeric',
+            'brgy' => 'sometimes|nullable|numeric',
+            'postal_code' => 'sometimes|nullable|numeric',
+            'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+            'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048']
+        ]);
+
+        if(!empty($data['password'])){
+             $user -> update([
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']) // hash the password
+            ]);
+        }else{
+            $user -> update([
+                'username' => $data['username'],
+                'email' => $data['email'],
+            ]);
+        }
+
+
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+
+            // Generate unique filename
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('images/profile_images');
+            
+            // Make sure the folder exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            // Delete the old image if it exists and is different
+            $profileImagePath = $user -> role == 'staff'? $user -> staff: $user -> nurses;
+            if (!empty( $profileImagePath ->profile_image)) {
+                $oldImagePath = public_path(ltrim($profileImagePath -> profile_image,'/'));
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath); // Delete old file
+                }
+            }
+
+            // Move the new file
+            $file->move($destinationPath, $filename);
+
+            // Update user profile image path in DB
+            switch($user-> role){
+                case 'staff':
+                    $user-> staff ->profile_image = 'images/profile_images/' . $filename;
+                    $user->staff ->save();
+                    break;
+                case 'nurse':
+                    $user-> nurses ->profile_image = 'images/profile_images/' . $filename;
+                    $user-> nurses ->save();
+                    break;
+
+            }
+            
+        }
+
+
+        // update the address table
+
+        $user -> addresses -> update([
+            'brgy_id' => $data['brgy'] ?? $user -> addresses -> brgy_id ?? null,
+            'city_id' => $data['city'] ?? $user -> addresses -> city_id ?? null,
+            'province_id' => $data['province'] ?? $user -> addresses -> province_id ?? null,
+            'region_id' => $data['region'] ?? $user -> addresses -> region_id ?? null,
+            'street' => $data['street'] ?? $user -> addresses -> street ?? null,
+            'postal_code' => $data['postal_code'] ?? $user -> addresses -> postal_code ?? null
+        ]);
+
+
+        $staff = $user-> staff;
+        $nurse = $user -> nurses;
+
+        // dd($staff);
+        switch(Auth::user() -> role){
+            case 'staff':
+                $staff -> update([
+                    'first_name' => $data['first_name']?? null,
+                    'middle_initial' => $data['middle_initial']?? null,
+                    'last_name' => $data['last_name']?? null,
+                    'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                    'age' => $data['age'],
+                    'date_of_birth' => $data['date_of_birth']?? null,
+                    'sex' => $data['sex']?? null,
+                    'civil_status' => $data['civil_status']?? null,
+                    'contact_number' => $data['contact_number']?? null,
+                    'nationality' => $data['nationality']?? null,
+                ]);
+
+
+                break;
+            case 'nurse':
+                $nurse -> update([
+                    'first_name' => $data['first_name']?? null,
+                    'middle_initial' => $data['middle_initial']?? null,
+                    'last_name' => $data['last_name']?? null,
+                    'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                    'age' => $data['age']?? null,
+                    'date_of_birth' => $data['date_of_birth']?? null,
+                    'sex' => $data['sex']?? null,
+                    'civil_status' => $data['civil_status']?? null,
+                    'contact_number' => $data['contact_number']?? null,
+                    'nationality' => $data['nationality']?? null,
+                ]);
+
+        }
+
+
+        Alert::success('Congrats', 'Profile updated successfully');
+
+
+        return redirect() -> route('page.profile');
 
     }
     

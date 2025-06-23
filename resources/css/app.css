@@ -12,8 +12,31 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-body{
-    background-color: #e9ecef;
+@font-face {
+    font-family: 'Poppins';
+    src: url('/Poppins/Poppins-ExtraBold.ttf')format('ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Poppins';
+    src: url('/Poppins/Poppins-Bold.ttf')format('ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+html body{
+    background-color: white !important;
+}
+
+h1,
+h5{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+label{
+    font-family:'Poppins', sans-serif ;
+    font-weight: 500 !important;
 }
 
 input.role-radio{
@@ -68,7 +91,7 @@ body{
 header{
     min-height: 90px !important;
     width: 100%;
-    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3) !important;
 }
 header nav h1{
     text-transform: uppercase;
@@ -79,11 +102,13 @@ header nav h1 span{
 }
 /* profile image */
 .profile-img{
-    max-width: 40px;
-    max-height: 40px;
+    width: 45px;
+    height: 45px;
     object-fit: cover;
     object-position: center;
     cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.3);
     
 }
 .links{

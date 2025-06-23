@@ -78,47 +78,11 @@
             </div>
 
 
-            <!-- ROLE -->
-            <div class="mb-3 w-100">
-                <label for="role" class="mb-1 h4 fs-4">Role:</label>
-                <!-- <select name="role" id="role" class="border py-2 px-3" onchange="showField(this.value)">
-                    <option value="">Select a Role</option>
-                    <option value="nurse">Nurse</option>
-                    <option value="staff">Staff</option>
-                </select> -->
-                <div class="radio-inputs d-flex justify-content-center align-items-center gap-4">
-                    <div class="role-con d-flex gap-2">
-                        <input type="radio" name="role" value="nurse" id="nurse" onchange="showField(this.value)" class="role-radio">
-                        <label for="nurse" class="fs-5">Nurse</label>
-                    </div>
-                    <div class="role-con d-flex gap-2">
-                        <input type="radio" name="role" value="staff" id="nurse" onchange="showField(this.value)" class="role-radio">
-                        <label for="staff" class="fs-5">Staff</label>
-                    </div>
-                </div>
-                @error('role')
-                    <small class="text-danger">{{$message}}</small>
-                @enderror
-
-            </div>
-
-            <!-- NURSE INPUT -->
-             <div class="mb-3 w-100 nurse-fields" id="nurse-fields" style="display: none;">
-                <div class="mb-3 w-100 d-flex gap-2">
-                    <div class="input-group w-100 d-flex gap-2 align-items-center">
-                        <label for="role" class="h4 fs-4 m-0">Department:</label>
-                        <select name="department" id="role" class="border py-2 px-3">
-                            <option value="">Select a Department</option>
-                        </select>
-                        @error('department')
-                            <small class="text-danger">{{$message}}</small>
-                        @enderror
-                    </div>
-                </div>
-             </div>
+            <!-- hidden input role -->
+             <input type="text" name="role" value="staff" hidden>
 
              <!-- STAFF -->
-             <div class="mb-3 w-100 staff-fields"  id="staff-fields"  style="display: none;">
+             <div class="mb-3 w-100 staff-fields"  id="staff-fields">
                 <div class="mb-3 w-100 d-flex gap-2">
                     <div class="input-group w-100 d-flex gap-2 align-items-center">
                         <label for="role" class="h4 fs-4 m-0">Assigned Area:</label>
@@ -132,6 +96,19 @@
                     </div>
                 </div> 
              </div>
+             <!-- RECOVERY QUESTION -->
+              <div class="mb-3 w-100">
+                    <div class="input-group w-100">
+                        <label for="recovery_question" class="fs-4 fw-bold w-100">Recovery Question:</label>
+                        <select name="recovery_question" id="recovery_question" class="form-select w-75 mb-2" required>
+                            <option value="">Select a question</option>
+                            <option value="1">What is your nickname? </option>
+                            <option value="2">What is the ame of your mother?</option>
+                            <option value="3">What is the name of your pet? </option>
+                        </select>
+                        <input type="text" name="recovery_answer" placeholder="Enter your answer" class="form-control w-100" required>
+                    </div>
+              </div>
           
 
             <div class="mb-3 w-95">

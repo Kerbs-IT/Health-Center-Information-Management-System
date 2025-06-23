@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class staff extends Model
 {
     //
+
+    protected $primaryKey = 'user_id'; // if the column is not the same like in 'user' table id and 'staff' user_id
+    protected $keyType = 'int'; 
     protected $fillable = [
         'user_id',
         'first_name',
@@ -33,6 +36,6 @@ class staff extends Model
         return $this -> belongsTo(addresses::class,'address_id','address_id');
     }
     public function assigned_area(){
-        return $this -> belongsTo(brgy_unit::class,'assigned_area_id','brgy_id');
+        return $this -> belongsTo(brgy_unit::class,'assigned_area_id','id');
     }
 }

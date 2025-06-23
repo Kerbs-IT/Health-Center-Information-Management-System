@@ -1,0 +1,83 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.print-icon{
+    height: 40px;
+    width: 40px;
+    fill: #2E8B57;
+}
+
+.table-header th {
+    background-color: #2E8B57 !important;
+    color: white;
+}
+.patient-info-header{
+    background-color: #2E8B57 !important;
+    color: white;
+}
+.table-header th{
+    padding: 10px;
+}
+.view-icon{
+    height: 30px;
+    width: 30px;
+    fill: #2E8B57;
+}
+tr th,
+tr td{
+    text-align: center;
+    padding: 5px 0;
+}
+tbody{
+    border-left: 1px solid rgba(0,0,0,0.2);
+    border-right: 1px solid rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+
+}
+
+/* view patient details */
+.arrow-right{
+    width: 30px;
+    height: 30px;
+}
+.sequence-links a{
+    display: block;
+    transition: 0.5s ease-in-out;
+}
+.sequence-links  a:hover{
+
+    color: black !important;
+}
+td{
+    vertical-align: middle !important;
+    padding: 10px;
+}
+/* prenatal */
+input[type='checkbox'] {
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid #333;
+  padding: 5px; /* This will work now because we removed default styling */
+}
+.custom-radio {
+  
+  width: 30px !important;
+  height: 30px;
+  border: 1px solid #333;
+  border-radius: 4px; /* optional: less rounded than circles */
+  cursor: pointer;
+}
+/* planning info */
+.planning-header::after {
+    content: "";
+    display: block;           
+    width: 100%;
+    height: 5px;
+    background-color: #2E8B57;
+    border-radius: 50px;
+}
+.hambuger-icon{
+    
+}

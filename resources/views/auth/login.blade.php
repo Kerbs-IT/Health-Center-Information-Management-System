@@ -25,15 +25,26 @@
 
             <div class="mb-3 w-95">
                 <label for="username" class="mb-1 fw-bold fs-3">Username:</label>
-                <input type="text" placeholder="Enter your username" name="username" class="p-2 w-100 fs-5">
+                <input type="text" placeholder="Enter your username" name="username" class="p-2 w-100 fs-5 bg-light" value="{{ old('username', Cookie::get('last_username')) }}">
             </div>
-            <div class="mb-3 w-95">
+            <div class="mb-2 w-95">
                 <label for="password" class="mb-1 fw-bold fs-3">Password:</label>
                 <div class="input-pass d-flex align-items-center">
-                    <input type="password" placeholder="Enter your password" name="password" class="p-2 w-100 fs-5" id="password">
+                    <input type="password" placeholder="Enter your password" name="password" class="p-2 w-100 fs-5 bg-light" id="password" value="{{ old('password', Cookie::get('last_password')) }}">
                     <i class="fa-solid fa-eye p-3 bg-primary text-white" id="eye-icon"></i>
                 </div>
-            </div>  
+            </div> 
+            <!-- remember me & forgot password -->
+            <div class="mb-3 w-95 d-flex justify-content-between">
+                <div class="remember-me">
+                    <input type="checkbox" name="remember" id="remember" {{ Cookie::get('remember_me') ? 'checked' : '' }}>
+                    <label for="remember" class="mb-0"> Remember me</label>
+                </div>
+                <div class="forgot-pass">
+                    <a href="{{ route('forgot.pass') }}">Forgot password?</a>
+                </div>
+                
+            </div> 
             @error('username')
                 <small class="text-danger">{{$message}}</small>
             @enderror
