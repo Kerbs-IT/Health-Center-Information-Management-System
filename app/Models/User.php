@@ -25,7 +25,8 @@ class User extends Authenticatable
         'password',
         'role',
         'recovery_question',
-        'recovery_answer'
+        'recovery_answer',
+        'status'
     ];
 
     /**
@@ -62,6 +63,9 @@ class User extends Authenticatable
     }
     public function staff(){
         return $this -> hasOne(staff::class,'user_id','id');
+    }
+    public function patient(){
+        return $this->hasOne(patients::class, 'user_id', 'id');
     }
 
     

@@ -15,7 +15,7 @@ class LoginController extends Controller
     public function authenticate(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'username' => ['required'],
+            'email' => ['required'],
             'password' => ['required'],
             
         ]);
@@ -24,11 +24,18 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            if (Auth::user()->status !== 'active') {
+                Auth::logout(); // force logout if not active
+                return back()->withErrors([
+                    'email' => 'Your account is ' . Auth::user()->status . '. Please wait for approval.',
+                ])->onlyInput('email');
+            }
+
             $data = Auth::user(); // gets the whole information of the user
             $role = $data -> role; // this gets the role of the user from the table
 
             if($remember){
-                Cookie::queue('last_username', $credentials['username']);
+                Cookie::queue('last_email', $credentials['email']);
                 Cookie::queue('last_password', $credentials['password']);
                 Cookie::queue('remember_me', true, 60 * 24 * 30);
             }else{
@@ -38,8 +45,8 @@ class LoginController extends Controller
 
             switch($role){
                 
-                case 'admin':
-                     return redirect() -> route('dashboard.admin');
+                case 'patient':
+                     return redirect() -> route('dashboard.patient');
                 case 'nurse':
                     
                     return redirect() -> route('dashboard.nurse');

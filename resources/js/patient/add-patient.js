@@ -106,11 +106,44 @@ document.addEventListener('DOMContentLoaded', () =>{
             // vital
             document.querySelector('.first-row').classList.replace('d-none','d-flex');
             document.querySelector('.second-row').classList.replace('d-none','d-flex');
-            document.querySelector('.third-row').classList.replace('d-flex','d-none');
+            document.querySelector('.third-row').classList.replace('d-flex', 'd-none');
+            // close otherrr input
+            document.querySelector('.tb-dots-inputs').classList.replace('d-flex', 'd-none');
+            document.querySelector('.senior-citizen-inputs').classList.replace('d-flex', 'd-none');
+            
             // show the family planning
             document.querySelector('.family-planning-inputs').classList.replace('d-none','d-flex');
 
-        }else{
+        } else if (dropdownValue == 'senior-citizen') {
+            document.querySelector('.vaccination-inputs').classList.replace('d-flex','d-none');
+
+            document.querySelector('.prenatal-inputs').classList.replace('d-flex', 'd-none');
+            document.querySelector('.family-planning-inputs').classList.replace('d-flex', 'd-none');
+            // vital
+            document.querySelector('.first-row').classList.replace('d-none','d-flex');
+            document.querySelector('.second-row').classList.replace('d-none','d-flex');
+            document.querySelector('.third-row').classList.replace('d-flex', 'd-none');
+             // close otherrr input
+            document.querySelector('.tb-dots-inputs').classList.replace('d-flex', 'd-none');
+            document.querySelector('.senior-citizen-inputs').classList.replace('d-flex', 'd-none');
+            // show senior citizen
+            document.querySelector('.senior-citizen-inputs').classList.replace('d-none','d-flex');
+        } else if (dropdownValue == 'tb-dots') {
+            document.querySelector('.vaccination-inputs').classList.replace('d-flex','d-none');
+
+            document.querySelector('.prenatal-inputs').classList.replace('d-flex', 'd-none');
+            document.querySelector('.family-planning-inputs').classList.replace('d-flex', 'd-none');
+            // vital
+            document.querySelector('.first-row').classList.replace('d-none','d-flex');
+            document.querySelector('.second-row').classList.replace('d-none','d-flex');
+            document.querySelector('.third-row').classList.replace('d-flex', 'd-none');
+
+             // close otherrr input
+            document.querySelector('.senior-citizen-inputs').classList.replace('d-flex', 'd-none');
+            // show senior citizen
+            document.querySelector('.tb-dots-inputs').classList.replace('d-none','d-flex');
+        }
+        else {
             document.querySelector('.vaccination-inputs').classList.replace('d-flex','d-none');
 
             document.querySelector('.prenatal-inputs').classList.replace('d-flex','d-none');

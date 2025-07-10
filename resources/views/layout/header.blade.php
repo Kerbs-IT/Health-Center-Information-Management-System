@@ -6,7 +6,11 @@
           <path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z" />
         </svg>
       </button>
-      <h1 class="mb-0">Welcome,<span>{{Auth::user() -> username ?? 'none'}}</span></h1>
+      @if ($page === 'DASHBOARD')
+        <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
+      @else
+        <h1 class="mb-0">{{ $page }}</h1>
+      @endif
     </div>
     <div class="right-info d-flex align-items-center justify-content-center gap-3">
       <button type="button" class="btn position-relative p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationModal">
@@ -29,16 +33,25 @@
                     border: 2px solid white;">
         </span>
       </button>
+      @php
+      $profileImage = null;
+
+      if (optional(Auth::user()->nurses)->profile_image) {
+      $profileImage = asset(Auth::user()->nurses->profile_image);
+      } elseif (optional(Auth::user()->staff)->profile_image) {
+      $profileImage = asset(Auth::user()->staff->profile_image);
+      } elseif (optional(Auth::user()->patients)->profile_image) {
+      $profileImage = asset(Auth::user()->patients->profile_image);
+      } else {
+      $profileImage = asset('images/profile_images/default_profile.png');
+      }
+      @endphp
       <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-        <img src="{{ optional(Auth::user()->nurses)->profile_image 
-            ? asset(optional(Auth::user()->nurses)->profile_image) 
-            : (optional(Auth::user()->staff)->profile_image 
-                ? asset(optional(Auth::user()->staff)->profile_image) 
-                : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-img" id="profile_img">
+        <img src="{{ $profileImage }}" alt=" profile picture" class="profile-img" id="profile_img">
         <div class="username-n-role">
           <h5 class="mb-0">{{ optional(Auth::user()->nurses)->full_name
                                         ?? optional(Auth::user()->staff)->full_name
-                                        ?? 'none'  }}</h5>
+                                        ?? optional(Auth::user()->patient)->full_name ?? 'none' }}</h5>
           <h6 class="mb-0 text-muted fw-light">{{Auth::user() -> role ?? 'none';}}</h6>
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">

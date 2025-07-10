@@ -15,7 +15,7 @@
         </div>
         <div class="maintenance-con d-flex gap-2 align-items-center ">
             <div class="mb-3">
-                <label for="">Maintenance Medication</label>
+                <label for="" class="text-nowrap">Maintenance Medication</label>
                 <select name="" id="" class="form-select">
                     <option value="" selected disabled>Select a Medication</option>
                     <option value="amlodipine">Amlodipine 5mg</option>
@@ -45,7 +45,7 @@
         <!-- table -->
         <table class="w-100 table">
             <thead>
-                <tr>
+                <tr class="table-header">
                     <th>Maintenance Medication</th>
                     <th>Dosage & Frequency</th>
                     <th>Duration</th>
@@ -61,11 +61,11 @@
                     <td>90 days</td>
                     <td>2025-01-01</td>
                     <td>2025-02-01</td>
-                    <td class="w-25">
-                        <div class="delete-icon d-flex align-items-center justify-content-center w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
+                    <td class=" align-middle text-center">
+                        <div class="delete-icon d-flex align-items-center justify-self-center w-100 h-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" width="20" height="20" viewBox="0 0 448 512">
                                 <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                            </svg>
+                            </svg>  
                         </div>
                     </td>
                 </tr>

@@ -104,8 +104,10 @@
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
                                                 @endphp
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="" class="mb-0">Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="" class="mb-0">Female</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="" class="mb-0">
+                                                    <label for="male">Male</label>
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="" class="mb-0">
+                                                    <label for="female">Female</label>
                                                 </div>
                                                 @error('sex')
                                                 <small class="text-danger">{{$message}}</small>
@@ -147,6 +149,19 @@
                                             @error('brgy')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
+                                        </div>
+                                        <div class="mb-2 w-50 senior-citizen-inputs d-none flex-column">
+                                            <label for=""> Member of Social Security System (SSS):</label>
+                                            <div class="radio-input d-flex align-items-center justify-content-center w-100 gap-1 py-2">
+                                                <input type="radio" id="male" class="mb-0" name="sex" value="" class="mb-0">
+                                                <label for="male">Male</label>
+                                                <input type="radio" id="female" class="mb-0" name="sex" value="" class="mb-0">
+                                                <label for="female">Female</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 w-50 tb-dots-inputs d-none flex-column">
+                                            <label for="">PhilHealth ID No.</label>
+                                            <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
                                         </div>
                                     </div>
                                     <div class="vaccination-inputs mb-2 d-none gap-1">
@@ -204,33 +219,87 @@
                                             </div>
 
                                         </div>
-                                        <div class="mb-3 w-100 d-flex gap-2">
+                                        <div class="mb-3 w-100 d-flex gap-3">
+
+                                            <!-- Religion -->
                                             <div class="input-field w-25">
-                                                <label for="motherName">Religion</label>
-                                                <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="mother_name" value="">
-                                                @error('mother_name')
+                                                <label for="religion" class="form-label">Religion</label>
+                                                <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion" value="">
+                                                @error('religion')
                                                 <small class="text-danger">{{$message}}</small>
                                                 @enderror
                                             </div>
-                                            <div class="input-field w-25">
-                                                <div class="header">
-                                                    <label for="" class="text-white">a</label>
-                                                </div>
-                                                <div class="philhealth-content d-flex align-items-center w-100 gap-2 mt-2">
-                                                    <label for="" class="fs-5">Philheath</label>
 
-
-                                                    <label>(Yes)</label>
-                                                    <input type="radio" name="philhealth" class="custom-radio w-25" value="yes">
-                                                    <div class="phil-num d-flex gap-1 ">
-                                                        <label for="" class="fs-5">Number:</label>
-                                                        <input type="text" class="">
+                                            <!-- PhilHealth -->
+                                            <div class="input-field w-50">
+                                                <label class="form-label">PhilHealth</label>
+                                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="philhealth" id="philhealth_yes" value="yes">
+                                                        <label class="form-check-label" for="philhealth_yes">(Yes)</label>
                                                     </div>
-                                                    <h6 class="mb-0">(No)</h6>
-                                                    <input type="radio" name="philhealth" class="custom-radio w-25" value="no">
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <label class="form-label mb-0">Number:</label>
+                                                        <input type="text" class="form-control form-control-sm" name="philhealth_number" style="width: 120px;">
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="philhealth" id="philhealth_no" value="no">
+                                                        <label class="form-check-label" for="philhealth_no">(No)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Family Planning -->
+                                            <div class="input-field w-50">
+                                                <label class="form-label fw-normal">Would you like to use a family planning method?</label>
+                                                <div class="d-flex gap-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_yes" value="yes">
+                                                        <label class="form-check-label" for="planning_yes">Yes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_no" value="no">
+                                                        <label class="form-check-label" for="planning_no">No</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_undecided" value="undecided">
+                                                        <label class="form-check-label" for="planning_undecided">Undecided</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <!-- Senior Citizen inputs -->
+                                    <div class="senior-citizen-inputs mb-2 d-none flex-column gap-1">
+                                        <div class="mb-2 w-100 d-flex gap-2">
+                                            <div class="input-field w-50">
+                                                <label for="civil_status" class="">Civil Status</label>
+                                                <select name="civil_status" id="civil_status" class="form-select">
+                                                    <option value="Single">Single</option>
+                                                    <option value="Married">Married</option>
+                                                    <option value="Divorce">Divorce</option>
+                                                </select>
+                                                @error('civil_status')
+                                                <small class="text-danger">{{$message}}</small>
+                                                @enderror
+                                            </div>
+                                            <div class="input-field w-50">
+                                                <label for="blood_type">Occupation</label>
+                                                <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation" value="">
+                                            </div>
+                                            <div class="mb-3 w-50 d-flex gap-2">
+                                                <div class="input-field w-100">
+                                                    <label for="motherName">Religion</label>
+                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="mother_name" value="">
+                                                    @error('mother_name')
+                                                    <small class="text-danger">{{$message}}</small>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                     <div class="family-planning-inputs d-none gap-1">
                                         <div class="input-field w-50">
@@ -273,8 +342,14 @@
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="brgy">Barangay*</label>
+                                                @php
+                                                $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
+                                                @endphp
                                                 <select name="brgy" id="brgy" class="form-select py-2">
-                                                    <option value="">Select a brgy</option>
+                                                    <option value="" disabled selected>Select a brgy</option>
+                                                    @foreach($brgy as $brgy_unit)
+                                                        <option value="{{ $brgy_unit -> id }}">{{$brgy_unit -> brgy_unit}}</option>
+                                                    @endforeach
                                                 </select>
                                                 @error('brgy')
                                                 <small class="text-danger">{{$message}}</small>
@@ -410,12 +485,9 @@
                                 <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
                             </div>
                         </div>
-                        <div class="tb-dots d-none patient-type" id="tb-dots-con">
-                            <h1>working tb</h1>
-                            <div class="buttons w-75 align-self-center d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
-                            </div>
+                        <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">
+                            @include('add_patient.tb-dots.tb-dots')
+
                         </div>
                         <div class="senior-citizen patient-type d-none flex-column align-self-center w-75 card shadow" id="senior-citizen-con">
                             @include('add_patient.senior-citizen.senior-citizen')

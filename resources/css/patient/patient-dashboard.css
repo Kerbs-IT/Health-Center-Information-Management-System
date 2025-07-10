@@ -1,0 +1,12 @@
+.edit-profile img{
+    height: 150px !important;
+    width: 150px !important;
+}
+
+.edit-profile {
+    border-right: 1px solid rgba(0,0,0,0.2) !important;
+}
+.profile-image img{
+    height: 150px !important;
+    width: 150px !important;
+}

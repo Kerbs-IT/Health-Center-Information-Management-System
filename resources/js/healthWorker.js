@@ -241,3 +241,26 @@ document.addEventListener('DOMContentLoaded', () =>{
     })
     
 });
+
+// for update and delete
+document.querySelectorAll('.status-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const userId = this.getAttribute('data-id');
+        const decision = this.getAttribute('data-decision');
+
+        fetch(`/update/status/${userId}/${decision}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); // or update UI
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});

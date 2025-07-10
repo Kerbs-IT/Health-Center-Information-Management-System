@@ -24,8 +24,8 @@
             @include('layout.header')
             <div class="d-flex flex-grow-1 flex-column">
                 <main class="flex-column p-2">
-                    <div class="top-part d-flex justify-content-between px-2 align-items-center">
-                        <h2>View Patient Details</h2>
+                    <div class="top-part d-flex justify-content-between px-2 align-items-center border-bottom">
+                        <h2>Update Patient Details</h2>
                         <div class="sequence-links d-flex justify-content-center align-items-center">
                             <h5 class="mb-0 text-muted cursor-pointer fw-normal">Records</h5>
                             <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
