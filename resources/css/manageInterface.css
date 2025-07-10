@@ -1,0 +1,60 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+/* .manage-interface-inputs{
+    background-color: red;
+    border-radius: 10px !important;
+    border: none !important;
+    width: 60px !important;
+    height: 50px !important;
+    border: none !important;
+        
+    
+}
+.color-hex-field{
+    border: 1px solid rgba(0,0,0,0.3) !important;
+    border-left: none !important;
+}
+.change-color{
+    border: 5px solid rgba(0, 0, 0, 0.3) !important;
+} */
+.color-text-wrap {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.color-box {
+    border: none !important;
+    padding: 0;
+    cursor: pointer;
+    width: 70px !important;
+    height: 60px !important;
+    border-right: 1px solid black !important;
+    border-radius: 0 5px 5px 0 !important;
+}
+
+.color-code {
+    border: none;
+    padding: 0 10px;
+    font-family: monospace;
+    background-color: white;
+}
+
+.color-code:focus {
+    outline: none; 
+    border: none !important;
+}
+
+/* Chrome, Safari (WebKit) specific fix */
+.color-box::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-box::-webkit-color-swatch {
+    border: none;
+}

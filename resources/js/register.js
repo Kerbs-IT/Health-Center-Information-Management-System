@@ -17,6 +17,21 @@ window.showField = function(role) {
     }
 };
 
+// handle the show of staff field
+document.getElementById("healthWorker").addEventListener('click', () => {
+    document.getElementById("staff-fields").classList.replace('d-none', 'd-block');
+    document.getElementById("patient_type_con").classList.replace('d-block', 'd-none');
+    document.getElementById("assigned_area").setAttribute("required", true);
+    document.getElementById("patient_type").removeAttribute("required");
+})
+document.getElementById("patient").addEventListener('click', () => {
+    document.getElementById("staff-fields").classList.replace('d-block', 'd-none');
+    document.getElementById("patient_type_con").classList.replace('d-none', 'd-block');
+    document.getElementById("assigned_area").removeAttribute("required");
+    document.getElementById("patient_type").setAttribute("required", true);
+})
+
+
 
 document.addEventListener('DOMContentLoaded', function (){
     fetch('/showBrgyUnit')
@@ -35,19 +50,3 @@ document.addEventListener('DOMContentLoaded', function (){
 });
 
 // nurse dept
-
-document.addEventListener('DOMContentLoaded', function (){
-    fetch('/nurseDept')
-        .then(response => response.json())
-        .then(data => {
-            let dropdown = document.getElementById('role');
-
-            console.log(data);
-            data.forEach(item => {
-                let option = document.createElement('option');
-                option.value = item.id;
-                option.text = item.department;
-                dropdown.appendChild(option);
-            });
-        });
-});

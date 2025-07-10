@@ -17,7 +17,7 @@
 }
 .item{
     display: inline-block;
-    min-width: 250px;
+    min-width: 235px;
     padding: 10px;
     background-color: white;
     box-shadow: 0 0 3px 1px rgba(0,0,0,0.2);
@@ -36,4 +36,165 @@
 .recent-post-text{
     font-size: 15px;
     font-weight:400;
+}
+.chart-canvas{
+    border: 1px solid rgba(0,0,0,0.2);
+}
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.service-label {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.service-count {
+    background-color: #065A24;
+    /* Example color */
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.3rem 1rem;
+    min-width: 50px;
+    text-align: center;
+    font-weight: bold;
+}
+/* monthy */
+.charts {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* FIXED CHART CONTAINER - NO MORE INVISIBLE MARGINS */
+.chart-container {
+    width: 300px;
+    /* or any value like 70%, 400px, etc. */
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.chart-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 160px;
+}
+
+.filter-select:hover {
+    border-color: #007bff;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* FIXED CANVAS CONTAINER - NO OVERFLOW */
+.canvas-container {
+
+    height: 280px;
+    width: 50%;
+    margin-top: 15px;
+}
+
+/* PIE CHART CONTAINER */
+.pie-chart-container {
+    flex: 1;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+#myPieChart {
+    background-color: white;
+    border-radius: 10px;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .chart-title {
+        font-size: 20px;
+    }
+
+    .chart-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .filter-container {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .charts {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .pie-chart-container {
+        height: 300px;
+    }
+
+    .canvas-container {
+        height: 250px;
+    }
 }

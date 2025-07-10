@@ -16,12 +16,13 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
 
 class healthWorkerController extends Controller
-{
+{   
     public function dashboard(){
 
-        $healthWorker = staff::OrderBy('user_id', 'ASC')-> paginate(10);
+        $healthWorker = user::where('status', 'active') -> where('role','staff') -> orderBy('id', 'ASC')-> paginate(10);
+        $pendingAccounts = user::where('status','pending') -> where('role', 'staff') -> orderBy('id', 'ASC') -> get();
 
-        return view('dashboard.healthWorker',['isActive' => true],['healthWorker' => $healthWorker ]);
+        return view('dashboard.healthWorker',['isActive' => true,'healthWorker' => $healthWorker,'pendingAccounts' => $pendingAccounts ]);
     }
     public function destroy($id){
         
@@ -94,7 +95,7 @@ class healthWorkerController extends Controller
 
                 // Delete the old image if it exists and is different
                 $profileImagePath = $user -> role == 'staff'? $user -> staff: $user -> nurses;
-                if (!empty( $profileImagePath ->profile_image)) {
+                if (!empty( $profileImagePath ->profile_image) && $profileImagePath->profile_image !== 'images/default_profile.png') {
                     $oldImagePath = public_path(ltrim($profileImagePath -> profile_image,'/'));
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath); // Delete old file

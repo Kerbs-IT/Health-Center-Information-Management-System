@@ -63,7 +63,7 @@
                                     </td>
                                     <td class="w-25">
                                         <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0"></span>
+                                            <h6 class="mb-0">Plan to have Family Planning method:</h6><span>Yes</span>
                                         </div>
                                     </td>
                                 </tr>

@@ -43,4 +43,8 @@ class addresses extends Model
     public function staff(){
         return $this -> hasOne(staff::class,'address_id','address_id');
     }
+    // patients
+    public function patient(){
+        return $this -> hasOne(patients::class,'address_id','address_id');
+    }
 }

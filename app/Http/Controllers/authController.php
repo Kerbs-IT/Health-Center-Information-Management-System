@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\addresses;
 use App\Models\nurses;
+use App\Models\patients;
 use App\Models\staff;
 use App\Models\User;
 use GrahamCampbell\ResultType\Success;
@@ -32,21 +33,38 @@ class authController extends Controller
             'username'=> 'required',
             'email' => ['required','email'],
             'password' => ['required','confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'role' => 'required|in:nurse,staff,other_roles',
+            'role' => 'required|in:staff,patient',
             'first_name' => 'required',
             'middle_initial' => ['required','max:2'],
             'last_name' => ['required'],
             'department' => 'required_if:role,nurse',
             'assigned_area' => 'required_if:role,staff',
             'recovery_question' => ['required'],
-            'recovery_answer' => ['required']
+            'recovery_answer' => ['required'],
+            'patient_type' => 'required_if:role,patient',
+
         ]);
 
         $data['recovery_answer'] = Hash::make($data['recovery_answer']);
        $data['password'] = Hash::make($data['password']);
+
+        switch ($data['role']) {
+            case 'nurse':
+            case 'staff':
+                $data['status'] = 'pending';  // Needs admin or nurse approval
+                break;
+
+            case 'patient':
+                $data['status'] = 'active';   // Patients get access immediately
+                break;
+
+            default:
+                $data['status'] = 'pending';  // fallback
+                break;
+        }
        $newUser = User::create($data);
 
-       $userId = $newUser-> id;
+       $userId = $newUser -> id;
 
        $address = addresses::create([
             'user_id' => $userId,
@@ -69,16 +87,13 @@ class authController extends Controller
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                 'address_id' => $address -> address_id,
                 'department_id' => $data['department'],
-                'profile_image' => 'images/profile_images/default_profile.png',
+                'profile_image' => 'images/default_profile.png',
                 'age' => null,
                 'date_of_birth' => null,
                 'sex' => null,
                 'civil_status' => null,
                 'contact_number' => null,
-                'nationality' => null,
-
-                
-
+                'nationality' => null,        
             ]);
             break;
         case 'staff':
@@ -90,7 +105,7 @@ class authController extends Controller
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                 'assigned_area_id' => $data['assigned_area'],
                 'address_id' => $address -> address_id,
-                'profile_image' => 'images/profile_images/default_profile.png',
+                'profile_image' => 'images/default_profile.png',
                 'age' => null,
                 'date_of_birth' => null,
                 'sex' => null,
@@ -98,6 +113,26 @@ class authController extends Controller
                 'contact_number' => null,
                 'nationality' => null,
            ]);
+           break;
+        case 'patient':{
+            patients::create([
+                'user_id' => $userId,
+                'patient_type' => $data['patient_type'],
+                'first_name' => $data['first_name'],
+                'middle_initial' => $data['middle_initial'],
+                'last_name' => $data['last_name'],
+                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                'address_id' => $address -> address_id,
+                'profile_image' => 'images/default_profile.png',
+                'age' => null,
+                'date_of_birth' => null,
+                'sex' => null,
+                'civil_status' => null,
+                'contact_number' => null,
+                'nationality' => null,
+           ]);
+           break;
+        }
            break;
        }
 
@@ -240,6 +275,20 @@ class authController extends Controller
 
         return redirect() -> route('page.profile');
 
+    }
+
+    public function updateStatus($id, $decision){
+        $user = User::where('id', $id);
+        if($decision == 'accept'){
+            $user -> update([
+                'status' => 'active'
+            ]);
+        }
+        if ($decision == 'reject') {
+            $user->update([
+                'status' => 'reject'
+            ]);
+        }
     }
     
 }

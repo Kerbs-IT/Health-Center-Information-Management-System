@@ -78,6 +78,14 @@ input[type='checkbox'] {
     background-color: #2E8B57;
     border-radius: 50px;
 }
-.hambuger-icon{
-    
+table tr th{
+    background-color: rgb(246, 246, 246) !important;
+}
+.record-con{
+    padding: 10px;
+    box-shadow: 1px 1px 3px 4px rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+.patient-profile{
+    border: 1px solid rgba(0,0,0,0.2);
 }

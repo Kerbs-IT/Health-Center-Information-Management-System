@@ -8,16 +8,23 @@ use App\Http\Controllers\brgyUnitController;
 use App\Http\Controllers\forgotPassController;
 use App\Http\Controllers\healthWorkerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\manageInterfaceController;
+use App\Http\Controllers\manageUserController;
+use App\Http\Controllers\masterListController;
 use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
+use App\Http\Controllers\patientController;
 use App\Http\Controllers\RecordsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('layout.app');
 });
 
 Route::get('/auth/login',[authController::class, 'login']) -> name('login');
+Route::get('/change-pass',function (){
+    return view('auth.changePass',['isActive' => true,]);
+}) -> name('change-pass');
 
 // logout
 Route::post('/logout',[LoginController::class,'logout']) -> name('logout');
@@ -44,18 +51,18 @@ Route::get('/dashboard/admin',function (){
 Route::get('/dashboard/nurse',[nurseDashboardController::class,'dashboard']) -> name('dashboard.nurse');
 
 Route::get('/dashboard/staff',function (){
-    return view('dashboard.staff');
+    return view('dashboard.staff',['isActive' => true,'page' => 'DASHBOARD']);
 }) -> name('dashboard.staff');
-
+// patient dashboard\
+Route::get('/dashboard/patient',[patientController::class, 'dashboard']) -> name('dashboard.patient');
 
 // menu bar blade
 Route::get('/menuBar',function (){
     return view('layout.menuBar');
 }) -> name('menubar');
 
-// profile route
 Route::get('/profile',function (){
-    return view('pages.profile', ['isActive' => true]);
+    return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
 }) -> name('page.profile');
 
 
@@ -111,4 +118,70 @@ Route::get('/patient-record/vaccination/case/id',[RecordsController::class,'vacc
 // -------------------------------------------- PRENATAL RECORD----------------------------------------------------------------
 Route::get('/patient-record/prenatal/view-records',[RecordsController::class,'prenatalRecord']) -> name('records.prenatal');
 Route::get('/patient-record/prenatal/view-details/id',[RecordsController::class, 'viewPrenatalDetail']) -> name('record.view.prenatal');
+Route::get('/patient-record/prenatal/edit-details/id',[RecordsController::class, 'editPrenatalDetail']) -> name('record.prenatal.edit');
+Route::get('/patient-record/prenatal/view-case/id', [RecordsController::class, 'editPrenatalCase']) -> name('record.prenatal.case');
+// --------------------------------------------- SENIOR CITIZEN RECORD ------------------------------------------------------
+Route::get('/patient-record/senior-citizen/view-records', [RecordsController::class, 'seniorCitizenRecord']) -> name('record.senior.citizen');
+Route::get('/patient-record/senior-citizen/view-detail/id', [RecordsController::class, 'seniorCitizenDetail']) -> name('record.senior.citizen.view');
+Route::get('/patient-record/senior-citizen/edit-details/id', [RecordsController::class, 'editSeniorCitizenDetail'])->name('record.senior.citizen.edit');
+Route::get('/patient-record/senior-citizen/view-case/id', [RecordsController::class, 'editSeniorCitizenCase'])->name('record.senior.citizen.case');
+// Route::get('/patient-record/senior-citizen/view-case-info/id', [RecordsController::class, 'viewSeniorCitizenCaseInfo']) -> name('record.case.view.Senior.citizen.info');
+
+// --------------------------------------------- FAMILY PLANNING RECORD ----------------------------------------------------------------
+Route::get('/patient-record/family-planning/view-records', [RecordsController::class, 'familyPlanningRecord']) -> name('record.family.planning');
+Route::get('/patient-record/family-planning/view-detail/id', [RecordsController::class, 'familyPlanningDetail'])->name('record.family.planning.view');
+Route::get('/patient-record/family-planning/edit-details/id', [RecordsController::class, 'editFamilyPlanningDetail'])->name('record.family.planning.edit');
+Route::get('/patient-record/family-planning/view-case/id', [RecordsController::class, 'viewFamilyPlanningCase'])->name('record.family.planning.case');
+
+// --------------------------------------------- TB DOTS -------------------------------------------------------------------------------
+Route::get('/patient-record/tb-dots/view-records', [RecordsController::class, 'tb_dotsRecord']) -> name('record.tb-dots');
+Route::get('/patient-record/tb-dots/view-detail/id', [RecordsController::class, 'tb_dotsDetail'])->name('record.tb-dots.view');
+Route::get('/patient-record/tb-dots/edit-details/id', [RecordsController::class, 'editTb_dotsDetail'])->name('record.tb-dots.edit');
+Route::get('/patient-record/tb-dots/view-case/id', [RecordsController::class, 'viewTb_dotsCase'])->name('record.tb-dots.case');
+
+// -------------------------------------------- MASTER LIST ----------------------------------------------------------------------------
+Route::get('/masterlist/vaccination',[masterListController::class, 'viewVaccinationMasterList']) -> name('masterlist.vaccination');
+Route::get('/masterlist/women-of-reproductive-age', [masterListController::class, 'viewWRAMasterList'])->name('masterlist.wra');
+
+// ------------------------------------------- Manage User -----------------------------------------------------
+Route::get('/manager-users', [manageUserController::class,'viewUsers']) -> name('manager.users');
+
+// ------------------------------------------- Manage Interface -----------------------------------------------
+Route::get('/manage-interface',[manageInterfaceController::class,'manageInterface']) -> name('manage.interface');
+
+// ------------------------------------------- Patient Account Record --------------------------------------------------------------
+Route::get('/user-account/medical-record', [patientController::class,'medicalRecord']) -> name('view.medical.record');
+
+// -------------------------------------------- ALL RECORDS ---------------------------------------------------
+Route::get('/record/all-records',[RecordsController::class, 'allRecords']) -> name('all.record');
+Route::get('/patient-record/all-record/view-detail/id', [RecordsController::class, 'allRecordPatientDetails'])-> name('record.allRecord.view');
+Route::get('/patient-record/all-record/edit-case/id', [RecordsController::class, 'allRecordsCase'])->name('record.allRecords.case');
+Route::get('/patient-record/all-record/edit-details/id',[RecordsController::class, 'allRecord_editPatientDetails']) -> name('allRecord.edit');
+
+Route::get('/patient-record/all-record/case/id/vaccination', [RecordsController::class, 'viewVaccinationRecord'])->name('allRecord.vaccination.record');
+
+Route::put('/update/status/{id}/{decision}', [authController::class, 'updateStatus']) -> name('update.status');
+
+
+// ---------------------------- home page
+// Route to homepage
+Route::get('/', function () {
+    return view('homepage');
+})->name('homepage');
+
+// Route to login page
+// Route::get('/login', function () {
+//     return view('login');
+// })->name('login');
+
+// // Route to Register page
+// Route::get('/register', function () {
+//     return view(view: 'register');
+// })->name('register');
+
+
+// Route to patient_register
+Route::get('/patient-register', function () {
+    return view('register_patient');
+})->name('register_patient');
 ?>
