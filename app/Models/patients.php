@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class patients extends Model
 {
     //
-    protected $primaryKey = 'user_id'; // if the column is not the same like in 'user' table id and 'staff' user_id
+    protected $primaryKey = 'id'; // if the column is not the same like in 'user' table id and 'staff' user_id
     protected $keyType = 'int';
     protected $fillable = [
         'user_id',
@@ -26,4 +26,9 @@ class patients extends Model
         'profile_image',
 
     ];
+
+    public function address()
+    {
+        return $this->hasOne(patient_addresses::class, 'patient_id');
+    }
 }

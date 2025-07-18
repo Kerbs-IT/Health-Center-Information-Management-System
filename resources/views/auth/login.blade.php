@@ -5,33 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png') }}">
     <link href="{{ asset('homepage.css') }}" rel="stylesheet"> {{-- Optional Custom Styling --}}
     <title>Health Center Information Management System</title>
 </head>
 
-<body class="vh-100">
+<body class="d-flex flex-column min-vh-100">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/login.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/login.js','resources/css/auth/login.css'])
 
-    <!-- <header class="w-100">
-        <nav class="w-100 bg-success" style="background-color: green;">
-                <div></div>
-        </nav>
-    </header> -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success shadow-sm sticky-top" >
+        <div class="container-fluid ">
+            <a class="navbar-brand d-flex gap-3 align-items-center h-100" href="#">
+                <img src="{{ asset('images/hugo_perez_logo.png') }}" alt="" style="height: 40px;">
+                <h3 class="mb-0">Health Center Information Mangement System</h3>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class=" navbar-collapse " id="navbarContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-color-danger fw-bold" href="{{ route('homepage')  }}#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#specialist">Specialist</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#faq">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage')  }}#events">Events</a></li>
+                    <li class="nav-item"><a class="btn btn-primary fw-normal btn-light text-black" href="{{ route('login') }}">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <main class="d-flex align-items-center justify-content-center h-100 ">
+    <main class="d-flex align-items-center justify-content-center flex-grow-1 ">
 
         <div class="container">
-            <div class="login-container login-card">
+            <div class="login-container login-card border">
                 <!-- Left Image -->
                 <div class=" p-0">
                     <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="login-img">
                 </div>
 
                 <!-- Right Form -->
-                <div class="form-section bg-light">
-                    <form action="{{route('auth.login')}}" method="POST" class="rounded border d-flex flex-column align-items-center p-4 bg-white">
+                <div class="login-form-con">
+                    <form action="{{route('auth.login')}}" method="POST" class="rounded d-flex flex-column align-items-center p-4 bg-white h-100">
                         @csrf
                         <h1 class="text-center fs-1 fw-bold">Login</h1>
 
