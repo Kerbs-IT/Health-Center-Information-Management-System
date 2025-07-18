@@ -1,6 +1,99 @@
 import { error } from 'jquery';
 import Swal from 'sweetalert2';
-import { loadAddress } from './address/address';
+
+fetch('/showBrgyUnit')
+.then(response => response.json())
+.then(data => {
+    let dropdown = document.getElementById('patient_purok_dropdown');
+
+    // console.log(data);
+    data.forEach(item => {
+        let option = document.createElement('option');
+        option.value = item.brgy_unit;
+        option.text = item.brgy_unit;
+        dropdown.appendChild(option);
+    });
+});
+
+// add the patient account
+const addPatientSubmitBtn = document.getElementById('add-patient-submit-btn');
+
+addPatientSubmitBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const formDataElement = document.getElementById('add-patient-form');
+    const formData = new FormData(formDataElement);
+
+    try {
+         // errors container
+        const username_error = document.querySelector('.username-error');
+        const fname_error = document.querySelector('.fname-error');
+        const middle_initial_error = document.querySelector('.middle-initial-error');
+        const lname_error = document.querySelector('.lname-error');
+        const email_error = document.querySelector('.email-error');
+        const password_error = document.querySelector('.password-error');
+        const blk_n_street_error = document.querySelector('.blk-n-street-error');
+        const purok_dropdown_error = document.querySelector('.purok-dropdown-error');
+        const recovery_question_error = document.querySelector('.recovery-question-error');
+        const recovery_answer_error = document.querySelector('.recovery-answer-error');
+
+        const response = await fetch('/add-patient-account', {
+            method: 'POST', // Yes, use POST
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+
+        const result = await response.json();
+        if (!response.ok) {
+             // set the errors
+            username_error.innerHTML = result.errors?.username?.[0] ?? '';
+            fname_error.innerHTML = result.errors?.first_name?.[0] ?? '';
+            middle_initial_error.innerHTML = result.errors?.middle_initial?.[0] ?? '';
+            lname_error.innerHTML = result.errors?.last_name?.[0] ?? '';
+            email_error.innerHTML = result.errors?.email?.[0] ?? '';
+            password_error.innerHTML = result.errors?.password?.[0] ?? '';
+            recovery_question_error.innerHTML = result.errors?.recovery_question?.[0] ?? '';
+            recovery_answer_error.innerHTML = result.errors?.recovery_answer?.[0] ?? '';
+            blk_n_street_error.innerHTML = result.errors?.blk_n_street?.[0] ?? '';
+            purok_dropdown_error.innerHTML = result.errors?.patient_purok_dropdown?.[0] ?? '';
+
+            Swal.fire({
+                title: 'Update',
+                text: "Invalid input value",
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        } else {
+
+            formDataElement.reset();
+            // make the errors gone
+            username_error.innerHTML =  '';
+            fname_error.innerHTML =  '';
+            middle_initial_error.innerHTML = '';
+            lname_error.innerHTML = '';
+            email_error.innerHTML = '';
+            password_error.innerHTML = '';
+            recovery_question_error.innerHTML = '';
+            recovery_answer_error.innerHTML = '';
+            blk_n_street_error.innerHTML = '';
+            purok_dropdown_error.innerHTML = '';
+            Swal.fire({
+                title: 'Creation',
+                text: "Patient Account is successfully created",
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 // import the address function
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/health-worker/${removeId}`, {
+                    fetch(`/delete-patient-account/${removeId}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -41,10 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-});
 
-// for the pop-up
-document.addEventListener('DOMContentLoaded', () =>{
     const editIcon = document.querySelectorAll('.edit-icon');
     const popUp = document.getElementById('pop-up');
     const cancelBtn = document.getElementById('cancel-btn');
@@ -56,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () =>{
             const id = icon.dataset.id;
             console.log(id);
 
-            fetch(`/health-worker/get-info/${id}`,{
+            fetch(`/patient-account/get-patient-info/${id}`,{
                 method:'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -83,8 +173,8 @@ document.addEventListener('DOMContentLoaded', () =>{
                 const nationality = document.getElementById('nationality');
                 const username = document.getElementById('username');
                 const email = document.getElementById('email');
-                const blkNstreet = document.getElementById('blk_n_street');
-                const postalCode = document.getElementById('postal_code');
+                const blkNstreet = document.getElementById('update_blk_n_street');
+                const patient_purok_address = document.getElementById('update_patient_purok_dropdown');
 
                 // address
                 const region = document.getElementById('region');
@@ -92,52 +182,37 @@ document.addEventListener('DOMContentLoaded', () =>{
                 const city = document.getElementById('city');
                 const brgy = document.getElementById('brgy');
 
-                // reset first
-                region.dataset.selected = '';
-                province.dataset.selected = '';
-                city.dataset.selected = '';
-                brgy.dataset.selected = '';
-
-                if(data.response.region_id){
-                    region.dataset.selected = data.response.region_id ;
-                    province.dataset.selected = data.response.province_id ;
-                    city.dataset.selected = data.response.city_id ;
-                    brgy.dataset.selected = data.response.brgy_id ;
-                    region.value = data.response.region_id ;
-                    
-                }else{
-                    region.innerHTML = '<option value="" dissabled>Select Region</option>';
-                    province.innerHTML = '<option value="">Select Province</option>';
-                    city.innerHTML = '<option value="">Select City/Municipality</option>';
-                    brgy.innerHTML = '<option value="">Select Barangay</option>';
-                }
-                loadAddress(province,city,brgy,region,region.value);  // load the address to populate the inputs
               
 
                 // input values
                 const baseUrl = profileImg.dataset.baseUrl; // gets data-base-url
-                profileImg.src = baseUrl + data.response.profile_image;
+                profileImg.src = baseUrl + data.response.patient.profile_image;
                 // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
                 console.log(profileImg);
-                fullname.innerHTML = data.response.full_name;
-                fname.value = data.response.first_name;
-                lname.value = data.response.last_name;
-                mInitial.value = data.response.middle_initial;
-                age.value = data.response.age;
-                bday.value = data.response.date_of_birth;
-                contact.value = data.response.contact_number;
-                nationality.value = data.response.nationality;
-                username.value = data.response.username;
-                email.value = data.response.email;
+                fullname.innerHTML = data.response.patient.full_name;
+                fname.value = data.response.patient.first_name;
+                lname.value = data.response.patient.last_name;
+                mInitial.value = data.response.patient.middle_initial;
+                age.value = data.response.patient.age;
+                bday.value = data.response.patient.date_of_birth;
+                contact.value = data.response.patient.contact_number;
+                nationality.value = data.response.patient.nationality;
+
+                username.value = data.response.user.username;
+                email.value = data.response.user.email;
+
                 console.log(username.value);
-                blkNstreet.value = data.response.street ?? 'none';
-                postalCode.value = data.response.postal_code; 
+                blkNstreet.value = data.response.patient_address.house_number 
+                + (data.response.patient_address.street ? ', ' + data.response.patient_address.street : '');
+                
+                // submit btn data-user value
+                submitBtn.dataset.user = data.response.user.id;
 
-                // assigned area
+                // select purok
                 const puroks = async function () {
-                    const dropdown = document.getElementById('update_assigned_area');
+                    // const dropdown = document.getElementById('update_assigned_area');
 
-                    const occupiedAreas = JSON.parse(dropdown.dataset.occupiedAreas);
+                    // const occupiedAreas = JSON.parse(dropdown.dataset.occupiedAreas);
                     
                     try {
                         const response = await fetch('/showBrgyUnit');
@@ -148,14 +223,10 @@ document.addEventListener('DOMContentLoaded', () =>{
                             let inUse = '';
                             let inUseText = '';
 
-                            const selected = element.id == data.response.assigned_area_id? 'selected' : '';
+                            const selected = element.brgy_unit == data.response.patient_address.purok? 'selected' : '';
                             // add other option
-                            const currentlyUse = element.id == data.response.assigned_area_id ? '(currently)' : '';
-                            if (element.id != data.response.assigned_area_id) {
-                                inUse = occupiedAreas.includes(Number(element.id)) ? 'disabled' : '';
-                                inUseText = occupiedAreas.includes(Number(element.id)) ? '(assigned to other)' : '';
-                            }
-                            dropdown.innerHTML += `<option value="${element.id}" ${selected} ${inUse}>${element.brgy_unit} ${currentlyUse} ${inUseText}</option>`;
+                            const currentlyUse = element.id == data.response.assigned_area_id ? '(currently)' : ''
+                            patient_purok_address.innerHTML += `<option value="${element.brgy_unit}" ${selected} >${element.brgy_unit} </option>`;
                 
                         });
                         
@@ -198,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 
         formData.append('_method', 'PUT'); // Laravel will detect this
         
-        fetch(`/health-worker/update/${userId}`, {
+        fetch(`/update-patient-account-information/${userId}`, {
             method: 'POST', // Yes, use POST
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -310,110 +381,3 @@ document.querySelectorAll('.status-btn').forEach(button => {
     });
 });
 
-// show the puroks for the assigned area
-const puroks = async function () {
-    const dropdown = document.getElementById('assigned_area');
-
-    const occupiedAreas = JSON.parse(dropdown.dataset.occupiedAreas);
-    
-    try {
-        const response = await fetch('/showBrgyUnit');
-        const brgyData = await response.json();
-
-
-        brgyData.forEach(element => {
-            let inUse = '';
-            let inUseText = '';
-
-           
-            inUse = occupiedAreas.includes(Number(element.id)) ? 'disabled' : '';
-            inUseText = occupiedAreas.includes(Number(element.id)) ? '(assigned to other)' : '';
-            dropdown.innerHTML += `<option value="${element.id}"  ${inUse}>${element.brgy_unit}  ${inUseText}</option>`;
-
-        });
-        
-    } catch (error) {
-        console.log('Errors', error);
-    }
-    
-};
-puroks();
-// add health workers
-
-const addHealthWorkerSubmitBTN = document.getElementById('add-Health-worker');
-
-addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
-    e.preventDefault();
-
-
-    // create a form
-    let form = document.getElementById('add-health-worker-form');
-    let formData = new FormData(form);
-
-    try {
-        // errors container
-        const username_error = document.getElementById('add-username-error');
-        const fname_error = document.querySelector('.fname-error');
-        const middle_initial_error = document.querySelector('.middle-initial-error');
-        const lname_error = document.querySelector('.lname-error');
-        const email_error = document.querySelector('.email-error');
-        const password_error = document.querySelector('.password-error');
-        const assigned_area_error = document.querySelector('.assigned-area-error');
-        const recovery_question_error = document.querySelector('.recovery-question-error');
-        const recovery_answer_error = document.querySelector('.recovery-answer-error');
-        
-        const response = await fetch('/add-health-worker-account', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }, 
-            body: formData
-        })
-
-        // get the response in json format
-        const result = await response.json();
-    
-        if (response.ok) {
-            // make the errors gone
-            username_error.innerHTML =  '';
-            fname_error.innerHTML =  '';
-            middle_initial_error.innerHTML = '';
-            lname_error.innerHTML = '';
-            email_error.innerHTML = '';
-            password_error.innerHTML = '';
-            assigned_area_error.innerHTML = '';
-            recovery_question_error.innerHTML = '';
-            recovery_answer_error.innerHTML = '';
-            Swal.fire({
-                title: 'Add New Health Worker',
-                text: "Health Worker Account is successfully added",
-                icon: 'success',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-            document.getElementById('add-health-worker-form').reset();
-        } else {
-
-            // set the errors
-            username_error.innerHTML = result.errors?.username?.[0] ?? '';
-            fname_error.innerHTML = result.errors?.first_name?.[0] ?? '';
-            middle_initial_error.innerHTML = result.errors?.middle_initial?.[0] ?? '';
-            lname_error.innerHTML = result.errors?.last_name?.[0] ?? '';
-            email_error.innerHTML = result.errors?.email?.[0] ?? '';
-            password_error.innerHTML = result.errors?.password?.[0] ?? '';
-            assigned_area_error.innerHTML = result.errors?.assigned_area?.[0] ?? '';
-            recovery_question_error.innerHTML = result.errors?.recovery_question?.[0] ?? '';
-            recovery_answer_error.innerHTML = result.errors?.recovery_answer?.[0] ?? '';
-            Swal.fire({
-                title: 'Add New Health Worker',
-                text: "Invalid input value",
-                icon: 'error',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-        }
-    }catch(error){
-        console.log('Error status:', error);
-    }
-})

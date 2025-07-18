@@ -1,6 +1,6 @@
 function resetDropdown(select, defaultText) {
-  select.innerHTML = `<option value="">${defaultText}</option>`;
-  select.disabled = true;
+  select.innerHTML = `<option value="" dissabled >${defaultText}</option>`;
+    select.disabled = true;
 }
 
 document.addEventListener('DOMContentLoaded', () =>{
@@ -85,10 +85,10 @@ export async function loadAddress(province, city, barangay, region, regionCode) 
     const selectedRegionId = region.dataset.selected;
 
     // Clear existing options first
-    region.innerHTML = '<option hidden selected>Select Region</option>';
-    province.innerHTML = '<option hidden selected>Select Province</option>';
-    city.innerHTML = '<option hidden selected>Select City/Municipality</option>';
-    barangay.innerHTML = '<option hidden selected>Select Barangay</option>';
+    region.innerHTML = '<option hidden dissabled value="">Select Region</option>';
+    province.innerHTML = '<option hidden dissabled value="" >Select Province</option>';
+    city.innerHTML = '<option hidden dissabled value="" >Select City/Municipality</option>';
+    barangay.innerHTML = '<option hidden dissabled  value="">Select Barangay</option>';
 
     try {
         // Fetch all region options

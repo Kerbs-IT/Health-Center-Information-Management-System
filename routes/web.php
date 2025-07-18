@@ -105,7 +105,7 @@ Route::get('/Dashboard/Health-workers', [healthWorkerController::class, 'dashboa
 // ------------------------------------DELETE n Update HEALTH WORKER RECORD-----------------------------------------
 Route::delete('/health-worker/{id}', [healthWorkerController::class, 'destroy'])->name('health-worker.destroy');
 Route::post('/health-worker/get-info/{id}', [healthWorkerController::class,'getInfo']) -> name('heath-worker.get-info');
-Route::post('/heath-worker/update/{id}',[healthWorkerController::class,'update']) -> name('health-worker.update');
+Route::put('/health-worker/update/{id}',[healthWorkerController::class,'update']) -> name('health-worker.update');
 
 // --------------------------------------------ADD PATIENT ROUTE SECTION-----------------------------------------------------
 Route::get('/add-patients', [addPatientController::class, 'dashboard']) -> name('add-patient');
@@ -184,4 +184,13 @@ Route::get('/', function () {
 Route::get('/patient-register', function () {
     return view('register_patient');
 })->name('register_patient');
+
+// manage health worker
+Route::post('/add-health-worker-account',[healthWorkerController::class, 'addHealthWorker']) -> name('managerHealthWorker.add-account');
+
+// manager patient account
+Route::post('/add-patient-account',[manageUserController::class, 'store']) -> name('manageUser.addPatientAccount');
+Route::delete('/delete-patient-account/{id}',[manageUserController::class, 'remove']) -> name('manageUser.delete');
+Route::post('/patient-account/get-patient-info/{id}',[manageUserController::class, 'info']) -> name('manageUser.info');
+Route::put('/update-patient-account-information/{id}',[manageUserController::class,'updateInfo']) -> name('manageUser.update');
 ?>

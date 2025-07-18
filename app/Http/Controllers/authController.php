@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\addresses;
 use App\Models\nurses;
+use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\staff;
 use App\Models\User;
@@ -24,8 +25,13 @@ class authController extends Controller
     }
 
     public function register(){
+        $occupiedAreas = \Illuminate\Support\Facades\DB::table('users')
+            ->join('staff', 'users.id', '=', 'staff.user_id')
+            ->where('users.status', 'active')
+            ->pluck('staff.assigned_area_id')
+            ->toArray();
 
-        return view('auth.register');
+        return view('auth.register',['occupied_assigned_areas' => $occupiedAreas]);
     }
     public function store(Request $request){
 
@@ -37,11 +43,11 @@ class authController extends Controller
             'first_name' => 'required',
             'middle_initial' => ['required','max:2'],
             'last_name' => ['required'],
-            'department' => 'required_if:role,nurse',
             'assigned_area' => 'required_if:role,staff',
             'recovery_question' => ['required'],
             'recovery_answer' => ['required'],
-            'patient_type' => 'required_if:role,patient',
+            'blk_n_street'=> 'required_if:role,patient',
+            'patient_purok_dropdown' => 'required_if:role,patient'
 
         ]);
 
@@ -115,14 +121,12 @@ class authController extends Controller
            ]);
            break;
         case 'patient':{
-            patients::create([
-                'user_id' => $userId,
-                'patient_type' => $data['patient_type'],
+            $patient = patients::create([
+                'user_id' => $userId ?? null,
                 'first_name' => $data['first_name'],
                 'middle_initial' => $data['middle_initial'],
                 'last_name' => $data['last_name'],
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
-                'address_id' => $address -> address_id,
                 'profile_image' => 'images/default_profile.png',
                 'age' => null,
                 'date_of_birth' => null,
@@ -131,6 +135,19 @@ class authController extends Controller
                 'contact_number' => null,
                 'nationality' => null,
            ]);
+        //    add the user address
+            // dd($patient->id);
+            $blk_n_street = explode(',' ,$data['blk_n_street']);
+            // dd($blk_n_street);
+            patient_addresses::create([
+                'patient_id' => $patient->id,
+                'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
+                'street'=> $blk_n_street[1] ?? null,
+                'purok' => $data['patient_purok_dropdown'],
+                'postal_code' => '4109',
+                'latitude' => null,
+                'longitude' => null,
+            ]);
            break;
         }
            break;
@@ -223,12 +240,13 @@ class authController extends Controller
         // update the address table
 
         $user -> addresses -> update([
-            'brgy_id' => $data['brgy'] ?? $user -> addresses -> brgy_id ?? null,
-            'city_id' => $data['city'] ?? $user -> addresses -> city_id ?? null,
-            'province_id' => $data['province'] ?? $user -> addresses -> province_id ?? null,
-            'region_id' => $data['region'] ?? $user -> addresses -> region_id ?? null,
-            'street' => $data['street'] ?? $user -> addresses -> street ?? null,
-            'postal_code' => $data['postal_code'] ?? $user -> addresses -> postal_code ?? null
+            // the address? is an nullsafe operator to safely check if there is a brgy_id or null
+            'brgy_id' => $data['brgy'] ?? $user -> addresses?->brgy_id ?? null,
+            'city_id' => $data['city'] ?? $user -> addresses?->city_id ?? null,
+            'province_id' => $data['province'] ?? $user -> addresses?->province_id ?? null,
+            'region_id' => $data['region'] ?? $user -> addresses?->region_id ?? null,
+            'street' => $data['street'] ?? $user -> addresses?->street ?? null,
+            'postal_code' => $data['postal_code'] ?? $user-> addresses?-> postal_code ?? null
         ]);
 
 

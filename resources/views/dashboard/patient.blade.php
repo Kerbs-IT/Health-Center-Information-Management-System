@@ -34,8 +34,8 @@
                         <!-- Left panel -->
                         <div class="edit-profile p-3 d-flex w-25 flex-column align-items-center border-end">
                             <img src="{{ optional(Auth::user()->patient)->profile_image 
-            ? asset(Auth::user()->patient->profile_image) 
-            : asset('images/profile_images/default_profile.png') }}"
+    ? asset(Auth::user()->patient->profile_image) 
+    : asset('images/default_profile.png') }}"
                                 alt="profile_img" class="mb-3" style="width: 100px; height: 100px; object-fit: cover;">
                             <h4 class="mb-3">{{ optional(Auth::user()->patient)->full_name ?? 'none' }}</h4>
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>

@@ -40,8 +40,8 @@
       $profileImage = asset(Auth::user()->nurses->profile_image);
       } elseif (optional(Auth::user()->staff)->profile_image) {
       $profileImage = asset(Auth::user()->staff->profile_image);
-      } elseif (optional(Auth::user()->patients)->profile_image) {
-      $profileImage = asset(Auth::user()->patients->profile_image);
+      } elseif (optional(Auth::user()->patient)->profile_image) {
+      $profileImage = asset(Auth::user()->patient->profile_image);
       } else {
       $profileImage = asset('images/profile_images/default_profile.png');
       }
