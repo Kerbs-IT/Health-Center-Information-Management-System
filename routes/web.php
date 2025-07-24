@@ -5,6 +5,7 @@ use App\Http\Controllers\addressController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\brgyUnit;
 use App\Http\Controllers\brgyUnitController;
+use App\Http\Controllers\colorPalleteController;
 use App\Http\Controllers\forgotPassController;
 use App\Http\Controllers\healthWorkerController;
 use App\Http\Controllers\LoginController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
 use App\Http\Controllers\RecordsController;
+use App\Models\color_pallete;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -193,4 +195,14 @@ Route::post('/add-patient-account',[manageUserController::class, 'store']) -> na
 Route::delete('/delete-patient-account/{id}',[manageUserController::class, 'remove']) -> name('manageUser.delete');
 Route::post('/patient-account/get-patient-info/{id}',[manageUserController::class, 'info']) -> name('manageUser.info');
 Route::put('/update-patient-account-information/{id}',[manageUserController::class,'updateInfo']) -> name('manageUser.update');
+
+// patient profile
+
+Route::post('/patient-profile-edit/{id}', [patientController::class, 'info']) -> name('patient-profile');
+Route::put('/patient-profile/update/{id}',[patientController::class, 'updateInfo']) -> name('patient-profile.update');
+
+// MAnage interface color pallete
+Route::get('/color-pallete', [colorPalleteController::class, 'getInfo']) -> name('color-pallete');
+Route::put('/update-color-pallete',[colorPalleteController::class,'updateInfo']) -> name('update-color-pallete');
+
 ?>

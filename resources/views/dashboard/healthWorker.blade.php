@@ -135,7 +135,7 @@
             @csrf
             <!-- profile image section -->
             <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
-                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
+                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}"> 
                 <h3 class=""></h3>
                 <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
                 <div class="upload-image d-flex flex-column">

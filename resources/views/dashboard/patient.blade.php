@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
 </head>
@@ -16,8 +17,9 @@
     'resources/js/header.js',
     'resources/css/manageInterface.css',
     'resources/css/patient/patient-dashboard.css',
-    'resources/css/patient/record.css'
-    ])
+    'resources/css/patient/record.css',
+    'resources/js/manageUser/userProfile.js',
+    'resources/css/profile.css'])
 
     <div class="ms-0 ps-0 d-flex w-100">
         <!-- aside contains the sidebar menu -->
@@ -36,10 +38,10 @@
                             <img src="{{ optional(Auth::user()->patient)->profile_image 
     ? asset(Auth::user()->patient->profile_image) 
     : asset('images/default_profile.png') }}"
-                                alt="profile_img" class="mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                alt="profile_img" class="mb-3 profile-section-image"  style="width: 100px; height: 100px; object-fit: cover;">
                             <h4 class="mb-3">{{ optional(Auth::user()->patient)->full_name ?? 'none' }}</h4>
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
-                            <button type="button" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#profile_modal">Edit Profile</button>
+                            <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
 
                         <!-- Right panel -->
@@ -49,46 +51,43 @@
                                 <div class="mb-3 d-flex px-4">
                                     <div class="box w-50">
                                         <div class="mb-2 d-flex gap-1">
-                                            <h5>Sex:</h5>
-                                            <p>Female</p>
+                                            <h5>Sex: </h5>
+                                            <p>{{ optional(Auth::user()-> patient) -> sex ?? 'none'}}</p>
                                         </div>
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Age:</h5>
-                                            <p>30</p>
+                                            <p>{{ optional(Auth::user()-> patient) -> age ?? 'none'}}</p>
                                         </div>
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Contact No:</h5>
-                                            <p>092103104103</p>
+                                            <p>{{ optional(Auth::user()-> patient) -> contact_number ?? 'none'}}</p>
                                         </div>
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Register Date:</h5>
-                                            <p>06/20/2025</p>
+                                            <p>{{ optional(Auth::user()) -> created_at -> format('m/d/Y') ?? 'none'}}</p>
                                         </div>
                                     </div>
                                     <!-- 2nd box -->
                                     <div class="box w-50 px-4">
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Nationality:</h5>
-                                            <p>Filipino</p>
+                                            <p>{{ optional(Auth::user()-> patient) -> nationality ?? 'none'}}</p>
                                         </div>
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Date of Birth:</h5>
-                                            <p>01/02/1995</p>
+                                            <p>{{ optional(Auth::user()-> patient) -> date_of_birth ?? 'none'}}</p>
                                         </div>
                                         <div class="mb-2 d-flex gap-1">
                                             <h5>Civil Status:</h5>
-                                            <p>Single</p>
+                                            <p>{{ optional(Auth::user()-> patient) -> civil_status ?? 'none'}}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Patient Type:</h5>
-                                            <p>{{Auth::user() -> patient -> patient_type}}</p>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                             <div class="address">
                                 <h4>Address</h4>
-                                <p class="fs-5 fw-light px-3">Blk 25 Lot 14, Green Forbes, Hugos Perez, Trece Martires City, Cavite, Philippines</p>
+                                <p class="fs-5 fw-light px-3">{{ $fullAddress }}</p>
                             </div>
                         </div>
                     </div>
@@ -129,17 +128,19 @@
     <div class="modal fade" id="profile_modal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="simpleModalLabel">Modal Title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
-                </div>
-                <div class="moda-body">
-                    <div class="pop-up  w-100 h-100 d-flex align-items-center justify-content-center" id="pop-up">
-                        <form action="" method="post" class="p-3 gap-3 w-100 d-flex opacity-[1]" enctype="multipart/form-data" id="profile-form">
-                            @csrf
+                <form action="" method="post" class="w-100 " enctype="multipart/form-data" id="profile-form">
+                    @method('PUT')
+                    @csrf
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="simpleModalLabel">Modal Title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                    </div>
+                    <div class="moda-body h-100">
+                        <div class="pop-up  w-100 h-100 d-flex align-items-start justify-content-center px-3 gap-3 mt-2" id="pop-up">
+
                             <!-- profile image section -->
-                            <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
-                                <img src="{{asset(optional(Auth::user() -> patient ) -> profile_image) ?? asset('images/profile_images/default_img.png')}}" alt="profile picture" class="profile-section-image" id="profile-image">
+                            <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center h-100" style="min-width:280px;">
+                                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
                                 <h3 class=""></h3>
                                 <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
                                 <div class="upload-image d-flex flex-column">
@@ -235,75 +236,44 @@
                                     <!-- password -->
                                     <div class="input-field w-50">
                                         <label for="password" class="">Password</label>
-                                        <input type="password" id="password" class="form-control" name="password">
+                                        <input type="password" id="edit_password" class="form-control" name="password">
                                         <small class="text-muted">Leave blank if you don't want to change it.</small>
                                         <small class="text-danger"></small>
                                     </div>
                                 </div>
                                 <!-- address -->
-                                <div class="mb-2 d-flex gap-1 flex-column">
-                                    <h4>Address</h4>
-                                    <div class="input-field d-flex gap-2 w-100">
-                                        <div class="mb-3 w-50">
-                                            <label for="" class="text-white">te</label>
-                                            <input type="text" placeholder="Blk & Lot n Street" class="form-control w-100" name="street" id="blk_n_street" value="">
-                                            <small class="text-danger" id="street-error"></small>
+                                <div class="mb-3 w-100" id="patient_type_con">
+                                    <label for="patient_type" class="form-label text-nowrap ">Patient Address </label>
+
+                                    <div class=" w-100 d-flex gap-2">
+                                        <div class="items w-50">
+                                            <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
+                                            <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
+                                            @error('blk_n_street')
+                                            <small class="text-danger">{{$message}}</small>
+                                            @enderror
                                         </div>
-                                        <div class="postal w-50">
-                                            <label for="postal">Postal Code</label>
-                                            <input type="number" placeholder="0123" name="postal_code" id="postal_code" class="form-control w-100" value="">
-                                            <small class="text-danger" id="postal-error"></small>
+                                        <div class="items w-50">
+                                            <label for="patient_purok_dropdown">Puroks*</label>
+                                            <select id="update_patient_purok_dropdown" class="form-select w-100" name="patient_purok_dropdown" required>
+                                                <option value="" selected disabled>Select a purok</option>
+                                            </select>
+                                            @error('patient_purok_dropdown')
+                                            <small class="text-danger">{{$message}}</small>
+                                            @enderror
                                         </div>
 
-                                    </div>
-                                    <div class="input-field d-flex gap-2">
-                                        <!-- region -->
-                                        <div class="mb-2 w-50">
-                                            <label for="region">Region*</label>
-                                            <select name="region" id="region" class="form-select" data-selected="">
-                                                <option value="">Select a region</option>
-                                            </select>
-                                            <small class="text-danger" id="region-error"></small>
-                                        </div>
-                                        <!-- province -->
-                                        <div class="mb-2 w-50">
-                                            <label for="province">Province*</label>
-                                            <select name="province" id="province" class="form-select" disabled data-selected="">
-                                                <option value="">Select a province</option>
-                                            </select>
-                                            <small class="text-danger" id="province-error"></small>
-                                        </div>
-                                    </div>
-
-                                    <!-- city n brgy -->
-                                    <div class="input-field d-flex gap-2">
-                                        <!-- city -->
-                                        <div class="mb-2 w-50">
-                                            <label for="city">City*</label>
-                                            <select name="city" id="city" class="form-select" disabled data-selected="">
-                                                <option value="">Select a city</option>
-                                            </select>
-                                            <small class="text-danger" id="city-error"></small>
-                                        </div>
-                                        <!-- brgy -->
-                                        <div class="mb-2 w-50">
-                                            <label for="brgy">Barangay*</label>
-                                            <select name="brgy" id="brgy" class="form-select" disabled data-selected="">
-                                                <option value="">Select a brgy</option>
-                                            </select>
-                                            <small class="text-danger" id="brgy-error"></small>
-                                        </div>
                                     </div>
                                 </div>
 
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Save changes</button>
-                </div>
+                    <div class="modal-footer d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Cancel</button>
+                        <input type="submit" value="Save" class="btn btn-success px-4" id="submit-btn" data-user>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
