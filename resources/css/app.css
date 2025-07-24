@@ -8,6 +8,15 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+:root{
+    /* --primaryColor: #FFFFFF;
+    --secondaryColor: #065A24;
+    --tertiaryColor: #2E8B57; */
+
+    --menu-text-color:#ffffff;
+    --active-menu-text: #ffffff;
+}
+
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -27,10 +36,13 @@
     font-style: normal;
 }
 
-html body{
-    background-color: white !important;
+html body
+{
+    background-color: var(--primaryColor) !important;
 }
-
+header{
+    background-color: #ffffff !important;
+}
 h1,
 h5{
     font-family: 'Poppins', sans-serif;
@@ -63,7 +75,7 @@ body{
 }
 
 .menu-bar{
-    background-color: #065A24;
+    background-color:var(--secondaryColor) ;
     width: 300px;
 }
 .sub-menu{
@@ -76,11 +88,11 @@ body{
     transition: transform 0.3s ease;
 }
 .menu-items:hover{
-    background-color: #2E8B57;
+    background-color: var(--tertiaryColor);
     transition: .3s ease-in-out;
 }
 .active{
-    background-color: #2E8B57;
+    background-color: var(--tertiaryColor);
 }
 .sub-menu a{
     border-left: 2px solid white;
@@ -140,3 +152,33 @@ input{
     border: 1px solid rgba(108, 108, 108, 0.1);
 }
 
+/* text color */
+
+.wrapper a{
+    color: var(--menu-text-color) !important;
+    transition: color .5s ease;
+}
+.wrapper a svg{
+    fill: var(--menu-text-color) !important;
+}
+.wrapper a.active svg{
+    fill: var(--active-menu-text) !important;
+}
+.wrapper a.active h4{
+    color: var(--active-menu-text) !important;
+}
+
+form h1{
+    color: var(--menu-text-color) !important;
+}
+
+main h1,
+div small,
+div h2,
+div h3,
+.sequence-links h5,
+.sequence-links svg,
+.sequence-links a{
+    fill: var(--menu-text-color) !important;
+    color: var(--menu-text-color) !important;
+}

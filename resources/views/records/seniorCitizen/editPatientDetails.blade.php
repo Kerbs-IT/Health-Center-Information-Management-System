@@ -8,7 +8,7 @@
     <title>Health Center Information Management System</title>
 </head>
 
-<body class="bg-white">
+<body >
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',
@@ -41,7 +41,7 @@
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-5">
                         <a href="{{route('record.senior.citizen')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
-                        <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden">
+                        <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden bg-white py-2">
                             @csrf
                             <div class="step d-flex flex-column w-100 rounded  px-2">
                                 <div class="info">

@@ -1,3 +1,7 @@
+:root{
+    --menu-text-color:#ffffff;
+}
+
 *{
     padding: 0;
     margin: 0;
@@ -10,12 +14,12 @@
 }
 
 .table-header th {
-    background-color: #2E8B57 !important;
-    color: white;
+    background-color: var(--secondaryColor) !important;
+    color: var(--menu-text-color) !important;
 }
 .patient-info-header{
-    background-color: #2E8B57 !important;
-    color: white;
+    background-color: var(--secondaryColor) !important;
+    color: var(--menu-text-color) !important;
 }
 .table-header th{
     padding: 10px;

@@ -8,7 +8,7 @@
     <title>Health Center Information Management System</title>
 </head>
 
-<body class="bg-white">
+<body >
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',

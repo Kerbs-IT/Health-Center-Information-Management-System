@@ -8,7 +8,7 @@
     <title>Health Center Information Management System</title>
 </head>
 
-<body class="bg-white">
+<body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',
@@ -42,126 +42,128 @@
                     <div class="flex-grow-1 py-3 px-5">
                         <a href="{{route('record.senior.citizen')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
                         <!-- patient Info -->
-                        <div class="patient-info">
-                            <h2 class="fs-3 fw-normal patient-info-header p-3 text-center">Patient's Information Details</h2>
+                        <div class="info bg-white rounded">
+                            <div class="patient-info">
+                                <h2 class="fs-3 fw-normal patient-info-header p-3 text-center">Patient's Information Details</h2>
+                            </div>
+                            <!-- basic info header -->
+                            <h3 class="text-start mb-3 fs-2 w-100">Basic Information</h3>
+                            <table class="table table-bordered table-light">
+                                <tbody>
+                                    <!-- first row -->
+                                    <tr>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Full Name:</h6> <span>Jan Louie Salimbago</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Age:</h6> <span>10</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Date of Birth</h6> <span>01/05/2023</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- 2nd row -->
+                                    <tr>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Place of Birth:</h6> <span>Caloocan City</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Sex:</h6> <span>Male</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Nationality</h6> <span>Filipino</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- 3rd row -->
+                                    <tr>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Civil Status:</h6> <span>Married</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Occupation:</h6> <span>Gardener</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">SSS member:</h6> <span>Yes</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h3 class="text-start mb-3 fs-2 w-100">Address</h3>
+                            <table class="table table-bordered table-light">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- vital header  -->
+                            <h3 class="text-start mb-3 fs-2 w-100">Vital Sign</h3>
+                            <table class="table table-bordered table-light">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- 2nd row -->
+                                    <tr>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Height(cm):</h6> <span>172 cm</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Weight(kg):</h6> <span>75 kg</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">120/80</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- 3rd -->
+                                    <tr>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Temperature(C):</h6> <span>30°C</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>25</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25 ">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">120/80</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <!-- basic info header -->
-                        <h3 class="text-start mb-3 fs-2 w-100">Basic Information</h3>
-                        <table class="table table-bordered table-light">
-                            <tbody>
-                                <!-- first row -->
-                                <tr>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Full Name:</h6> <span>Jan Louie Salimbago</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Age:</h6> <span>10</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Date of Birth</h6> <span>01/05/2023</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- 2nd row -->
-                                <tr>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Place of Birth:</h6> <span>Caloocan City</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Sex:</h6> <span>Male</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Nationality</h6> <span>Filipino</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- 3rd row -->
-                                <tr>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Civil Status:</h6> <span>Married</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Occupation:</h6> <span>Gardener</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">SSS member:</h6> <span>Yes</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <h3 class="text-start mb-3 fs-2 w-100">Address</h3>
-                        <table class="table table-bordered table-light">
-                            <tbody>
-                                <tr>
-                                    <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- vital header  -->
-                        <h3 class="text-start mb-3 fs-2 w-100">Vital Sign</h3>
-                        <table class="table table-bordered table-light">
-                            <tbody>
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- 2nd row -->
-                                <tr>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Height(cm):</h6> <span>172 cm</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Weight(kg):</h6> <span>75 kg</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">120/80</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- 3rd -->
-                                <tr>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Temperature(C):</h6> <span>30°C</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>25</span>
-                                        </div>
-                                    </td>
-                                    <td class="w-25 ">
-                                        <div class="info d-flex gap-2 align-items-center">
-                                            <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">120/80</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </main>
             </div>
