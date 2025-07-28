@@ -13,6 +13,8 @@
 <body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
+    'resources/css/patient/record.css',
+    'resources/js/login.js',
     'resources/js/menudropdown.js',
     'resources/js/header.js',
     'resources/css/healthWorker.css',
@@ -51,7 +53,7 @@
                     </nav>
                 </header>
                 <main class="m-3 overflow-y-auto max-h-[calc(100vh-100px)] p-3">
-                    <div class="button-con d-flex justify-content-end">
+                    <div class="button-con d-flex justify-content-end mb-2">
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
                             Add an Account
                         </button>
@@ -59,7 +61,7 @@
 
                     <div class="records">
                         <table class="table px-3">
-                            <thead>
+                            <thead class="table-header">
                                 <th style="width: 10%;">No</th>
                                 <th style="width: 25%;">Name</th>
                                 <th style="width: 15%;" class="text-center">Purok</th>
