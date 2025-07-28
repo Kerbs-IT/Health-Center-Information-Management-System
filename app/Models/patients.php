@@ -31,4 +31,7 @@ class patients extends Model
     {
         return $this->hasOne(patient_addresses::class, 'patient_id');
     }
+    public function medical_record_case(){
+        return $this->hasMany(medical_record_cases::class,'patient_id','id');
+    }
 }
