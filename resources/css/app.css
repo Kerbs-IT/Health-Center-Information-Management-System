@@ -15,6 +15,7 @@
 
     --menu-text-color:#ffffff;
     --active-menu-text: #ffffff;
+    --primary-bg-text:#ffffff;
 }
 
 
@@ -161,12 +162,23 @@ input{
 .wrapper a svg{
     fill: var(--menu-text-color) !important;
 }
-.wrapper a.active svg{
+/* .wrapper a.active svg,
+.wrapper .sub-menu a.active svg{
     fill: var(--active-menu-text) !important;
-}
-.wrapper a.active h4{
+} */
+.wrapper a.active{
     color: var(--active-menu-text) !important;
 }
+.wrapper a.active h4,
+.wrapper .sub-menu a.active h5{
+    color: var(--active-menu-text) !important;
+}
+.wrapper a:hover{
+    color:var(--active-menu-text) !important;
+}
+/* .wrapper .sub-menu a svg:hover{
+    fill:var(--active-menu-text) !important;
+} */
 
 form h1{
     color: var(--menu-text-color) !important;
@@ -179,6 +191,13 @@ div h3,
 .sequence-links h5,
 .sequence-links svg,
 .sequence-links a{
-    fill: var(--menu-text-color) !important;
-    color: var(--menu-text-color) !important;
+    fill: var(--primary-bg-text) !important;
+    color: var(--primary-bg-text) !important;
+}
+
+/* EYE ICON HOVER */
+#eye-icon:hover,
+#Retype-eye-icon{
+    background: black;
+    cursor: pointer;
 }

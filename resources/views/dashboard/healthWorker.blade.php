@@ -13,10 +13,12 @@
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',
+    'resources/css/patient/record.css',
     'resources/js/header.js',
     'resources/css/healthWorker.css',
     'resources/js/healthWorker.js',
-    'resources/css/profile.css',])
+    'resources/css/profile.css',
+    'resources/js/login.js'])
     @include('sweetalert::alert')
     <div class="ms-0 ps-0 d-flex w-100" style="height: 100vh;">
         <!-- aside contains the sidebar menu -->
@@ -73,7 +75,7 @@
 
                     <div class="records">
                         <table class="table px-3">
-                            <thead>
+                            <thead class="table-header">
                                 <th style="width: 10%;">No</th>
                                 <th style="width: 25%;">Name</th>
                                 <th style="width: 15%;" class="text-center">Contact Info</th>
@@ -135,7 +137,7 @@
             @csrf
             <!-- profile image section -->
             <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
-                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}"> 
+                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
                 <h3 class=""></h3>
                 <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
                 <div class="upload-image d-flex flex-column">
@@ -343,7 +345,7 @@
                             <?php $count = 1; ?>
                             @foreach($pendingAccounts as $account)
                             <tr class="align-middle">
-                               
+
                                 <td>{{$count}}</td>
                                 <td>
                                     <?php $image = $account->staff->profile_image; ?>

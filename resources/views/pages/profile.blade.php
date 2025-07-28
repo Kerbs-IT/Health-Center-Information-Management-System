@@ -74,8 +74,8 @@
 
                     </nav>
                 </header>
-                <main>
-                    <div class="change-pass-button w-100 d-flex justify-content-end p-4">
+                <main class="mt-4">
+                    <div class="change-pass-button w-100 d-flex justify-content-end px-4">
                         <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
                     </div>
 
@@ -88,7 +88,7 @@
                         : (optional(Auth::user()->staff)->profile_image 
                             ? asset(optional(Auth::user()->staff)->profile_image) 
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
-                            <h3 class="">{{optional(Auth::user() -> staff) -> full_name ?? optional(Auth::user() -> nurses) -> full_name ?? 'none'}}</h3>
+                            <h3 class="text-black">{{optional(Auth::user() -> staff) -> full_name ?? optional(Auth::user() -> nurses) -> full_name ?? 'none'}}</h3>
                             <h5 class="mb-3 text-muted text-capitalize fw-normal">{{ optional(Auth::user()) -> role ?? 'none'}}</h5>
                             <div class="upload-image d-flex flex-column">
                                 <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>

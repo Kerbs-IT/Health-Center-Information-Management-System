@@ -31,7 +31,7 @@
                 <main class=" mt-4 d-flex align-items-center justify-content-center flex-grow-1">
                     <div class="color-pallette  h-[700px] bg-light w-[900px] p-3 d-flex align-items-center flex-column  rounded">
                         <div class="pallet-con w-50">
-                            <h2 class="text-center fw-bold"> Change Color Pallete </h2>
+                            <h2 class="text-center fw-bold text-dark"> Change Color Pallete </h2>
                             <div class="colors mt-5">
                                 <form action="" method="post" id="color-pallete-form">
                                     @method('PUT')

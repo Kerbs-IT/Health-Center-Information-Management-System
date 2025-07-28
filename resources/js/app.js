@@ -46,6 +46,7 @@ async function currentColorPallete() {
 
         const rootTextBarProperty = "--menu-text-color";
         const rootActiveProperty = "--active-menu-text";
+        const rootPrimaryTextProperty = "--primary-bg-text";
         const wrapperElement = document.querySelectorAll('.wrapper a.active');
         console.log(wrapperElement);
         if (wrapperElement) {
@@ -53,6 +54,7 @@ async function currentColorPallete() {
             hexToRgb(data.tertiaryColor, rootActiveProperty);
         }
         hexToRgb(data.secondaryColor, rootTextBarProperty);
+        hexToRgb(data.primaryColor, rootPrimaryTextProperty);
     } catch (error) {   
         
     }
