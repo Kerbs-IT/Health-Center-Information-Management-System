@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
 </head>
 
-<body >
+<body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',
@@ -26,7 +27,8 @@
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-4 basic-info" style="overflow-y: auto; min-height: 0;">
 
-                <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden">
+                <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="add-patient-form">
+                    @csrf
                     <h1 class="align-self-start justify-self-start mb-1" id="head-text">Basic Information</h1>
 
                     <div class="step d-flex flex-column w-100 rounded  px-2" id="step1">
@@ -35,7 +37,7 @@
                                 <div class="user-info w-100">
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient</label>
-                                        <select name="type-of-patient" id="type-of-patient" class="form-select text-center bg-light w-25" onchange="showAdditional()">
+                                        <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-25" onchange="showAdditional()">
                                             <option value="" disabled selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
                                             <option value="prenatal">Prenatal</option>
@@ -72,7 +74,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                            <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
                                             @error('date_of_birth')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
@@ -80,7 +82,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field w-50">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="">
+                                            <input type="text" id="place_of_birth" placeholder="trece martires city" class="form-control" name="place_of_birth" value="">
                                             @error('place_of_birth')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
@@ -104,9 +106,9 @@
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
                                                 @endphp
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="" class="mb-0">
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="male" class="mb-0">
                                                     <label for="male">Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="" class="mb-0">
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0">
                                                     <label for="female">Female</label>
                                                 </div>
                                                 @error('sex')
@@ -142,9 +144,12 @@
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 w-50">
-                                            <label for="brgy">Administered by*</label>
-                                            <select name="brgy" id="brgy" class="form-select ">
-                                                <option value="">Select a person</option>
+                                            <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
+                                            <select name="handled_by" id="handled_by" class="form-select ">
+                                                <option value="" disabled selected>Select a person</option>
+                                                @foreach($healthworkers as $worker)
+                                                <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>
+                                                @endforeach
                                             </select>
                                             @error('brgy')
                                             <small class="text-danger">{{$message}}</small>
@@ -153,9 +158,9 @@
                                         <div class="mb-2 w-50 senior-citizen-inputs d-none flex-column">
                                             <label for=""> Member of Social Security System (SSS):</label>
                                             <div class="radio-input d-flex align-items-center justify-content-center w-100 gap-1 py-2">
-                                                <input type="radio" id="male" class="mb-0" name="sex" value="" class="mb-0">
+                                                <input type="radio" id="male" class="mb-0" name="" value="" class="mb-0">
                                                 <label for="male">Male</label>
-                                                <input type="radio" id="female" class="mb-0" name="sex" value="" class="mb-0">
+                                                <input type="radio" id="female" class="mb-0" name="" value="" class="mb-0">
                                                 <label for="female">Female</label>
                                             </div>
                                         </div>
@@ -186,7 +191,7 @@
                                         <div class="mb-2 w-100 d-flex gap-2">
                                             <div class="input-field w-50">
                                                 <label for="motherName">Head of the Family</label>
-                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="mother_name" value="">
+                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="" value="">
                                                 @error('mother_name')
                                                 <small class="text-danger">{{$message}}</small>
                                                 @enderror
@@ -292,7 +297,7 @@
                                             <div class="mb-3 w-50 d-flex gap-2">
                                                 <div class="input-field w-100">
                                                     <label for="motherName">Religion</label>
-                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="mother_name" value="">
+                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name=" value="">
                                                     @error('mother_name')
                                                     <small class="text-danger">{{$message}}</small>
                                                     @enderror
@@ -315,7 +320,7 @@
                                         </div>
                                         <div class="input-field w-25">
                                             <label for="religion">Religion</label>
-                                            <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="mother_name" value="">
+                                            <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="" value="">
                                             @error('religion')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
@@ -348,7 +353,7 @@
                                                 <select name="brgy" id="brgy" class="form-select py-2">
                                                     <option value="" disabled selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
-                                                        <option value="{{ $brgy_unit -> id }}">{{$brgy_unit -> brgy_unit}}</option>
+                                                    <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('brgy')
@@ -393,11 +398,11 @@
                                         <div class="mb-2 input-field d-none gap-3 w-100 third-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Birth Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="height">
+                                                <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 00.00" name="weight">
+                                                <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight">
                                             </div>
                                         </div>
                                     </div>
@@ -425,40 +430,50 @@
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="Nurse">
                                     </div>
                                 </div>
+                                <div class="mb-2 w-100">
+                                    <div class="mb-2 w-100">
+                                        <label for="patient_name">handled By:</label>
+                                        <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
+                                    </div>
+                                </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
-                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control w-100 " name="date_of_vaccination" value="">
+                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
                                     </div>
                                 </div>
                                 <div class="mb-2 w-100">
                                     <div class="mb-2 w-100">
                                         <label for="time">Time</label>
-                                        <input type="time" class="form-control" name="time_of_vaccination">
+                                        <input type="time" class="form-control" name="time_of_vaccination" required>
                                     </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="vaccine_type">Vaccine Type:</label>
                                     <div class="mb-2 d-flex gap-2">
-                                        <select name="vaccine_type" id="vaccine_type" class="form-select w-100">
-                                            <option value="">Select Vaccine</option>
+                                        <select name="vaccine_type" id="vaccine_input" class="form-select w-100" required>
+                                            <option value="" selected disabled>Select Vaccine</option>
+                                            @foreach($vaccines as $vaccine)
+                                            <option value="{{$vaccine -> id}}">{{$vaccine->type_of_vaccine}}</option>
+                                            @endforeach
                                         </select>
-                                        <button type="button" class="btn btn-success"> Add</button>
+                                        <button type="button" class="btn btn-success" id="vaccine-add-btn"> Add</button>
                                     </div>
                                 </div>
-                                <div class="mb-2 bg-secondary w-100 p-3 d-flex  flex-wrap rounded">
-                                    <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
+                                <div class="mb-2 bg-secondary w-100 p-3 d-flex flex-wrap justify-content-center rounded vaccines-container gap-1 ">
+                                    <!-- <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
                                         <p class="mb-0">Penta 1</p>
                                         <div class="delete-icon d-flex align-items-center justify-content-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
                                                 <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
                                             </svg>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
+                                <input type="text" name="selected_vaccines" id="selected_vaccines" hidden>
                                 <div class="mb-2 w-100">
                                     <label for="dose" class="w-100">Vaccine Dose Number:</label>
-                                    <select id="dose" name="dose" required class="form-select">
+                                    <select id="dose" name="dose_number" required class="form-select" required>
                                         <option value="" disabled selected>Select Dose</option>
                                         <option value="1">1st Dose</option>
                                         <option value="2">2nd Dose</option>
@@ -474,7 +489,7 @@
                             </div>
                             <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-5">
                                 <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="submit" class="btn btn-success px-5 py-2 fs-5">Save Record</button>
+                                <button type="submit" class="btn btn-success px-5 py-2 fs-5" id="vaccination-submit-btn">Save Record</button>
                             </div>
                         </div>
                         <!-- PRENATAL -->

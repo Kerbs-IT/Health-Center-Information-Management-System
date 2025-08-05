@@ -54,17 +54,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Full Name:</h6> <span>Jan Louie Salimbago</span>
+                                                <h6 class="mb-0">Full Name:</h6> <span>{{optional($info)?->full_name??'none'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Age:</h6> <span>10</span>
+                                                <h6 class="mb-0">Age:</h6> <span>{{optional($info)-> age ?? 'none'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date of Birth</h6> <span>01/05/2023</span>
+                                                <h6 class="mb-0">Date of Birth: </h6> <span>{{optional($info->date_of_birth ? Carbon\Carbon::parse($info->date_of_birth) : null)?->format('M j, Y') ?? 'none' }}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -72,17 +72,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Place of Birth:</h6> <span>Caloocan City</span>
+                                                <h6 class="mb-0">Place of Birth:</h6> <span>{{optional($info)->place_of_birth ?? 'none'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Sex:</h6> <span>Male</span>
+                                                <h6 class="mb-0">Sex:</h6> <span>{{optional($info)->sex ?? 'none'}}</span>
                                             </div>
                                         </td>
-                                        <td class="w-25">
+                                        <td class="w-25" rowspan="2">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Nationality</h6> <span>Filipino</span>
+                                                <h6 class="mb-0">Nationality</h6> <span>{{optional($info)->nationality ?? 'none'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -90,19 +90,19 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Mother Name:</h6> <span>Paulia Gomez</span>
+                                                <h6 class="mb-0">Mother Name:</h6> <span>{{optional($info->medical_record_case[0]->vaccination_medical_record)->mother_name ?? 'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Father's Name:</h6> <span>Juanito Pelaez</span>
+                                                <h6 class="mb-0">Father's Name:</h6> <span>{{optional($info->medical_record_case[0]->vaccination_medical_record)->father_name ?? 'N/A'}}</span>
                                             </div>
                                         </td>
-                                        <td class="w-25">
+                                        <!-- <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
                                                 <h6 class="mb-0">Nationality</h6> <span>Filipino</span>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>
@@ -110,7 +110,7 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <tr>
-                                        <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
+                                        <td colspan="7" class="p-4 text-start">{{$fullAddress?? 'none'}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -121,7 +121,7 @@
                                     <tr>
                                         <td colspan="7">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
+                                                <h6 class="mb-0">Date:</h6> <span>{{optional($info->medical_record_case[0]->vaccination_medical_record)->created_at?->format('M j, Y') ?? 'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -129,12 +129,12 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Birth Height(cm):</h6> <span>172 cm</span>
+                                                <h6 class="mb-0">Birth Height(cm):</h6> <span>{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}} cm</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Birth Weight(kg):</h6> <span>75 kg</span>
+                                                <h6 class="mb-0">Birth Weight(kg):</h6> <span>{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}} kg</span>
                                             </div>
                                         </td>
                                     </tr>

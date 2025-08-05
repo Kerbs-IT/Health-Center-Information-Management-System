@@ -112,11 +112,13 @@ Route::put('/health-worker/update/{id}',[healthWorkerController::class,'update']
 // --------------------------------------------ADD PATIENT ROUTE SECTION-----------------------------------------------------
 Route::get('/add-patients', [addPatientController::class, 'dashboard']) -> name('add-patient');
 
-// --------------------------------------------RECORDS --------------------------------------------------------------------
+// --------------------------------------------VACCINATION RECORDS --------------------------------------------------------------------
 Route::get('/patient-record/vaccination', [RecordsController::class, 'vaccinationRecord']) -> name('record.vaccination');
-Route::get('/patient-record/vaccination/view-details',[RecordsController::class,'viewDetails']) -> name('view.details');
-Route::get('/patient-record/vaccination/edit-details/id',[RecordsController::class,'vaccinationEditDetails']) -> name('record.vaccination.edit');
+Route::get('/patient-record/vaccination/view-details/{id}',[RecordsController::class,'viewDetails']) -> name('view.details');
+Route::get('/patient-record/vaccination/edit-details/{id}',[RecordsController::class,'vaccinationEditDetails']) -> name('record.vaccination.edit');
 Route::get('/patient-record/vaccination/case/id',[RecordsController::class,'vaccinationCase']) -> name('record.vaccination.case');
+Route::put('/patient-record/update/{id}',[RecordsController::class, 'vaccinationUpdateDetails'])-> name('record.vaccination.update');
+Route::delete('/patient-record/vaccination/delete/{id}',[RecordsController::class, 'vaccinationDelete'])-> name('record.vaccination.delete');
 // -------------------------------------------- PRENATAL RECORD----------------------------------------------------------------
 Route::get('/patient-record/prenatal/view-records',[RecordsController::class,'prenatalRecord']) -> name('records.prenatal');
 Route::get('/patient-record/prenatal/view-details/id',[RecordsController::class, 'viewPrenatalDetail']) -> name('record.view.prenatal');
@@ -204,5 +206,12 @@ Route::put('/patient-profile/update/{id}',[patientController::class, 'updateInfo
 // MAnage interface color pallete
 Route::get('/color-pallete', [colorPalleteController::class, 'getInfo']) -> name('color-pallete');
 Route::put('/update-color-pallete',[colorPalleteController::class,'updateInfo']) -> name('update-color-pallete');
+
+// ADD VACCINATION PATIENT
+Route::post('/add-patient/vaccination',[addPatientController::class,'addVaccinationPatient'])-> name('add-vaccination-patient');
+
+// health worker list 
+
+Route::get('/health-worker-list',[healthWorkerController::class,'healthWorkerList']);
 
 ?>

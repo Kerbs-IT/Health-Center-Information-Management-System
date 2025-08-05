@@ -38,4 +38,11 @@ class staff extends Model
     public function assigned_area(){
         return $this -> belongsTo(brgy_unit::class,'assigned_area_id','id');
     }
+    public function vaccination_case_records(){
+        return $this-> hasMany(vaccination_case_records::class,'health_worker_id','user_id');
+    }
+    public function vaccination_medical_records()
+    {
+        return $this->hasMany(vaccination_case_records::class, 'health_worker_id', 'user_id');
+    }
 }

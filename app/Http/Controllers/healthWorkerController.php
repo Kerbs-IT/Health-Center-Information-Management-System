@@ -240,4 +240,24 @@ class healthWorkerController extends Controller
             ],422);
         }
     }
+
+    public function healthWorkerList(){
+
+        try {
+            $healthWorkers = User::select('users.*')
+                ->join('staff', 'users.id', '=', 'staff.user_id')
+                ->where('users.role', 'staff')
+                ->where('users.status', 'active')
+                ->orderBy('staff.full_name', 'ASC')
+                ->with('staff')
+                ->get();
+
+            return response()->json(['healthWorkers'=>$healthWorkers]);
+        } catch (ValidationException $e) {
+            return response()-> json([
+                'errors'=> $e
+            ]);
+        }
+        
+    }
 }
