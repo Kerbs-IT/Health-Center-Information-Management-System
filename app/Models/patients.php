@@ -24,7 +24,12 @@ class patients extends Model
         'contact_number',
         'nationality',
         'profile_image',
+        'date_of_registration',
+        'place_of_birth'
 
+    ];
+    protected $casts = [
+        'date_of_birth' => 'date',
     ];
 
     public function address()

@@ -9,27 +9,27 @@
             <!-- 1 -->
             <div class="mb-2 w-25 d-flex">
                 <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">1</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
+                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
             </div>
             <!-- 2 -->
             <div class="mb-2 w-25 d-flex">
                 <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">2</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
+                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
             </div>
             <!-- 3 -->
             <div class="mb-2 w-25 d-flex">
                 <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">3</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
+                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
             </div>
             <!-- 4 -->
             <div class="mb-2 w-25 d-flex">
                 <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">4</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
+                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
             </div>
             <!-- 5 -->
             <div class="mb-2 w-25 d-flex">
                 <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">5</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
+                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
             </div>
         </div>
         <div class="ob-history mb-2">
