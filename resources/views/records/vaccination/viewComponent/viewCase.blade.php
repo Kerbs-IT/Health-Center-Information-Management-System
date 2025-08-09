@@ -5,7 +5,7 @@
             <tbody>
                 <tr>
                     <th>Patient Name</th>
-                    <td>Jan Louie Salimbago</td>
+                    <td id="view-patient-name">Jan Louie Salimbago</td>
                 </tr>
                 <tr>
                     <th>Administered By</th>
@@ -13,28 +13,25 @@
                 </tr>
                 <tr>
                     <th>Date of Vaccination</th>
-                    <td>2025-06-25</td> <!-- Replace with dynamic value -->
+                    <td id="view-date-of-vaccination">2025-06-25</td> <!-- Replace with dynamic value -->
                 </tr>
                 <tr>
                     <th>Time of Vaccination</th>
-                    <td>09:00 AM</td> <!-- Replace with dynamic value -->
+                    <td id="view-time-of-vaccination">09:00 AM</td> <!-- Replace with dynamic value -->
                 </tr>
                 <tr>
                     <th>Vaccine Type</th>
-                    <td>
-                        <ul class="list-unstyled mb-0">
-                            <li>Penta 1</li>
-                            <!-- Add more vaccines here if needed -->
-                        </ul>
+                    <td id="view-vaccine-type">
+                        Penta
                     </td>
                 </tr>
                 <tr>
                     <th>Vaccine Dose Number</th>
-                    <td>1st Dose</td>
+                    <td id="view-dose-number">1st Dose</td>
                 </tr>
                 <tr>
                     <th>Remarks</th>
-                    <td>No complications after administration</td>
+                    <td id="view-case-remarks"> No complications after administration</td>
                 </tr>
             </tbody>
         </table>
