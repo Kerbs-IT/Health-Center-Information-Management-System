@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\vaccination_case_records;
 use App\Models\vaccination_medical_records;
+use App\Models\vaccineAdministered;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -105,8 +108,41 @@ class RecordsController extends Controller
             ]);
         }
     }
-    public function vaccinationCase(){
-        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD']);
+    public function vaccinationCase($id){
+        $medical_record_case = medical_record_cases::where('patient_id',$id)-> where('type_of_case','vaccination')-> firstOrFail();
+        $vaccination_case_record = vaccination_case_records::where('medical_record_case_id',$medical_record_case->id)->get();
+        // dd($vaccination_case_record);
+
+       
+        // $vaccine_administered = vaccineAdministered::where('vaccination_case_record_id', $vaccination_case_record->id)->get();
+        // dd($medical_record_case, $vaccination_case_record, $vaccine_administered);
+        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD','vaccination_case_record'=> $vaccination_case_record]);
+    }
+    public function vaccinationViewCase($id){
+
+        try {
+            $vaccinationCase = vaccination_case_records::findOrFail($id);
+
+            $vaccineAdministered = vaccineAdministered::where(
+                'vaccination_case_record_id',
+                $vaccinationCase->id
+            )->get();
+
+            return response()->json([
+                'vaccinationCase'     => $vaccinationCase,
+                'vaccineAdministered' => $vaccineAdministered
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Vaccination case not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            // For any other kind of exception
+            return response()->json([
+                'error' => 'An unexpected error occurred.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
     public function vaccinationDelete($id)
     {
