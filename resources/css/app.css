@@ -201,3 +201,6 @@ div h3,
     background: black;
     cursor: pointer;
 }
+.delete-icon:hover(){
+    cursor: pointer;
+}

@@ -8,52 +8,131 @@ use App\Models\patients;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
+use App\Models\vaccines;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class RecordsController extends Controller
 {
-    public function allRecords(){
+    public function allRecords()
+    {
         return view('records.allRecords.allRecord', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function allRecordPatientDetails(){
+    public function allRecordPatientDetails()
+    {
         return view('records.allRecords.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function allRecord_editPatientDetails(){
+    public function allRecord_editPatientDetails()
+    {
         return view('records.allRecords.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function allRecordsCase(){
+    public function allRecordsCase()
+    {
         return view('records.allRecords.patientCase', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function viewVaccinationRecord(){
+    public function viewVaccinationRecord()
+    {
         return view('records.allRecords.viewVaccinationRecord', ['isActive' => true, 'page' => 'RECORD']);
+    }
+    public function updateVacciationCaseRecord(Request $request, $id)
+    {
+
+        try{
+
+            $data = $request->validate([
+                'update_handled_by' => 'required',
+                'date_of_vaccination' => 'required',
+                'time_of_vaccination' => 'sometimes',
+                'selected_vaccine' => 'required',
+                'case_record_id' => 'required',
+                'dose' => 'required',
+                'remarks' => 'sometimes'
+            ]);
+
+            // delete the existing vaccine administed first, then create a new record of the vaccines
+            $currentlyAdministedVaccine = vaccineAdministered::where('vaccination_case_record_id',$data['case_record_id'])->delete();
+            
+
+            // this if for compiling the selected vaccines
+            // get the vaccine types
+            $vaccines = explode(',', $data['selected_vaccine']);
+            $selectedVaccinesArray = [];
+
+            foreach ($vaccines as $key => $vaccineId) {
+                $vaccineText = vaccines::find($vaccineId);
+
+                $selectedVaccinesArray[] = $vaccineText->vaccine_acronym;
+            }
+
+            $selectedVaccines = implode(', ', $selectedVaccinesArray);
+
+            // GET THE MEDICAL RECORD CASE THAT WE WANT TO UPDATE
+            $vaccination_case_record = vaccination_case_records::findOrFail($data['case_record_id']);
+            // UPDATE THE DATA
+            $vaccination_case_record -> update([
+                'health_worker_id' => $data['update_handled_by']?? $vaccination_case_record->health_worker_id,
+                'date_of_vaccination' => $data['date_of_vaccination']?? $vaccination_case_record-> date_of_vaccination,
+                'time'=> $data['time_of_vaccination']?? $vaccination_case_record-> time,
+                'vaccine_type' => $selectedVaccines?? $vaccination_case_record-> vaccine_type,
+                'dose_number'=> $data['dose']?? $vaccination_case_record->dose,
+                'remarks'=> $data['remarks']?? $vaccination_case_record-> remarks
+            ]);
+
+            // UPLOAD THE NEW SET OF VACCINES
+            foreach ($vaccines as $vaccineId) {
+                $vaccine = vaccines::find($vaccineId);
+
+                $vaccineAdministered = vaccineAdministered::create([
+                    'vaccination_case_record_id' => $data['case_record_id'],
+                    'vaccine_type' => $vaccine->type_of_vaccine,
+                    'dose_number' => $data['dose'] ?? null,
+                    'vaccine_id' => $vaccineId ?? null
+                ]);
+            }
+
+            return response()-> json([
+                'message' => 'updating information successfully'
+            ]);
+
+        }catch(ValidationException $e){
+            return response()-> json([
+                'errors' => $e->errors()
+            ]);
+        }
+        
+
+
     }
 
     // vaccination
-    public function vaccinationRecord(){
-        $vaccinationRecord = medical_record_cases::with('patient')->where('type_of_case','vaccination')-> get();
-        return view('records.vaccination.vaccination', ['isActive' => true, 'page' => 'RECORD', 'vaccinationRecord'=> $vaccinationRecord]);
+    public function vaccinationRecord()
+    {
+        $vaccinationRecord = medical_record_cases::with('patient')->where('type_of_case', 'vaccination')->get();
+        return view('records.vaccination.vaccination', ['isActive' => true, 'page' => 'RECORD', 'vaccinationRecord' => $vaccinationRecord]);
     }
-    public function viewDetails($id){
+    public function viewDetails($id)
+    {
         $info = patients::with('medical_record_case.vaccination_medical_record')->findOrFail($id);
-        $address = patient_addresses::where('patient_id',$id)->firstorFail();
-        $fullAddress = $address->house_number.','. $address->street.', '.$address-> purok . ', '.$address-> barangay.', '.$address->city.', ' .$address->province;
-        return view('records.vaccination.patientDetails', ['isActive' => true, 'page' => 'RECORD', 'info' => $info,'fullAddress'=> $fullAddress,'address'=> $address]);
+        $address = patient_addresses::where('patient_id', $id)->firstorFail();
+        $fullAddress = $address->house_number . ',' . $address->street . ', ' . $address->purok . ', ' . $address->barangay . ', ' . $address->city . ', ' . $address->province;
+        return view('records.vaccination.patientDetails', ['isActive' => true, 'page' => 'RECORD', 'info' => $info, 'fullAddress' => $fullAddress, 'address' => $address]);
     }
-    public function vaccinationEditDetails($id){
+    public function vaccinationEditDetails($id)
+    {
         $info = patients::with('medical_record_case.vaccination_medical_record')->findOrFail($id);
         $address = patient_addresses::where('patient_id', $id)->firstorFail();
         $street = $address->house_number . ($address->street ? ', ' . $address->street : '');
-        return view('records.vaccination.editPatientDetails',['isActive' => true, 'page' => 'RECORD', 'info' => $info, 'address' => $address, 'street'=>$street]);
+        return view('records.vaccination.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'info' => $info, 'address' => $address, 'street' => $street]);
     }
-    public function vaccinationUpdateDetails(Request $request,$id){
+    public function vaccinationUpdateDetails(Request $request, $id)
+    {
         try {
             $patient = patients::findorFail($id);
-            $medical_record_case = medical_record_cases::where('patient_id',$id)->firstOrFail();
-            $vaccination_medical_record = vaccination_medical_records::where('medical_record_case_id',$medical_record_case->id);
-            $patient_address = patient_addresses::where('patient_id',$id)-> firstOrFail();
-            $data = $request -> validate([
+            $medical_record_case = medical_record_cases::where('patient_id', $id)->firstOrFail();
+            $vaccination_medical_record = vaccination_medical_records::where('medical_record_case_id', $medical_record_case->id);
+            $patient_address = patient_addresses::where('patient_id', $id)->firstOrFail();
+            $data = $request->validate([
                 'first_name' => 'sometimes|nullable|string',
                 'last_name' => 'sometimes|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
@@ -72,53 +151,55 @@ class RecordsController extends Controller
                 'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/']
             ]);
-            $patient-> update([
-                'first_name'=> $data['first_name']?? $patient->first_name,
-                'last_name'=>  $data['last_name']?? $patient->last_name,
-                'middle_initial'=> $data['middle_initial']?? $patient->middle_initial,
-                'date_of_birth'=> $data['date_of_birth']?? $patient-> date_of_birth,
-                'place_of_birth'=> $data['place_of_birth']?? $patient-> place_of_birth,
-                'age'=> $data['age']?? $patient->age,
-                'sex'=> $data['sex']?? $patient-> sex,
-                'contact_number'=> $data['contact_number']?? $patient->contact_number,
-                'nationality'=> $data['nationality']?? $patient->nationality,
+            $patient->update([
+                'first_name' => $data['first_name'] ?? $patient->first_name,
+                'last_name' =>  $data['last_name'] ?? $patient->last_name,
+                'middle_initial' => $data['middle_initial'] ?? $patient->middle_initial,
+                'date_of_birth' => $data['date_of_birth'] ?? $patient->date_of_birth,
+                'place_of_birth' => $data['place_of_birth'] ?? $patient->place_of_birth,
+                'age' => $data['age'] ?? $patient->age,
+                'sex' => $data['sex'] ?? $patient->sex,
+                'contact_number' => $data['contact_number'] ?? $patient->contact_number,
+                'nationality' => $data['nationality'] ?? $patient->nationality,
 
             ]);
-            $vaccination_medical_record -> update([
-                'date_of_registration' => $data['date_of_registration']?? $medical_record_case-> date_of_registration,
-                'mother_name'=> $data['mother_name']?? $medical_record_case->mother_name,
-                'father_name'=> $data['father_name']?? $medical_record_case->father_name,
-                'birth_height' => $data['vaccination_height']?? $medical_record_case->birth_height,
+            $vaccination_medical_record->update([
+                'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
+                'mother_name' => $data['mother_name'] ?? $medical_record_case->mother_name,
+                'father_name' => $data['father_name'] ?? $medical_record_case->father_name,
+                'birth_height' => $data['vaccination_height'] ?? $medical_record_case->birth_height,
                 'birth_weight' => $data['vaccination_weight'] ?? $medical_record_case->birth_weight,
             ]);
             $blk_n_street = explode(',', $data['street']);
             $patient_address->update([
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
                 'street' => $blk_n_street[1] ?? null,
-                'purok' => $data['brgy']?? $patient_address-> purok
+                'purok' => $data['brgy'] ?? $patient_address->purok
             ]);
 
-            return response()-> json([
-                'message'=> 'Patient information is successfully updated'
+            return response()->json([
+                'message' => 'Patient information is successfully updated'
             ]);
         } catch (ValidationException $e) {
-            return response()-> json([
+            return response()->json([
                 'message' => 'Patient information is not successfully updated',
-                'error' => $e-> errors()
+                'error' => $e->errors()
             ]);
         }
     }
-    public function vaccinationCase($id){
-        $medical_record_case = medical_record_cases::where('patient_id',$id)-> where('type_of_case','vaccination')-> firstOrFail();
-        $vaccination_case_record = vaccination_case_records::where('medical_record_case_id',$medical_record_case->id)->get();
+    public function vaccinationCase($id)
+    {
+        $medical_record_case = medical_record_cases::where('patient_id', $id)->where('type_of_case', 'vaccination')->firstOrFail();
+        $vaccination_case_record = vaccination_case_records::where('medical_record_case_id', $medical_record_case->id)->get();
         // dd($vaccination_case_record);
 
-       
-        // $vaccine_administered = vaccineAdministered::where('vaccination_case_record_id', $vaccination_case_record->id)->get();
+
+        // $vaccine_administered = vaccineAdministered::where('vaccination_case_record_id', $vaccination_case_record[0]->id)->get();
         // dd($medical_record_case, $vaccination_case_record, $vaccine_administered);
-        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD','vaccination_case_record'=> $vaccination_case_record]);
+        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD', 'vaccination_case_record' => $vaccination_case_record]);
     }
-    public function vaccinationViewCase($id){
+    public function vaccinationViewCase($id)
+    {
 
         try {
             $vaccinationCase = vaccination_case_records::findOrFail($id);
@@ -169,23 +250,28 @@ class RecordsController extends Controller
 
 
     // prenatal
-    public function prenatalRecord(){
+    public function prenatalRecord()
+    {
         return view('records.prenatal.prenatal', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function viewPrenatalDetail(){
+    public function viewPrenatalDetail()
+    {
         return view('records.prenatal.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-  
-    public function editPrenatalDetail(){
+
+    public function editPrenatalDetail()
+    {
         return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function editPrenatalCase(){
+    public function editPrenatalCase()
+    {
         return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 'page' => 'RECORD']);
     }
 
     // senior Citizen
 
-    public function seniorCitizenRecord(){
+    public function seniorCitizenRecord()
+    {
         return view('records.seniorCitizen.seniorCitizen', ['isActive' => true, 'page' => 'RECORD']);
     }
     public function seniorCitizenDetail()
@@ -200,27 +286,32 @@ class RecordsController extends Controller
     {
         return view('records.seniorCitizen.seniorCitizenPatientCase', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function viewSeniorCitizenCaseInfo(){
+    public function viewSeniorCitizenCaseInfo()
+    {
         return view('records.seniorCitizen.viewCase', ['isActive' => true, 'page' => 'RECORD']);
     }
 
     // -------------------------- family planning
-    public function familyPlanningRecord(){
-        return view('records.familyPlanning.familyPlanning',['isActive' => true, 'page' => 'RECORD']);
+    public function familyPlanningRecord()
+    {
+        return view('records.familyPlanning.familyPlanning', ['isActive' => true, 'page' => 'RECORD']);
     }
     public function familyPlanningDetail()
     {
         return view('records.familyPlanning.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function editFamilyPlanningDetail(){
+    public function editFamilyPlanningDetail()
+    {
         return view('records.familyPlanning.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
     }
-    public function viewFamilyPlanningCase(){
+    public function viewFamilyPlanningCase()
+    {
         return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD']);
     }
 
     // --------------------------- tb dots ----------------------------------------
-    public function tb_dotsRecord(){
+    public function tb_dotsRecord()
+    {
         return view('records.tb-dots.tb-dots', ['isActive' => true, 'page' => 'RECORD']);
     }
     public function tb_dotsDetail()

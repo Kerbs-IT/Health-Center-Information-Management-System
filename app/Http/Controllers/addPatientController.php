@@ -145,6 +145,7 @@ class addPatientController extends Controller
                     'vaccination_case_record_id' => $medicalCaseRecordId,
                     'vaccine_type' => $vaccine -> type_of_vaccine,
                     'dose_number' => $data['dose_number']??null,
+                    'vaccine_id' => $vaccineId?? null
                 ]);
             }
 
