@@ -12,4 +12,7 @@ class vaccines extends Model
         'type_of_vaccine',
         'vaccine_acronym'
     ];
+    public function vaccine_administered(){
+        return $this -> hasMany(vaccineAdministered::class,'vaccine_id','id');
+    }
 }

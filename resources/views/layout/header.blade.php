@@ -7,9 +7,9 @@
         </svg>
       </button>
       @if ($page === 'DASHBOARD')
-        <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
+      <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
       @else
-        <h1 class="mb-0">{{ $page }}</h1>
+      <h1 class="mb-0">{{ $page }}</h1>
       @endif
     </div>
     <div class="right-info d-flex align-items-center justify-content-center gap-3">
@@ -56,7 +56,7 @@
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">
           <a href="{{ route('page.profile') }}" class="text-decoration-none text-black">view profile</a>
-          <a href="{{route('logout')}}" class="text-decoration-none text-black">Logout</a>
+          <a href="{{route('logout')}}" class="text-decoration-none text-black" id="headerLogOut">Logout</a>
         </div>
       </div>
     </div>

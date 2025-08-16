@@ -16,6 +16,7 @@ use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
 use App\Http\Controllers\RecordsController;
+use App\Http\Controllers\vaccineController;
 use App\Models\color_pallete;
 use Illuminate\Support\Facades\Route;
 
@@ -120,6 +121,10 @@ Route::get('/patient-record/vaccination/case/{id}',[RecordsController::class,'va
 Route::put('/patient-record/update/{id}',[RecordsController::class, 'vaccinationUpdateDetails'])-> name('record.vaccination.update');
 Route::delete('/patient-record/vaccination/delete/{id}',[RecordsController::class, 'vaccinationDelete'])-> name('record.vaccination.delete');
 Route::get('/vaccination-case/record/{id}',[RecordsController::class, 'vaccinationViewCase'])-> name('view.case.info');
+// --- UPDATE CASE DETAIL
+Route::put('/vaccine/update/case-record/{id}',[RecordsController::class,'updateVacciationCaseRecord'])-> name('update.case.record');
+// ------- get vaccines
+Route::get('/vaccines',[vaccineController::class, 'getVaccines']);
 // -------------------------------------------- PRENATAL RECORD----------------------------------------------------------------
 Route::get('/patient-record/prenatal/view-records',[RecordsController::class,'prenatalRecord']) -> name('records.prenatal');
 Route::get('/patient-record/prenatal/view-details/id',[RecordsController::class, 'viewPrenatalDetail']) -> name('record.view.prenatal');
