@@ -121,6 +121,10 @@ Route::get('/patient-record/vaccination/case/{id}',[RecordsController::class,'va
 Route::put('/patient-record/update/{id}',[RecordsController::class, 'vaccinationUpdateDetails'])-> name('record.vaccination.update');
 Route::delete('/patient-record/vaccination/delete/{id}',[RecordsController::class, 'vaccinationDelete'])-> name('record.vaccination.delete');
 Route::get('/vaccination-case/record/{id}',[RecordsController::class, 'vaccinationViewCase'])-> name('view.case.info');
+// ADD VACCINATION CASE RECORD
+Route::post('/add-vaccination-case/{id}',[RecordsController::class, 'addVaccinationCaseRecord']);
+// ---------------- DELETE VACCINATION CASE ----------------------
+Route::delete('/delete-vaccination-case/{id}',[RecordsController::class,'deleteVaccinationCase']);
 // --- UPDATE CASE DETAIL
 Route::put('/vaccine/update/case-record/{id}',[RecordsController::class,'updateVacciationCaseRecord'])-> name('update.case.record');
 // ------- get vaccines

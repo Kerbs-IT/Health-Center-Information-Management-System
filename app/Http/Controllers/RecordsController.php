@@ -12,6 +12,7 @@ use App\Models\vaccines;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Type\Integer;
 
 class RecordsController extends Controller
 {
@@ -132,6 +133,9 @@ class RecordsController extends Controller
             $medical_record_case = medical_record_cases::where('patient_id', $id)->firstOrFail();
             $vaccination_medical_record = vaccination_medical_records::where('medical_record_case_id', $medical_record_case->id);
             $patient_address = patient_addresses::where('patient_id', $id)->firstOrFail();
+            // update the full name of vaccination case record
+            $vaccination_case_record = vaccination_case_records::where('medical_record_case_id',$medical_record_case ->id)->get();
+            
             $data = $request->validate([
                 'first_name' => 'sometimes|nullable|string',
                 'last_name' => 'sometimes|nullable|string',
@@ -155,6 +159,11 @@ class RecordsController extends Controller
                 'first_name' => $data['first_name'] ?? $patient->first_name,
                 'last_name' =>  $data['last_name'] ?? $patient->last_name,
                 'middle_initial' => $data['middle_initial'] ?? $patient->middle_initial,
+                'full_name' => trim(
+                    ($data['first_name'] ?? $patient->first_name) . ' ' .
+                    ($data['middle_initial'] ?? $patient->middle_initial) . ' ' .
+                    ($data['last_name'] ?? $patient->last_name)
+                ),
                 'date_of_birth' => $data['date_of_birth'] ?? $patient->date_of_birth,
                 'place_of_birth' => $data['place_of_birth'] ?? $patient->place_of_birth,
                 'age' => $data['age'] ?? $patient->age,
@@ -163,6 +172,17 @@ class RecordsController extends Controller
                 'nationality' => $data['nationality'] ?? $patient->nationality,
 
             ]);
+            // update each record associate to patient vaccination case the vaccination case record
+            foreach ($vaccination_case_record as $record) {
+                $record->update([
+                    'patient_name' => trim(
+                        ($data['first_name'] ?? $patient->first_name) . ' ' .
+                            ($data['middle_initial'] ?? $patient->middle_initial) . ' ' .
+                            ($data['last_name'] ?? $patient->last_name)
+                    )
+                ]);
+            }
+            
             $vaccination_medical_record->update([
                 'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
                 'mother_name' => $data['mother_name'] ?? $medical_record_case->mother_name,
@@ -189,14 +209,14 @@ class RecordsController extends Controller
     }
     public function vaccinationCase($id)
     {
-        $medical_record_case = medical_record_cases::where('patient_id', $id)->where('type_of_case', 'vaccination')->firstOrFail();
+        $medical_record_case = medical_record_cases::with('patient')->where('patient_id', $id)->where('type_of_case', 'vaccination')->firstOrFail();
         $vaccination_case_record = vaccination_case_records::where('medical_record_case_id', $medical_record_case->id)->get();
         // dd($vaccination_case_record);
 
 
         // $vaccine_administered = vaccineAdministered::where('vaccination_case_record_id', $vaccination_case_record[0]->id)->get();
         // dd($medical_record_case, $vaccination_case_record, $vaccine_administered);
-        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD', 'vaccination_case_record' => $vaccination_case_record]);
+        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD', 'vaccination_case_record' => $vaccination_case_record, 'medical_record_case'=> $medical_record_case]);
     }
     public function vaccinationViewCase($id)
     {
@@ -244,6 +264,84 @@ class RecordsController extends Controller
             return response()->json([
                 'message' => "Unexpected error occurred",
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // add vaccination case record
+    public function addVaccinationCaseRecord(Request $request, $id){
+
+        try{
+            $data = $request->validate([
+                'add_patient_full_name' => 'required',
+                'add_handled_by' => 'required',
+                'add_date_of_vaccination' => 'required',
+                'add_time_of_vaccination' => 'sometimes|nullable|string',
+                'selected_vaccine_type' => 'required',
+                'add_record_dose' => 'required',
+                'add_case_remarks' => 'sometimes|nullable|string'
+            ]);
+
+            // get the vaccine types
+            $vaccines = explode(',', $data['selected_vaccine_type']);
+            $selectedVaccinesArray = [];
+
+            foreach ($vaccines as $key => $vaccineId) {
+                $vaccineText = vaccines::find($vaccineId);
+
+                $selectedVaccinesArray[] = $vaccineText->vaccine_acronym;
+            }
+
+            $selectedVaccines = implode(', ', $selectedVaccinesArray);
+
+            $newCaseRecord = vaccination_case_records::create([
+                'medical_record_case_id' => $id,
+                'patient_name' => $data['add_patient_full_name'],
+                'date_of_vaccination' => $data['add_date_of_vaccination'],
+                'time' => $data['add_time_of_vaccination'] ?? null,
+                'vaccine_type' => $selectedVaccines,
+                'dose_number' => (int) $data['add_record_dose'],
+                'remarks' => $data['add_case_remarks'] ?? null,
+                'type_of_record' => 'Vaccination Record',
+                'health_worker_id' => (int) $data['add_handled_by']
+            ]);
+
+            // id of medical case record
+            $medicalCaseRecordId = $newCaseRecord->id;
+
+            foreach ($vaccines as $vaccineId) {
+                $vaccine = vaccines::find($vaccineId);
+
+                $vaccineAdministered = vaccineAdministered::create([
+                    'vaccination_case_record_id' => $medicalCaseRecordId,
+                    'vaccine_type' => $vaccine->type_of_vaccine,
+                    'dose_number' => $data['add_record_dose'] ?? null,
+                    'vaccine_id' => $vaccineId ?? null
+                ]);
+            }
+
+            return response()->json(['message' => 'Patient has been added'], 201);
+        }catch(ValidationException $e){
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        }
+       
+    }
+    public function deleteVaccinationCase($id){
+        try {
+            $vaccination_case_record = vaccination_case_records::findOrFail($id);
+            $vaccination_case_record->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vaccination case deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete vaccination case.',
+                'error'   => $e->getMessage()
             ], 500);
         }
     }

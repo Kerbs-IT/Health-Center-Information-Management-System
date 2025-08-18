@@ -49,7 +49,8 @@
                         <div class="tables d-flex flex-column p-3">
                             <div class="add-btn mb-3 d-flex justify-content-between">
                                 <a href="{{route('record.vaccination')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
-                                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal">Add Record</button>
+                                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add-vaccination-case-record-btn">Add Record</button>
+                                <!-- <div>{{$medical_record_case ->id}}</div> -->
                             </div>
                             <table class="w-100 table ">
                                 <thead class="table-header">
@@ -84,7 +85,7 @@
                                                     </svg>
                                                 </button>
                                                 <button type="button" class="btn btn-info text-white fw-bold px-3 case-edit-btn" data-bs-toggle="modal" data-bs-target="#editVaccinationModal" data-bs-case-id="{{$record->id}}">Edit</button>
-                                                <button type="button" class="btn btn-danger delete-record-icon text-white fw-bold px-3">Archive</button>
+                                                <button type="button" class="btn btn-danger archive-record-icon text-white fw-bold px-3" data-bs-case-id="{{$record->id}}">Archive</button>
                                                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                     <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
                                                 </svg>
@@ -132,7 +133,7 @@
                         <div class="modal fade" id="vaccinationModal" tabindex="-1" aria-labelledby="vaccinationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content">
-                                    <form method="POST" action="#" class="flex-column">
+                                    <form method="POST" action="#" class="flex-column" id="add-vaccination-case-form">
                                         <div class="modal-header bg-success text-white">
                                             <h5 class="modal-title" id="vaccinationModalLabel">Vaccination Details</h5>
                                             <button type="button" class="btn-close text-white" data-bs-dismiss="modal" style="filter: invert(1);"></button>
@@ -143,65 +144,75 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="patient_name">Patient Name</label>
-                                                    <input type="text" class="form-control bg-light" disabled placeholder="Jan Louie Salimbago">
+                                                    <input type="text" class="form-control bg-light" disabled placeholder="Enter the name" id="add-patient-name-vaccination-case" value="{{$medical_record_case->patient->full_name}}">
+                                                    <input type="text" name="add_patient_full_name" value="{{$medical_record_case->patient->full_name}}" hidden>
                                                 </div>
 
+                                                @if(Auth::user()-> role == 'nurse')
                                                 <div class="mb-2 w-100">
-                                                    <label for="administered_by">Administered By</label>
-                                                    <input type="text" class="form-control bg-light" disabled placeholder="Nurse">
+                                                    <label for="update_handled_by" class="w-100 form-label">Handled By:</label>
+                                                    <select name="add_handled_by" id="add_handled_by" class="form-select w-100" required>
+                                                        <option value="" selected disabled>Select the Health Worker</option>
+                                                    </select>
+                                                    <small class="text-danger w-100" id="add-health-worker-error"></small>
                                                 </div>
+                                                @elseif(Auth::user()-> role == 'staff')
+                                                <div class="mb-2 w-100">
+                                                    <label for="administered_by">Handled By:</label>
+                                                    <input type="text" class="form-control bg-light" disabled placeholder="Nurse" value="Nurse Joy">
+                                                </div>
+                                                @endif
 
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
-                                                    <input type="date" id="date_of_vaccination" class="form-control" name="date_of_vaccination">
+                                                    <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination">
+                                                    <small class="text-danger w-100" id="add-date-error"></small>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="time_of_vaccination">Time</label>
-                                                    <input type="time" class="form-control" name="time_of_vaccination">
+                                                    <input type="time" class="form-control" name="add_time_of_vaccination" id="add-time-of-vaccination">
+                                                    <small class="text-danger w-100" id="add-time-error"></small>
                                                 </div>
 
                                                 <div class="mb-2">
                                                     <label for="vaccine_type">Vaccine Type:</label>
                                                     <div class="d-flex gap-2">
-                                                        <select name="vaccine_type" id="vaccine_type" class="form-select w-100">
-                                                            <option value="">Select Vaccine</option>
+                                                        <select id="add_vaccine_type" class="form-select w-100">
+                                                            <option value="" selected dissabled>Select Vaccine</option>
                                                         </select>
-                                                        <button type="button" class="btn btn-success">Add</button>
+                                                        <button type="button" class="btn btn-success" id="add-vaccination-btn">Add</button>
                                                     </div>
                                                 </div>
+                                                <!-- hidden input -->
+                                                <input type="text" name="selected_vaccine_type" id="add-selected-vaccines" hidden>
+                                                <!-- vaccine container -->
+                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded gap-2" id="add-vaccine-container">
 
-                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded">
-                                                    <div class="vaccine d-flex justify-content-between bg-white align-items-center p-2 w-25 rounded">
-                                                        <p class="mb-0">Penta 1</p>
-                                                        <div class="delete-icon d-flex align-items-center justify-content-center">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
-                                                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
                                                 </div>
+                                                <small class="text-danger w-100" id="selected-vaccine-error"></small>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="dose">Vaccine Dose Number:</label>
-                                                    <select id="dose" name="dose" required class="form-select">
+                                                    <select id="dose" name="add_record_dose" required class="form-select" id="add_case_dose">
                                                         <option value="" disabled selected>Select Dose</option>
                                                         <option value="1">1st Dose</option>
                                                         <option value="2">2nd Dose</option>
                                                         <option value="3">3rd Dose</option>
                                                     </select>
+                                                    <small class="text-danger w-100" id="add-dose-error"></small>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="remarks">Remarks*</label>
-                                                    <input type="text" class="form-control" id="remarks" name="remarks">
+                                                    <input type="text" class="form-control" id="remarks" name="add_case_remarks" id="add_case_remarks">
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="modal-footer d-flex justify-content-between">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-success">Save Record</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="add-cancel-btn">Cancel</button>
+                                            <button type="submit" class="btn btn-success" id="add_case_save_btn" data-bs-case-id="{{$medical_record_case-> id}}">Save Record</button>
                                         </div>
                                     </form>
                                 </div>
