@@ -1,37 +1,10 @@
 <div class="prenatal-con d-flex w-75 flex-column card shadow p-3 align-self-center h-100 rounded">
     <div class="mb-2 w-100">
         <label for="patient_name" class="w-100">Patient Name</label>
-        <input type="text" value="Mariela J. Santoban" class="p-2 w-50">
+        <input type="text"  class="p-2 w-50" disabled id="prenatal_patient_full_name">
     </div>
     <div class="mb-2 w-100">
-        <label for="date_of_tetanous">Petsa ng Injeksyon ng Tetanus Toxiod</label>
-        <div class="dates d-flex gap-1 ">
-            <!-- 1 -->
-            <div class="mb-2 w-25 d-flex">
-                <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">1</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
-            </div>
-            <!-- 2 -->
-            <div class="mb-2 w-25 d-flex">
-                <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">2</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
-            </div>
-            <!-- 3 -->
-            <div class="mb-2 w-25 d-flex">
-                <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">3</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
-            </div>
-            <!-- 4 -->
-            <div class="mb-2 w-25 d-flex">
-                <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">4</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
-            </div>
-            <!-- 5 -->
-            <div class="mb-2 w-25 d-flex">
-                <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">5</span>
-                <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="" value="">
-            </div>
-        </div>
+
         <div class="ob-history mb-2">
             <h3>OB HISTORY</h3>
             <div class="type-of-pregnancy d-flex w-100 gap-1">
@@ -41,31 +14,32 @@
                 </div>
                 <div class="item">
                     <label for="G">P</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <input type="number" name="P" class="form-control w-100" placeholder="0">
                 </div>
                 <div class="item">
                     <label for="G">T</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <input type="number" name="T" class="form-control w-100" placeholder="0">
                 </div>
                 <div class="item">
                     <label for="G">Premature</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <input type="number" name="premature" class="form-control w-100" placeholder="0">
                 </div>
                 <div class="item">
                     <label for="G">Abortion</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <input type="number" name="abortion" class="form-control w-100" placeholder="0">
                 </div>
                 <div class="item">
                     <label for="G">Living Children</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <input type="number" name="living_children" class="form-control w-100" placeholder="0">
                 </div>
             </div>
         </div>
         <h3>Records</h3>
         <div class="previous-record mb-3 d-flex gap-1">
-            <div class="item">
+            <div class="item w-25">
                 <label for="year_of_pregnancy">Year of Pregnancy</label>
-                <input type="date" name="year_of_pregranancy" class="form-control w-100">
+                <input type="number" id="pregnancy_year" name="pregnancy_year" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required>
+                <span class="w-100 text-danger" id="preg_year_error"></span>
             </div>
             <div class="item">
                 <label for="type_of_delivery">Type of Delivery</label>
@@ -81,25 +55,38 @@
                     <option value="home_birth">Home Birth</option>
                     <option value="emergency_cesarean">Emergency Cesarean</option>
                 </select>
+                <span class="w-100 text-danger" id="type_of_delivery_error"></span>
             </div>
             <div class="item">
                 <label for="place_of_delivery">Place of Delivery</label>
-                <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="trece">
+                <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="trece" id="place_of_delivery">
+                <span class="w-100 text-danger" id="place_of_delivery_error"></span>
             </div>
             <div class="item">
                 <label for="birth_attendant">Birth Attendant</label>
-                <input type="text" name="birth_attendant" class="form-control w-100" placeholder="Nurse joy">
+                <input type="text" name="birth_attendant" class="form-control w-100" placeholder="Nurse joy" id="birth_attendant">
+                <span class="w-100 text-danger" id="birth_attendant_error"></span>
             </div>
             <div class="item">
                 <label for="Complication">Complication</label>
-                <input type="text" name="Complication" class="form-control w-100" placeholder="">
+                <input type="text" name="Complication" class="form-control w-100" placeholder="" id="complication" value="none">
+                <span class="w-100 text-danger" id="complication_error"></span>
             </div>
             <div class="item">
                 <label for="G">Outcome</label>
-                <input type="text" name="G" class="form-control w-100" placeholder="">
+                <select id="pregnancyOutcome" name="pregnancyOutcome" required class="form-select">
+                    <option value="" disabled selected>Select Outcome</option>
+                    <option value="term">Term Delivery</option>
+                    <option value="preterm">Preterm Delivery</option>
+                    <option value="abortion">Abortion (Spontaneous/Induced)</option>
+                    <option value="ectopic">Ectopic Pregnancy</option>
+                    <option value="stillbirth">Stillbirth (IUFD)</option>
+                    <option value="living">Living Child</option>
+                </select>
+                <span class="w-100 text-danger" id="outcome_error"></span>
             </div>
             <div class="d-flex align-self-end mb-0">
-                <button type="button" class="btn btn-success"> Add</button>
+                <button type="button" class="btn btn-success" id="add-pregnancy-history-btn"> Add</button>
             </div>
         </div>
         <!-- results -->
@@ -117,15 +104,15 @@
                     </tr>
                 </thead>
                 <tbody id="previous-records-body">
-                    <tr class="text-center">
-                        <td>2022-08-15</td>
-                        <td>Normal Spontaneous Delivery (NSD)</td>
-                        <td>Trece</td>
-                        <td>Nurse Joy</td>
-                        <td>None</td>
-                        <td>Live birth</td>
+                    <tr class="text-center h-25">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td>
-                            <button class="btn btn-danger btn-sm">Remove</button>
+                            <!-- <button class="btn btn-danger btn-sm"></button> -->
                         </td>
                     </tr>
                 </tbody>
@@ -136,42 +123,43 @@
         <div class="subjective-info mb-3 border-bottom">
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
-                    <label for="place_of_delivery">LMP</label>
-                    <input type="date" name="place_of_delivery" class="form-control w-100" placeholder="trece">
+                    <label for="LMP">LMP</label>
+                    <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP">
                 </div>
                 <div class="mb-2 w-100">
                     <label for="expected_delivery">Expected Delivery</label>
                     <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece">
                 </div>
                 <div class="mb-2 w-100">
-                    <label for="expected_delivery">Menarche</label>
-                    <input type="text" name="expected_delivery" class="form-control w-100" placeholder="trece">
+                    <label for="menarche">Menarche</label>
+                    <input type="text" name="menarche" class="form-control w-100" placeholder="ex.13" id="menarche">
                 </div>
             </div>
+            <h3>Tetanus Toxoid Status (Year)</h3>
             <!-- next row -->
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
-                    <label for="place_of_delivery">TT1</label>
-                    <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="2021">
+                    <label for="TT1">TT1</label>
+                    <input type="text" name="TT1" class="form-control w-100" placeholder="YYYY" id="TT1">
                 </div>
                 <div class="mb-2 w-100">
-                    <label for="expected_delivery">TT2</label>
-                    <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                    <label for="TT2">TT2</label>
+                    <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT2">
                 </div>
                 <div class="mb-2 w-100">
-                    <label for="expected_delivery">TT3</label>
-                    <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                    <label for="TT2">TT3</label>
+                    <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT3">
                 </div>
             </div>
             <!-- last row -->
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
-                    <label for="place_of_delivery">TT4</label>
-                    <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="2021">
+                    <label for="TT4">TT4</label>
+                    <input type="text" name="TT4" class="form-control w-100" placeholder="YYYY" id="TT4">
                 </div>
                 <div class="mb-2 w-100">
-                    <label for="expected_delivery">TT5</label>
-                    <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                    <label for="TT2">TT5</label>
+                    <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT5">
                 </div>
             </div>
 
@@ -181,40 +169,40 @@
             <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
             <div class="checkboxes d-flex gap-2 mb-2 flex-wrap">
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
+                    <input type="checkbox" name="spotting" class="p-4" value="yes">
                     <label for="spotting" class="w-100 fs-5">Spotting</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">Edema</label>
+                    <input type="checkbox" name="edema" class="p-4" value="yes">
+                    <label for="edema" class="w-100 fs-5">Edema</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">severe headache</label>
+                    <input type="checkbox" name="severe_headache" class="p-4" value="yes">
+                    <label for="severe_headache" class="w-100 fs-5">severe headache</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">blumming of vision</label>
+                    <input type="checkbox" name="blumming_of_vission" class="p-4" value="yes">
+                    <label for="blumming_of_vission" class="w-100 fs-5">blumming of vision</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">Watery discharge</label>
+                    <input type="checkbox" name="watery_discharge" class="p-4" value="yes">
+                    <label for="watery_discharge" class="w-100 fs-5">Watery discharge</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">severe vomiting</label>
+                    <input type="checkbox" name="severe_vomiting" class="p-4" value="yes">
+                    <label for="severe_vomiting" class="w-100 fs-5">severe vomiting</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">Hx of smoking </label>
+                    <input type="checkbox" name="hx_of_smoking" class="p-4" value="yes">
+                    <label for="hx_of_smoking" class="w-100 fs-5">Hx of smoking </label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">alcohol drinker</label>
+                    <input type="checkbox" name="alcohol_drinker" class="p-4" value="yes">
+                    <label for="alcohol_drinker" class="w-100 fs-5">alcohol drinker</label>
                 </div>
                 <div class="mb-1 d-flex align-items-center gap-1">
-                    <input type="checkbox" name="spotting" class="p-4">
-                    <label for="spotting" class="w-100 fs-5">Drug intake</label>
+                    <input type="checkbox" name="drug_intake" class="p-4" value="yes">
+                    <label for="drug_intake" class="w-100 fs-5">Drug intake</label>
                 </div>
             </div>
 
@@ -246,7 +234,7 @@
                     </div>
                     <!-- 2nd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
-                        <label for="sasarin" class="w-75">3 beses nakuhanan magkasunod:</label>
+                        <label for="nakuhanan_ng_sunod" class="w-75">3 beses nakuhanan magkasunod:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
                             <input type="radio" id="yes" name="answer_2">
                             <label for="yes">Oo</label>
@@ -256,7 +244,7 @@
                     </div>
                     <!-- 3rd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
-                        <label for="sasarin" class="w-75">Ipinanganak ng patay:</label>
+                        <label for="dead_child" class="w-75">Ipinanganak ng patay:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
                             <input type="radio" id="yes" name="answer_3">
                             <label for="yes">Oo</label>
@@ -266,7 +254,7 @@
                     </div>
                     <!-- 4th -->
                     <div class="mb-2 d-flex justify-content-between w-100">
-                        <label for="sasarin" class="w-75">Labis na pagdurogo matapos manganak:</label>
+                        <label for="blood_after_pregnancy" class="w-75">Labis na pagdurogo matapos manganak:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
                             <input type="radio" id="yes" name="answer_4">
                             <label for="yes">Oo</label>
@@ -275,15 +263,15 @@
                         </div>
                     </div>
                 </div>
-                <!-- 2nd question-->
+                <!-- 2nd questions-->
                 <div class="questions w-100">
                     <h3 class="w-100 bg-success text-white text-center">Kasalukuyang Problemang Pang Kalusugan</h3>
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Tuberculosis(ubong labis 14 araaw):</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer">
+                            <input type="radio" id="yes" name="q2_answer1">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer">
+                            <input type="radio" name="q2_answer1">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -291,9 +279,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Sakit sa Puso:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer">
+                            <input type="radio" id="yes" name="q2_answer2">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer">
+                            <input type="radio" name="q2_answer2">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -301,9 +289,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Diabetis:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer">
+                            <input type="radio" id="yes" name="q2_answer3">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer">
+                            <input type="radio" name="q2_answer3">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -311,9 +299,9 @@
                     <div class="mb-2 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Hika:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer">
+                            <input type="radio" id="yes" name="q2_answer4">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer">
+                            <input type="radio" name="q2_answer4">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -321,9 +309,9 @@
                     <div class="mb-2 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Bisyo:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer">
+                            <input type="radio" id="yes" name="q2_answer5">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer">
+                            <input type="radio" name="q2_answer5">
                             <label for="no">HIndi</label>
                         </div>
                     </div>

@@ -45,4 +45,12 @@ class staff extends Model
     {
         return $this->hasMany(vaccination_case_records::class, 'health_worker_id', 'user_id');
     }
+    // prenatal
+    public function prenatal_medical_records(){
+        return $this->hasMany(prenatal_medical_records::class, 'health_worker_id', 'user_id');
+    }
+    public function prenatal_case_records()
+    {
+        return $this->hasMany(prenatal_medical_records::class, 'health_worker_id', 'user_id');
+    }
 }

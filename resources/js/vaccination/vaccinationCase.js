@@ -418,10 +418,7 @@ updateSaveBtn.addEventListener("click", async (e) => {
     if (!response.ok) {
         Swal.fire({
             title: "Update",
-            text: data.errors
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" "), // this will make the text capitalize each word
+            text: "There's an error", // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",

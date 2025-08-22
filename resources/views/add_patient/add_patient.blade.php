@@ -17,7 +17,8 @@
     'resources/css/profile.css',
     'resources/js/patient/add-patient.js',
     'resources/css/patient/add-patient.css',
-    'resources/css/patient/record.css'])
+    'resources/css/patient/record.css',
+    'resources/js/prenatal/addPrenatalPatient.js'])
     @include('sweetalert::alert')
     <div class="add-patient d-flex vh-100">
         <aside>
@@ -191,7 +192,7 @@
                                         <div class="mb-2 w-100 d-flex gap-2">
                                             <div class="input-field w-50">
                                                 <label for="motherName">Head of the Family</label>
-                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="" value="">
+                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="family_head_name" value="">
                                                 @error('mother_name')
                                                 <small class="text-danger">{{$message}}</small>
                                                 @enderror
@@ -240,15 +241,15 @@
                                                 <label class="form-label">PhilHealth</label>
                                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="philhealth" id="philhealth_yes" value="yes">
+                                                        <input class="" type="radio" name="philhealth_number_radio" id="philhealth_yes" value="yes">
                                                         <label class="form-check-label" for="philhealth_yes">(Yes)</label>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-1">
                                                         <label class="form-label mb-0">Number:</label>
-                                                        <input type="text" class="form-control form-control-sm" name="philhealth_number" style="width: 120px;">
+                                                        <input type="text" class="form-control form-control-sm w-100" name="philHealth_number" >
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="philhealth" id="philhealth_no" value="no">
+                                                        <input class="" type="radio" name="philhealth_number_radio" id="philhealth_no" value="no">
                                                         <label class="form-check-label" for="philhealth_no">(No)</label>
                                                     </div>
                                                 </div>
@@ -259,20 +260,26 @@
                                                 <label class="form-label fw-normal">Would you like to use a family planning method?</label>
                                                 <div class="d-flex gap-3">
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_yes" value="yes">
-                                                        <label class="form-check-label" for="planning_yes">Yes</label>
+                                                        <input class="" type="radio" name="family_planning" id="planning_yes" value="yes">
+                                                        <label class="" for="planning_yes">Yes</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_no" value="no">
-                                                        <label class="form-check-label" for="planning_no">No</label>
+                                                        <input class="" type="radio" name="family_planning" id="planning_no" value="no">
+                                                        <label class="" for="planning_no">No</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="family_planning" id="planning_undecided" value="undecided">
+                                                        <input class="" type="radio" name="family_planning" id="planning_undecided" value="undecided">
                                                         <label class="form-check-label" for="planning_undecided">Undecided</label>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="input-field">
+                                                <label for="family_serial_no" class="form-label w-100">Family Serial No.</label>
+                                                <input type="number" name="family_serial_no" placeholder="enter family serial no." class="w-100 form-control">
+                                            </div>
                                         </div>
 
                                     </div>
@@ -299,7 +306,7 @@
                                                     <label for="motherName">Religion</label>
                                                     <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name=" value="">
                                                     @error('mother_name')
-                                                    <small class="text-danger">{{$message}}</small>
+                                                    <small class=" text-danger">{{$message}}</small>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -409,7 +416,7 @@
                                 </div>
                             </div>
                             <div class="button align-self-end mt-auto">
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
+                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()" id="first_next">Next</button>
                             </div>
                         </div>
                     </div>
@@ -500,10 +507,12 @@
                                 <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
                             </div>
                         </div>
+                        <!-- TB DOTS -->
                         <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">
                             @include('add_patient.tb-dots.tb-dots')
 
                         </div>
+                        <!-- SENIOR CITIZEN -->
                         <div class="senior-citizen patient-type d-none flex-column align-self-center w-75 card shadow" id="senior-citizen-con">
                             @include('add_patient.senior-citizen.senior-citizen')
                         </div>
@@ -516,7 +525,7 @@
                     <!-- STEP 3 PRENATAL -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step3">
                         <div id="prenatal-step3" class="d-none">@include('add_patient.prenatalPlanning')</div>
-                        <div id="family-planning-step3" class="d-none flex-grow-1 d-none flex-column h-100 w-100"> @include('add_patient.familyPlanning.step3')</div>
+
                     </div>
                     <!-- STEP 4 -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step4">
@@ -555,7 +564,11 @@
     <script>
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('dateOfRegistration').value = today;
-        document.getElementById('date_of_vaccination').value = today;
+
+        // check if the date of vaccination input is present to avoid error
+        if (document.getElementById('date_of_vaccination')) {
+            document.getElementById('date_of_vaccination').value = today;
+        };
     </script>
 </body>
 
