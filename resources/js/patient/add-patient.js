@@ -89,21 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
             return; // stop the function here
         }
-        if (fname.value == '' || lname.value == '' || street.value == '' || brgy.value == '') {
-            Swal.fire({
-                // title: 'Type of Patient',
-                text: "Important information is empty",
-                icon: "warning",
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ok",
-            });
-            fname.style.border = fname.value ? "" : "2px solid red";
-            lname.style.border = lname.value ? "" : "2px solid red";
-            street.style.border = street.value ? "" : "2px solid red";
-            brgy.style.border = brgy.value ? "" : "2px solid red";
-            return; // stop the function here
-        }
+        // if (fname.value == '' || lname.value == '' || street.value == '' || brgy.value == '') {
+        //     Swal.fire({
+        //         // title: 'Type of Patient',
+        //         text: "Important information is empty",
+        //         icon: "warning",
+        //         confirmButtonColor: "#d33",
+        //         cancelButtonColor: "#3085d6",
+        //         confirmButtonText: "Ok",
+        //     });
+        //     fname.style.border = fname.value ? "" : "2px solid red";
+        //     lname.style.border = lname.value ? "" : "2px solid red";
+        //     street.style.border = street.value ? "" : "2px solid red";
+        //     brgy.style.border = brgy.value ? "" : "2px solid red";
+        //     return; // stop the function here
+        // }
 
         currentStep++;
         showStep(currentStep);
@@ -125,6 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".vaccination-inputs")
                 .classList.replace("d-none", "d-flex");
+            // hide family planning inputs
+            document
+                 .querySelector(".family-planning-inputs")
+                 .classList.replace("d-flex", "d-none");
             // vital sign
             document
                 .querySelector(".first-row")
@@ -144,7 +148,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".prenatal-inputs")
                 .classList.replace("d-none", "d-flex");
-            // vital
+            // hide family planning
+            document.querySelector(".family-planning-inputs").classList.replace('d-flex','d-none');
+            // 
             document
                 .querySelector(".first-row")
                 .classList.replace("d-none", "d-flex");
