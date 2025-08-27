@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\prenatal_case_records;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
@@ -302,7 +303,7 @@ class RecordsController extends Controller
                 'vaccine_type' => $selectedVaccines,
                 'dose_number' => (int) $data['add_record_dose'],
                 'remarks' => $data['add_case_remarks'] ?? null,
-                'type_of_record' => 'Vaccination Record',
+                'type_of_record' => 'Case Record',
                 'health_worker_id' => (int) $data['add_handled_by']
             ]);
 
@@ -350,16 +351,23 @@ class RecordsController extends Controller
     // prenatal
     public function prenatalRecord()
     {
-        return view('records.prenatal.prenatal', ['isActive' => true, 'page' => 'RECORD']);
+        $prenatalRecord = medical_record_cases::with('patient')->where('type_of_case', 'prenatal')->get();
+        return view('records.prenatal.prenatal', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=> $prenatalRecord]);
     }
-    public function viewPrenatalDetail()
+    public function viewPrenatalDetail($id)
     {
-        return view('records.prenatal.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_case_record.pregnancy_history_questions', 'prenatal_medical_record'])->where('id',$id)->firstOrFail();
+        // $caseInfo = prenatal_case_records::with('pregnancy_history_questions')->where('medical_record_case_id',$id)->firstOrFail();
+        $prenatalCaseRecord = prenatal_case_records::with('pregnancy_history_questions')->where('medical_record_case_id', $prenatalRecord->id)->firstOrFail();
+        return view('records.prenatal.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=>$prenatalRecord, 'prenatalCaseRecord' => $prenatalCaseRecord]);
     }
 
-    public function editPrenatalDetail()
+    public function editPrenatalDetail($id)
     {
-        return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
+       
+        $address = patient_addresses::where('patient_id',$prenatalRecord->patient->id)-> firstOrFail();
+        return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=> $prenatalRecord,'address'=> $address]);
     }
     public function editPrenatalCase()
     {

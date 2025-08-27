@@ -1,7 +1,7 @@
 <div class="prenatal-con d-flex w-75 flex-column card shadow p-3 align-self-center h-100 rounded">
     <div class="mb-2 w-100">
         <label for="patient_name" class="w-100">Patient Name</label>
-        <input type="text"  class="p-2 w-50" disabled id="prenatal_patient_full_name">
+        <input type="text" class="p-2 w-50" disabled id="prenatal_patient_full_name">
     </div>
     <div class="mb-2 w-100">
 
@@ -215,7 +215,7 @@
                     <h3 class="w-100 bg-success text-white text-center">Kasaysayan ng Pagbubuntis</h3>
                     <div class="mb-4 d-flex">
                         <label for="number_of" class="w-100 fs-5" class="w-50">Bilang ng Pagbubuntis:</label>
-                        <select name="number_if_children" id="number_of_children" class="form-select w-50 text-center">
+                        <select name="number_of_children" id="number_of_children" class="form-select w-50 text-center">
                             <option value="" disabled selected>Select the number</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -226,9 +226,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Nanganak ng sasarin:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter gap-3">
-                            <input type="radio" id="yes" name="answer_1">
+                            <input type="radio" id="yes" name="answer_1" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer_1">
+                            <input type="radio" name="answer_1" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -236,9 +236,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="nakuhanan_ng_sunod" class="w-75">3 beses nakuhanan magkasunod:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer_2">
+                            <input type="radio" id="yes" name="answer_2" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer_2">
+                            <input type="radio" name="answer_2" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -246,9 +246,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="dead_child" class="w-75">Ipinanganak ng patay:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer_3">
+                            <input type="radio" id="yes" name="answer_3" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer_3">
+                            <input type="radio" name="answer_3" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -256,9 +256,9 @@
                     <div class="mb-2 d-flex justify-content-between w-100">
                         <label for="blood_after_pregnancy" class="w-75">Labis na pagdurogo matapos manganak:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="answer_4">
+                            <input type="radio" id="yes" name="answer_4" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="answer_4">
+                            <input type="radio" name="answer_4" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -269,9 +269,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Tuberculosis(ubong labis 14 araaw):</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="q2_answer1">
+                            <input type="radio" id="yes" name="q2_answer1" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="q2_answer1">
+                            <input type="radio" name="q2_answer1" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -279,9 +279,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Sakit sa Puso:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="q2_answer2">
+                            <input type="radio" id="yes" name="q2_answer2" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="q2_answer2">
+                            <input type="radio" name="q2_answer2" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -289,9 +289,9 @@
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Diabetis:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="q2_answer3">
+                            <input type="radio" id="yes" name="q2_answer3" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="q2_answer3">
+                            <input type="radio" name="q2_answer3" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -299,9 +299,9 @@
                     <div class="mb-2 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Hika:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="q2_answer4">
+                            <input type="radio" id="yes" name="q2_answer4" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="q2_answer4">
+                            <input type="radio" name="q2_answer4" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -309,9 +309,9 @@
                     <div class="mb-2 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Bisyo:</label>
                         <div class="radio-input w-50 d-fles align-items-center justify-content-cetter">
-                            <input type="radio" id="yes" name="q2_answer5">
+                            <input type="radio" id="yes" name="q2_answer5" value="yes">
                             <label for="yes">Oo</label>
-                            <input type="radio" name="q2_answer5">
+                            <input type="radio" name="q2_answer5" value="no">
                             <label for="no">HIndi</label>
                         </div>
                     </div>
@@ -321,15 +321,15 @@
                 <label for="" class="fw-bold fs-5">Decision</label>
                 <div class="options px-5 py-2">
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f1_option">
+                        <input type="radio" name="nurse_decision" id="nurse_f1_option" value="Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan">
                         <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
                     </div>
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f2_option">
+                        <input type="radio" name="nurse_decision" id="nurse_f2_option" value="Masusing pagsusuri at aksyon ng kumadrona / Nurse">
                         <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
                     </div>
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f3_option">
+                        <input type="radio" name="nurse_decision" id="nurse_f3_option" value="pinayong manganak sa Ospital">
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>
                 </div>

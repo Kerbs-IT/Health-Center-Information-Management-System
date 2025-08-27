@@ -9,7 +9,7 @@ class pregnancy_plans extends Model
     //
 
     protected $fillable = [
-        'medical_case_record_id',
+        'medical_record_case_id',
         'patient_name',
         'midwife_name',
         'place_of_birth',
