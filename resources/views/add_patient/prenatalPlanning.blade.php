@@ -151,7 +151,7 @@
         </div>
         <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2">
             <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-            <button type="submit" class="btn btn-success px-5 py-2 fs-5">Save Record</button>
+            <button type="submit" class="btn btn-success px-5 py-2 fs-5" id="prenatal-save-btn">Save Record</button>
         </div>
     </div>
 </div>

@@ -8,6 +8,7 @@ class prenatal_case_records extends Model
 {
     protected $fillable = [
         'medical_record_case_id',
+        'patient_name',
         'G',
         'P',
         'T',
@@ -30,7 +31,7 @@ class prenatal_case_records extends Model
         'pulse_rate',
         'respiratory_rate',
         'height',
-        'weight'
+        'weight',
 
     ];
     public function medical_record_case()
@@ -46,11 +47,11 @@ class prenatal_case_records extends Model
     }
 
     public function prenatal_assessment(){
-        return $this-> hasMany(prenatal_assessment::class, "prenatal_case_record_id", "id");
+        return $this-> hasMany(prenatal_assessments::class, "prenatal_case_record_id", "id");
     }
 
     public function pregnancy_history_questions(){
-        return $this->hasMany(prenatal_assessment::class, "prenatal_case_record_id", "id");
+        return $this->hasMany(pregnancy_history_questions::class, "prenatal_case_record_id", "id");
     }
 
 }

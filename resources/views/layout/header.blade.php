@@ -1,4 +1,4 @@
-<header class=" d-flex align-items-center px-3 ">
+<header class=" d-flex align-items-center px-3 z-n1">
   <nav class="d-flex justify-content-between align-items-center w-100 ">
     <div class="box d-flex gap-3 align-items-center justify-content-center">
       <button>

@@ -246,7 +246,7 @@
                                                     </div>
                                                     <div class="d-flex align-items-center gap-1">
                                                         <label class="form-label mb-0">Number:</label>
-                                                        <input type="text" class="form-control form-control-sm w-100" name="philHealth_number" >
+                                                        <input type="text" class="form-control form-control-sm w-100" name="philHealth_number">
                                                     </div>
                                                     <div class="form-check">
                                                         <input class="" type="radio" name="philhealth_number_radio" id="philhealth_no" value="no">
@@ -374,15 +374,15 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80">
+                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100" placeholder="00 C">
+                                                <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 60-100">
+                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
                                             </div>
 
                                         </div>
@@ -390,7 +390,7 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 25">
+                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Height(cm):</label>
@@ -525,7 +525,7 @@
                     <!-- STEP 3 PRENATAL -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step3">
                         <div id="prenatal-step3" class="d-none">@include('add_patient.prenatalPlanning')</div>
-
+                        <div id="family-planning-step3" class="d-none flex-grow-1 flex-column h-100 w-100">@include('add_patient.familyPlanning.step3')</div>
                     </div>
                     <!-- STEP 4 -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step4">

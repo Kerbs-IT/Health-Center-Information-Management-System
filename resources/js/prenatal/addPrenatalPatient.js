@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td>${birthAttendant.value}</td>
                         <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${birthAttendant.value}>
                         <td>${complication.value}</td>
-                        <input type="hidden"  name="complication[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${complication.value}>
+                        <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${complication.value}>
                         <td>${outcome.value}</td>
                         <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${outcome.value}>
                         <td>
@@ -228,4 +228,28 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log(fullNameCon);
     })
 
+
 });
+
+// upload the data on the database
+
+const prenatalAddBtn = document.getElementById("prenatal-save-btn");
+
+prenatalAddBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const form = document.getElementById("add-patient-form");
+    const formData = new FormData(form);
+
+    // call the route
+    const response = await fetch("/add-prenatal-patient", {
+        method: 'POST',
+        headers:{"X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            Accept: "application/json",
+        },
+        body:formData
+    });
+
+
+})

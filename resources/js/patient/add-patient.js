@@ -43,11 +43,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     .classList.add("flex-column");
                 // target the specific div
 
+                // hide the family planning
+                document
+                    .getElementById("family-planning-step3")
+                    .classList.remove("d-flex");
+                document
+                    .getElementById("family-planning-step3")
+                    .classList.add("d-none");
+
                 document
                     .getElementById("prenatal-step3")
                     .classList.remove("d-none");
             } else if (selected == "family-planning") {
-                console.log("taena gumana kaya boy");
+                // console.log("taena gumana kaya boy");
                 document
                     .getElementById("step" + step)
                     .classList.remove("d-none");
@@ -89,21 +97,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             return; // stop the function here
         }
-        // if (fname.value == '' || lname.value == '' || street.value == '' || brgy.value == '') {
-        //     Swal.fire({
-        //         // title: 'Type of Patient',
-        //         text: "Important information is empty",
-        //         icon: "warning",
-        //         confirmButtonColor: "#d33",
-        //         cancelButtonColor: "#3085d6",
-        //         confirmButtonText: "Ok",
-        //     });
-        //     fname.style.border = fname.value ? "" : "2px solid red";
-        //     lname.style.border = lname.value ? "" : "2px solid red";
-        //     street.style.border = street.value ? "" : "2px solid red";
-        //     brgy.style.border = brgy.value ? "" : "2px solid red";
-        //     return; // stop the function here
-        // }
+        if (
+            fname.value == "" ||
+            lname.value == "" ||
+            street.value == "" ||
+            brgy.value == ""
+        ) {
+            Swal.fire({
+                // title: 'Type of Patient',
+                text: "Important information is empty",
+                icon: "warning",
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ok",
+            });
+            fname.style.border = fname.value ? "" : "2px solid red";
+            lname.style.border = lname.value ? "" : "2px solid red";
+            street.style.border = street.value ? "" : "2px solid red";
+            brgy.style.border = brgy.value ? "" : "2px solid red";
+            return; // stop the function here
+        }
 
         currentStep++;
         showStep(currentStep);
@@ -127,8 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 .classList.replace("d-none", "d-flex");
             // hide family planning inputs
             document
-                 .querySelector(".family-planning-inputs")
-                 .classList.replace("d-flex", "d-none");
+                .querySelector(".family-planning-inputs")
+                .classList.replace("d-flex", "d-none");
             // vital sign
             document
                 .querySelector(".first-row")
@@ -149,8 +162,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 .querySelector(".prenatal-inputs")
                 .classList.replace("d-none", "d-flex");
             // hide family planning
-            document.querySelector(".family-planning-inputs").classList.replace('d-flex','d-none');
-            // 
+            document
+                .querySelector(".family-planning-inputs")
+                .classList.replace("d-flex", "d-none");
+            //
             document
                 .querySelector(".first-row")
                 .classList.replace("d-none", "d-flex");

@@ -51,20 +51,21 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <!-- first row -->
+                                    <!-- <div>{{$prenatalRecord}}</div> -->
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Head of the Family:</h6> <span class="fw-light">Jan Louie Salimbago</span>
+                                                <h6 class="mb-0">Head of the Family:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_medical_record?->family_head_name??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Family Serial No:</h6> <span class="fw-light">1010</span>
+                                                <h6 class="mb-0">Family Serial No:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_medical_record?->family_serial_no??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Plan to have Family Planning method:</h6><span>Yes</span>
+                                                <h6 class="mb-0">Plan to have Family Planning method:</h6><span>{{optional($prenatalRecord)->prenatal_medical_record?->family_planning_decision??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -72,17 +73,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Name of Patient:</h6> <span class="fw-light">Julianna S. Jose</span>
+                                                <h6 class="mb-0">Name of Patient:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->full_name??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Sex:</h6> <span class="fw-light">Female</span>
+                                                <h6 class="mb-0">Sex:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->sex??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Age:</h6> <span class="fw-light">28</span>
+                                                <h6 class="mb-0">Age:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->age??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -90,17 +91,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">BirthDay:</h6> <span class="fw-light">01-22-1990</span>
+                                                <h6 class="mb-0">BirthDay:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->date_of_birth->format('M d Y')??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Blood Type:</h6> <span class="fw-light">O+</span>
+                                                <h6 class="mb-0">Blood Type:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_medical_record?->blood_type??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Nationality:</h6> <span class="fw-light">Filipino</span>
+                                                <h6 class="mb-0">Nationality:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->nationality??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -108,17 +109,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Contact No.:</h6> <span class="fw-light">0932647102</span>
+                                                <h6 class="mb-0">Contact No.:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->contact_number??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Religion:</h6> <span class="fw-light">Catholic</span>
+                                                <h6 class="mb-0">Religion:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_medical_record?->religion??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Civil Status:</h6> <span class="fw-light">Married</span>
+                                                <h6 class="mb-0">Civil Status:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->civil_status??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -139,7 +140,7 @@
                                     <tr>
                                         <td colspan="7">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
+                                                <h6 class="mb-0">Date:</h6> <span>{{optional($prenatalRecord)->prenatal_case_record?->first()->created_at->format('M d Y')}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -147,17 +148,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Height(cm):</h6> <span>172 cm</span>
+                                                <h6 class="mb-0">Height(cm):</h6> <span>{{optional($prenatalRecord)->prenatal_case_record?->first()->height}} cm</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Weight(kg):</h6> <span>75 kg</span>
+                                                <h6 class="mb-0">Weight(kg):</h6> <span>{{optional($prenatalRecord)->prenatal_case_record?->first()->weight}} kg</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_case_record?->first()->blood_pressure??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -165,17 +166,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Temperature(C):</h6> <span>30°C</span>
+                                                <h6 class="mb-0">Temperature(C):</h6> <span>{{optional($prenatalRecord)->prenatal_case_record?->first()->temperature??'N/A'}}°C</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>25</span>
+                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>{{optional($prenatalRecord)->prenatal_case_record?->first()->respiratory_rate??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">{{optional($prenatalRecord)->prenatal_case_record?->first()->pulse_rate?? 'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -191,39 +192,36 @@
                                         </tr>
                                         <tr class="border-bottom">
                                             <th class="w-75"></th>
-                                            <th>Hindi</th>
                                             <th>Oo</th>
+                                            <th>Hindi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
+
                                             <td class="text-start">Nanganak ng sasarin:</td>
-                                            <td></td>
-                                            <td class="text-black">✔</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_1 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_1 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-start">3 beses nakuhanan magkasunod:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-start">3 beses nakuhanan magkasuyesd:</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_2 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_2 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">Ipinanganak ng patay:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_3 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_3 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">Labis na pagdurogo matapos manganak:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_4 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->answer_4 == 'no' ? '✔' : '' }}</td>
                                         </tr>
-                                        <tr>
-                                            <td class="text-start">Labis na pagdurogo matapos manganak:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
-                                        </tr>
+
                                         <tr class="bg-light">
                                             <td class="text-start">Bilang ng nakaraang pagbubuntis</td>
-                                            <td colspan="2">1</td>
+                                            <td colspan="2">{{optional($prenatalRecord)->prenatal_case_record?->first()->pregnancy_history_questions[0]->number_of_children??'0'}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -235,35 +233,35 @@
                                         </tr>
                                         <tr class="border-bottom">
                                             <th class="w-75"></th>
-                                            <th>Hindi</th>
                                             <th>Oo</th>
+                                            <th>Hindi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td class="text-start">Tuberculosis(ubong labis sa 14 na araw):</td>
-                                            <td></td>
-                                            <td class="text-black">✔</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer2 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer2 == 'no' ?'✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">sakit sa Puso:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer2 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer2 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">Diabetes:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer3 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer3 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">Hika:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer4 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer4 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-start">Bisyo:</td>
-                                            <td class="text-black">✔</td>
-                                            <td class="text-black"></td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer5 == 'yes'?"✔":""}}</td>
+                                            <td class="text-black">{{ optional($prenatalCaseRecord->pregnancy_history_questions->first())->q2_answer5 == 'no' ? '✔' : '' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -273,7 +271,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <td class="fw-bold bg-light">Hatol sa Pasyente:</td>
-                                    <td>Masusing pagsusuri at aksyon ng kumadrona / Nurse</td>
+                                    <td>{{optional($prenatalRecord)->prenatal_case_record->first()->decision??''}}</td>
                                 </tr>
                             </table>
                         </div>
