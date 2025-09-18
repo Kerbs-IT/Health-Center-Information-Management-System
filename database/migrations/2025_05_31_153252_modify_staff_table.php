@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('staff', function (Blueprint $table) {
             //
             $table -> string('full_name')-> nullable();
-            $table -> string('middle_nitial') -> nullable();
+            $table -> string('middle_initial') -> nullable();
         });
     }
 
