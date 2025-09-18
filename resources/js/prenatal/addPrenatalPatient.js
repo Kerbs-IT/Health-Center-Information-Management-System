@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const birthAttendantError = document.getElementById(
         "birth_attendant_error"
     );
-    // const complicationError = document.getElementById("complication_error");
     const outcomeError = document.getElementById("outcome_error");
 
     // record container
@@ -250,6 +249,25 @@ prenatalAddBtn.addEventListener('click', async (e) => {
         },
         body:formData
     });
+    if (response.ok) {
+          Swal.fire({
+              title: "Prenatal Patient",
+              text: "Patient is Successfully added.", // this will make the text capitalize each word
+              icon: "success",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+          });
+            
+    } else {
+          Swal.fire({
+              title: "Prenatal Patient",
+              text: "Error occur Patient is not Successfully added.", // this will make the text capitalize each word
+              icon: "error",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+          });
+            
+    }
 
 
 })

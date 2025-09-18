@@ -8,59 +8,59 @@
     <tbody>
         <tr>
             <td class="fw-bold bg-light">Ako ay papaanakin ni</td>
-            <td>Dr. Ana Santos</td>
+            <td id="midwife_name_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Plano kong manganak sa</td>
-            <td>St. Luke's Maternity Clinic</td>
+            <td id="place_of_pregnancy_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Otorisado ng PhilHealth</td>
-            <td>Yes</td>
+            <td id="authorized_by_philhealth_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Tinatayang gagastusin (P)</td>
-            <td>5,000</td>
+            <td id="cost_of_pregnancy_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Paraan ng pagbabayad</td>
-            <td>PhilHealth</td>
+            <td id="mode_of_payment_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Paraan ng pagbiyahe</td>
-            <td>Tricycle</td>
+            <td id="mode_of_transportation_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Taong magdadala sa hospital</td>
-            <td>Juan Dela Cruz</td>
+            <td id="accompany_person_to_hospital_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Taong sasamahan sa panganganak</td>
-            <td>Maria Dela Cruz</td>
+            <td id="accompany_person_through_pregnancy_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Taong mag-aalaga pagkatapos manganak</td>
-            <td>Lola Rosa</td>
+            <td id="care_person_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Magbibigay ng dugo kung kailangan</td>
-            <td>Pedro Cruz</td>
+            <td id="blood_donor_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Sabihan kung may komplikasyon - Pangalan</td>
-            <td>Grace Mendoza</td>
+            <td id="emergency_person_name_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Sabihan kung may komplikasyon - Tirahan</td>
-            <td>Brgy. Mabini, Trece Martires</td>
+            <td id="emergency_person_residency_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Sabihan kung may komplikasyon - Telepono</td>
-            <td>0936 627 8720</td>
+            <td id="emergency_person_contact_number_value"></td>
         </tr>
         <tr>
             <td class="fw-bold bg-light">Pangalan ng pasyente</td>
-            <td>Jan Louie Salimbago</td>
+            <td id="patient_name_value"></td>
         </tr>
     </tbody>
 </table>

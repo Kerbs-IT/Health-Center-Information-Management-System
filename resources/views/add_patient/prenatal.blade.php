@@ -321,15 +321,15 @@
                 <label for="" class="fw-bold fs-5">Decision</label>
                 <div class="options px-5 py-2">
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f1_option" value="Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan">
+                        <input type="radio" name="nurse_decision" id="nurse_f1_option" value="1">
                         <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
                     </div>
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f2_option" value="Masusing pagsusuri at aksyon ng kumadrona / Nurse">
+                        <input type="radio" name="nurse_decision" id="nurse_f2_option" value="2">
                         <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
                     </div>
                     <div class="mb-2">
-                        <input type="radio" name="nurse_decision" id="nurse_f3_option" value="pinayong manganak sa Ospital">
+                        <input type="radio" name="nurse_decision" id="nurse_f3_option" value="3">
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>
                 </div>

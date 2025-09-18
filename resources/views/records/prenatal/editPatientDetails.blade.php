@@ -53,23 +53,19 @@
                                     <div class="mb-2 d-flex gap-1">
                                         <div class="input-field w-50">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light border-dark" name="first_name" value="{{optional($prenatalRecord)->patient?->first_name??''}}">
-                                            @error('first_name')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
-
+                                            <small class="text-danger text-errors" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
-                                            @error('middle_initial')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="middle_initial_error"></small>
+                                            
 
                                         </div>
                                         <div class="input-field w-50">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
-                                            @error('last_name')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger text-errors" id="last_name_error"></small>
+
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1">
@@ -77,26 +73,26 @@
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{optional($prenatalRecord)->patient?->date_of_birth->format('Y-m-d')??''}}">
-                                            @error('date_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="date_of_birth_error"></small>
+                                            
                                         </div>
                                         <!-- place of birth -->
                                         <div class="input-field w-50">
                                             <label for="place_of_birth">Place of Birth</label>
                                             <input type="text" id="place_of_birth" placeholder="20" class="form-control bg-light border-dark" name="place_of_birth" value="{{optional($prenatalRecord)->patient?->place_of_birth??''}}">
-                                            @error('place_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="birth_place_error"></small>
+                                            
                                         </div>
 
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
-                                            @error('age')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="age_error"></small>
+                                            
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1">
@@ -110,34 +106,34 @@
                                                     <input type="radio" id="male" class="mb-0" name="sex" value="male" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'male'?'checked':''}}>Male</label>
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'female'?'checked':''}}>Female</label>
                                                 </div>
-                                                @error('sex')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="sex_error"></small>
+                                                
                                             </div>
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field w-50">
                                             <label for="contact_number" class="">Contact Number</label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
-                                            @error('contact_number')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="contact_number_error"></small>
+                                            
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="nationality" class="">Nationality</label>
                                             <input type="text" placeholder="ex. Filipino" class="form-control bg-light border-dark" name="nationality" value="{{optional($prenatalRecord)->patient?->nationality??''}}">
-                                            @error('nationality')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="nationality_error"></small>
+                                            
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1">
                                         <div class="input-field w-50">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{optional($prenatalRecord)->patient?->	date_of_registration??''}}">
-                                            @error('date_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="date_of_registration_error"></small>
+                                            
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 w-50">
@@ -145,9 +141,9 @@
                                             <select name="handled_by" id="edit_handled_by" class="form-select bg-light border-dark " data-bs-health-worker-id="{{optional($prenatalRecord)->prenatal_case_record[0]->health_worker_id??''}}">
                                                 <option value="" disabled>Select a person</option>
                                             </select>
-                                            @error('brgy')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            
+                                            <small class="text-danger text-errors" id="handled_by_error"></small>
+                                            
                                         </div>
                                     </div>
 
@@ -157,9 +153,9 @@
                                             <div class="input-field w-50">
                                                 <label for="motherName">Head of the Family</label>
                                                 <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control bg-light border-dark" name="family_head" value="{{optional($prenatalRecord)->prenatal_medical_record->family_head_name??'N/A'}}">
-                                                @error('mother_name')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="head_of_family_error"></small>
+                                                
 
                                             </div>
                                             <div class="input-field w-50">
@@ -170,9 +166,9 @@
                                                     <option value="Married" {{optional($prenatalRecord)->patient == 'Married'?'selected':''}}>Married</option>
                                                     <option value="Divorce" {{optional($prenatalRecord)->patient == 'Divorce'?'selected':''}}>Divorce</option>
                                                 </select>
-                                                @error('civil_status')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="civil_status_error"></small>
+                                                
                                             </div>
                                             <div class="input-field w-50">
                                                 <label for="blood_type">Blood Type</label>
@@ -187,6 +183,7 @@
                                                     <option value="O+">O+</option>
                                                     <option value="O-">O-</option>
                                                 </select>
+                                                <small class="text-danger text-errors" id="blood_type_error"></small>
                                             </div>
 
                                         </div>
@@ -196,9 +193,9 @@
                                             <div class="input-field w-25">
                                                 <label for="religion" class="form-label">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control bg-light border-dark" name="religion" value="{{optional($prenatalRecord)->prenatal_medical_record -> religion??'N/A'}}">
-                                                @error('religion')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="religion_error"></small>
+                                                
                                             </div>
 
                                             <!-- PhilHealth -->
@@ -218,6 +215,7 @@
                                                         <label class="form-check-label" for="philhealth_no">(No)</label>
                                                     </div>
                                                 </div>
+                                                <small class="text-danger text-errors" id="philhealth_error"></small>
                                             </div>
 
                                             <!-- Family Planning -->
@@ -246,6 +244,7 @@
                                             <label for="family_serial_no" class="form-label w-100">Family Serial No.</label>
                                             <input type="number" name="family_serial_no" placeholder="enter family serial no." class="w-100 form-control bg-light border-dark" value="{{optional($prenatalRecord)->prenatal_medical_record->family_serial_no ??''}}">
                                         </div>
+                                        <small class="text-danger text-errors" id="family_serial_error"></small>
                                     </div>
                                     <!-- address -->
                                     <div class="mb-2 d-flex gap-1 flex-column border-top border-bottom">
@@ -254,18 +253,18 @@
                                             <div class=" mb-2 w-50">
                                                 <label for="street">Street*</label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim($address->house_number . ' ' . optional($address->street)->name) }}">
-                                                @error('street')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="street_error"></small>
+                                                
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="brgy">Barangay*</label>
                                                 <select name="brgy" id="brgy" class="form-select py-2 bg-light border-dark" data-bs-selected-brgy="{{$address-> purok}}">
                                                     <option value="">Select a brgy</option>
                                                 </select>
-                                                @error('brgy')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                
+                                                <small class="text-danger text-errors" id="brgy_error"></small>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -276,14 +275,17 @@
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Blood Pressure:</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="ex. 120/80" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Temperature:</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="00 C" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder=" 60-100" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="pulse_rate_error"></small>
                                             </div>
 
                                         </div>
@@ -292,14 +294,17 @@
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="ex. 25" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Height(cm):</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" placeholder="00.00" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Weight(kg):</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" placeholder=" 00.00" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? 'N/A' }}">
+                                                <small class="text-danger text-errors" id="weight_error"></small>
                                             </div>
                                         </div>
                                     </div>
@@ -408,6 +413,25 @@
                                                         <label for="yes">Oo</label>
                                                         <input type="radio" name="q2_answer5" value="no" {{ optional($prenatalRecord)->prenatal_case_record[0]-> pregnancy_history_questions[0] -> q2_answer5 == 'no'?'checked': '' }}>
                                                         <label for="no">HIndi</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="survey-questionare w-100 ">
+                                            <div class="hatol">
+                                                <label for="" class="fw-bold fs-5">Decision</label>
+                                                <div class="options px-5 py-2">
+                                                    <div class="mb-2">
+                                                        <input type="radio" name="nurse_decision" id="nurse_f1_option" value="1" {{optional($caseRecord)-> decision == 1 ?'checked':''}}>
+                                                        <label for="nurse_f1_option">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input type="radio" name="nurse_decision" id="nurse_f2_option" value="2" {{optional($caseRecord)-> decision == 2 ?'checked':''}}>
+                                                        <label for="nurse_f2_option">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input type="radio" name="nurse_decision" id="nurse_f3_option" value="3" {{optional($caseRecord)-> decision == 3 ?'checked':''}}>
+                                                        <label for="nurse_f3_option">Ipinayong manganak sa Ospital</label>
                                                     </div>
                                                 </div>
                                             </div>

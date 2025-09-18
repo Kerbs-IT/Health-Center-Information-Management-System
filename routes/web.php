@@ -5,6 +5,7 @@ use App\Http\Controllers\addressController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\brgyUnit;
 use App\Http\Controllers\brgyUnitController;
+use App\Http\Controllers\CaseController;
 use App\Http\Controllers\colorPalleteController;
 use App\Http\Controllers\forgotPassController;
 use App\Http\Controllers\healthWorkerController;
@@ -134,9 +135,13 @@ Route::get('/vaccines',[vaccineController::class, 'getVaccines']);
 Route::get('/patient-record/prenatal/view-records',[RecordsController::class,'prenatalRecord']) -> name('records.prenatal');
 Route::get('/patient-record/prenatal/view-details/{id}',[RecordsController::class, 'viewPrenatalDetail']) -> name('record.view.prenatal');
 Route::get('/patient-record/prenatal/edit-details/{id}',[RecordsController::class, 'editPrenatalDetail']) -> name('record.prenatal.edit');
-Route::get('/patient-record/prenatal/view-case/id', [RecordsController::class, 'editPrenatalCase']) -> name('record.prenatal.case');
+Route::get('/patient-record/prenatal/view-case/{id}', [RecordsController::class, 'prenatalCase']) -> name('record.prenatal.case');
 Route::post('/add-prenatal-patient',[PrenatalController::class, 'addPatient']);
 Route::put('/update/prenatal-patient-details/{id}',[PrenatalController::class, 'updateDetails']);
+Route::get('/view-case/case-record/{typeOfRecord}/{id}', [CaseController::class, 'viewCase']); // fetches the case information
+Route::get('/view-prenatal/pregnancy-plan/{id}',[PrenatalController::class, 'viewPregnancyPlan']);
+// update the case information
+Route::put('patient-record/update/prenatal-case/{id}', [PrenatalController::class, 'updateCase']);
 // --------------------------------------------- SENIOR CITIZEN RECORD ------------------------------------------------------
 Route::get('/patient-record/senior-citizen/view-records', [RecordsController::class, 'seniorCitizenRecord']) -> name('record.senior.citizen');
 Route::get('/patient-record/senior-citizen/view-detail/id', [RecordsController::class, 'seniorCitizenDetail']) -> name('record.senior.citizen.view');

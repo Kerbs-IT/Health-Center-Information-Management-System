@@ -271,7 +271,22 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <td class="fw-bold bg-light">Hatol sa Pasyente:</td>
-                                    <td>{{optional($prenatalRecord)->prenatal_case_record->first()->decision??''}}</td>
+                                    <td id="decision_con">
+                                        @php
+                                        $decision = optional($prenatalRecord)->prenatal_case_record->first()->decision ?? '';
+                                        @endphp
+
+                                        @if ($decision == 1)
+                                        Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan
+                                        @elseif ($decision == 2)
+                                        Masusing pagsusuri at aksyon ng kumadrona / Nurse
+                                        @elseif ($decision == 3)
+                                        Ipinayong manganak sa Ospital
+                                        @else
+                                        {{-- optional: show nothing or a default --}}
+                                        @endif
+                                    </td>
+
                                 </tr>
                             </table>
                         </div>
