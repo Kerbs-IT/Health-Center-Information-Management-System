@@ -47,7 +47,7 @@ class prenatal_case_records extends Model
     }
 
     public function prenatal_assessment(){
-        return $this-> hasMany(prenatal_assessments::class, "prenatal_case_record_id", "id");
+        return $this-> hasOne(prenatal_assessments::class, "prenatal_case_record_id", "id");
     }
 
     public function pregnancy_history_questions(){

@@ -94,7 +94,7 @@
                                                 </svg>
                                             </a>
                                             <a href="/patient-record/prenatal/edit-details/{{$record->id}}" class="btn btn-info text-white fw-bold px-3">Edit</a>
-                                            <a href="{{ route('record.prenatal.case') }}" class="btn btn-dark text-white fw-bold px-3">Case</a>
+                                            <a href="/patient-record/prenatal/view-case/{{$record->id}}" class="btn btn-dark text-white fw-bold px-3">Case</a>
                                         </div>
                                     </td>
                                 </tr>

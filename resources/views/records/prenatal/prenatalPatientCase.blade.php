@@ -3,21 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
 </head>
 
-<body >
+<body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/js/menudropdown.js',
     'resources/js/header.js',
     'resources/css/profile.css',
-    'resources/js/patient/add-patient.js',
     'resources/css/patient/add-patient.css',
     'resources/css/patient/record.css',
-    'resources/js/record/record.js'])
+    'resources/js/record/record.js',
+    'resources/js/prenatal/prenatalCase.js'])
     <div class="patient-case vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
@@ -61,21 +62,23 @@
                                 </thead>
                                 <!-- data of patient -->
                                 <tbody>
+                                    @foreach($prenatalCaseRecords -> prenatal_case_record as $record)
+
                                     <tr class="px-">
-                                        <td>C-01</td>
-                                        <td>Medical Record</td>
+                                        <td>{{$record-> id}}</td>
+                                        <td>{{$record-> type_of_record}}</td>
                                         <td>Nurse Joy</td>
-                                        <td>05-22-2025</td>
-                                        <td>Done</td>
+                                        <td>{{ optional($record->created_at)->format('M j, Y') }}</td>
+                                        <td>{{$record->status}}</td>
 
                                         <td>
                                             <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                                                <button type="button" data-bs-toggle="modal" data-bs-target="#viewPrenatalMedicalRecordModal">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#viewPrenatalMedicalRecordModal" id="viewCaseBtn" data-bs-medical-id="{{$record->id}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                         <path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z" />
                                                     </svg>
                                                 </button>
-                                                <button type="button" class="btn btn-info text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="#editVaccinationModal">Edit</button>
+                                                <button type="button" class="btn btn-info text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="#editVaccinationModal" id="case-edit-icon" data-bs-medical-id="{{$record->id}}">Edit</button>
                                                 <button type="button" class="btn btn-danger delete-record-icon text-white fw-bold px-3">Archive</button>
                                                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                     <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
@@ -84,18 +87,22 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    @endforeach
+
+                                    @if($prenatalCaseRecords -> pregnancy_plan)
                                     <tr>
-                                        <td>C-02</td>
-                                        <td>Pregnancy Plan</td>
+
+                                        <td>{{$prenatalCaseRecords -> pregnancy_plan->id}}</td>
+                                        <td>{{$prenatalCaseRecords -> pregnancy_plan->type_of_record}}</td>
                                         <td>Nurse Joy</td>
-                                        <td>05-22-2025</td>
+                                        <td>{{$prenatalCaseRecords -> pregnancy_plan->created_at->format('M j, Y')}}</td>
                                         <td>Done</td>
                                         <td>
                                             <!-- <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                                                <button class="btn btn-success text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="#updateVaccinationModal">Update</button>
-                                            </div> -->
+                                                        <button class="btn btn-success text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="#updateVaccinationModal">Update</button>
+                                                    </div> -->
                                             <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                                                <button type="button" data-bs-toggle="modal" data-bs-target="#viewPregnancyPlanRecordModal">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#viewPregnancyPlanRecordModal" id="pregnancy-plan-view-btn" data-bs-id="{{$prenatalCaseRecords -> pregnancy_plan->id}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                         <path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z" />
                                                     </svg>
@@ -109,6 +116,8 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    @endif
+
                                     <tr class="px-">
                                         <td>C-01</td>
                                         <td>Family Planning</td>
@@ -128,7 +137,7 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                     <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
                                                 </svg>
-                                                <!-- <p class="mb-0">None</p> -->
+
                                             </div>
                                         </td>
                                     </tr>
@@ -144,7 +153,7 @@
                             </div>
                         </div>
                         <!-- edit family planning -->
-                        <!-- EDIT CASE INFO -->
+                        <!-- EDIT FAMILY CASE RECORD -->
                         <div class="modal fade" id="editFamilyPlanningModal" tabindex="-1" aria-labelledby="editVaccinationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-centered">
                                 <div class="modal-content">
@@ -194,7 +203,7 @@
                         <div class="modal fade" id="viewPregnancyPlanRecordModal" tabindex="-1" aria-labelledby="vaccinationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-centered">
                                 <div class="modal-content">
-                                    <div class="modal-header bg-success">
+                                    <div class="modal-header bg-success text-white">
                                         <h5 class="modal-title" id="vaccinationModalLabel">Prenatal Medical Record Details</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);"></button>
                                     </div>
@@ -444,72 +453,45 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- EDIT CASE INFO -->
+                        <!-- EDIT prenatal CASE INFO -->
                         <div class="modal fade" id="editVaccinationModal" tabindex="-1" aria-labelledby="editVaccinationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-centered">
                                 <div class="modal-content">
-                                    <form method="POST" action="#" class="flex-column">
+                                    <form method="POST" action="" class="flex-column" id="update-prenatal-case-record-form">
+                                        @method('PUT')
+                                        @csrf
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="vaccinationModalLabel">Prenatal Details</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-
                                         <div class="modal-body">
                                             <div class="mb-2 w-100">
-                                                <label for="date_of_tetanous">Petsa ng Injeksyon ng Tetanus Toxiod</label>
-                                                <div class="dates d-flex gap-1 ">
-                                                    <!-- 1 -->
-                                                    <div class="mb-2 w-25 d-flex">
-                                                        <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">1</span>
-                                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
-                                                    </div>
-                                                    <!-- 2 -->
-                                                    <div class="mb-2 w-25 d-flex">
-                                                        <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">2</span>
-                                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
-                                                    </div>
-                                                    <!-- 3 -->
-                                                    <div class="mb-2 w-25 d-flex">
-                                                        <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">3</span>
-                                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
-                                                    </div>
-                                                    <!-- 4 -->
-                                                    <div class="mb-2 w-25 d-flex">
-                                                        <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">4</span>
-                                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
-                                                    </div>
-                                                    <!-- 5 -->
-                                                    <div class="mb-2 w-25 d-flex">
-                                                        <span class="px-3 bg-secondary text-center mb-0 text-white d-flex align-items-center justify-content-center" style="height: 38px;">5</span>
-                                                        <input type="date" id="date_of_vaccination" placeholder="20" class="form-control flex-grow-1 " name="date_of_vaccination" value="">
-                                                    </div>
-                                                </div>
                                                 <div class="ob-history mb-2">
                                                     <h3>OB HISTORY</h3>
                                                     <div class="type-of-pregnancy d-flex w-100 gap-1">
                                                         <div class="item">
                                                             <label for="G">G</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <input type="number" name="G" class="form-control w-100" placeholder="0" id="grada_input">
                                                         </div>
                                                         <div class="item">
                                                             <label for="G">P</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <input type="number" name="P" class="form-control w-100" placeholder="0" id="para_input">
                                                         </div>
                                                         <div class="item">
-                                                            <label for="G">T</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <label for="T">T</label>
+                                                            <input type="number" name="T" class="form-control w-100" placeholder="0" id="term_input">
                                                         </div>
                                                         <div class="item">
-                                                            <label for="G">Premature</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <label for="premature">Premature</label>
+                                                            <input type="number" name="premature" class="form-control w-100" placeholder="0" id="premature_input">
                                                         </div>
                                                         <div class="item">
-                                                            <label for="G">Abortion</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <label for="abortion">Abortion</label>
+                                                            <input type="number" name="abortion" class="form-control w-100" placeholder="0" id="abortion_input">
                                                         </div>
                                                         <div class="item">
-                                                            <label for="G">Living Children</label>
-                                                            <input type="number" name="G" class="form-control w-100" placeholder="0">
+                                                            <label for="living_children">Living Children</label>
+                                                            <input type="number" name="living_children" class="form-control w-100" placeholder="0" id="living_children_input">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -517,41 +499,54 @@
                                                 <div class="previous-record mb-3 d-flex gap-1">
                                                     <div class="item">
                                                         <label for="year_of_pregnancy">Year of Pregnancy</label>
-                                                        <input type="date" name="year_of_pregranancy" class="form-control w-100">
+                                                        <input type="number" name="pregnancy_year" class="form-control w-100" id="pregnancy_year">
+                                                        <span class="text-danger" id="preg_year_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="type_of_delivery">Type of Delivery</label>
                                                         <select name="type_of_delivery" id="type_of_delivery" class="form-select" required>
                                                             <option value="" disabled selected>Select Type of Delivery</option>
-                                                            <option value="normal_spontaneous_delivery">Normal Spontaneous Delivery (NSD)</option>
-                                                            <option value="cesarean_section">Cesarean Section (CS)</option>
-                                                            <option value="assisted_vaginal_delivery">Assisted Vaginal Delivery</option>
-                                                            <option value="breech_delivery">Breech Delivery</option>
-                                                            <option value="forceps_delivery">Forceps Delivery</option>
-                                                            <option value="vacuum_extraction">Vacuum Extraction</option>
-                                                            <option value="water_birth">Water Birth</option>
-                                                            <option value="home_birth">Home Birth</option>
-                                                            <option value="emergency_cesarean">Emergency Cesarean</option>
+                                                            <option value="Normal Spontaneous Delivery">Normal Spontaneous Delivery (NSD)</option>
+                                                            <option value="Cesarean Section">Cesarean Section (CS)</option>
+                                                            <option value="Assisted Vaginal Delivery">Assisted Vaginal Delivery</option>
+                                                            <option value="Breech delivery">Breech Delivery</option>
+                                                            <option value="Forceps Delivery">Forceps Delivery</option>
+                                                            <option value="Vacuum Extraction">Vacuum Extraction</option>
+                                                            <option value="Water Birth">Water Birth</option>
+                                                            <option value="Home Birth">Home Birth</option>
+                                                            <option value="Emergency Cesarean">Emergency Cesarean</option>
                                                         </select>
+                                                        <span class="text-danger" id="type_of_delivery_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="place_of_delivery">Place of Delivery</label>
-                                                        <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="trece">
+                                                        <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="trece" id="place_of_delivery">
+                                                        <span class="text-danger" id="place_of_delivery_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="birth_attendant">Birth Attendant</label>
-                                                        <input type="text" name="birth_attendant" class="form-control w-100" placeholder="Nurse joy">
+                                                        <input type="text" name="birth_attendant" class="form-control w-100" placeholder="Nurse joy" id="birth_attendant">
+                                                        <span class="text-danger" id="birth_attendant_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="Complication">Complication</label>
-                                                        <input type="text" name="Complication" class="form-control w-100" placeholder="">
+                                                        <input type="text" name="Complication" class="form-control w-100" placeholder="" id="complication" value="None">
                                                     </div>
                                                     <div class="item">
                                                         <label for="G">Outcome</label>
-                                                        <input type="text" name="G" class="form-control w-100" placeholder="">
+                                                        <select id="outcome" name="outcome" required class="form-select">
+                                                            <option value="" disabled selected>Select Outcome</option>
+                                                            <option value="term">Term Delivery</option>
+                                                            <option value="preterm">Preterm Delivery</option>
+                                                            <option value="abortion">Abortion (Spontaneous/Induced)</option>
+                                                            <option value="ectopic">Ectopic Pregnancy</option>
+                                                            <option value="stillbirth">Stillbirth (IUFD)</option>
+                                                            <option value="living">Living Child</option>
+                                                        </select>
+                                                        <span class="w-100 text-danger" id="outcome_error"></span>
                                                     </div>
                                                     <div class="d-flex align-self-end mb-0">
-                                                        <button type="button" class="btn btn-success"> Add</button>
+                                                        <button type="button" class="btn btn-success" id="add-pregnancy-history-btn"> Add</button>
                                                     </div>
                                                 </div>
                                                 <!-- results -->
@@ -568,18 +563,8 @@
                                                                 <th>Action</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody id="previous-records-body">
-                                                            <tr class="text-center">
-                                                                <td>2022-08-15</td>
-                                                                <td>Normal Spontaneous Delivery (NSD)</td>
-                                                                <td>Trece</td>
-                                                                <td>Nurse Joy</td>
-                                                                <td>None</td>
-                                                                <td>Live birth</td>
-                                                                <td>
-                                                                    <button class="btn btn-danger btn-sm">Remove</button>
-                                                                </td>
-                                                            </tr>
+                                                        <tbody id="edit-previous-records-body">
+
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -589,114 +574,94 @@
                                                     <div class="mb-2 d-flex w-100 gap-2">
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">LMP</label>
-                                                            <input type="date" name="place_of_delivery" class="form-control w-100" placeholder="trece">
+                                                            <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input">
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">Expected Delivery</label>
-                                                            <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece">
+                                                            <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input">
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">Menarche</label>
-                                                            <input type="text" name="expected_delivery" class="form-control w-100" placeholder="trece">
+                                                            <input type="text" name="menarche" class="form-control w-100" placeholder="trece" id="menarche_input">
                                                         </div>
                                                     </div>
                                                     <!-- next row -->
                                                     <div class="mb-2 d-flex w-100 gap-2">
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">TT1</label>
-                                                            <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="2021">
+                                                            <input type="text" name="tt1" class="form-control w-100" placeholder="YYYY" id="tt1_input">
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT2</label>
-                                                            <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                                                            <input type="text" name="tt2" class="form-control w-100" placeholder="YYYY" id="tt2_input">
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT3</label>
-                                                            <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                                                            <input type="text" name="tt3" class="form-control w-100" placeholder="YYYY" id="tt3_input">
                                                         </div>
                                                     </div>
                                                     <!-- last row -->
                                                     <div class="mb-2 d-flex w-100 gap-2">
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">TT4</label>
-                                                            <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="2021">
+                                                            <input type="text" name="tt4" class="form-control w-100" placeholder="YYYY" id="tt4_input">
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT5</label>
-                                                            <input type="text" name="expected_delivery" class="form-control w-100" placeholder="2021">
+                                                            <input type="text" name="tt5" class="form-control w-100" placeholder="YYYY" id="tt5_input">
                                                         </div>
                                                     </div>
 
                                                 </div>
                                                 <!-- ASSESSMENT -->
-                                                <div class="assessment-con mb-3 border-bottom">
+                                                <div class="assessment-con mb-3">
                                                     <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
                                                     <div class="checkboxes d-flex gap-2 mb-2 flex-wrap">
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">Spotting</label>
+                                                            <input type="checkbox" name="spotting" class="p-4" id="spotting_input" value="yes">
+                                                            <label for="spotting_input" class="w-100 fs-5">Spotting</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">Edema</label>
+                                                            <input type="checkbox" value="yes" name="edema" class="p-4" id="edema_input">
+                                                            <label for="edema_input" class="w-100 fs-5">Edema</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">severe headache</label>
+                                                            <input type="checkbox" value="yes" name="severe_headache" class="p-4" id="severe_headache_input">
+                                                            <label for="severe_headache_input" class="w-100 fs-5">severe headache</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">blumming of vision</label>
+                                                            <input type="checkbox" value="yes" name="blurring_of_vission" class="p-4" id="blurring_of_vission_input">
+                                                            <label for="blurring_of_vission_input" class="w-100 fs-5">blumming of vision</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">Watery discharge</label>
+                                                            <input type="checkbox" value="yes" name="watery_discharge" class="p-4" id="watery_discharge_input">
+                                                            <label for="watery_discharge_input" class="w-100 fs-5">Watery discharge</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">severe vomiting</label>
+                                                            <input type="checkbox" value="yes" name="severe_vomiting" class="p-4" id="severe_vomiting_input">
+                                                            <label for="severe_vomiting_input" class="w-100 fs-5">severe vomiting</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">Hx of smoking </label>
+                                                            <input type="checkbox" value="yes" name="hx_smoking" class="p-4" id="hx_smoking_input">
+                                                            <label for="hx_smoking_input" class="w-100 fs-5">Hx of smoking </label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">alcohol drinker</label>
+                                                            <input type="checkbox" value="yes" name="alcohol_drinker" class="p-4" id="alcohol_drinker_input">
+                                                            <label for="alcohol_drinker_input" class="w-100 fs-5">alcohol drinker</label>
                                                         </div>
                                                         <div class="mb-1 d-flex align-items-center gap-1">
-                                                            <input type="checkbox" name="spotting" class="p-4">
-                                                            <label for="spotting" class="w-100 fs-5">Drug intake</label>
+                                                            <input type="checkbox" value="yes" name="drug_intake" class="p-4" id="drug_intake_input">
+                                                            <label for="drug_intake_input" class="w-100 fs-5">Drug intake</label>
                                                         </div>
                                                     </div>
 
-                                                </div>
-                                                <!-- main info about pregnancy -->
-                                                <div class="survey-questionare w-100 ">
-                                                    <div class="hatol">
-                                                        <label for="" class="fw-bold fs-5">Decision</label>
-                                                        <div class="options px-5 py-2">
-                                                            <div class="mb-2">
-                                                                <input type="radio" name="nurse_decision" id="nurse_f1_option">
-                                                                <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <input type="radio" name="nurse_decision" id="nurse_f2_option">
-                                                                <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <input type="radio" name="nurse_decision" id="nurse_f3_option">
-                                                                <label for="">Ipinayong manganak sa Ospital</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                </div>                                         
                                             </div>
                                         </div>
 
                                         <div class="modal-footer d-flex justify-content-between">
                                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-success">Save Record</button>
+                                            <button type="submit" class="btn btn-success" id="update-save-btn">Save Record</button>
                                         </div>
                                     </form>
                                 </div>

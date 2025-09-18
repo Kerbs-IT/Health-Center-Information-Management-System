@@ -365,13 +365,15 @@ class RecordsController extends Controller
     public function editPrenatalDetail($id)
     {
         $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
+        $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)->firstOrFail();
        
         $address = patient_addresses::where('patient_id',$prenatalRecord->patient->id)-> firstOrFail();
-        return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=> $prenatalRecord,'address'=> $address]);
+        return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=> $prenatalRecord,'address'=> $address, 'caseRecord' => $caseRecord]);
     }
-    public function editPrenatalCase()
+    public function prenatalCase($caseId)
     {
-        return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 'page' => 'RECORD']);
+        $prenatalCaseRecords = medical_record_cases::with('prenatal_case_record.pregnancy_timeline_records', 'pregnancy_plan')->where('id', $caseId)->firstOrFail();
+        return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 'page' => 'RECORD','prenatalCaseRecords'=>$prenatalCaseRecords]);
     }
 
     // senior Citizen

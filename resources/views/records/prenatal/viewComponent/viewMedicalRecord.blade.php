@@ -1,33 +1,4 @@
 <div class="table-responsive">
-    <table class="table table-bordered">
-        <thead class="table-secondary table-header text-center">
-            <tr>
-                <th colspan="2">Tetanus Toxoid Injections</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>TT1</th>
-                <td>2023-01-01</td>
-            </tr>
-            <tr>
-                <th>TT2</th>
-                <td>2023-02-01</td>
-            </tr>
-            <tr>
-                <th>TT3</th>
-                <td>2023-03-01</td>
-            </tr>
-            <tr>
-                <th>TT4</th>
-                <td>2023-04-01</td>
-            </tr>
-            <tr>
-                <th>TT5</th>
-                <td>2023-05-01</td>
-            </tr>
-        </tbody>
-    </table>
 
     <table class="table table-bordered">
         <thead class="table-secondary text-center table-header">
@@ -38,27 +9,27 @@
         <tbody>
             <tr>
                 <th>G (Gravida)</th>
-                <td>2</td>
+                <td id="gravida_value"></td>
             </tr>
             <tr>
                 <th>P (Para)</th>
-                <td>1</td>
+                <td id="para_value"></td>
             </tr>
             <tr>
                 <th>T (Term)</th>
-                <td>1</td>
+                <td id="term_value"></td>
             </tr>
             <tr>
                 <th>Premature</th>
-                <td>0</td>
+                <td id="premature_value"></td>
             </tr>
             <tr>
                 <th>Abortion</th>
-                <td>0</td>
+                <td id="abortion_value"></td>
             </tr>
             <tr>
                 <th>Living Children</th>
-                <td>1</td>
+                <td id="livingChildren_value"></td>
             </tr>
         </tbody>
     </table>
@@ -74,15 +45,15 @@
                 <th>Outcome</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="pregnancy_history_body">
             <tr class="text-center">
-                <td>2022-08-15</td>
-                <td>Normal Spontaneous Delivery (NSD)</td>
-                <td>Trece</td>
-                <td>Nurse Joy</td>
-                <td>None</td>
-                <td>Live birth</td>
-            </tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>`;
         </tbody>
     </table>
 
@@ -95,35 +66,35 @@
         <tbody>
             <tr>
                 <th>LMP</th>
-                <td>2024-09-01</td>
+                <td id="lmp_value">2024-09-01</td>
             </tr>
             <tr>
                 <th>Expected Delivery</th>
-                <td>2025-06-01</td>
+                <td id="expected_delivery_value">2025-06-01</td>
             </tr>
             <tr>
                 <th>Menarche</th>
-                <td>12</td>
+                <td id="menarche_value">12</td>
             </tr>
             <tr>
                 <th>TT1</th>
-                <td>2021</td>
+                <td id="tt1_value">2021</td>
             </tr>
             <tr>
                 <th>TT2</th>
-                <td>2021</td>
+                <td id="tt2_value">2021</td>
             </tr>
             <tr>
                 <th>TT3</th>
-                <td>2021</td>
+                <td id="tt3_value">2021</td>
             </tr>
             <tr>
                 <th>TT4</th>
-                <td>2021</td>
+                <td id="tt4_value">2021</td>
             </tr>
             <tr>
                 <th>TT5</th>
-                <td>2021</td>
+                <td id="tt5_value">2021</td>
             </tr>
         </tbody>
     </table>
@@ -137,53 +108,39 @@
         <tbody>
             <tr>
                 <th>Spotting</th>
-                <td>Yes</td>
+                <td id="spotting_value"></td>
             </tr>
             <tr>
                 <th>Edema</th>
-                <td>Yes</td>
+                <td id="edema_value"></td>
             </tr>
             <tr>
                 <th>Severe Headache</th>
-                <td>Yes</td>
+                <td id="severe_headache_value"></td>
             </tr>
             <tr>
                 <th>Blurring of Vision</th>
-                <td>No</td>
+                <td id="blurring_of_vission_value"></td>
             </tr>
             <tr>
                 <th>Watery Discharge</th>
-                <td>No</td>
+                <td id="water_discharge_value"></td>
             </tr>
             <tr>
                 <th>Severe Vomiting</th>
-                <td>Yes</td>
+                <td id="severe_vomiting_value"></td>
             </tr>
             <tr>
                 <th>Hx of Smoking</th>
-                <td>Yes</td>
+                <td id="smoking_value"></td>
             </tr>
             <tr>
                 <th>Alcohol Drinker</th>
-                <td>No</td>
+                <td id="alcohol_drinker_value"></td>
             </tr>
             <tr>
                 <th>Drug Intake</th>
-                <td>No</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <table class="table table-bordered">
-        <thead class="table-secondary text-center table-header">
-            <tr>
-                <th colspan="2">Nurse Decision</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>Decision</th>
-                <td>Papuntahin sa Doktor/RHU, Sundan ang kalagayan</td>
+                <td id="drug_intake_value"></td>
             </tr>
         </tbody>
     </table>

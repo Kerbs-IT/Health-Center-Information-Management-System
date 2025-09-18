@@ -13,7 +13,7 @@ class prenatal_assessments extends Model
         'severe_headache',
         'blumming_vission',
         'water_discharge',
-        'severe_vomiting',
+        'severe_vomitting',
         'hx_smoking',
         'alchohol_drinker',
         'drug_intake'
