@@ -18,7 +18,7 @@ return new class extends Migration
             $table -> string('sex') -> nullable();
             $table -> string('civil_status') -> nullable();
             $table -> integer('contact_number')-> nullable();
-            $table -> string('nationality');
+            $table -> string('nationality')->nullable();
         });
     }
 

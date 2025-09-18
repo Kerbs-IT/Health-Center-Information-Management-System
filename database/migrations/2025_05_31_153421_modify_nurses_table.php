@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nurses', function (Blueprint $table) {
-            $table -> string('full_name')-> nullable();
-            $table -> string('middle_nitial') -> nullable();
+            $table->string('full_name')->nullable();
+            $table->string('middle_initial')->nullable();
         });
     }
 
