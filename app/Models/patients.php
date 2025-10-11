@@ -30,6 +30,7 @@ class patients extends Model
     ];
     protected $casts = [
         'date_of_birth' => 'date',
+        'date_of_registration' => 'date'
     ];
 
     public function address()

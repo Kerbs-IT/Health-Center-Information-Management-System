@@ -140,27 +140,27 @@ document.addEventListener("DOMContentLoaded", () => {
         ".blood-donor-name-container"
     );
     console.log(addBloodDonorBtn);
+    if (addBloodDonorBtn) {
+        // add event listerner to the btn
+        addBloodDonorBtn.addEventListener("click", (e) => {
+            e.preventDefault();
 
-    // add event listerner to the btn
-    addBloodDonorBtn.addEventListener("click", (e) => {
-        e.preventDefault();
+            // get the name of the blood donor
+            const bloodDonorName = bloodDonorInput.value;
 
-        // get the name of the blood donor
-        const bloodDonorName = bloodDonorInput.value;
+            if (bloodDonorName == "") {
+                Swal.fire({
+                    title: "Donor Name Error",
+                    text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
 
-        if (bloodDonorName == '') {
-             Swal.fire({
-                 title: "Donor Name Error",
-                 text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
-                 icon: "error",
-                 confirmButtonColor: "#3085d6",
-                 confirmButtonText: "OK",
-             });
-            
-            return;
-        }
+                return;
+            }
 
-        bloodDonorContainer.innerHTML += `
+            bloodDonorContainer.innerHTML += `
                 <div class="box prenatal-box d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded">
                     <h5 class="mb-0">${bloodDonorName}</h5>
                     <div class="delete-icon d-flex align-items-center justify-content-center">
@@ -171,14 +171,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     <input type="text" name="names_of_donor[]" hidden value="${bloodDonorName}" class="donor_name_input">
                 </div>`;
 
-        // let donors = document.querySelectorAll(
-        //     'input[name="names_of_donor[]"]'
-        // );
+            // let donors = document.querySelectorAll(
+            //     'input[name="names_of_donor[]"]'
+            // );
 
-        // donors.forEach((donor) => {
-        //     console.log(donor.value);
-        // });
-    });
+            // donors.forEach((donor) => {
+            //     console.log(donor.value);
+            // });
+        });
+    }
+        
 
     
 

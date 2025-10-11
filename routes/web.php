@@ -18,9 +18,12 @@ use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
 use App\Http\Controllers\PrenatalController;
 use App\Http\Controllers\RecordsController;
+use App\Http\Controllers\SeniorCitizenController;
+use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
 use App\Models\color_pallete;
 use Illuminate\Support\Facades\Route;
+use LDAP\Result;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -140,14 +143,32 @@ Route::post('/add-prenatal-patient',[PrenatalController::class, 'addPatient']);
 Route::put('/update/prenatal-patient-details/{id}',[PrenatalController::class, 'updateDetails']);
 Route::get('/view-case/case-record/{typeOfRecord}/{id}', [CaseController::class, 'viewCase']); // fetches the case information
 Route::get('/view-prenatal/pregnancy-plan/{id}',[PrenatalController::class, 'viewPregnancyPlan']);
+Route::put('/update/pregnancy-plan-record/{id}',[PrenatalController::class, 'updatePregnancyPlan']); // route for updating the pregnancy plan record of the patient
+Route::get('/patient-record/view-details/{id}', [PrenatalController::class, 'viewPrenatalDetail']);
 // update the case information
 Route::put('patient-record/update/prenatal-case/{id}', [PrenatalController::class, 'updateCase']);
+Route::post('/prenatal/add-check-up-record/{id}',[PrenatalController::class, "uploadPregnancyCheckup"]);
+// route for geting checkup info
+Route::get('/prenatal/view-pregnancy-checkup-info/{id}', [PrenatalController::class, 'viewCheckupInfo']);
+// update the checkup
+Route::put('/update/prenatal-check-up/{id}', [PrenatalController::class, 'updatePregnancyCheckUp']);
+
+
+
+
 // --------------------------------------------- SENIOR CITIZEN RECORD ------------------------------------------------------
 Route::get('/patient-record/senior-citizen/view-records', [RecordsController::class, 'seniorCitizenRecord']) -> name('record.senior.citizen');
-Route::get('/patient-record/senior-citizen/view-detail/id', [RecordsController::class, 'seniorCitizenDetail']) -> name('record.senior.citizen.view');
-Route::get('/patient-record/senior-citizen/edit-details/id', [RecordsController::class, 'editSeniorCitizenDetail'])->name('record.senior.citizen.edit');
-Route::get('/patient-record/senior-citizen/view-case/id', [RecordsController::class, 'editSeniorCitizenCase'])->name('record.senior.citizen.case');
+Route::get('/patient-record/senior-citizen/view-detail/{id}', [RecordsController::class, 'seniorCitizenDetail']) -> name('record.senior.citizen.view');
+Route::get('/patient-record/senior-citizen/edit-details/{id}', [RecordsController::class, 'editSeniorCitizenDetail'])->name('record.senior.citizen.edit');
+Route::get('/patient-record/senior-citizen/view-case/{id}', [RecordsController::class, 'viewSeniorCitizenCases'])->name('record.senior.citizen.case');
 // Route::get('/patient-record/senior-citizen/view-case-info/id', [RecordsController::class, 'viewSeniorCitizenCaseInfo']) -> name('record.case.view.Senior.citizen.info');
+
+// SENIOR CITIZEN ADD PATIENT
+Route::post('/patient-record/add/senior-citizen-record', [SeniorCitizenController::class, "addPatient"]);
+Route::put('/update/senior-citizen/details/{id}',[SeniorCitizenController::class, 'updateDetails']);
+Route::get('/senior-citizen/case-details/{id}',[SeniorCitizenController::class, 'viewCaseDetails']);
+Route::put('/patient-case/senior-citizen/{id}', [SeniorCitizenController::class, 'updateCase']); //update the case of senior citizen
+Route::post('/patient-case/senior-citizen/new-case/{id}', [SeniorCitizenController::class, 'addCase']);
 
 // --------------------------------------------- FAMILY PLANNING RECORD ----------------------------------------------------------------
 Route::get('/patient-record/family-planning/view-records', [RecordsController::class, 'familyPlanningRecord']) -> name('record.family.planning');
@@ -157,9 +178,18 @@ Route::get('/patient-record/family-planning/view-case/id', [RecordsController::c
 
 // --------------------------------------------- TB DOTS -------------------------------------------------------------------------------
 Route::get('/patient-record/tb-dots/view-records', [RecordsController::class, 'tb_dotsRecord']) -> name('record.tb-dots');
-Route::get('/patient-record/tb-dots/view-detail/id', [RecordsController::class, 'tb_dotsDetail'])->name('record.tb-dots.view');
-Route::get('/patient-record/tb-dots/edit-details/id', [RecordsController::class, 'editTb_dotsDetail'])->name('record.tb-dots.edit');
-Route::get('/patient-record/tb-dots/view-case/id', [RecordsController::class, 'viewTb_dotsCase'])->name('record.tb-dots.case');
+Route::get('/patient-record/tb-dots/view-detail/{id}', [RecordsController::class, 'tb_dotsDetail'])->name('record.tb-dots.view');
+Route::get('/patient-record/tb-dots/edit-details/{id}', [RecordsController::class, 'editTb_dotsDetail'])->name('record.tb-dots.edit');
+Route::get('/patient-record/tb-dots/view-case/{id}', [RecordsController::class, 'viewTb_dotsCase'])->name('record.tb-dots.case');
+
+// add patient
+Route::post('/patient-record/add/tb-dots', [TbDotsController::class,'addPatient']);
+Route::post('/patient-record/tb-dots/update-details/{id}',[TbDotsController::class, 'updatePatientDetails']);
+Route::get('/patient/tb-dots/get-case-info/{id}', [TbDotsController::class, 'caseInfo']);
+Route::put('/patient-case/tb-dots/update/{id}',[TbDotsController::class, 'updateCase']);
+Route::post('/patient-record/add/check-up/tb-dots/{id}',[TbDotsController::class, 'addPatientCheckUp']);
+Route::get('/patient-record/view-check-up/tb-dots/{id}', [TbDotsController::class, 'viewPatientCheckUp']);
+Route::put('/patient-record/tb-dots/update-checkup/{id}',[TbDotsController::class, 'updatePatientCheckUpInfo']);
 
 // -------------------------------------------- MASTER LIST ----------------------------------------------------------------------------
 Route::get('/masterlist/vaccination',[masterListController::class, 'viewVaccinationMasterList']) -> name('masterlist.vaccination');

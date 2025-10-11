@@ -6,6 +6,10 @@ use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\prenatal_case_records;
+use App\Models\senior_citizen_case_records;
+use App\Models\staff;
+use App\Models\tb_dots_case_records;
+use App\Models\tb_dots_check_ups;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
@@ -356,10 +360,13 @@ class RecordsController extends Controller
     }
     public function viewPrenatalDetail($id)
     {
-        $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_case_record.pregnancy_history_questions', 'prenatal_medical_record'])->where('id',$id)->firstOrFail();
+        $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_case_record.pregnancy_history_questions', 'prenatal_medical_record',])->where('id',$id)->firstOrFail();
         // $caseInfo = prenatal_case_records::with('pregnancy_history_questions')->where('medical_record_case_id',$id)->firstOrFail();
         $prenatalCaseRecord = prenatal_case_records::with('pregnancy_history_questions')->where('medical_record_case_id', $prenatalRecord->id)->firstOrFail();
-        return view('records.prenatal.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=>$prenatalRecord, 'prenatalCaseRecord' => $prenatalCaseRecord]);
+        // address
+        $address = patient_addresses::where('patient_id', $prenatalRecord->patient->id)->firstorFail();
+        $fullAddress = $address->house_number . ',' . $address->street . ', ' . $address->purok . ', ' . $address->barangay . ', ' . $address->city . ', ' . $address->province;
+        return view('records.prenatal.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD','prenatalRecord'=>$prenatalRecord, 'prenatalCaseRecord' => $prenatalCaseRecord,'fullAddress'=> $fullAddress ]);
     }
 
     public function editPrenatalDetail($id)
@@ -372,7 +379,7 @@ class RecordsController extends Controller
     }
     public function prenatalCase($caseId)
     {
-        $prenatalCaseRecords = medical_record_cases::with('prenatal_case_record.pregnancy_timeline_records', 'pregnancy_plan')->where('id', $caseId)->firstOrFail();
+        $prenatalCaseRecords = medical_record_cases::with('prenatal_case_record.pregnancy_timeline_records', 'pregnancy_plan', 'pregnancy_checkup')->where('id', $caseId)->firstOrFail();
         return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 'page' => 'RECORD','prenatalCaseRecords'=>$prenatalCaseRecords]);
     }
 
@@ -380,19 +387,29 @@ class RecordsController extends Controller
 
     public function seniorCitizenRecord()
     {
-        return view('records.seniorCitizen.seniorCitizen', ['isActive' => true, 'page' => 'RECORD']);
+        $seniorCitizenRecords = medical_record_cases::with('patient')->where('type_of_case','senior-citizen')->get();
+        return view('records.seniorCitizen.seniorCitizen', ['isActive' => true, 'page' => 'RECORD', 'seniorCitizenRecords'=> $seniorCitizenRecords]);
     }
-    public function seniorCitizenDetail()
+    public function seniorCitizenDetail($id)
     {
-        return view('records.seniorCitizen.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->findOrFail($id);
+        // address
+        $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
+        $fullAddress = $address->house_number . ',' . $address->street . ', ' . $address->purok . ', ' . $address->barangay . ', ' . $address->city . ', ' . $address->province;
+        return view('records.seniorCitizen.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD','seniorCitizenRecord'=> $seniorCitizenRecord, 'fullAddress' => $fullAddress]);
     }
-    public function editSeniorCitizenDetail()
+    public function editSeniorCitizenDetail($id)
     {
-        return view('records.seniorCitizen.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->findOrFail($id);
+        // address
+        $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
+        return view('records.seniorCitizen.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'seniorCitizenRecord' => $seniorCitizenRecord, 'address' => $address]);
     }
-    public function editSeniorCitizenCase()
+    public function viewSeniorCitizenCases($id)
     {
-        return view('records.seniorCitizen.seniorCitizenPatientCase', ['isActive' => true, 'page' => 'RECORD']);
+        $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id',$id)->get();
+        $patientRecord = medical_record_cases::with('patient', 'senior_citizen_medical_record')->findOrFail($id);
+        return view('records.seniorCitizen.seniorCitizenPatientCase', ['isActive' => true, 'page' => 'RECORD','seniorCaseRecords'=>  $seniorCaseRecords, 'patient_name'=> $patientRecord ->patient->full_name, 'healthWorkerId' => $patientRecord->senior_citizen_medical_record-> health_worker_id, 'medicalRecordId' => $id  ]);
     }
     public function viewSeniorCitizenCaseInfo()
     {
@@ -420,18 +437,42 @@ class RecordsController extends Controller
     // --------------------------- tb dots ----------------------------------------
     public function tb_dotsRecord()
     {
-        return view('records.tb-dots.tb-dots', ['isActive' => true, 'page' => 'RECORD']);
+        $tbRecords = medical_record_cases::with('patient')->where('type_of_case', 'tb-dots')->get();
+        return view('records.tb-dots.tb-dots', ['isActive' => true, 'page' => 'RECORD', 'tbRecords'=> $tbRecords]);
     }
-    public function tb_dotsDetail()
-    {
-        return view('records.tb-dots.viewtb_dotsDetails', ['isActive' => true, 'page' => 'RECORD']);
+    public function tb_dotsDetail($id)
+    {   
+        try{
+            $tbRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])->findOrFail($id);
+
+            $address = patient_addresses::where('patient_id', $tbRecord->patient->id)->firstorFail();
+            $fullAddress = $address->house_number . ',' . $address->street . ', ' . $address->purok . ', ' . $address->barangay . ', ' . $address->city . ', ' . $address->province;
+            return view('records.tb-dots.viewtb_dotsDetails', ['isActive' => true, 'page' => 'RECORD','tbDotsRecord' => $tbRecord, 'fullAddress' => $fullAddress]);
+        }catch(\Exception $e){
+            return  view('records.tb-dots.viewtb_dotsDetails', ['isActive' => true, 'page' => 'RECORD', 'error' => $e->getMessage()]);
+        }
+        
     }
-    public function editTb_dotsDetail()
-    {
-        return view('records.tb-dots.editTb_dotsDetails', ['isActive' => true, 'page' => 'RECORD']);
+    public function editTb_dotsDetail($id)
+    {   
+        try{
+            $tbRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])->findOrFail($id);
+
+            $address = patient_addresses::where('patient_id', $tbRecord->patient->id)->firstorFail();
+            return view('records.tb-dots.editTb_dotsDetails', ['isActive' => true, 'page' => 'RECORD', 'tbDotsRecord' => $tbRecord, 'address' => $address]);
+        }catch(\Exception $e){
+            return view('records.tb-dots.editTb_dotsDetails', ['isActive' => true, 'page' => 'RECORD', 'error'=> $e->getMessage()]);
+        }
+       
     }
-    public function viewTb_dotsCase()
+    public function viewTb_dotsCase($id)
     {
-        return view('records.tb-dots.tb_dotsCase', ['isActive' => true, 'page' => 'RECORD']);
+        $tbDotsCaseRecords = tb_dots_case_records::where('medical_record_case_id', $id)->get();
+        $patientRecord = medical_record_cases::with('patient', 'tb_dots_medical_record')->findOrFail($id);
+
+        // check up 
+
+        $checkUpRecords = tb_dots_check_ups::where('medical_record_case_id', $id)->get();
+        return view('records.tb-dots.tb_dotsCase', ['isActive' => true, 'page' => 'RECORD', 'tbDotsRecords' =>  $tbDotsCaseRecords,'checkUpRecords' => $checkUpRecords, 'patient_name' => $patientRecord->patient->full_name, 'healthWorkerId' => $patientRecord->tb_dots_medical_record->health_worker_id, 'medicalRecordId' => $id]);
     }
 }

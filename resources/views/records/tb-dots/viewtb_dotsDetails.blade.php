@@ -14,7 +14,6 @@
     'resources/js/menudropdown.js',
     'resources/js/header.js',
     'resources/css/profile.css',
-    'resources/js/patient/add-patient.js',
     'resources/css/patient/record.css'])
     <div class="patient-details vh-100 d-flex">
         <aside>
@@ -54,17 +53,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Full Name:</h6> <span>Jan Louie Salimbago</span>
+                                                <h6 class="mb-0">Full Name:</h6> <span>{{$tbDotsRecord->patient->full_name??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Age:</h6> <span>10</span>
+                                                <h6 class="mb-0">Age:</h6> <span>{{$tbDotsRecord->patient->age??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date of Birth</h6> <span>01/05/2023</span>
+                                                <h6 class="mb-0">Date of Birth</h6> <span>{{$tbDotsRecord->patient->date_of_birth?->format('M d Y')??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -72,37 +71,38 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Place of Birth:</h6> <span>Caloocan City</span>
+                                                <h6 class="mb-0">Place of Birth:</h6> <span>{{$tbDotsRecord->patient->place_of_birth??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Sex:</h6> <span>Male</span>
+                                                <h6 class="mb-0">Sex:</h6> <span>{{$tbDotsRecord->patient->sex??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Nationality</h6> <span>Filipino</span>
+                                                <h6 class="mb-0">Nationality</h6> <span>{{$tbDotsRecord->patient->nationality??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
                                     <!-- 3rd row -->
                                     <tr>
+
                                         <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">Date of Registratin:</h6> <span>{{$tbDotsRecord->patient->date_of_registration->format('M d Y')??'N/A'}}</span>
+                                            </div>
+                                        </td>
+                                        <td class="w-25">
+                                            <div class="info d-flex gap-2 align-items-center">
+                                                <h6 class="mb-0">PhilHealth ID No :</h6> <span>{{$tbDotsRecord->tb_dots_medical_record->philhealth_id_no??'N/A'}}</span>
+                                            </div>
+                                        </td>
+                                        <!-- <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
                                                 <h6 class="mb-0">Civil Status:</h6> <span>Married</span>
                                             </div>
-                                        </td>
-                                        <td class="w-25">
-                                            <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Occupation:</h6> <span>Businessman</span>
-                                            </div>
-                                        </td>
-                                        <td class="w-25">
-                                            <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">PhilHealth ID No :</h6> <span>1234-5678-9012</span>
-                                            </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>
@@ -110,7 +110,7 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <tr>
-                                        <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
+                                        <td colspan="7" class="p-4 text-start">{{$fullAddress??'N/A'}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -121,7 +121,7 @@
                                     <tr>
                                         <td colspan="7">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
+                                                <h6 class="mb-0">Date:</h6> <span>{{optional($tbDotsRecord->tb_dots_medical_record)->created_at?->format('M d Y')??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -129,17 +129,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Height(cm):</h6> <span>172 cm</span>
+                                                <h6 class="mb-0">Height(cm):</h6> <span>{{$tbDotsRecord->tb_dots_medical_record->height??'N/A'}} cm</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Weight(kg):</h6> <span>75 kg</span>
+                                                <h6 class="mb-0">Weight(kg):</h6> <span>{{$tbDotsRecord->tb_dots_medical_record->weight??'N/A'}} kg</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">{{$tbDotsRecord->tb_dots_medical_record->blood_pressure??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -147,17 +147,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Temperature(C):</h6> <span>30°C</span>
+                                                <h6 class="mb-0">Temperature(C):</h6> <span>{{$tbDotsRecord->tb_dots_medical_record->temperature??'N/A'}}°C</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>25</span>
+                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>{{$tbDotsRecord->tb_dots_medical_record->respiratory_rate??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">{{$tbDotsRecord->tb_dots_medical_record->pulse_rate??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>

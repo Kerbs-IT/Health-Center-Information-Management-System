@@ -18,7 +18,9 @@
     'resources/js/patient/add-patient.js',
     'resources/css/patient/add-patient.css',
     'resources/css/patient/record.css',
-    'resources/js/prenatal/addPrenatalPatient.js'])
+    'resources/js/prenatal/addPrenatalPatient.js',
+    'resources/js/senior_citizen/addPatient.js',
+    'resources/js/tb_dots/add_patient.js'])
     @include('sweetalert::alert')
     <div class="add-patient d-flex vh-100">
         <aside>
@@ -92,7 +94,7 @@
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
-                                            <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
+                                            <input type="number" id="age" placeholder="20" class="form-control" name="age" value="">
                                             @error('age')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
@@ -155,15 +157,6 @@
                                             @error('brgy')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
-                                        </div>
-                                        <div class="mb-2 w-50 senior-citizen-inputs d-none flex-column">
-                                            <label for=""> Member of Social Security System (SSS):</label>
-                                            <div class="radio-input d-flex align-items-center justify-content-center w-100 gap-1 py-2">
-                                                <input type="radio" id="male" class="mb-0" name="" value="" class="mb-0">
-                                                <label for="male">Male</label>
-                                                <input type="radio" id="female" class="mb-0" name="" value="" class="mb-0">
-                                                <label for="female">Female</label>
-                                            </div>
                                         </div>
                                         <div class="mb-2 w-50 tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
@@ -299,19 +292,27 @@
                                             </div>
                                             <div class="input-field w-50">
                                                 <label for="blood_type">Occupation</label>
-                                                <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation" value="">
+                                                <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation" >
                                             </div>
                                             <div class="mb-3 w-50 d-flex gap-2">
                                                 <div class="input-field w-100">
                                                     <label for="motherName">Religion</label>
-                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name=" value="">
+                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="religion" >
                                                     @error('mother_name')
                                                     <small class=" text-danger">{{$message}}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+                                            <div class="mb-2 w-50  d-flex flex-column">
+                                                <label for=""> Member of Social Security System (SSS):</label>
+                                                <div class="radio-input d-flex align-items-center justify-content-center w-100 gap-1 py-2">
+                                                    <input type="radio" id="male" class="mb-0" name="SSS" value="Yes" class="mb-0">
+                                                    <label for="male">Yes</label>
+                                                    <input type="radio" id="female" class="mb-0" name="SSS" value="No" class="mb-0">
+                                                    <label for="female">No</label>
+                                                </div>
+                                            </div>
                                         </div>
-
                                     </div>
                                     <div class="family-planning-inputs d-none gap-1">
                                         <div class="input-field w-50">

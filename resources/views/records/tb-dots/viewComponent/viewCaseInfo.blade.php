@@ -9,32 +9,29 @@
                 <tbody>
                     <tr>
                         <th>Patient Name</th>
-                        <td>Jan Louie Samlimbago</td>
+                        <td id="view_patient_name"></td>
                     </tr>
                     <tr>
                         <th>Type of Tuberculosis (TB)</th>
-                        <td>Pulmonary TB</td>
+                        <td id="view_type_of_tuberculosis"></td>
                     </tr>
                     <tr>
                         <th>Type of TB Case</th>
-                        <td>New</td>
+                        <td id="view_type_of_tb_case"></td>
                     </tr>
                     <tr>
                         <th>Date of Diagnosis</th>
-                        <td>2024-06-01</td>
+                        <td id="view_date_of_diagnosis"></td>
                     </tr>
                     <tr>
                         <th>Name of Physician</th>
-                        <td>Dr. Maria Santos</td>
+                        <td id="view_name_of_physician">Dr. Maria Santos</td>
                     </tr>
                     <tr>
                         <th>Sputum Test Results</th>
-                        <td>Positive</td>
+                        <td id="view_sputum_test_results"></td>
                     </tr>
-                    <tr>
-                        <th>Signature</th>
-                        <td><img src="/path/to/signature.png" alt="Signature" width="100"></td>
-                    </tr>
+                   
                 </tbody>
             </table>
 
@@ -44,19 +41,19 @@
                     <tr class="table-header">
                         <th>Medicine Name</th>
                         <th>Dosage & Frequency</th>
-                        <th>Duration</th>
+                        <th>Quality</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody id="view-table-body">
+                    <!-- <tr>
                         <td>Isoniazid</td>
                         <td>1 tablet/day</td>
                         <td>6 months</td>
                         <td>2025-01-01</td>
                         <td>2025-07-01</td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
 
@@ -64,11 +61,11 @@
                 <tbody>
                     <tr>
                         <th>Treatment Category</th>
-                        <td>First-line Treatment</td>
+                        <td id="view_treatment_category">First-line Treatment</td>
                     </tr>
                     <tr>
                         <th>Assigned Health Worker</th>
-                        <td>Nurse Joy</td>
+                        <td id="view_assigned_health_worker">Nurse Joy</td>
                     </tr>
                 </tbody>
             </table>
@@ -78,19 +75,19 @@
                 <tbody>
                     <tr>
                         <th>Date of Diagnosis</th>
-                        <td>2024-06-01</td>
+                        <td id="view_date_administered">2024-06-01</td>
                     </tr>
                     <tr>
                         <th>Side Effects</th>
-                        <td>Nausea</td>
+                        <td id="view_side_effect">Nausea</td>
                     </tr>
                     <tr>
                         <th>Remarks</th>
-                        <td>Patient is responding well to treatment.</td>
+                        <td id="view_remarks">Patient is responding well to treatment.</td>
                     </tr>
                     <tr>
                         <th>Outcome</th>
-                        <td>On-going Treatment</td>
+                        <td id="view_outcome">On-going Treatment</td>
                     </tr>
                 </tbody>
             </table>

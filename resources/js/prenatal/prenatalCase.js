@@ -106,8 +106,7 @@ viewBtn.addEventListener("click", async (e) => {
     // decision
     const decision = document.getElementById("decision_value");
 
-    const caseDecision = 
-    decision.innerHTML = data.caseInfo.decision;
+    const caseDecision = (decision.innerHTML = data.caseInfo.decision);
 
     console.log("datas:", data);
 });
@@ -126,6 +125,8 @@ pregnancyPlanviewBtn.addEventListener("click", async (e) => {
 
     // get the response data
     const data = await response.json();
+
+    console.log(data);
 
     // get the id of response container
     const midwifeName = document.getElementById("midwife_name_value");
@@ -427,15 +428,6 @@ caseEditBtn.addEventListener("click", async (e) => {
         data.caseInfo.prenatal_assessment.alchohol_drinker == "yes";
     drug_intake.checked =
         data.caseInfo.prenatal_assessment.drug_intake == "yes";
-
-    // deciscion
-    const nurse_decision_1 = document.getElementById("nurse_f1_option");
-    const nurse_decision_2 = document.getElementById("nurse_f2_option");
-    const nurse_decision_3 = document.getElementById("nurse_f3_option");
-
-    nurse_decision_1.checked = data.caseInfo.decision == "1";
-    nurse_decision_2.checked = data.caseInfo.decision == "2";
-    nurse_decision_3.checked = data.caseInfo.decision == "3";
 });
 
 // update the case
@@ -485,3 +477,248 @@ saveRecordBtn.addEventListener("click", async (e) => {
         });
     }
 });
+
+// edit section of pregnancy plan -- viewing pregnancy plan value
+
+const pregnancyPlanEditBTN = document.getElementById("pregnancy_plan_edit_btn");
+
+// this is the btn in modal to save the new information
+const updateBTN = document.getElementById("pregnancy_plan_update_btn");
+
+pregnancyPlanEditBTN.addEventListener("click", async (e) => {
+    const pregnancyPlanId = pregnancyPlanviewBtn.dataset.bsId;
+    // let set the custom variable for the save btn since i place it outside this event listener to avoid redundancy and overlapping
+    updateBTN.dataset.pregnancyPlanId = pregnancyPlanId;
+
+    // fetch the pregnancy plan information from the database
+    const response = await fetch(
+        `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`
+    );
+    const data = await response.json();
+    console.log(data);
+    // get the inputs container
+    const midwife_name = document.getElementById("midwife_name");
+    const place_of_birth = document.getElementById("place_of_birth");
+    const authorized_by_philhealth_yes = document.getElementById(
+        "authorized_by_philhealth_yes"
+    );
+    const authorized_by_philhealth_no = document.getElementById(
+        "authorized_by_philhealth_no"
+    );
+    const cost_of_pregnancy = document.getElementById("cost_of_pregnancy");
+    const payment_method = document.getElementById("payment_method");
+    const transportation_mode = document.getElementById("transportation_mode");
+    const accompany_person_to_hospital = document.getElementById(
+        "accompany_person_to_hospital"
+    );
+    const accompany_through_pregnancy = document.getElementById(
+        "accompany_through_pregnancy"
+    );
+    const care_person = document.getElementById("care_person");
+    const emergency_person_name = document.getElementById(
+        "emergency_person_name"
+    );
+    const emergency_person_residency = document.getElementById(
+        "emergency_person_residency"
+    );
+    const emergency_person_contact_number = document.getElementById(
+        "emergency_person_contact_number"
+    );
+    const patient_name = document.getElementById("patient_name");
+    // lets reset the container of donor names so it only show the data from the database removing the redundancy
+    donor_names_con.innerHTML = "";
+
+    Object.entries(data.pregnancyPlan).forEach(([key, value]) => {
+        if (key == "authorized_by_philhealth") {
+            if (value == "yes") {
+                console.log("yes");
+                document.getElementById(
+                    "authorized_by_philhealth_yes"
+                ).checked = true;
+            } else if (value == "no") {
+                document.getElementById(
+                    "authorized_by_philhealth_no"
+                ).checked = true;
+            }
+        }
+        if (document.getElementById(`${key}`)) {
+            document.getElementById(`${key}`).value = value;
+        }
+        // loop through the donor names
+        if (key == "donor_name") {
+            data.pregnancyPlan.donor_name.forEach((name) => {
+                donor_names_con.innerHTML += `
+                 <div class="box vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
+                                                                <h5 class="mb-0">${name.donor_name}</h5>
+                                                                <div class="delete-icon d-flex align-items-center justify-content-center">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
+                                                                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                                                                    </svg>
+                                                                </div>
+                                                                <input type="hidden" name="donor_names[]" value="${name.donor_name}" class="donor_name_input">
+                                                            </div>`;
+            });
+        }
+    });
+
+    // handle the remove of the selected donor
+    donor_names_con.addEventListener("click", (e) => {
+        let donors = document.querySelectorAll('input[name="donor_names[]"]');
+        if (e.target.closest(".box")) {
+            if (e.target.closest(".delete-icon-svg")) {
+                e.target.closest(".box").remove();
+            }
+        }
+        console.log("donor deleted");
+    });
+});
+
+const donor_names_con = document.getElementById("donor_names_con");
+const donor_name_input = document.getElementById("name_of_donor");
+// add btn
+const addBtn = document.getElementById("donor_name_add_btn");
+// event listener for adding the name
+addBtn.addEventListener("click", (e) => {
+    if (donor_name_input.value !== "") {
+        donor_names_con.innerHTML += `
+            <div class="box vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
+                <h5 class="mb-0">${donor_name_input.value}</h5>
+                <div class="delete-icon d-flex align-items-center justify-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
+                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                    </svg>
+                </div>
+                <input type="hidden" name="donor_names[]" value="${donor_name_input.value}" class="donor_name_input">
+            </div>
+            `;
+        // reset the input field
+        donor_name_input.value = "";
+    } else {
+        Swal.fire({
+            title: "Adding Blood Donor Name",
+            text: "Please provide valid name.", // this will make the text capitalize each word
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    }
+});
+
+// -------------- update the pregnancy plan record only trigger when the save button is click
+// there add a condition identify if the btn is present
+
+if (updateBTN) {
+    updateBTN.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const pregnancyPlanId = updateBTN.dataset.pregnancyPlanId;
+        console.log(pregnancyPlanId);
+        const form = document.getElementById("pregnancy_plan_update_form");
+        const formData = new FormData(form);
+
+        for (const [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+
+        const response = await fetch(
+            `/update/pregnancy-plan-record/${pregnancyPlanId}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                title: "Prenatal Patient",
+                text: data.message, // this will make the text capitalize each word
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+        } else {
+            Swal.fire({
+                title: "Prenatal Patient",
+                text: "Error occur updating Patient is not Successful.", // this will make the text capitalize each word
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+        }
+    });
+}
+
+// add prenatal checkup record
+const prentalCheckUpBTN = document.getElementById("prenatal_check_up_add_btn");
+const uploadBTN = document.getElementById("check-up-save-btn");
+
+prentalCheckUpBTN.addEventListener("click", async (e) => {
+    const medicalId = e.target.dataset.bsMedicalRecordId;
+    uploadBTN.dataset.bsMedicalRecordId = medicalId;
+    console.log("medical id: ", medicalId);
+    const response = await fetch(`/patient-record/view-details/${medicalId}`);
+    // get the data
+    const data = await response.json();
+
+    // fields
+    const patient_name = document.getElementById("check_up_patient_name");
+    const handled_by = document.getElementById("check_up_handled_by");
+    const healthworkerId = document.getElementById("health_worker_id");
+    const hiddenPatientName = document.getElementById(
+        "hidden_check_up_patient_name"
+    );
+
+    // provide the info
+    patient_name.value = data.prenatalRecord.patient.full_name ?? "";
+    handled_by.value = data.healthWorker.full_name ?? "";
+    healthworkerId.value = data.healthWorker.user_id;
+    hiddenPatientName.value = data.prenatalRecord.patient.full_name;
+});
+
+// upload the information to the database
+// check save btn
+
+uploadBTN.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const form = document.getElementById("check-up-form");
+    const formData = new FormData(form);
+    const medicalId = e.target.dataset.bsMedicalRecordId;
+    const response = await fetch(`/prenatal/add-check-up-record/${medicalId}`, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
+                .content,
+            Accept: "application/json",
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        Swal.fire({
+            title: "Prenatal Patient",
+            text: "Error occur updating Patient is not Successful.", 
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    } else{
+        const data = await response.json();
+        Swal.fire({
+            title: "Prenatal check-Up Info",
+            text: data.message, 
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    }
+});
+
+

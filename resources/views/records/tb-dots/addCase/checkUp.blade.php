@@ -1,27 +1,28 @@
 <div class="card shadow">
     <div class="card-body">
-
         <!-- Date of Visit -->
         <div class="mb-3">
             <label for="visit_date" class="form-label">Date of Visit</label>
-            <input type="date" class="form-control" id="visit_date" name="visit_date" value="<?= date('Y-m-d') ?>">
+            <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>">
+            <input type="hidden" name="patient_name" value="{{$patient_name}}">
+            <input type="hidden" name="handled_by" value="{{$healthWorkerId}}">
         </div>
 
         <!-- Weight / Vitals -->
-        <div class="vital-sign">
+        <div class="vital-sign w-100">
             <h5>Vital Sign</h5>
             <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
                 <div class="mb-2 w-50">
                     <label for="BP">Blood Pressure:</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 120/80" disabled>
+                    <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Temperature:</label>
-                    <input type="number" class="form-control w-100" placeholder="00 C" disabled>
+                    <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Pulse Rate(Bpm):</label>
-                    <input type="text" class="form-control w-100" placeholder=" 60-100" disabled>
+                    <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
                 </div>
 
             </div>
@@ -29,15 +30,15 @@
             <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
                 <div class="mb-2 w-50">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 25" disabled>
+                    <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Height(cm):</label>
-                    <input type="number" class="form-control w-100" placeholder="00.00" name="height" disabled>
+                    <input type="number" class="form-control w-100" placeholder="00.00" name="height">
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Weight(kg):</label>
-                    <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight" disabled>
+                    <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
                 </div>
             </div>
         </div>
@@ -45,18 +46,18 @@
         <!-- Adherence -->
         <div class="mb-3">
             <label for="adherence" class="form-label">Adherence to Treatment</label>
-            <select class="form-select" id="adherence" name="adherence">
+            <select class="form-select" id="adherence" name="adherence_of_treatment">
                 <option value="">-- Select Option --</option>
-                <option value="no_missed">No missed doses</option>
-                <option value="missed_1_2">Missed 1–2 doses</option>
-                <option value="missed_multiple">Missed multiple doses</option>
+                <option value="No Missed">No missed doses</option>
+                <option value="Missed 1-2">Missed 1–2 doses</option>
+                <option value="Missed Multiple">Missed multiple doses</option>
             </select>
         </div>
 
         <!-- Side Effects -->
         <div class="mb-3">
             <label for="side_effects" class="form-label">Side Effects</label>
-            <input type="text" class="form-control" id="side_effects" name="side_effects" placeholder="e.g., nausea, rashes">
+            <input type="text" class="form-control" id="side_effects" name="side_effect" placeholder="e.g., nausea, rashes">
         </div>
 
         <!-- Progress Note -->
@@ -68,11 +69,11 @@
         <!-- Sputum Test Result -->
         <div class="mb-3">
             <label for="sputum_result" class="form-label">Sputum Test Result</label>
-            <select class="form-select" id="sputum_result" name="sputum_result">
+            <select class="form-select" id="sputum_result" name="sputum_test_result">
                 <option value="">-- Select Result --</option>
-                <option value="not_done">Not Done</option>
-                <option value="positive">Positive</option>
-                <option value="negative">Negative</option>
+                <option value="Not Done">Not Done</option>
+                <option value="Positive">Positive</option>
+                <option value="Negative">Negative</option>
             </select>
         </div>
 
@@ -89,7 +90,7 @@
         <!-- Outcome Update -->
         <div class="mb-3">
             <label for="treatment_outcome" class="form-label">Outcome Update</label>
-            <select class="form-select" id="treatment_outcome" name="treatment_outcome">
+            <select class="form-select" id="treatment_outcome" name="outcome">
                 <option value="">-- Select Outcome --</option>
                 <option value="ongoing">Ongoing Treatment</option>
                 <option value="cured">Cured</option>
