@@ -129,7 +129,7 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <tr>
-                                        <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
+                                        <td colspan="7" class="p-4 text-start">{{$fullAddress}}</td>
                                     </tr>
                                 </tbody>
                             </table>

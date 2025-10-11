@@ -11,7 +11,7 @@
                     <tbody>
                         <tr>
                             <th>Date of Visit</th>
-                            <td>2025-06-25</td>
+                            <td id="view_checkup_date_of_visit">2025-06-25</td>
                         </tr>
                     </tbody>
                 </table>
@@ -21,19 +21,19 @@
                     <tbody>
                         <tr>
                             <th>Blood Pressure</th>
-                            <td>120/80</td>
+                            <td id="view_checkup_blood_pressure">120/80</td>
                             <th>Temperature (°C)</th>
-                            <td>36.7</td>
+                            <td id="view_checkup_temperature">36.7</td>
                             <th>Pulse Rate (BPM)</th>
-                            <td>80</td>
+                            <td id="view_checkup_pulse_rate">80</td>
                         </tr>
                         <tr>
                             <th>Respiratory Rate</th>
-                            <td>18</td>
+                            <td id="view_checkup_respiratory_rate">18</td>
                             <th>Height (cm)</th>
-                            <td>165.5</td>
+                            <td id="view_checkup_height">165.5</td>
                             <th>Weight (kg)</th>
-                            <td>54.2</td>
+                            <td id="view_checkup_weight">54.2</td>
                         </tr>
                     </tbody>
                 </table>
@@ -42,27 +42,27 @@
                     <tbody>
                         <tr>
                             <th>Adherence to Treatment</th>
-                            <td>No missed doses</td>
+                            <td id="view_checkup_adherence_of_treatment">No missed doses</td>
                         </tr>
                         <tr>
                             <th>Side Effects</th>
-                            <td>Nausea, mild headache</td>
+                            <td id="view_checkup_side_effect">Nausea, mild headache</td>
                         </tr>
                         <tr>
                             <th>Progress Note</th>
-                            <td>Patient gaining weight, no major issues noted. Continue current regimen.</td>
+                            <td id="view_checkup_progress_note">Patient gaining weight, no major issues noted. Continue current regimen.</td>
                         </tr>
                         <tr>
                             <th>Sputum Test Result</th>
-                            <td>Negative</td>
+                            <td id="view_checkup_sputum_test_result">Negative</td>
                         </tr>
                         <tr>
                             <th>Treatment Phase</th>
-                            <td>Continuation Phase</td>
+                            <td id="view_checkup_treatment_phase">Continuation Phase</td>
                         </tr>
                         <tr>
                             <th>Outcome Update</th>
-                            <td>Ongoing Treatment</td>
+                            <td id="view_checkup_outcome">Ongoing Treatment</td>
                         </tr>
                     </tbody>
                 </table>

@@ -6,7 +6,7 @@
         <div class="mb-3 w-100">
             <div class="upper-box d-flex align-items-center gap-1">
                 <label for="midwife" class="fs-5 fw-medium text-nowrap">Ako ay papaanakin ni:</label>
-                <input type="text" class="flex-grow-1 form-control" name="midwife" placeholder="(pangalan ng doctor/nars/midwife, atbp.)">
+                <input type="text" class="flex-grow-1 form-control" name="midwife_name" placeholder="(pangalan ng doctor/nars/midwife, atbp.)">
             </div>
         </div>
         <!-- plano ko manganak -->
@@ -22,9 +22,9 @@
                 <label for="midwife" class="fs-5 fw-medium text-nowrap">Ito ay pasilid na otorisado ng Philheath:</label>
                 <div class="authorize-radio d-flex gap-3 align-items-center">
                     <label for="yes" class="fs-5"> Yes:</label>
-                    <input type="radio" name="authorized_by_philhealth">
+                    <input type="radio" name="authorized_by_philhealth" value="yes">
                     <label for="no" class="fs-5">Hindi:</label>
-                    <input type="radio" name="authorized_by_philhealth" class="mb-0">
+                    <input type="radio" name="authorized_by_philhealth" class="mb-0" value="no">
                 </div>
             </div>
         </div>
@@ -98,12 +98,12 @@
             <div class="upper-box d-flex gap-1 mb-2">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
                 <div class="blood-donation d-flex w-100">
-                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan" id="blood_donor_input">
-                    <button type="button" class="btn btn-success" id="blood_donor_add_btn">Add</button>
+                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan"  id="donor_name_input">
+                    <button type="button" class="btn btn-success" id="donor_name_add_btn">Add</button>
                 </div>
                 <!-- hidden input since madami to -->
             </div>
-            <div class="lower-box p-3 bg-secondary w-75 justify-self-center blood-donor-name-container gap-3 w-100">
+            <div class="lower-box p-3 bg-secondary w-100 justify-self-center blood-donor-name-container d-flex gap-3">
                 <!-- <div class=" d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
                     <h5 class="mb-0">Jan Loiue Salimbago</h5>
                     <div class="delete-icon d-flex align-items-center justify-content-center">

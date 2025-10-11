@@ -6,13 +6,13 @@
 
     <div class="modal-body">
         <div class="d-flex p-4 flex-column">
-            <div class="contents bottom-border">
-                <table class="table table-bordered table-light">
+            <div class="contents ">
+                <table class="table table-bordered  table-light">
                     <tbody>
                         <!-- Full Name Row -->
                         <tr>
                             <td colspan="2" class="w-25 fw-semibold">Full Name:</td>
-                            <td colspan="5" class="w-75">Jan Louie Salimbago</td>
+                            <td colspan="5" class="w-75 bg-white" id="view_patient_name">Jan Louie Salimbago</td>
                         </tr>
 
                         <!-- Section Header -->
@@ -25,13 +25,13 @@
                         <!-- Existing Medical Condition -->
                         <tr>
                             <td colspan="2" class="w-25 fw-semibold">Existing Medical Condition:</td>
-                            <td colspan="5" class="w-75">None</td>
+                            <td colspan="5" class="w-75 bg-white" id="view_existing_medical_condition">None</td>
                         </tr>
 
                         <!-- Allergies -->
                         <tr>
                             <td colspan="2" class="w-25 fw-semibold">Allergies:</td>
-                            <td colspan="5" class="w-75">None</td>
+                            <td colspan="5" class="w-75 bg-white" id="view_alergies">None</td>
                         </tr>
                     </tbody>
 
@@ -48,25 +48,25 @@
                             <th>End Date</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="viewCaseBody">
+                        <!-- <tr>
                             <td>Amlodipine 5mg</td>
                             <td>1x/day</td>
                             <td>90 days</td>
                             <td>2025-01-01</td>
                             <td>2025-02-01</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
                 <!-- nurse -->
                 <table class="table table-bordered">
                     <tr>
-                        <td colspan="2" class="w-25 fw-semibold">Prescribe by:</td>
-                        <td colspan="5" class="w-75">Nurse Joy</td>
+                        <td colspan="2" class="w-25 fw-semibold bg-light">Prescribe by:</td>
+                        <td colspan="5" class="w-75 bg-white" id="view_prescribe_by_nurse">Nurse Joy</td>
                     </tr>
                     <tr>
-                        <td colspan="2">Remarks*</td>
-                        <td colspan="5">none</td>
+                        <td colspan="2" class="bg-light">Remarks*</td>
+                        <td colspan="5" id="view_remarks">none</td>
                     </tr>
                 </table>
             </div>

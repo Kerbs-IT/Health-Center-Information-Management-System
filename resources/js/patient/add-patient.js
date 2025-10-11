@@ -230,9 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".tb-dots-inputs")
                 .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".senior-citizen-inputs")
-                .classList.replace("d-flex", "d-none");
             // show senior citizen
             document
                 .querySelector(".senior-citizen-inputs")

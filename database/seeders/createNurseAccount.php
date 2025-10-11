@@ -33,7 +33,7 @@ class createNurseAccount extends Seeder
         $nurseInfo = nurses::create([
             'user_id'       => $user->id,
             'first_name'    => 'Jane',
-            'middle_initial'=> 'D',
+            'middle_initial' => 'D',
             'last_name'     => 'Doe',
             'full_name'     => 'Jane D Doe',
             'profile_image' => 'images/default_profile.png',

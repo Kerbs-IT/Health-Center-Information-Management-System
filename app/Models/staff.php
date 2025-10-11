@@ -53,4 +53,33 @@ class staff extends Model
     {
         return $this->hasMany(prenatal_medical_records::class, 'health_worker_id', 'user_id');
     }
+    public function prenatal_checkup(){
+        return $this-> hasMany(pregnancy_checkups::class,'health_worker_id','user_id');
+    }
+
+    // senior citizen
+    public function senior_citizen_medical_records(){
+        return $this-> hasMany(senior_citizen_medical_records::class, 'health_worker_id', 'user_id');
+
+    }
+    public function senior_citizen_case_records()
+    {
+        return $this->hasMany(senior_citizen_case_records::class, 'health_worker_id', 'user_id');
+    }
+
+    // senior citizen
+    public function tb_dots_medical_records()
+    {
+        return $this->hasMany(tb_dots_medical_records::class, 'health_worker_id', 'user_id');
+    }
+    public function tb_dots_case_records()
+    {
+        return $this->hasMany(tb_dots_case_records::class, 'health_worker_id', 'user_id');
+    }
+
+    // tb dots checkuo
+    public function tb_dots_checkup()
+    {
+        return $this->hasMany(tb_dots_check_ups::class, 'health_worker_id', 'user_id');
+    }
 }

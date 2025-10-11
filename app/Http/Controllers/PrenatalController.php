@@ -6,13 +6,16 @@ use App\Models\donor_names;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\pregnancy_checkups;
 use App\Models\pregnancy_history_questions;
 use App\Models\pregnancy_plans;
 use App\Models\pregnancy_timeline_records;
 use App\Models\prenatal_assessment;
 use App\Models\prenatal_assessments;
 use App\Models\prenatal_case_records;
+use App\Models\prenatal_check_ups;
 use App\Models\prenatal_medical_records;
+use App\Models\staff;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
@@ -114,11 +117,11 @@ class PrenatalController extends Controller
                 'midwife_name' => 'sometimes|nullable|string',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'authorized_by_philhealth' => 'sometimes|nullable|string',
-                'cost_of_property' => 'sometimes|nullable|string',
+                'cost_of_pregnancy' => 'sometimes|nullable|number',
                 'payment_method' => 'sometimes|nullable|string',
                 'transportation_mode' => 'sometimes|nullable|string',
                 'accompany_person_to_hospital' => 'sometimes|nullable|string',
-                'accompnay_through_pregnancy' => 'sometimes|nullable|string',
+                'accompany_through_pregnancy' => 'sometimes|nullable|string',
                 'care_person' => 'sometimes|nullable|string',
                 'emergency_person_name' => 'sometimes|nullable|string',
                 'emergency_person_residency' => 'sometimes|nullable|string',
@@ -271,11 +274,11 @@ class PrenatalController extends Controller
                 'midwife_name' => $pregnancy_plan['midwife_name'] ?? null,
                 'place_of_birth' => $pregnancy_plan['place_of_birth'] ?? null,
                 'authorized_by_philhealth' => $pregnancy_plan['authorized_by_philhealth'] ?? null,
-                'cost_of_property' => $pregnancy_plan['cost_of_property'] ?? null,
+                'cost_of_pregnancy' => $pregnancy_plan['cost_of_pregnancy'] ?? null,
                 'payment_method' => $pregnancy_plan['payment_method'] ?? null,
                 'transportation_mode' => $pregnancy_plan['transportation_mode'] ?? null,
                 'accompany_person_to_hospital' => $pregnancy_plan['accompany_person_to_hospital'] ?? null,
-                'accompnay_through_pregnancy' =>  $pregnancy_plan['accompnay_through_pregnancy'] ?? null,
+                'accompany_through_pregnancy' =>  $pregnancy_plan['accompany_through_pregnancy'] ?? null,
                 'care_person' => $pregnancy_plan['care_person'] ?? null,
                 'emergency_person_name' => $pregnancy_plan['emergency_person_name'] ?? null,
                 'emergency_person_residency' => $pregnancy_plan['emergency_person_residency'] ?? null,
@@ -413,6 +416,11 @@ class PrenatalController extends Controller
                 'q2_answer4' => $data['q2_answer4'] ?? $pregnancyHistory->q2_answer4,
                 'q2_answer5' => $data['q2_answer5'] ?? $pregnancyHistory->q2_answer5,
             ]);
+            // update pregnancy plan patient name
+            $pregnancyPlanRecord = pregnancy_plans::where('medical_record_case_id',$id)->firstOrFail();
+            $pregnancyPlanRecord -> update([
+                'patient_name' => $prenatalRecord->patient-> full_name
+            ]);
 
 
             return response()->json(['message' => 'Updating Patient information Successfully'], 200);
@@ -530,6 +538,7 @@ class PrenatalController extends Controller
                 'alchohol_drinker' => $assessment['alcohol_drinker'] ?? 'no',
                 'drug_intake' => $assessment['drug_intake'] ?? 'no'
             ]);
+           
 
             return response()->json(['message' => 'Patient Info is Updated'], 201);
         } catch (ValidationException $e) {
@@ -537,5 +546,350 @@ class PrenatalController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
+    }
+
+    public function updatePregnancyPlan(Request $request, $id){
+        try{
+            $pregnancyPlanRecord = pregnancy_plans::findOrFail($id);
+
+            $data = $request->validate([
+                'midwife_name' => 'sometimes|nullable|string',
+                'place_of_birth' => 'sometimes|nullable|string',
+                'authorized_by_philhealth' => 'sometimes|nullable|string',
+                'cost_of_pregnancy' => 'sometimes|nullable|numeric',
+                'payment_method' => 'sometimes|nullable|string',
+                'transportation_mode' => 'sometimes|nullable|string',
+                'accompany_person_to_hospital' => 'sometimes|nullable|string',
+                'accompany_through_pregnancy' => 'sometimes|nullable|string',
+                'care_person' => 'sometimes|nullable|string',
+                'emergency_person_name' => 'sometimes|nullable|string',
+                'emergency_person_residency' => 'sometimes|nullable|string',
+                'emergency_person_contact_number' => 'sometimes|nullable|string',
+                'signature_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:5120',
+                'donor_names' => 'sometimes|nullable|array'
+            ]);
+
+            // update
+
+            $pregnancyPlanRecord->update([
+                'midwife_name' => $data['midwife_name'] ?? $pregnancyPlanRecord->midwife_name,
+                'place_of_birth' => $data['place_of_birth'] ?? $pregnancyPlanRecord->place_of_birth,
+                'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? $pregnancyPlanRecord->authorized_by_philhealth,
+                'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? $pregnancyPlanRecord->cost_of_pregnancy,
+                'payment_method' => $data['payment_method'] ?? $pregnancyPlanRecord->payment_method,
+                'transportation_mode' => $data['transportation_mode'] ?? $pregnancyPlanRecord->transportation_mode,
+                'accompany_person_to_hospital' => $data['accompany_person_to_hospital'] ?? $pregnancyPlanRecord->accompany_person_to_hospital,
+                'accompany_through_pregnancy' =>  $data['accompany_through_pregnancy'] ?? $pregnancyPlanRecord->accompany_through_pregnancy,
+                'care_person' => $data['care_person'] ?? $pregnancyPlanRecord->care_person,
+                'emergency_person_name' => $data['emergency_person_name'] ?? $pregnancyPlanRecord->emergency_person_name,
+                'emergency_person_residency' => $data['emergency_person_residency'] ?? $pregnancyPlanRecord->emergency_person_residency,
+                'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? $pregnancyPlanRecord->emergency_person_contact_number,
+                'signature' => $data['signature_image'] ?? $pregnancyPlanRecord->signature,
+                'type_of_record' => 'Pregnancy Plan Record'
+            ]);
+            // delete all the donor name as update logic
+            $donorNamesRecord = donor_names::where('pregnancy_plan_id', $pregnancyPlanRecord->id)->delete();
+
+            if (isset($data['donor_names']) && !empty($data['donor_names'])) {
+                foreach ($data['donor_names'] as $name) {
+                    if (!empty(trim($name))) { // Also check if name is not empty
+                        donor_names::create([
+                            'pregnancy_plan_id' => $id,
+                            'donor_name' => trim($name)
+                        ]);
+                    }
+                }
+            };
+            
+            return response()->json(['message' => 'Updating Patient Pregnancy Plan Successfully'], 200);
+        }catch(ValidationException $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+        
+    }
+    public function viewPrenatalDetail($id)
+    {
+        try {
+            $prenatalRecord = medical_record_cases::with([
+                'patient',
+                'prenatal_case_record.pregnancy_history_questions',
+                'prenatal_medical_record'
+            ])->where('id', $id)->firstOrFail();
+
+            $prenatalCaseRecord = prenatal_case_records::with('pregnancy_history_questions')
+                ->where('medical_record_case_id', $prenatalRecord->id)
+                ->firstOrFail();
+
+            $healthWorker = staff::where('user_id', $prenatalCaseRecord->health_worker_id)
+                ->firstOrFail();
+
+            return response()->json([
+                'prenatalRecord'      => $prenatalRecord,
+                'prenatalCaseRecord'  => $prenatalCaseRecord,
+                'healthWorker'        => $healthWorker,
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Record not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Something went wrong: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadPregnancyCheckup(Request $request,$id){
+        try{
+            $request->validate(
+                [
+                    // Required fields
+                    'check_up_full_name'       => 'required|string|max:255',
+
+                    // Optional fields
+                    'health_worker_id'         => 'nullable|exists:staff,user_id',
+                    'check_up_time'            => 'nullable|date_format:H:i',
+                    'check_up_blood_pressure'  => 'nullable|string|max:20',
+                    'check_up_temperature'     => 'nullable|numeric|min:20|max:45',
+                    'check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
+                    'check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
+                    'check_up_height'          => 'nullable|numeric|min:0',
+                    'check_up_weight'          => 'nullable|numeric|min:0',
+
+                    // Symptom questions (all optional but strings)
+                    'abdomen_question'                 => 'nullable|string|max:255',
+                    'abdomen_question_remarks'         => 'nullable|string|max:500',
+                    'vaginal_question'                 => 'nullable|string|max:255',
+                    'vaginal_question_remarks'         => 'nullable|string|max:500',
+                    'headache_question'                => 'nullable|string|max:255',
+                    'headache_question_remarks'        => 'nullable|string|max:500',
+                    'blurry_vission_question'          => 'nullable|string|max:255',
+                    'blurry_vission_question_remarks'  => 'nullable|string|max:500',
+                    'urination_question'               => 'nullable|string|max:255',
+                    'urination_question_remarks'       => 'nullable|string|max:500',
+                    'baby_move_question'               => 'nullable|string|max:255',
+                    'baby_move_question_remarks'       => 'nullable|string|max:500',
+                    'decreased_baby_movement'          => 'nullable|string|max:255',
+                    'decreased_baby_movement_remarks'  => 'nullable|string|max:500',
+                    'other_symptoms_question'          => 'nullable|string|max:255',
+                    'other_symptoms_question_remarks'  => 'nullable|string|max:500',
+
+                    // Final remarks
+                    'overall_remarks'           => 'nullable|string|max:1000',
+                ],
+                [],// this is empty because we didn't customize the error message for each field we just change the name 
+                [
+                    // Replace attribute names for cleaner error messages
+                    'check_up_time'             => 'Time',
+                    'check_up_blood_pressure'   => 'Blood Pressure',
+                    'check_up_temperature'      => 'Temperature',
+                    'check_up_pulse_rate'       => 'Pulse Rate',
+                    'check_up_respiratory_rate' => 'Respiratory Rate',
+                    'check_up_height'           => 'Height',
+                    'check_up_weight'           => 'Weight',
+
+                    'abdomen_question'                 => 'Abdomen Question',
+                    'abdomen_question_remarks'         => 'Abdomen Remarks',
+                    'vaginal_question'                 => 'Vaginal Question',
+                    'vaginal_question_remarks'         => 'Vaginal Remarks',
+                    'headache_question'                => 'Headache Question',
+                    'headache_question_remarks'        => 'Headache Remarks',
+                    'blurry_vission_question'          => 'Blurry Vision Question',
+                    'blurry_vission_question_remarks'  => 'Blurry Vision Remarks',
+                    'urination_question'               => 'Urination Question',
+                    'urination_question_remarks'       => 'Urination Remarks',
+                    'baby_move_question'               => 'Baby Movement Question',
+                    'baby_move_question_remarks'       => 'Baby Movement Remarks',
+                    'decreased_baby_movement'          => 'Decreased Baby Movement',
+                    'decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
+                    'other_symptoms_question'          => 'Other Symptoms Question',
+                    'other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
+
+                    'overall_remarks'           => 'Overall Remarks',
+                ]
+            );
+
+            // data insertion
+            $prenatalCheckup = pregnancy_checkups::create([
+                'medical_record_case_id'    => $id,
+                'patient_name'              => $request->check_up_full_name,
+                'health_worker_id'          => $request->health_worker_id,
+                'check_up_time'             => $request->check_up_time,
+                'check_up_blood_pressure'   => $request->check_up_blood_pressure,
+                'check_up_temperature'      => $request->check_up_temperature,
+                'check_up_pulse_rate'       => $request->check_up_pulse_rate,
+                'check_up_respiratory_rate' => $request->check_up_respiratory_rate,
+                'check_up_height'           => $request->check_up_height,
+                'check_up_weight'           => $request->check_up_weight,
+
+                'abdomen_question'                 => $request->abdomen_question,
+                'abdomen_question_remarks'         => $request->abdomen_question_remarks,
+                'vaginal_question'                 => $request->vaginal_question,
+                'vaginal_question_remarks'         => $request->vaginal_question_remarks,
+                'headache_question'                => $request->headache_question,
+                'headache_question_remarks'        => $request->headache_question_remarks,
+                'blurry_vission_question'          => $request->blurry_vission_question,
+                'blurry_vission_question_remarks'  => $request->blurry_vission_question_remarks,
+                'urination_question'               => $request->urination_question,
+                'urination_question_remarks'       => $request->urination_question_remarks,
+                'baby_move_question'               => $request->baby_move_question,
+                'baby_move_question_remarks'       => $request->baby_move_question_remarks,
+                'decreased_baby_movement'          => $request->decreased_baby_movement,
+                'decreased_baby_movement_remarks'  => $request->decreased_baby_movement_remarks,
+                'other_symptoms_question'          => $request->other_symptoms_question,
+                'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
+
+                'overall_remarks' => $request->overall_remarks,
+                'status'=> 'Done'
+            ]);
+            return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
+        }catch(ValidationException $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        };
+
+    }
+
+    public function viewCheckUpInfo($id){
+        try{
+            $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
+            $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
+            return response()-> json([
+                'pregnancy_checkup_info'=> $pregnancy_checkup,
+                'healthWorker'=> $healthWorker
+            ]);
+        }catch(\Exception $e){
+            return response()-> json([
+                'error'=> $e->getMessage()
+            ]);
+        }
+       
+
+
+    }
+    public function updatePregnancyCheckUp(Request $request, $id){
+        try {
+            $checkUp = pregnancy_checkups::findOrFail($id);
+            $request->validate(
+                [
+                    // Required fields
+                    'edit_check_up_full_name'       => 'required|string|max:255',
+
+                    // Optional fields
+                    'edit_health_worker_id'         => 'nullable|exists:staff,user_id',
+                    'edit_check_up_time'            => 'nullable|date_format:H:i:s',
+                    'edit_check_up_blood_pressure'  => 'nullable|string|max:20',
+                    'edit_check_up_temperature'     => 'nullable|numeric|min:20|max:45',
+                    'edit_check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
+                    'edit_check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
+                    'edit_check_up_height'          => 'nullable|numeric|min:0',
+                    'edit_check_up_weight'          => 'nullable|numeric|min:0',
+
+                    // Symptom questions (all optional but strings)
+                    'edit_abdomen_question'                 => 'nullable|string|max:255',
+                    'edit_abdomen_question_remarks'         => 'nullable|string|max:500',
+                    'edit_vaginal_question'                 => 'nullable|string|max:255',
+                    'edit_vaginal_question_remarks'         => 'nullable|string|max:500',
+                    'edit_headache_question'                => 'nullable|string|max:255',
+                    'edit_headache_question_remarks'        => 'nullable|string|max:500',
+                    'edit_swelling_question'                => 'nullable|string|max:255',
+                    'edit_swelling_question_remarks'        => 'nullable|string|max:500',
+                    'edit_blurry_vission_question'          => 'nullable|string|max:255',
+                    'edit_blurry_vission_question_remarks'  => 'nullable|string|max:500',
+                    'edit_urination_question'               => 'nullable|string|max:255',
+                    'edit_urination_question_remarks'       => 'nullable|string|max:500',
+                    'edit_baby_move_question'               => 'nullable|string|max:255',
+                    'edit_baby_move_question_remarks'       => 'nullable|string|max:500',
+                    'edit_decreased_baby_movement'          => 'nullable|string|max:255',
+                    'edit_decreased_baby_movement_remarks'  => 'nullable|string|max:500',
+                    'edit_other_symptoms_question'          => 'nullable|string|max:255',
+                    'edit_other_symptoms_question_remarks'  => 'nullable|string|max:500',
+
+                    // Final remarks
+                    'edit_overall_remarks'           => 'nullable|string|max:1000',
+                ],
+                [], // this is empty because we didn't customize the error message for each field we just change the name 
+                [
+                    // Replace attribute names for cleaner error messages
+                    'edit_check_up_time'             => 'Time',
+                    'edit_check_up_blood_pressure'   => 'Blood Pressure',
+                    'edit_check_up_temperature'      => 'Temperature',
+                    'edit_check_up_pulse_rate'       => 'Pulse Rate',
+                    'edit_check_up_respiratory_rate' => 'Respiratory Rate',
+                    'edit_check_up_height'           => 'Height',
+                    'edit_check_up_weight'           => 'Weight',
+
+                    'edit_abdomen_question'                 => 'Abdomen Question',
+                    'edit_abdomen_question_remarks'         => 'Abdomen Remarks',
+                    'edit_vaginal_question'                 => 'Vaginal Question',
+                    'edit_vaginal_question_remarks'         => 'Vaginal Remarks',
+                    'edit_headache_question'                => 'Headache Question',
+                    'edit_headache_question_remarks'        => 'Headache Remarks',
+                    'edit_blurry_vission_question'          => 'Blurry Vision Question',
+                    'edit_blurry_vission_question_remarks'  => 'Blurry Vision Remarks',
+                    'edit_urination_question'               => 'Urination Question',
+                    'edit_urination_question_remarks'       => 'Urination Remarks',
+                    'edit_baby_move_question'               => 'Baby Movement Question',
+                    'edit_baby_move_question_remarks'       => 'Baby Movement Remarks',
+                    'edit_decreased_baby_movement'          => 'Decreased Baby Movement',
+                    'edit_decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
+                    'edit_other_symptoms_question'          => 'Other Symptoms Question',
+                    'edit_other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
+
+                    'edit_overall_remarks'           => 'Overall Remarks',
+                ]
+            );
+
+            // data insertion
+            $checkUp->update([
+                'patient_name'              => $request->edit_check_up_full_name?? $checkUp->patient_name,
+                'health_worker_id'          => $request->edit_health_worker_id?? $checkUp->health_worker_id,
+                'check_up_time'             => $request->edit_check_up_time ?? $checkUp->check_up_time,
+                'check_up_blood_pressure'   => $request->edit_check_up_blood_pressure ?? $checkUp->check_up_blood_pressure,
+                'check_up_temperature'      => $request->edit_check_up_temperature ?? $checkUp->check_up_temperature,
+                'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? $checkUp->check_up_pulse_rate,
+                'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate?? $checkUp->check_up_respiratory_rate,
+                'check_up_height'           => $request->edit_check_up_height?? $checkUp->check_up_height,
+                'check_up_weight'               => $request->edit_check_up_weight ?? $checkUp->check_up_weight,
+
+                'abdomen_question'              => $request->edit_abdomen_question ?? $checkUp->abdomen_question,
+                'abdomen_question_remarks'      => $request->edit_abdomen_question_remarks ?? $checkUp->abdomen_question_remarks,
+
+                'vaginal_question'              => $request->edit_vaginal_question ?? $checkUp->vaginal_question,
+                'vaginal_question_remarks'      => $request->edit_vaginal_question_remarks ?? $checkUp->vaginal_question_remarks,
+
+                'headache_question'             => $request->edit_headache_question ?? $checkUp->headache_question,
+                'headache_question_remarks'     => $request->edit_headache_question_remarks ?? $checkUp->headache_question_remarks,
+
+                'swelling_question'             => $request->edit_swelling_question ?? $checkUp->swelling_question,
+                'swelling_question_remarks'     => $request->edit_swelling_question_remarks ?? $checkUp->swelling_question_remarks,
+
+                'blurry_vission_question'       => $request->edit_blurry_vission_question ?? $checkUp->blurry_vission_question,
+                'blurry_vission_question_remarks' => $request->edit_blurry_vission_question_remarks ?? $checkUp->blurry_vission_question_remarks,
+
+                'urination_question'            => $request->edit_urination_question ?? $checkUp->urination_question,
+                'urination_question_remarks'    => $request->edit_urination_question_remarks ?? $checkUp->urination_question_remarks,
+
+                'baby_move_question'            => $request->edit_baby_move_question ?? $checkUp->baby_move_question,
+                'baby_move_question_remarks'    => $request->edit_baby_move_question_remarks ?? $checkUp->baby_move_question_remarks,
+
+                'decreased_baby_movement'       => $request->edit_decreased_baby_movement ?? $checkUp->decreased_baby_movement,
+                'decreased_baby_movement_remarks' => $request->edit_decreased_baby_movement_remarks ?? $checkUp->decreased_baby_movement_remarks,
+
+                'other_symptoms_question'       => $request->edit_other_symptoms_question ?? $checkUp->other_symptoms_question,
+                'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? $checkUp->other_symptoms_question_remarks,
+
+                'overall_remarks'               => $request->edit_overall_remarks ?? $checkUp->overall_remarks,
+                'status' => 'Done'
+            ]);
+            return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        };
     }
 }

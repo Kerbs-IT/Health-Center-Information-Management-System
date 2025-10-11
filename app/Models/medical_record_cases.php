@@ -31,4 +31,30 @@ class medical_record_cases extends Model
     public function pregnancy_plan(){
         return $this-> hasOne(pregnancy_plans::class, 'medical_record_case_id', 'id');
     }
+    // prental check-up
+    public function pregnancy_checkup(){
+        return $this->hasMany(pregnancy_checkups::class,'medical_record_case_id','id');
+    }
+
+    // senior citizen
+
+    public function senior_citizen_medical_record(){
+        return $this-> hasOne(senior_citizen_medical_records::class, 'medical_record_case_id','id');
+    }
+    public function senior_citizen_case_record(){
+        return $this-> hasMany(senior_citizen_case_records::class, 'medical_record_case_id', 'id');
+    }
+
+    // td dots
+    public function tb_dots_medical_record(){
+        return $this-> hasOne(tb_dots_medical_records::class, 'medical_record_case_id', 'id');
+    }
+    public function tb_dots_case_record()
+    {
+        return $this->hasMany(tb_dots_case_records::class, 'medical_record_case_id', 'id');
+    }
+    // tb dots checkuo
+    public function tb_dots_checkup(){
+        return $this->hasMany(tb_dots_check_ups::class, 'medical_record_case_id', 'id');
+    }
 }
