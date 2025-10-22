@@ -9,9 +9,9 @@
                 <p class="mb-0 fs-5 fw-light">severe headaches/migraine</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q1" id="q1_yes">
+                <input type="radio" name="medical_history_severe_headaches_migraine" id="q1_yes" value="Yes">
                 <label for="q1_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q1" id="q1_no">
+                <input type="radio" name="medical_history_severe_headaches_migraine" id="q1_no" value="No">
                 <label for="q1_no" class="fs-5">No</label>
             </div>
         </div>
@@ -22,9 +22,9 @@
                 <p class="mb-0 fs-5 fw-light">history of stroke / heart attack / hypertension</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q2" id="q2_yes">
+                <input type="radio" name="medical_history_history_of_stroke" id="q2_yes" value="Yes">
                 <label for="q2_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q2" id="q2_no">
+                <input type="radio" name="medical_history_history_of_stroke" id="q2_no" value="No">
                 <label for="q2_no" class="fs-5">No</label>
             </div>
         </div>
@@ -35,9 +35,9 @@
                 <p class="mb-0 fs-5 fw-light">non-traumatic hemtoma/ frequent bruising or gum bleeding</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q3" id="q3_yes">
+                <input type="radio" name="medical_history_non_traumatic_hemtoma" id="q3_yes" value="Yes">
                 <label for="q3_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q3" id="q3_no">
+                <input type="radio" name="medical_history_non_traumatic_hemtoma" id="q3_no" value="No">
                 <label for="q3_no" class="fs-5">No</label>
             </div>
         </div>
@@ -48,9 +48,9 @@
                 <p class="mb-0 fs-5 fw-light">current or history of breast cancer / breast mass</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q4" id="q4_yes">
+                <input type="radio" name="medical_history_history_of_breast_cancer" id="q4_yes" value="Yes">
                 <label for="q4_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q4" id="q4_no">
+                <input type="radio" name="medical_history_history_of_breast_cancer" id="q4_no" value="No">
                 <label for="q4_no" class="fs-5">No</label>
             </div>
         </div>
@@ -61,9 +61,9 @@
                 <p class="mb-0 fs-5 fw-light">severe chest pain</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q5" id="q5_yes">
+                <input type="radio" name="medical_history_severe_chest_pain" id="q5_yes" value="Yes">
                 <label for="q5_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q5" id="q5_no">
+                <input type="radio" name="medical_history_severe_chest_pain" id="q5_no" value="No">
                 <label for="q5_no" class="fs-5">No</label>
             </div>
         </div>
@@ -74,9 +74,9 @@
                 <p class="mb-0 fs-5 fw-light">cough for more than 14 days</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q6" id="q6_yes">
+                <input type="radio" name="medical_history_cough" id="q6_yes" value="Yes">
                 <label for="q6_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q6" id="q6_no">
+                <input type="radio" name="medical_history_cough" id="q6_no" value="No">
                 <label for="q6_no" class="fs-5">No</label>
             </div>
         </div>
@@ -87,9 +87,9 @@
                 <p class="mb-0 fs-5 fw-light">jaundice</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q7" id="q7_yes">
+                <input type="radio" name="medical_history_jaundice" id="q7_yes" value="Yes">
                 <label for="q7_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q7" id="q7_no">
+                <input type="radio" name="medical_history_jaundice" id="q7_no" value="No">
                 <label for="q7_no" class="fs-5">No</label>
             </div>
         </div>
@@ -100,9 +100,9 @@
                 <p class="mb-0 fs-5 fw-light">unexplained vaginal bleeding</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q8" id="q8_yes">
+                <input type="radio" name="medical_history_unexplained_vaginal_bleeding" id="q8_yes" value="Yes">
                 <label for="q8_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q8" id="q8_no">
+                <input type="radio" name="medical_history_unexplained_vaginal_bleeding" id="q8_no" value="No">
                 <label for="q8_no" class="fs-5">No</label>
             </div>
         </div>
@@ -113,9 +113,9 @@
                 <p class="mb-0 fs-5 fw-light">abnormal vaginal discharge</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q9" id="q9_yes">
+                <input type="radio" name="medical_history_abnormal_vaginal_discharge" id="q9_yes" value="Yes">
                 <label for="q9_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q9" id="q9_no">
+                <input type="radio" name="medical_history_abnormal_vaginal_discharge" id="q9_no" value="No">
                 <label for="q9_no" class="fs-5">No</label>
             </div>
         </div>
@@ -126,9 +126,9 @@
                 <p class="mb-0 fs-5 fw-light">intak of phenobarbital (anti-seizure) or rifampicin (anti-TB) </p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q10" id="q10_yes">
+                <input type="radio" name="medical_history_abnormal_phenobarbital" id="q10_yes" value="Yes">
                 <label for="q10_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q10" id="q10_no">
+                <input type="radio" name="medical_history_abnormal_phenobarbital" id="q10_no" value="No">
                 <label for="q10_no" class="fs-5">No</label>
             </div>
         </div>
@@ -139,9 +139,9 @@
                 <p class="mb-0 fs-5 fw-light">is the client a SMOKER?</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q11" id="q11_yes">
+                <input type="radio" name="medical_history_smoker" id="q11_yes" value="Yes">
                 <label for="q11_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q11" id="q11_no">
+                <input type="radio" name="medical_history_smoker" id="q11_no" value="No">
                 <label for="q11_no" class="fs-5">No</label>
             </div>
         </div>
@@ -152,15 +152,15 @@
                 <p class="mb-0 fs-5 fw-light">with Disability?</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="q12" id="q12_yes">
+                <input type="radio" name="medical_history_with_dissability" id="q12_yes" value="Yes">
                 <label for="q12_yes" class="fs-5">Yes</label>
-                <input type="radio" name="q12" id="q12_no">
+                <input type="radio" name="medical_history_with_dissability" id="q12_no" value="No">
                 <label for="q12_no" class="fs-5">No</label>
             </div>
         </div>
         <div class="mb-2 d-flex gap-2 align-items-center">
             <label for="dissability_yes" class="text-nowrap fs-5">(If YES please specify):</label>
-            <input type="text" placeholder="Enter the dissability" class="form-control">
+            <input type="text" placeholder="Enter the dissability" class="form-control" name="if_with_dissability_specification">
         </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">

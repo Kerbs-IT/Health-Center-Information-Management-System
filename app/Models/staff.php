@@ -82,4 +82,14 @@ class staff extends Model
     {
         return $this->hasMany(tb_dots_check_ups::class, 'health_worker_id', 'user_id');
     }
+
+    // family planning
+
+    public function family_planning_medical_records(){
+        return $this->hasMany(family_planning_medical_records::class, 'health_worker_id', 'user_id');
+    }
+    public function family_planning_case_records()
+    {
+        return $this->hasMany(family_planning_case_records::class, 'health_worker_id', 'user_id');
+    }
 }

@@ -1,59 +1,29 @@
-<h5 class="mb-3">III. RISK FOR SEXUALLY TRANSMITTED INFECTIONS</h5>
-<table class="table table-bordered table-striped">
-    <thead class="table-header">
+<table class="table table-bordered table-striped mb-0">
+    <thead class="seperator">
         <tr>
-            <th>Question</th>
-            <th>Response</th>
+            <th colspan="12" class="text-start">III. RISK FOR SEXUALLY TRANSMITTED INFECTIONS</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>Abnormal discharge from the genital area</td>
-            <td>Yes (Vagina)</td>
+            <td id="view_infection_abnormal_discharge_from_genital_area"></td>
         </tr>
         <tr>
             <td>Scores or ulcers in the genital area</td>
-            <td>No</td>
+            <td id="view_scores_or_ulcer"></td>
         </tr>
         <tr>
             <td>pain or burning sensation in the genital area</td>
-            <td>Yes</td>
+            <td id="view_pain_or_burning_sensation"></td>
         </tr>
         <tr>
             <td>History of treatment for sexually transmitted infection</td>
-            <td>No</td>
+            <td id="view_history_of_sexually_transmitted_infection"></td>
         </tr>
         <tr>
             <td>HIV/AIDS/Pelvic inflamatory disease</td>
-            <td>No</td>
-        </tr>
-    </tbody>
-</table>
-
-<h5 class="mt-4 mb-3">IV. RISKS FOR VIOLENCE AGAINST WOMEN (VAW)</h5>
-<table class="table table-bordered table-striped">
-    <thead class="table-header">
-        <tr>
-            <th>Question</th>
-            <th>Response</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>History of domestic violence of VAW</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>Unpleasant relationship with partner</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
-            <td>Partner does not approve of the visit to FP clinic</td>
-            <td>No</td>
-        </tr>
-        <tr>
-            <td>Referred to</td>
-            <td>DSWD</td>
+            <td id="view_sexually_transmitted_disease"></td>
         </tr>
     </tbody>
 </table>

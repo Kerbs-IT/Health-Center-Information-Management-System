@@ -204,3 +204,14 @@ div h3,
 .delete-icon:hover(){
     cursor: pointer;
 }
+
+/* tablesss */
+
+.top-seperator{
+    /* border-top: 2px solid black !important; */
+    border-bottom: 2px solid black !important;
+}
+.seperator{
+    border-top: 2px solid black !important;
+    border-bottom: 2px solid black !important;
+}

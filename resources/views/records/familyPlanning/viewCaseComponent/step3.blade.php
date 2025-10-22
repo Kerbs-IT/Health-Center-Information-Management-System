@@ -1,67 +1,95 @@
-<h5 class="mb-3">II.Obstetrical History Record</h5>
-<table class="table table-bordered table-striped">
-    <thead class="table-header">
+<table class="table table-bordered table-striped mb-0">
+    <thead class="seperator">
         <tr>
-            <th>Field</th>
-            <th>Details</th>
+            <th colspan="12" class="text-start">II.Obstetrical History Record</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="">
         <tr>
-            <td>Gravida (G)</td>
-            <td>3</td>
+            <td colspan="12" class="p-0">
+                <div class="row text-center m-0">
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong>Gravida (G):</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_G"></strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong>Para (P):</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_P"></strong>
+                    </div>
+                </div>
+            </td>
         </tr>
         <tr>
-            <td>Para (P)</td>
-            <td>2</td>
+            <td colspan="12" class="p-0">
+                <div class="row text-center m-0">
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong>Term:</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_full_term"></strong>
+                    </div>
+                    <div class="col-6 col-md-3 p-2 border-end p-2">
+                        <strong>Abortion:</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_abortion"></strong>
+                    </div>
+                </div>
+            </td>
         </tr>
         <tr>
-            <td>Full Term</td>
-            <td>2</td>
-        </tr>
-        <tr>
-            <td>Abortion</td>
-            <td>1</td>
-        </tr>
-        <tr>
-            <td>Premature</td>
-            <td>0</td>
-        </tr>
-        <tr>
-            <td>Living Children</td>
-            <td>2</td>
+            <td colspan="12" class="p-0">
+                <div class="row text-center m-0">
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong>Premature:</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_premature"></strong>
+                    </div>
+                    <div class="col-6 col-md-3 p-2 border-end p-2">
+                        <strong>Living Children:</strong>
+                    </div>
+                    <div class="col-6 col-md-3 border-end p-2">
+                        <strong id="view_living_children"></strong>
+                    </div>
+                </div>
+            </td>
         </tr>
         <tr>
             <td>Date of Last Delivery</td>
-            <td>2022-07-10</td>
+            <td id="view_date_of_last_delivery"></td>
         </tr>
         <tr>
             <td>Type of Last Delivery</td>
-            <td>Cesarean Section</td>
+            <td id="view_type_of_last_delivery"></td>
         </tr>
         <tr>
             <td>Last Menstrual Period</td>
-            <td>2024-05-15</td>
+            <td id="view_date_of_last_delivery_menstrual_period"></td>
         </tr>
         <tr>
             <td>Previous Menstrual Period</td>
-            <td>2024-04-13</td>
+            <td id="view_date_of_previous_delivery_menstrual_period"></td>
         </tr>
         <tr>
             <td>Menstrual Flow</td>
-            <td>Moderate (3–5 pads/day)</td>
+            <td id="view_type_of_menstrual"></td>
         </tr>
         <tr>
             <td>Dysmenorrhea</td>
-            <td>Yes</td>
+            <td id="view_Dysmenorrhea"></td>
         </tr>
         <tr>
             <td>Hydatidiform Mole (last 12 months)</td>
-            <td>No</td>
+            <td id="view_hydatidiform_mole"></td>
         </tr>
         <tr>
             <td>History of Ectopic Pregnancy</td>
-            <td>Yes</td>
+            <td id="view_ectopic_pregnancy"></td>
         </tr>
     </tbody>
 </table>
