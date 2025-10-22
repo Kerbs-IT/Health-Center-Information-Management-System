@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\family_planning_case_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
@@ -418,20 +419,25 @@ class RecordsController extends Controller
 
     // -------------------------- family planning
     public function familyPlanningRecord()
-    {
-        return view('records.familyPlanning.familyPlanning', ['isActive' => true, 'page' => 'RECORD']);
+    {   
+        $familyPlanning = medical_record_cases::with('patient')->where('type_of_case','family-planning')->get();
+        return view('records.familyPlanning.familyPlanning', ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecords' => $familyPlanning]);
     }
-    public function familyPlanningDetail()
+    public function familyPlanningDetail($id)
     {
-        return view('records.familyPlanning.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record','family_planning_medical_record'])->findOrFail($id);
+        return view('records.familyPlanning.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD','familyPlanningRecord'=> $familyPlanningRecords]);
     }
-    public function editFamilyPlanningDetail()
+    public function editFamilyPlanningDetail($id)
     {
-        return view('records.familyPlanning.editPatientDetails', ['isActive' => true, 'page' => 'RECORD']);
+        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
+        $address = patient_addresses::where('patient_id', $familyPlanningRecords->patient->id)->firstOrFail();
+        return view('records.familyPlanning.editPatientDetails', ['isActive' => true, 'page' => 'RECORD' ,'familyPlanningRecord' => $familyPlanningRecords,'address'=> $address]);
     }
-    public function viewFamilyPlanningCase()
+    public function viewFamilyPlanningCase($id)
     {
-        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD']);
+        $familyPlanningCases = family_planning_case_records::where('medical_record_case_id',$id)->get();
+        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD','familyPlanningCases'=> $familyPlanningCases ]);
     }
 
     // --------------------------- tb dots ----------------------------------------

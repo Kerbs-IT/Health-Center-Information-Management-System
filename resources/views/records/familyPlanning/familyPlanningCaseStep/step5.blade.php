@@ -5,31 +5,24 @@
         <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
             <div class="mb-2 w-50">
                 <label for="BP">Blood Pressure:</label>
-                <input type="text" class="form-control w-100" placeholder="ex. 120/80" disabled>
-            </div>
-            <div class="mb-2 w-50">
-                <label for="BP">Temperature:</label>
-                <input type="number" class="form-control w-100" placeholder="00 C" disabled>
-            </div>
-            <div class="mb-2 w-50">
-                <label for="BP">Pulse Rate(Bpm):</label>
-                <input type="text" class="form-control w-100" placeholder=" 60-100" disabled>
+                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="edit_blood_pressure" id="edit_blood_pressure">
             </div>
 
+            <div class="mb-2 w-50">
+                <label for="BP">Pulse Rate(Bpm):</label>
+                <input type="text" class="form-control w-100" placeholder=" 60-100" name="edit_pulse_rate" id="edit_pulse_rate">
+            </div>
         </div>
         <!-- 2nd row -->
         <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
-            <div class="mb-2 w-50">
-                <label for="BP">Respiratory Rate (breaths/min):</label>
-                <input type="text" class="form-control w-100" placeholder="ex. 25" disabled>
-            </div>
+
             <div class="mb-2 w-50">
                 <label for="BP">Height(cm):</label>
-                <input type="number" class="form-control w-100" placeholder="00.00" name="height" disabled>
+                <input type="number" class="form-control w-100" placeholder="00.00" name="edit_height" id="edit_height">
             </div>
             <div class="mb-2 w-50">
                 <label for="BP">Weight(kg):</label>
-                <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight" disabled>
+                <input type="number" class="form-control w-100" placeholder=" 00.00" name="edit_weight" id="edit_weight">
             </div>
         </div>
     </div>
@@ -41,20 +34,20 @@
                     <div class="list-of-skin px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="skin-type" id="new-acceptor">
-                                <label for="new-acceptor">Normal</label>
+                                <input type="radio" name="edit_skin_type" id="edit_skin_normal" value="Normal">
+                                <label for="edit_skin_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="skin-type" id="current-user">
-                                <label for="current-user">Pale</label>
+                                <input type="radio" name="edit_skin_type" id="edit_skin_pale" value="Pale">
+                                <label for="edit_skin_pale">Pale</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="skin-type" id="current-method">
-                                <label for="current-method">Yellowish</label>
+                                <input type="radio" name="edit_skin_type" id="edit_skin_yellowish" value="Yellowish">
+                                <label for="edit_skin_yellowish">Yellowish</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="skin-type" id="current-method">
-                                <label for="current-method">Hematoma</label>
+                                <input type="radio" name="edit_skin_type" id="edit_skin_hematoma" value="Hematoma">
+                                <label for="edit_skin_hematoma">Hematoma</label>
                             </div>
                         </div>
                     </div>
@@ -64,16 +57,16 @@
                     <div class="list-of-conjuctiva px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="conjuctiva-type" id="new-acceptor">
-                                <label for="new-acceptor">Normal</label>
+                                <input type="radio" name="edit_conjuctiva_type" id="edit_conjuctiva_normal" value="Normal">
+                                <label for="edit_conjuctiva_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="conjuctiva-type" id="current-user">
-                                <label for="current-user">Pale</label>
+                                <input type="radio" name="edit_conjuctiva_type" id="edit_conjuctiva_pale" value="Pale">
+                                <label for="edit_conjuctiva_pale">Pale</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="conjuctiva-type" id="current-method">
-                                <label for="current-method">Yellowish</label>
+                                <input type="radio" name="edit_conjuctiva_type" id="edit_conjuctiva_yellowish" value="Yellowish">
+                                <label for="edit_conjuctiva_yellowish">Yellowish</label>
                             </div>
                         </div>
                     </div>
@@ -86,16 +79,16 @@
                     <div class="list-of-neck px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="neck-type" id="new-acceptor">
-                                <label for="new-acceptor">Normal</label>
+                                <input type="radio" name="edit_neck_type" id="edit_neck_type_normal" value="Normal">
+                                <label for="edit_neck_type_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="neck-type" id="current-user">
-                                <label for="current-user">Neck Mass</label>
+                                <input type="radio" name="edit_neck_type" id="edit_neck_type_neck_mass" value="Neck Mass">
+                                <label for="edit_neck_type_neck_mass">Neck Mass</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="neck-type" id="current-method">
-                                <label for="current-method">enlarged lymph nodes</label>
+                                <input type="radio" name="edit_neck_type" id="edit_nect_type_enlarge" value="enlarged lymph nodes">
+                                <label for="edit_nect_type_enlarge">enlarged lymph nodes</label>
                             </div>
                         </div>
                     </div>
@@ -106,16 +99,16 @@
                     <div class="list-of-neck px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="breast-type" id="new-acceptor">
-                                <label for="new-acceptor">Normal</label>
+                                <input type="radio" name="edit_breast_type" id="edit_breast_normal" value="Normal">
+                                <label for="edit_breast_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="breast-type" id="current-user">
-                                <label for="current-user"> Mass</label>
+                                <input type="radio" name="edit_breast_type" id="edit_breast_mass" value="Mass">
+                                <label for="edit_breast_mass"> Mass</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="breast-type" id="current-method">
-                                <label for="current-method">Nipple Discharge</label>
+                                <input type="radio" name="edit_breast_type" id="edit_breast_nipple_discharge" value="Nipple Discharge">
+                                <label for="edit_breast_nipple_discharge">Nipple Discharge</label>
                             </div>
                         </div>
                     </div>
@@ -128,16 +121,16 @@
                     <div class="list-of-neck px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abdomen-type" id="new-acceptor">
-                                <label for="new-acceptor">Normal</label>
+                                <input type="radio" name="edit_abdomen_type" id="edit_abdomen_normal" value="Normal">
+                                <label for="edit_abdomen_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abdomen-type" id="current-user">
-                                <label for="current-user">Abdominal Mass</label>
+                                <input type="radio" name="edit_abdomen_type" id="edit_abdomen_mass" value="Abdominal Mass">
+                                <label for="edit_abdomen_mass">Abdominal Mass</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abdomen-type" id="current-method">
-                                <label for="current-method">varicosities</label>
+                                <input type="radio" name="edit_abdomen_type" id="edit_abdomen_varicosities" value="varicosities">
+                                <label for="edit_abdomen_varicosities">varicosities</label>
                             </div>
                         </div>
                     </div>
@@ -148,16 +141,16 @@
                     <div class="list-of-neck px-2">
                         <div class="type-of-user-inputs ">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="extremites-type" id="new-acceptor">
-                                <label for="new-acceptor">normal</label>
+                                <input type="radio" name="edit_extremites_type" id="edit_extremities_normal" value="Normal">
+                                <label for="edit_extremities_normal">Normal</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="extremites-type" id="current-user">
-                                <label for="current-user">Edema</label>
+                                <input type="radio" name="edit_extremites_type" id="edit_extremities_edema" value="Edema">
+                                <label for="edit_extremities_edema">Edema</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="extremites-type" id="current-method">
-                                <label for="current-method">varicosities</label>
+                                <input type="radio" name="edit_extremites_type" id="edit_extremities_varicosities" value="varicosities">
+                                <label for="edit_extremities_varicosities">varicosities</label>
                             </div>
 
                         </div>
@@ -173,83 +166,87 @@
                 <div class="list-of-neck px-2">
                     <div class="type-of-user-inputs ">
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="extremites-UID-type" id="new-acceptor">
-                            <label for="new-acceptor">Normal</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_normal" value="Normal">
+                            <label for="edit_extremites_UID_type_normal">Normal</label>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="extremites-UID-type" id="current-user">
-                            <label for="current-user">Mass</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_mass" value="Mass">
+                            <label for="edit_extremites_UID_type_mass">Mass</label>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="extremites-UID-type" id="current-method">
-                            <label for="current-method">Abdominal Discharge</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_abdominal_discharge" value="abdominal discharge">
+                            <label for="edit_extremites_UID_type_abdominal_discharge">Abdominal Discharge</label>
+                        </div>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_cervical_abnormalities" value="cervial abnormalities">
+                            <label for="edit_extremites_UID_type_cervical_abnormalities">Cervial Abnormalities</label>
                         </div>
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="new-acceptor">
-                                <label for="new-acceptor">Warts</label>
+                                <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_warts" value="warts">
+                                <label for="edit_cervical_abnormalities_type_warts" class="cervical_abnormalities_type">Warts</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-user">
-                                <label for="current-user">Polyp or cyst</label>
+                                <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_Polyp" value="Polyp or cyst">
+                                <label for="edit_cervical_abnormalities_type_Polyp" class="cervical_abnormalities_type">Polyp or cyst</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-method">
-                                <label for="current-method">inflammation or erosion</label>
+                                <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_inflamation_or_erosion" value="inflammation or erosion">
+                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="cervical_abnormalities_type">inflammation or erosion</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-method">
-                                <label for="current-method">Bloody discharge</label>
+                                <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
+                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="cervical_abnormalities_type">Bloody discharge</label>
                             </div>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="cervical-consistency-type" id="new-acceptor">
-                            <label for="new-acceptor">cervical consistency</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_cervical_consistency" value="cervical consistency">
+                            <label for="edit_extremites_UID_type_cervical_consistency">cervical consistency</label>
                         </div>
                         <!-- firm or soft -->
                         <div class="inner-type-abnormalities d-flex gap-3" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="new-acceptor">
-                                <label for="new-acceptor">Firm</label>
+                                <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_firm" value="firm">
+                                <label for="edit_cervical_consistency_type_firm" class="cervical_consistency_type_label">Firm</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-user">
-                                <label for="current-user">Soft</label>
+                                <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_soft" value="soft">
+                                <label for="edit_cervical_consistency_type_soft" class="cervical_consistency_type_label">Soft</label>
                             </div>
                         </div>
                         <!-- tenderness -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="cervical-tendency-type" id="new-acceptor">
-                            <label for="new-acceptor">cervical tenderness</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_cervical_tenderness" value="cervical tenderness">
+                            <label for="edit_cervical_tenderness">cervical tenderness</label>
                         </div>
                         <!-- adnexal mass -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="adnexal-mass-type" id="new-acceptor">
-                            <label for="new-acceptor">adnexal mass / tenderness</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_adnexal_mass" value="adnexal mass / tenderness">
+                            <label for="edit_adnexal_mass">adnexal mass / tenderness</label>
                         </div>
                         <!-- uterine position -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="adnexal-mass-type" id="new-acceptor">
-                            <label for="new-acceptor">Uterine position</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="physical_examination_extremites_UID_type_uterine" value="uterine position">
+                            <label for="physical_examination_extremites_UID_type_uterine">Uterine position</label>
                         </div>
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="new-acceptor">
-                                <label for="new-acceptor">Mid</label>
+                                <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_mid" value="Mid">
+                                <label for="edit_uterine_position_type_mid" class="uterine_position_type_label">Mid</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-user">
-                                <label for="current-user">Anteflexed</label>
+                                <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_anteflexed" value="Anteflexed">
+                                <label for="edit_uterine_position_type_anteflexed" class="uterine_position_type_label">Anteflexed</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
-                                <input type="radio" name="abnormalities-type" id="current-method">
-                                <label for="current-method">Retroflexed</label>
+                                <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_typer_retroflexed" value="Retroflexed">
+                                <label for="edit_uterine_position_typer_retroflexed" class="uterine_position_type_label">Retroflexed</label>
                             </div>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="abnormalities-type" id="current-method">
-                            <label for="current-method">Uterine depth</label>
-                            <input type="text" class="w-25">
+                            <input type="radio" name="physical_examination_extremites_UID_type" id="edit_uterine_depth" value="uterine depth">
+                            <label for="edit_uterine_depth">Uterine depth</label>
+                            <input type="text" class="w-25" name="edit_uterine_depth_text" id="edit_uterine_depth_text">
                             <small>cm</small>
                         </div>
                     </div>
@@ -264,7 +261,7 @@
     <h4 class="border-bottom px-1"> ACKNOWLEDGEMENT</h4>
     <div class="mb-3">This is to certify that the Physician/Nurse/Midwife of the clinic has fully
         explained to me the different methods available in the family planning
-        and i freely choose the <input type="text border-bottom" class="rounded"> method.
+        and i freely choose the <input type="text" id="edit_choosen_method" name="edit_choosen_method" class="rounded text-center"> method.
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2">
         <div class="mb-3 w-50 d-flex flex-column">
@@ -274,7 +271,7 @@
         </div>
         <div class="mb-3 w-50">
             <label for="signature_image" class="text-white">Upload Signature</label>
-            <input type="date" class="form-control w-100 text-center">
+            <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement">
         </div>
     </div>
     <div class="mb-3 w-100">
@@ -288,8 +285,8 @@
         </div>
         <div class="mb-3 w-50">
             <label for="signature_image" class="text-white">Upload Signature</label>
-            <input type="date" class="form-control w-100 text-center">
+            <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent">
         </div>
     </div>
-   
+
 </div>

@@ -9,10 +9,10 @@
                     <p class="mb-0 fs-5 fw-light">Abnormal discharge from the genital area</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="step5_q1" id="step5_q1_yes">
-                    <label for="step5_q1_yes" class="fs-5">Yes</label>
-                    <input type="radio" name="step5_q1" id="step5_q1_no">
-                    <label for="step5_q1_no" class="fs-5">No</label>
+                    <input type="radio" name="edit_infection_abnormal_discharge_from_genital_area" id="edit_infection_abnormal_discharge_from_genital_area_yes" value="Yes">
+                    <label for="edit_infection_abnormal_discharge_from_genital_area_yes" class="fs-5">Yes</label>
+                    <input type="radio" name="edit_infection_abnormal_discharge_from_genital_area" id="edit_infection_abnormal_discharge_from_genital_area_no" value="No">
+                    <label for="edit_infection_abnormal_discharge_from_genital_area_no" class="fs-5">No</label>
                 </div>
             </div>
             <!-- follow up -->
@@ -22,10 +22,10 @@
                     <p class="mb-0 fs-5 fw-light">If "Yes" indicate it from:</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="follow-up" id="follow-up_yes">
-                    <label for="follow-up_yes" class="fs-5">Vagina</label>
-                    <input type="radio" name="follow-up" id="follow-up_no">
-                    <label for="follow-up_no" class="fs-5">Penis</label>
+                    <input type="radio" name="edit_origin_of_abnormal_discharge" id="edit_origin_of_abnormal_discharge_yes" value="Vagina">
+                    <label for="edit_origin_of_abnormal_discharge_yes" class="fs-5">Vagina</label>
+                    <input type="radio" name="edit_origin_of_abnormal_discharge" id="edit_origin_of_abnormal_discharge_no" value="Penis">
+                    <label for="edit_origin_of_abnormal_discharge_no" class="fs-5">Penis</label>
                 </div>
             </div>
             <!-- next -->
@@ -35,10 +35,10 @@
                     <p class="mb-0 fs-5 fw-light">Scores or ulcers in the genital area</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="step5_q2" id="step5_q2_yes">
-                    <label for="step5_q2_yes" class="fs-5">Yes</label>
-                    <input type="radio" name="step5_q2" id="step5_q2_no">
-                    <label for="step5_q2_no" class="fs-5">No</label>
+                    <input type="radio" name="edit_score_or_ulcer" id="edit_score_or_ulcer_yes" value="Yes">
+                    <label for="edit_score_or_ulcer_yes" class="fs-5">Yes</label>
+                    <input type="radio" name="edit_score_or_ulcer" id="edit_score_or_ulcer_no" value="No">
+                    <label for="edit_score_or_ulcer_no" class="fs-5">No</label>
                 </div>
             </div>
             <!-- q3 -->
@@ -48,10 +48,10 @@
                     <p class="mb-0 fs-5 fw-light">pain or burning sensation in the genital area</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="step5_q3" id="step5_q3_yes">
-                    <label for="step5_q3_yes" class="fs-5">Yes</label>
-                    <input type="radio" name="step5_q3" id="step5_q3_no">
-                    <label for="step5_q3_no" class="fs-5">No</label>
+                    <input type="radio" name="edit_pain_or_burning_sensation" id="edit_pain_or_burning_sensation_yes" value="Yes">
+                    <label for="edit_pain_or_burning_sensation_yes" class="fs-5">Yes</label>
+                    <input type="radio" name="edit_pain_or_burning_sensation" id="edit_pain_or_burning_sensation_no" value="No">
+                    <label for="edit_pain_or_burning_sensation_no" class="fs-5">No</label>
                 </div>
             </div>
             <!-- q4 -->
@@ -61,10 +61,10 @@
                     <p class="mb-0 fs-5 fw-light text-nowrap">History of treatment for sexually transmitted infection</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="step5_q4" id="step5_q4_yes">
-                    <label for="step5_q4_yes" class="fs-5">Yes</label>
-                    <input type="radio" name="step5_q4" id="step5_q4_no">
-                    <label for="step5_q4_no" class="fs-5">No</label>
+                    <input type="radio" name="edit_history_of_sexually_transmitted_infection" id="edit_history_of_sexually_transmitted_infection_yes" value="Yes">
+                    <label for="edit_history_of_sexually_transmitted_infection_yes" class="fs-5">Yes</label>
+                    <input type="radio" name="edit_history_of_sexually_transmitted_infection" id="edit_history_of_sexually_transmitted_infection_no" value="No">
+                    <label for="edit_history_of_sexually_transmitted_infection_no" class="fs-5">No</label>
                 </div>
             </div>
             <!-- q5 -->
@@ -74,10 +74,10 @@
                     <p class="mb-0 fs-5 fw-light">HIV/AIDS/Pelvic inflamatory disease</p>
                 </div>
                 <div class="answers d-flex align-items-center justify-content-center gap-2">
-                    <input type="radio" name="step5_q5" id="step5_q5_yes">
-                    <label for="step5_q5_yes" class="fs-5">Yes</label>
-                    <input type="radio" name="step5_q5" id="step5_q5_no">
-                    <label for="step5_q5_no" class="fs-5">No</label>
+                    <input type="radio" name="edit_sexually_transmitted_disease" id="edit_sexually_transmitted_disease_yes" value="Yes">
+                    <label for="edit_sexually_transmitted_disease_yes" class="fs-5">Yes</label>
+                    <input type="radio" name="edit_sexually_transmitted_disease" id="edit_sexually_transmitted_disease_no" value="No">
+                    <label for="edit_sexually_transmitted_disease_no" class="fs-5">No</label>
                 </div>
             </div>
         </div>
@@ -91,10 +91,10 @@
                 <p class="mb-0 fs-5 fw-light">History of domestic violence of VAW</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="step5_q6" id="step5_q6_yes">
-                <label for="step5_q6_yes" class="fs-5">Yes</label>
-                <input type="radio" name="step5_q6" id="step5_q6_no">
-                <label for="step5_q6_no" class="fs-5">No</label>
+                <input type="radio" name="edit_history_of_domestic_violence_of_VAW" id="edit_history_of_domestic_violence_of_VAW_yes" value="Yes">
+                <label for="edit_history_of_domestic_violence_of_VAW_yes" class="fs-5">Yes</label>
+                <input type="radio" name="edit_history_of_domestic_violence_of_VAW" id="edit_history_of_domestic_violence_of_VAW_no" value="No">
+                <label for="edit_history_of_domestic_violence_of_VAW_no" class="fs-5">No</label>
             </div>
         </div>
         <!-- q7 -->
@@ -104,10 +104,10 @@
                 <p class="mb-0 fs-5 fw-light">Unpleasant relationship with partner</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="step5_q7" id="step5_q7_yes">
-                <label for="step5_q7_yes" class="fs-5">Yes</label>
-                <input type="radio" name="step5_q7" id="step5_q7_no">
-                <label for="step5_q7_no" class="fs-5">No</label>
+                <input type="radio" name="edit_unpleasant_relationship_with_partner" id="edit_unpleasant_relationship_with_partner_yes" value="Yes">
+                <label for="edit_unpleasant_relationship_with_partner_yes" class="fs-5">Yes</label>
+                <input type="radio" name="edit_unpleasant_relationship_with_partner" id="edit_unpleasant_relationship_with_partner_no" value="No">
+                <label for="edit_unpleasant_relationship_with_partner_no" class="fs-5">No</label>
             </div>
         </div>
         <!-- q8 -->
@@ -117,10 +117,10 @@
                 <p class="mb-0 fs-5 fw-light">Partner does not approve of the visit to FP clinic</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
-                <input type="radio" name="step5_q8" id="step5_q8_yes">
-                <label for="step5_q8_yes" class="fs-5">Yes</label>
-                <input type="radio" name="step5_q8" id="step5_q8_no">
-                <label for="step5_q8_no" class="fs-5">No</label>
+                <input type="radio" name="edit_partner_does_not_approve" id="edit_partner_does_not_approve_yes">
+                <label for="edit_partner_does_not_approve_yes" class="fs-5">Yes</label>
+                <input type="radio" name="edit_partner_does_not_approve" id="edit_partner_does_not_approve_no">
+                <label for="edit_partner_does_not_approve_no" class="fs-5">No</label>
             </div>
         </div>
         <div class="reffered-to d-flex flex-column">
@@ -128,22 +128,22 @@
             <div class="list-of-org">
                 <div class="type-of-user-inputs px-5">
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <input type="radio" name="type-of-patient" id="new-acceptor">
-                        <label for="new-acceptor">DSWD</label>
+                        <input type="radio" name="edit_referred_to" id="edit_DSWD" value="DSWD">
+                        <label for="edit_DSWD">DSWD</label>
                     </div>
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <input type="radio" name="type-of-patient" id="current-user">
-                        <label for="current-user">WCPU</label>
+                        <input type="radio" name="edit_referred_to" id="edit_WCPU" value="WCPU">
+                        <label for="edit_WCPU">WCPU</label>
                     </div>
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <input type="radio" name="type-of-patient" id="current-method">
-                        <label for="current-method">NGOs</label>
+                        <input type="radio" name="edit_referred_to" id="edit_NGOs" value="NGOs">
+                        <label for="edit_NGOs">NGOs</label>
                     </div>
                     <!-- new clinic -->
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <input type="radio" name="type-of-patient" id="changing-clinic">
-                        <label for="changing-clinic">Others(specify):</label>
-                        <input type="text" class="form-control w-50">
+                        <input type="radio" name="edit_referred_to" id="edit_others" value="others">
+                        <label for="edit_others">Others(specify):</label>
+                        <input type="text" class="form-control w-50" name="edit_reffered_to_others">
                     </div>
                 </div>
             </div>

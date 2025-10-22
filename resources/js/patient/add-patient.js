@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const lname = document.getElementById("last_name");
         const street = document.getElementById("street");
         const brgy = document.getElementById("brgy");
+        const handled_by = document.getElementById("handled_by");
 
         if (typeSelect.value === "") {
             Swal.fire({
@@ -101,7 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
             fname.value == "" ||
             lname.value == "" ||
             street.value == "" ||
-            brgy.value == ""
+            brgy.value == "" ||
+            handled_by.value == ""
         ) {
             Swal.fire({
                 // title: 'Type of Patient',
@@ -115,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lname.style.border = lname.value ? "" : "2px solid red";
             street.style.border = street.value ? "" : "2px solid red";
             brgy.style.border = brgy.value ? "" : "2px solid red";
+            handled_by.style.border = handled_by.value ? "" : "2px solid red";
             return; // stop the function here
         }
 
@@ -203,8 +206,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // show the family planning
             document
-                .querySelector(".family-planning-inputs")
-                .classList.replace("d-none", "d-flex");
+                .querySelectorAll(".family-planning-inputs")
+                .forEach((element) => {
+                    element.classList.replace("d-none", "d-flex");
+                });
+
         } else if (dropdownValue == "senior-citizen") {
             document
                 .querySelector(".vaccination-inputs")

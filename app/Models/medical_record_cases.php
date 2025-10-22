@@ -57,4 +57,13 @@ class medical_record_cases extends Model
     public function tb_dots_checkup(){
         return $this->hasMany(tb_dots_check_ups::class, 'medical_record_case_id', 'id');
     }
+
+    // family planning 
+
+    public function family_planning_medical_record(){
+        return $this->hasOne(family_planning_medical_records::class, 'medical_record_case_id', 'id');
+    }
+    public function family_planning_case_record(){
+        return $this->hasOne(family_planning_case_records::class, 'medical_record_case_id', 'id');
+    }
 }

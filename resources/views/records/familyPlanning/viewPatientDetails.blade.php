@@ -54,17 +54,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Name of Client:</h6> <span class="fw-light">Josephine Batumbakal</span>
+                                                <h6 class="mb-0">Name of Client:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->full_name??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Client ID:</h6> <span class="fw-light">1010</span>
+                                                <h6 class="mb-0">Client ID:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record)->client_id??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">PHILHEALTH NO:</h6> <span class="fw-light">1011</span>
+                                                <h6 class="mb-0">PHILHEALTH NO:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record)->philhealth_no??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -72,17 +72,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0"> Date of Birth:</h6> <span class="fw-light">01-22-1990</span>
+                                                <h6 class="mb-0"> Date of Birth:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->date_of_birth?->format('M d, Y')??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Sex:</h6> <span class="fw-light">Female</span>
+                                                <h6 class="mb-0">Sex:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->sex??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Age:</h6> <span class="fw-light">28</span>
+                                                <h6 class="mb-0">Age:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->age??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -91,17 +91,17 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Contact No.:</h6> <span class="fw-light">0932647102</span>
+                                                <h6 class="mb-0">Contact No.:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->contact_number??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Religion:</h6> <span class="fw-light">Catholic</span>
+                                                <h6 class="mb-0">Religion:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_medical_record)->religion??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Civil Status:</h6> <span class="fw-light">Married</span>
+                                                <h6 class="mb-0">Civil Status:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->civil_status??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -109,17 +109,12 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Occupation:</h6> <span class="fw-light">Call Center Agent</span>
+                                                <h6 class="mb-0">Occupation:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_medical_record)->occupation??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Blood Type:</h6> <span class="fw-light">O+</span>
-                                            </div>
-                                        </td>
-                                        <td class="w-25">
-                                            <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Nationality:</h6> <span class="fw-light">Filipino</span>
+                                                <h6 class="mb-0">Nationality:</h6> <span class="fw-light">{{optional($familyPlanningRecord->patient)->nationality??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -131,7 +126,7 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <tr>
-                                        <td colspan="7" class="p-4 text-start">Blk 25 lot 11, Green Forbes, Hugo Perez, Trece Martires City, Cavite, Philippines</td>
+                                        <td colspan="7" class="p-4 text-start">{{optional($familyPlanningRecord->family_planning_case_record)->client_address??'N/A'}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -142,7 +137,7 @@
                                     <tr>
                                         <td colspan="7">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Date:</h6> <span>06-24-2025</span>
+                                                <h6 class="mb-0">Date:</h6> <span>{{optional($familyPlanningRecord->family_planning_medical_record)->created_at?->format('M d, Y')??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -150,17 +145,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Height(cm):</h6> <span>172 cm</span>
+                                                <h6 class="mb-0">Height(cm):</h6> <span>{{optional($familyPlanningRecord->family_planning_medical_record)->height??'N/A'}}cm</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Weight(kg):</h6> <span>75 kg</span>
+                                                <h6 class="mb-0">Weight(kg):</h6> <span>{{optional($familyPlanningRecord->family_planning_medical_record)->weight??'N/A'}} kg</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Blood Pressure:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_medical_record)->blood_pressure??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -168,17 +163,17 @@
                                     <tr>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Temperature(C):</h6> <span>30°C</span>
+                                                <h6 class="mb-0">Temperature(C):</h6> <span>{{optional($familyPlanningRecord->family_planning_medical_record)->temperature??'N/A'}}°C</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>25</span>
+                                                <h6 class="mb-0">Respiratory Rate(breaths/min):</h6> <span>{{optional($familyPlanningRecord->family_planning_medical_record)->respiratory_rate??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25 ">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">120/80</span>
+                                                <h6 class="mb-0">Pulse Rate:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_medical_record)->pulse_rate??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>

@@ -20,7 +20,8 @@
     'resources/css/patient/record.css',
     'resources/js/prenatal/addPrenatalPatient.js',
     'resources/js/senior_citizen/addPatient.js',
-    'resources/js/tb_dots/add_patient.js'])
+    'resources/js/tb_dots/add_patient.js',
+    'resources/js/family_planning/add_patient.js'])
     @include('sweetalert::alert')
     <div class="add-patient d-flex vh-100">
         <aside>
@@ -292,12 +293,12 @@
                                             </div>
                                             <div class="input-field w-50">
                                                 <label for="blood_type">Occupation</label>
-                                                <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation" >
+                                                <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             </div>
                                             <div class="mb-3 w-50 d-flex gap-2">
                                                 <div class="input-field w-100">
                                                     <label for="motherName">Religion</label>
-                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="religion" >
+                                                    <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="religion">
                                                     @error('mother_name')
                                                     <small class=" text-danger">{{$message}}</small>
                                                     @enderror
@@ -314,7 +315,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="family-planning-inputs d-none gap-1">
+                                    <div class="family-planning-inputs d-none gap-1 mb-2">
                                         <div class="input-field w-50">
                                             <label for="civil_status" class="">Civil Status</label>
                                             <select name="civil_status" id="civil_status" class="form-select">
@@ -327,18 +328,40 @@
                                             @enderror
                                         </div>
                                         <div class="input-field w-25">
-                                            <label for="religion">Religion</label>
-                                            <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="" value="">
-                                            @error('religion')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <label for="family_plan_religion">Religion</label>
+                                            <input type="text" id="family_plan_religion" placeholder="Enter the Religion" class="form-control" name="religion">
+                                            <small class="text-danger"></small>
                                         </div>
                                         <div class="input-field w-25">
-                                            <label for="patient_occupation">Occupation</label>
-                                            <input type="text" id="patient_occupation" placeholder="Enter the Occupation" class="form-control" name="patient_occupation" value="">
-                                            @error('occupation')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <label for="family_plan_occupation">Occupation</label>
+                                            <input type="text" id="family_plan_patient_occupation" placeholder="Enter the Occupation" class="form-control" name="family_plan_occupation" value="">
+                                            <small class="text-danger"></small>
+                                        </div>
+                                    </div>
+                                    <!-- family planning 2nd inputs -->
+                                    <div class="family-planning-inputs d-none gap-1">
+                                        <div class="input-field w-50">
+                                            <label for="client_id">Client ID:</label>
+                                            <input type="text" id="client_id" placeholder="Enter the client ID" class="form-control" name="client_id">
+                                            <small class="text-danger"></small>
+                                        </div>
+                                        <div class="input-field w-50">
+                                            <label for="philhealth_no">Philhealth No:</label>
+                                            <input type="text" id="philhealth_no" placeholder="Enter the Religion" class="form-control" name="philhealth_no">
+                                            <small class="text-danger"></small>
+                                        </div>
+                                        <div class="input-field w-50 ">
+                                            <label for="NHTS" class="">NHTS?:</label>
+                                            <div class="inputs d-flex gap-5 w-100 justify-content-center">
+                                                <div class="radio-input">
+                                                    <input type="radio" name="NHTS" value="Yes" id="nhts_yes">
+                                                    <label for="nhts_yes">Yes</label>
+                                                </div>
+                                                <div class="radio-input">
+                                                    <input type="radio" name="NHTS" value="No" id="nhts_no">
+                                                    <label for="nhts_no">No</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -523,7 +546,7 @@
 
                         </div>
                     </div>
-                    <!-- STEP 3 PRENATAL -->
+                    <!-- STEP 3 PRENATAL & family planning -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step3">
                         <div id="prenatal-step3" class="d-none">@include('add_patient.prenatalPlanning')</div>
                         <div id="family-planning-step3" class="d-none flex-grow-1 flex-column h-100 w-100">@include('add_patient.familyPlanning.step3')</div>
