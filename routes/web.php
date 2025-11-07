@@ -182,6 +182,12 @@ Route::post('/patient-record/family-planning/add-record',[FamilyPlanningControll
 Route::put('/patient-record/family-planning/update-information/{id}', [FamilyPlanningController::class, 'editPatientDetails']); // update the patient details
 Route::get('/patient-case/family-planning/viewCaseInfo/{id}', [FamilyPlanningController::class, 'viewCaseInfo']);
 Route::put('/patient-case/family-planning/update-case-info/{id}',[FamilyPlanningController::class, 'updateCaseInfo']);
+Route::post('/patient-record/family-planning/add/side-b-record', [FamilyPlanningController::class, 'addSideBrecord']);
+Route::get('/patient-record/family-planning/view/side-b-record/{id}', [FamilyPlanningController::class, 'sideBrecords']);
+// update side b
+Route::put('/patient-record/family-planning/update/side-b-record/{id}',[FamilyPlanningController::class, 'updateSideBrecord']);
+// add new side A if ever the record is deleted
+Route::post('/patient-record/family-planning/add/side-a-record/{id}', [FamilyPlanningController::class, 'addSideAcaseInfo']);
 
 // --------------------------------------------- TB DOTS -------------------------------------------------------------------------------
 Route::get('/patient-record/tb-dots/view-records', [RecordsController::class, 'tb_dotsRecord'])->name('record.tb-dots');

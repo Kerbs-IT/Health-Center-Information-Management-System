@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\family_planning_case_records;
+use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
@@ -437,7 +438,9 @@ class RecordsController extends Controller
     public function viewFamilyPlanningCase($id)
     {
         $familyPlanningCases = family_planning_case_records::where('medical_record_case_id',$id)->get();
-        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD','familyPlanningCases'=> $familyPlanningCases ]);
+        $familyPlanningSideB = family_planning_side_b_records::where('medical_record_case_id', $id)->get();
+        $patientInfo = medical_record_cases::with(['family_planning_medical_record','patient'])->findOrFail($id);
+        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD','familyPlanningCases'=> $familyPlanningCases,'patientInfo'=> $patientInfo, 'familyPlanningSideB'=> $familyPlanningSideB ]);
     }
 
     // --------------------------- tb dots ----------------------------------------

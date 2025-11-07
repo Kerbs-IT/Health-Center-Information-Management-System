@@ -92,4 +92,8 @@ class staff extends Model
     {
         return $this->hasMany(family_planning_case_records::class, 'health_worker_id', 'user_id');
     }
+    public function family_planning_side_b_record()
+    {
+        return $this->hasMany(family_planning_side_b_records::class, 'health_worker_id', 'user_id');
+    }
 }
