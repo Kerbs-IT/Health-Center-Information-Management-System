@@ -7,6 +7,7 @@ use App\Models\family_planning_medical_histories;
 use App\Models\family_planning_medical_records;
 use App\Models\family_planning_obsterical_histories;
 use App\Models\family_planning_physical_examinations;
+use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
@@ -487,6 +488,260 @@ class FamilyPlanningController extends Controller
       
     }
 
+    //  this function will be used when the record is deleted
+
+    public function addSideAcaseInfo(Request $request,$id){
+        try {
+            $familyPlanCaseInfo = family_planning_case_records::where('type_of_record', 'Family Planning Client Assessment Record - Side A')->where('medical_record_case_id',$id)->get();
+            
+            if(count($familyPlanCaseInfo)>0){
+                return response()->json(['message'=> "Unable to create the record. A record already exists!"],422);
+            }
+
+            $patientData = $request->validate([
+                'side_A_add_client_fname' => 'required|string',
+                'side_A_add_client_MI' => 'sometimes|nullable|string|max:2',
+                'side_A_add_client_lname' => 'required|string',
+                'side_A_add_client_date_of_birth' => 'sometimes|nullable|date',
+                'side_A_add_client_age' => 'sometimes|nullable|numeric|max:100',
+                'side_A_add_occupation' => 'sometimes|nullable|string',
+                'side_A_add_client_civil_status' => 'sometimes|nullable|string',
+                'side_A_add_client_religion' => 'sometimes|nullable|string',
+            ]);
+
+            $caseData = $request->validate([
+                'side_A_add_client_id' => 'sometimes|nullable|string',
+                'side_A_add_philhealth_no' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^\d{2}-\d{9}-\d{1}$/'
+                ],
+                'side_A_add_NHTS' => 'sometimes|nullable|string',
+                'side_A_add_spouse_lname' => 'sometimes|nullable|string',
+                'side_A_add_spouse_fname' => 'sometimes|nullable|string',
+                'side_A_add_spouse_MI' => 'sometimes|nullable|string|max:2',
+                'side_A_add_spouse_date_of_birth' => 'sometimes|nullable|date',
+                'side_A_add_spouse_age' => 'sometimes|nullable|numeric|max:100',
+                'side_A_add_spouse_occupation' => 'sometimes|nullable|string',
+
+                'side_A_add_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
+                'side_A_add_plan_to_have_more_children' => 'sometimes|nullable|string',
+                'side_A_add_average_montly_income' => 'sometimes|nullable|numeric',
+                'side_A_add_family_planning_type_of_patient' => 'sometimes|nullable|string',
+                'side_A_add_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
+                'side_A_add_current_user_reason_for_FP' => 'sometimes|nullable|string',
+                'side_A_add_current_method_reason' => 'sometimes|nullable|string',
+                'side_A_add_previously_used_method' => 'sometimes|nullable|array',
+
+                // acknowledgement
+                'side_A_add_choosen_method' => 'sometimes|nullable|string',
+                'side_A_add_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'side_A_add_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
+                'side_A_add_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'side_A_add_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
+                'side_A_add_current_user_type' => 'sometimes|nullable|string',
+                'side_A_add_health_worker_id' => 'required'
+            ]);
+
+            // medical history
+            $medicalHistoryData = $request->validate([
+                'side_A_add_severe_headaches_migraine' => 'sometimes|nullable|string',
+                'side_A_add_history_of_stroke' => 'sometimes|nullable|string',
+                'side_A_add_non_traumatic_hemtoma' => 'sometimes|nullable|string',
+                'side_A_add_history_of_breast_cancer' => 'sometimes|nullable|string',
+                'side_A_add_severe_chest_pain' => 'sometimes|nullable|string',
+                'side_A_add_cough' => 'sometimes|nullable|string',
+                'side_A_add_jaundice' => 'sometimes|nullable|string',
+                'side_A_add_unexplained_vaginal_bleeding' => 'sometimes|nullable|string',
+                'side_A_add_abnormal_vaginal_discharge' => 'sometimes|nullable|string',
+                'side_A_add_abnormal_phenobarbital' => 'sometimes|nullable|string',
+                'side_A_add_smoker' => 'sometimes|nullable|string',
+                'side_A_add_with_dissability' => 'sometimes|nullable|string',
+                'side_A_add_if_with_dissability_specification' => 'sometimes|nullable|string',
+            ]);
+
+            // Obsterical history
+            $obstericalHistoryData = $request->validate([
+                'side_A_add_G' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_P' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_full_term' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_abortion' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_premature' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_living_children' => 'sometimes|nullable|numeric|max:20',
+                'side_A_add_date_of_last_delivery' => 'sometimes|nullable|date',
+                'side_A_add_type_of_last_delivery' => 'sometimes|nullable|string',
+                'side_A_add_date_of_last_delivery_menstrual_period' => 'sometimes|nullable|date',
+                'side_A_add_date_of_previous_delivery_menstrual_period' => 'sometimes|nullable|date',
+                'side_A_add_type_of_menstrual' => 'sometimes|nullable|string',
+                'side_A_add_Dysmenorrhea' => 'sometimes|nullable|string',
+                'side_A_add_hydatidiform_mole' => 'sometimes|nullable|string',
+                'side_A_add_ectopic_pregnancy' => 'sometimes|nullable|string',
+            ]);
+
+            //  RISK FOR SEXUALLY TRANSMITTED INFECTIONS & RISKS FOR VIOLENCE AGAINTS WOMEN (VAW)
+            $riskData = $request->validate([
+                'side_A_add_infection_abnormal_discharge_from_genital_area' => 'sometimes|nullable|string',
+                'side_A_add_origin_of_abnormal_discharge' => 'sometimes|nullable|string',
+                'side_A_add_scores_or_ulcer' => 'sometimes|nullable|string',
+                'side_A_add_pain_or_burning_sensation' => 'sometimes|nullable|string',
+                'side_A_add_history_of_sexually_transmitted_infection' => 'sometimes|nullable|string',
+                'side_A_add_sexually_transmitted_disease' => 'sometimes|nullable|string',
+
+                'side_A_add_history_of_domestic_violence_of_VAW' => 'sometimes|nullable|string',
+                'side_A_add_unpleasant_relationship_with_partner' => 'sometimes|nullable|string',
+                'side_A_add_partner_does_not_approve' => 'sometimes|nullable|string',
+                'side_A_add_referred_to' => 'sometimes|nullable|string',
+                'side_A_add_reffered_to_others' => 'sometimes|nullable|string',
+            ]);
+
+            // physical examination
+            $physicalExaminationData = $request->validate([
+                'side_A_add_blood_pressure' => 'sometimes|nullable|numeric',
+                'side_A_add_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
+                'side_A_add_height'            => 'nullable|numeric|between:30,300', // cm range
+                'side_A_add_weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'side_A_add_skin_type' => 'sometimes|nullable|string',
+                'side_A_add_conjuctiva_type' => 'sometimes|nullable|string',
+                'side_A_add_breast_type' => 'sometimes|nullable|string',
+                'side_A_add_abdomen_type' => 'sometimes|nullable|string',
+                'side_A_add_extremites_type' => 'sometimes|nullable|string',
+                'side_A_add_extremites_UID_type' => 'sometimes|nullable|string',
+                'side_A_add_cervical_abnormalities_type' => 'sometimes|nullable|string',
+                'side_A_add_cervical_consistency_type' => 'sometimes|nullable|string',
+                'side_A_add_uterine_position_type' => 'sometimes|nullable|string',
+                'side_A_add_uterine_depth_text' => 'sometimes|nullable|numeric',
+                'side_A_add_neck_type' => 'sometimes|nullable|string',
+            ]);
+
+            // update patient info first
+            $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method']);
+
+            // update the case
+            $familyPlanningCaseRecord = family_planning_case_records::create([
+                'medical_record_case_id'=>$id,
+                'health_worker_id'=>$caseData['side_A_add_health_worker_id'],
+                'client_id' => $caseData['side_A_add_client_id'] ?? null,
+                'philhealth_no' => $caseData['side_A_add_philhealth_no'] ?? null,
+                'NHTS' => $caseData['side_A_add_NHTS'] ?? null,
+                'client_name' => trim(($patientData['side_A_add_client_fname'] . ' ' . $patientData['side_A_add_client_MI'] . ' ' . $patientData['side_A_add_client_lname'])) ?? null,
+                'client_date_of_birth' => $patientData['side_A_add_client_date_of_birth'] ?? null,
+                'client_age' => $patientData['side_A_add_client_age'] ??null,
+                'occupation' => $patientData['side_A_add_occupation'] ??null,
+                'client_contact_number' => $patientData['side_A_add_client_contact_number'] ??null,
+                'client_civil_status' => $patientData['side_A_add_client_civil_status'] ??null,
+                'client_religion' => $patientData['side_A_add_client_religion'] ??null,
+                'spouse_lname' => $caseData['side_A_add_spouse_lname'] ??null,
+                'spouse_fname' => $caseData['side_A_add_spouse_fname'] ??null,
+                'spouse_MI' => $caseData['side_A_add_spouse_MI'] ??null,
+                'spouse_date_of_birth' => $caseData['side_A_add_spouse_date_of_birth'] ??null,
+                'spouse_age' => $caseData['side_A_add_spouse_age'] ??null,
+                'spouse_occupation' => $caseData['side_A_add_spouse_occupation'] ??null,
+                'number_of_living_children' => $caseData['side_A_add_number_of_living_children'] ??null,
+                'plan_to_have_more_children' => $caseData['side_A_add_plan_to_have_more_children'] ??null,
+
+                'average_montly_income' => $caseData['side_A_add_average_montly_income'] ??null,
+                'type_of_patient' => $caseData['side_A_add_family_planning_type_of_patient'] ??null,
+                'new_acceptor_reason_for_FP' => $caseData['side_A_add_new_acceptor_reason_for_FP'] ??null,
+                'current_user_reason_for_FP' => $caseData['side_A_add_current_user_reason_for_FP'] ??null,
+                'current_method_reason' => $caseData['side_A_add_current_method_reason'] ??null,
+                'previously_used_method' => $previoulyMethod ??null,
+                'choosen_method' => $caseData['side_A_add_choosen_method'] ??null,
+                'signature_image' => $caseData['side_A_add_family_planning_signature_image'] ??null,
+                'date_of_acknowledgement' => $caseData['side_A_add_family_planning_date_of_acknowledgement'] ??null,
+                'acknowledgement_consent_signature_image' => $caseData['side_A_add_family_planning_acknowlegement_consent_signature_image'] ??null,
+                'date_of_acknowledgement_consent' => $caseData['side_A_add_family_planning_date_of_acknowledgement_consent'] ??null,
+                'current_user_type' => $caseData['side_A_add_current_user_type'] ??null,
+                'status' => 'Done'
+            ]);
+
+            family_planning_medical_histories::create([
+                'case_id'=> $familyPlanningCaseRecord->id,
+                'severe_headaches_migraine' => $medicalHistoryData['side_A_add_severe_headaches_migraine'] ?? null,
+                'history_of_stroke' => $medicalHistoryData['side_A_add_history_of_stroke'] ?? null,
+                'non_traumatic_hemtoma' => $medicalHistoryData['side_A_add_non_traumatic_hemtoma'] ?? null,
+                'history_of_breast_cancer' => $medicalHistoryData['side_A_add_history_of_breast_cancer'] ?? null,
+                'severe_chest_pain' => $medicalHistoryData['side_A_add_severe_chest_pain'] ?? null,
+                'cough' => $medicalHistoryData['side_A_add_cough'] ?? null,
+                'jaundice' => $medicalHistoryData['side_A_add_jaundice'] ?? null,
+                'unexplained_vaginal_bleeding' => $medicalHistoryData['side_A_add_unexplained_vaginal_bleeding'] ?? null,
+                'abnormal_vaginal_discharge' => $medicalHistoryData['side_A_add_abnormal_vaginal_discharge'] ?? null,
+                'abnormal_phenobarbital' => $medicalHistoryData['side_A_add_abnormal_phenobarbital'] ?? null,
+                'smoker' => $medicalHistoryData['side_A_add_smoker'] ?? null,
+                'with_dissability' => $medicalHistoryData['side_A_add_with_dissability'] ?? null,
+                'if_with_dissability_specification' => $medicalHistoryData['side_A_add_if_with_dissability_specification'] ?? null,
+            ]);
+
+            family_planning_obsterical_histories::create([
+                'case_id' => $familyPlanningCaseRecord->id,
+                'G' => $obstericalHistoryData['side_A_add_G'] ?? null,
+                'P' => $obstericalHistoryData['side_A_add_P'] ?? null,
+                'full_term' => $obstericalHistoryData['side_A_add_full_term'] ?? null,
+                'abortion' => $obstericalHistoryData['side_A_add_abortion'] ?? null,
+                'premature' => $obstericalHistoryData['side_A_add_premature'] ?? null,
+                'living_children' => $obstericalHistoryData['side_A_add_living_children'] ?? null,
+                'date_of_last_delivery' => $obstericalHistoryData['side_A_add_date_of_last_delivery'] ?? null,
+                'type_of_last_delivery' => $obstericalHistoryData['side_A_add_type_of_last_delivery'] ?? null,
+                'date_of_last_delivery_menstrual_period' => $obstericalHistoryData['side_A_add_date_of_last_delivery_menstrual_period'] ?? null,
+                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['side_A_add_date_of_previous_delivery_menstrual_period '] ?? null,
+                'type_of_menstrual' => $obstericalHistoryData['side_A_add_type_of_menstrual'] ?? null,
+                'Dysmenorrhea' => $obstericalHistoryData['side_A_add_Dysmenorrhea'] ?? null,
+                'hydatidiform_mole' => $obstericalHistoryData['side_A_add_hydatidiform_mole'] ?? null,
+                'ectopic_pregnancy' => $obstericalHistoryData['side_A_add_ectopic_pregnancy'] ?? null,
+            ]);
+
+            // risk for sexuall transmitted update
+            risk_for_sexually_transmitted_infections::create([
+                'case_id' => $familyPlanningCaseRecord->id,
+                'infection_abnormal_discharge_from_genital_area' => $riskData['side_A_add_infection_abnormal_discharge_from_genital_area'] ??  null,
+                'origin_of_abnormal_discharge' => $riskData['side_A_add_origin_of_abnormal_discharge'] ??  null,
+                'scores_or_ulcer' => $riskData['side_A_add_scores_or_ulcer'] ??  null,
+                'pain_or_burning_sensation' => $riskData['side_A_add_pain_or_burning_sensation'] ??  null,
+                'history_of_sexually_transmitted_infection' => $riskData['side_A_add_history_of_sexually_transmitted_infection'] ??  null,
+                'sexually_transmitted_disease' => $riskData['side_A_add_sexually_transmitted_disease'] ??  null,
+                'history_of_domestic_violence_of_VAW' => $riskData['side_A_add_history_of_domestic_violence_of_VAW'] ??  null,
+                'unpleasant_relationship_with_partner' => $riskData['side_A_add_unpleasant_relationship_with_partner'] ??  null,
+                'partner_does_not_approve' => $riskData['side_A_add_partner_does_not_approve'] ??  null,
+                'referred_to' => $riskData['side_A_add_referred_to'] ??  null,
+                'reffered_to_others' => $riskData['side_A_add_reffered_to_others'] ??  null,
+            ]);
+
+            // update physical examination
+
+
+            family_planning_physical_examinations::create([
+                'case_id' => $familyPlanningCaseRecord->id,
+                'blood_pressure' => $medicalData['side_A_add_blood_pressure'] ??null,
+                'pulse_rate' => $medicalData['side_A_add_pulse_rate'] ??null,
+                'height' => $medicalData['side_A_add_height'] ??null,
+                'weight' => $medicalData['side_A_add_height'] ??null,
+
+                'skin_type' => $physicalExaminationData['side_A_add_skin_type'] ??null,
+                'conjuctiva_type' => $physicalExaminationData['side_A_add_conjuctiva_type'] ??null,
+                'breast_type' => $physicalExaminationData['side_A_add_breast_type'] ??null,
+                'abdomen_type' => $physicalExaminationData['side_A_add_abdomen_type'] ??null,
+                'extremites_type' => $physicalExaminationData['side_A_add_extremites_type'] ??null,
+                'extremites_UID_type' => $physicalExaminationData['side_A_add_extremites_UID_type'] ??null,
+                'cervical_abnormalities_type' => $physicalExaminationData['side_A_add_cervical_abnormalities_type'] ??null,
+                'cervical_consistency_type' => $physicalExaminationData['side_A_add_cervical_consistency_type'] ??null,
+                'uterine_position_type' => $physicalExaminationData['side_A_add_uterine_position_type'] ??null,
+                'uterine_depth_text' => $physicalExaminationData['side_A_add_uterine_depth_text'] ??null,
+                'neck_type' => $physicalExaminationData['side_A_add_neck_type'] ??null
+            ]);
+
+            return response()->json(['message' => 'Family Planning Patient Case information is updated Successfully'], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------
+
 
     public function updateCaseInfo(Request $request, $id){
         try{
@@ -668,6 +923,7 @@ class FamilyPlanningController extends Controller
                 'acknowledgement_consent_signature_image' => $caseData['edit_family_planning_acknowlegement_consent_signature_image'] ?? $familyPlanCaseInfo ->acknowledgement_consent_signature_image,
                 'date_of_acknowledgement_consent' => $caseData['edit_family_planning_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo ->date_of_acknowledgement_consent,
                 'current_user_type' => $caseData['edit_current_user_type'] ?? $familyPlanCaseInfo ->current_user_type,
+                'status'=> 'Done'
             ]);
 
             $familyPlanCaseInfo ->medical_history -> update([
@@ -753,5 +1009,114 @@ class FamilyPlanningController extends Controller
         }
 
         
+    }
+
+
+    public function addSideBrecord(Request $request){
+        try{
+            $data = $request->validate([
+                'side_b_medical_record_case_id'=> 'required',
+                'side_b_health_worker_id' => 'required',
+                'side_b_date_of_visit' => 'sometimes|nullable|date',
+                'side_b_medical_findings' => 'sometimes|nullable|string',
+                'side_b_method_accepted' => 'sometimes|nullable|string',
+                'side_b_name_n_signature' => 'sometimes|nullable|string',
+                'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
+                'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
+                'baby_last_4_weeks_question' => 'sometimes|nullable|string',
+                'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
+                'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
+                'contraceptive_question' => 'sometimes|nullable|string'
+            ]);
+
+            // add the data
+            family_planning_side_b_records::create([
+                'medical_record_case_id' => $data['side_b_medical_record_case_id'],
+                'health_worker_id' => $data['side_b_health_worker_id'],
+                'date_of_visit' => $data['side_b_date_of_visit'] ?? null,
+                'medical_findings' => $data['side_b_medical_findings'] ?? null,
+                'method_accepted' => $data['side_b_method_accepted'] ?? null,
+                'signature_of_the_provider' => $data['side_b_name_n_signature'] ?? null,
+                'date_of_follow_up_visit' => $data['side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question' => $data['baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question' => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question' => $data['baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question' => $data['menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question' => $data['miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question' => $data['contraceptive_question'] ?? null
+
+            ]);
+            return response()->json(['message' => 'Family Planning Assessment Record Successfully Added'], 200);
+        }catch(ValidationException $e){
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
+            ], 500);
+        }
+       
+    }
+    public function sideBrecords($id){
+        try{
+            $sideBrecord = family_planning_side_b_records::findorFail($id);
+
+            return response()->json(['sideBrecord' => $sideBrecord],200);
+        }catch(\Exception $e){
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function updateSideBrecord(Request $request, $id){
+        try{
+            $sideBrecord = family_planning_side_b_records::findOrFail($id);
+            $data = $request->validate([
+                'edit_side_b_medical_record_case_id' => 'required',
+                'edit_side_b_health_worker_id' => 'required',
+                'edit_side_b_date_of_visit' => 'sometimes|nullable|date',
+                'edit_side_b_medical_findings' => 'sometimes|nullable|string',
+                'edit_side_b_method_accepted' => 'sometimes|nullable|string',
+                'edit_side_b_name_n_signature' => 'sometimes|nullable|string',
+                'edit_side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'edit_baby_Less_than_six_months_question' => 'sometimes|nullable|string',
+                'edit_sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
+                'edit_baby_last_4_weeks_question' => 'sometimes|nullable|string',
+                'edit_menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
+                'edit_miscarriage_or_abortion_question' => 'sometimes|nullable|string',
+                'edit_contraceptive_question' => 'sometimes|nullable|string'
+            ]);
+
+            $sideBrecord -> update([
+                'medical_record_case_id' => $data['edit_side_b_medical_record_case_id'],
+                'health_worker_id' => $data['edit_side_b_health_worker_id'],
+                'date_of_visit' => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
+                'medical_findings' => $data['edit_side_b_medical_findings'] ?? $sideBrecord->medical_findings,
+                'method_accepted' => $data['edit_side_b_method_accepted'] ?? $sideBrecord->method_accepted,
+                'signature_of_the_provider' => $data['edit_side_b_name_n_signature'] ?? $sideBrecord->signature_of_the_provider,
+                'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? $sideBrecord->date_of_follow_up_visit,
+                'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? $sideBrecord->baby_Less_than_six_months_question,
+                'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? $sideBrecord->sexual_intercouse_or_mesntrual_period_question,
+                'baby_last_4_weeks_question' => $data['edit_baby_last_4_weeks_question'] ?? $sideBrecord->baby_last_4_weeks_question,
+                'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? $sideBrecord->menstrual_period_in_seven_days_question,
+                'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? $sideBrecord->miscarriage_or_abortion_question,
+                'contraceptive_question' => $data['edit_contraceptive_question'] ?? $sideBrecord->contraceptive_question,
+                'status' => 'Done'
+            ]);
+
+            return response()->json(['message' => 'Family Planning Assessment Record Successfully Updated'], 200);
+            
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
+            ], 500);
+        }
     }
 }

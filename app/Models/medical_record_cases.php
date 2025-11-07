@@ -66,4 +66,9 @@ class medical_record_cases extends Model
     public function family_planning_case_record(){
         return $this->hasOne(family_planning_case_records::class, 'medical_record_case_id', 'id');
     }
+    // family planning side b case
+    public function family_planning_side_b_record(){
+        return $this->hasOne(family_planning_side_b_records::class, 'medical_record_case_id', 'id');
+    }
+    
 }

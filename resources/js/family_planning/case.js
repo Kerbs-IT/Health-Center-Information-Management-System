@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
 
-
 const viewIcon = document.getElementById("view-family-plan-info");
 
 viewIcon.addEventListener("click", async (e) => {
@@ -399,15 +398,19 @@ editSaveBtn.addEventListener("click", async (e) => {
     // id
     const id = editSaveBtn.dataset.caseId;
 
-    const response = await fetch(`/patient-case/family-planning/update-case-info/${id}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
+    const response = await fetch(
+        `/patient-case/family-planning/update-case-info/${id}`,
+        {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        }
+    );
 
     const data = await response.json();
 
@@ -433,7 +436,7 @@ editSaveBtn.addEventListener("click", async (e) => {
         }
 
         Swal.fire({
-            title: "Prenatal Patient",
+            title: "Family Planning Patient",
             text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
@@ -441,6 +444,173 @@ editSaveBtn.addEventListener("click", async (e) => {
         });
     }
 });
+
+// side btn interaction
+const side_b_BTN = document.getElementById("side-b-add-record-btn");
+
+side_b_BTN.addEventListener("click", () => {
+    const patientInfo = JSON.parse(side_b_BTN.dataset.patientInfo);
+    // populate the hidden input 
+    const medical_case_record_id_element = document.getElementById('side_b_medical_record_case_id');
+    const health_worker_id_element = document.getElementById('side_b_health_worker_id');
+
+    // give the value
+    medical_case_record_id_element.value = patientInfo.id;
+    health_worker_id_element.value = patientInfo.family_planning_medical_record.health_worker_id;
+
+    // date of the visit
+    const date_of_visit = document.getElementById("side_b_date_of_visit");
+
+    const today = new Date().toISOString().split("T")[0];
+    date_of_visit.value = today;
+
+});
+
+// upload the data to the database
+const side_b_save_record_btn = document.getElementById('side-b-save-record-btn');
+
+side_b_save_record_btn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const form = document.getElementById("side-b-add-form");
+    const formData = new FormData(form);
+
+    const response = await fetch(
+        "/patient-record/family-planning/add/side-b-record/",
+        {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+    
+    // handle the response, its either success or there are errors
+
+     if (response.ok) {
+         Swal.fire({
+             title: "Family Planning Patient",
+             text: data.message, // this will make the text capitalize each word
+             icon: "success",
+             confirmButtonColor: "#3085d6",
+             confirmButtonText: "OK",
+         });
+     } else {
+         let message = "";
+
+         if (data.errors) {
+             if (typeof data.errors == "object") {
+                 message = Object.values(data.errors).flat().join("\n");
+             } else {
+                 message = data.errors;
+             }
+         } else {
+             message = "An unexpected error occurred.";
+         }
+
+         Swal.fire({
+             title: "Family Planning Patient",
+             text: capitalizeEachWord(message), // this will make the text capitalize each word
+             icon: "error",
+             confirmButtonColor: "#3085d6",
+             confirmButtonText: "OK",
+         });
+     }
+})
+// add side A (in case the record is deleted)
+
+const add_side_A_BTN = document.getElementById("side-a-add-record-btn");
+
+add_side_A_BTN.addEventListener('click', () => {
+    const patientInfo = JSON.parse(add_side_A_BTN.dataset.patientInfo);
+    // get the important element
+    const client_fname = document.getElementById("side_A_add_client_fname");
+    const client_MI = document.getElementById("side_A_add_client_MI");
+    const client_lname = document.getElementById("side_A_add_client_lname");
+    const client_bday = document.getElementById('side_A_add_client_date_of_birth');
+    const client_age = document.getElementById("side_A_add_client_age");
+    const client_occupation = document.getElementById("side_A_add_occupation");
+    const client_civil_status = document.getElementById('side_A_add_client_civil_status');
+    const client_religion = document.getElementById('side_A_add_client_religion');
+
+
+    // populate the inputs
+    client_fname.value = patientInfo.patient.first_name;
+    client_MI.value = patientInfo.patient.middle_initial;
+    client_lname.value = patientInfo.patient.last_name;
+    client_age.value = patientInfo.patient.age;
+    client_bday.value = patientInfo.patient.date_of_birth;
+    client_occupation.value = patientInfo.family_planning_medical_record.occupation;
+    client_civil_status.value = patientInfo.patient.civil_status;
+    client_religion.value = patientInfo.family_planning_medical_record.religion;
+});
+
+// upload the record
+const side_A_upload_btn = document.getElementById("side-a-save-record-btn");
+side_A_upload_btn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const id = add_side_A_BTN.dataset.medicalCaseRecordId;
+    const form = document.getElementById("side-a-add-form");
+    const formData = new FormData(form);
+    
+    const response = await fetch(
+        `/patient-record/family-planning/add/side-a-record/${id}`,
+        {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        }
+    );
+
+    const data = await response.json();
+
+    // handle the response, its either success or there are errors
+
+    if (response.ok) {
+        Swal.fire({
+            title: "Family Planning Patient",
+            text: data.message, // this will make the text capitalize each word
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    } else {
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = data.message??"An unexpected error occurred.";
+        }
+
+        Swal.fire({
+            title: "Family Planning Patient",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    }
+
+})
+
+// ------------------------------- FUNCTIONS --------------------------------------------------------
 
 function inputPicker(key, value) {
     const elements = document.querySelectorAll(`input[name="edit_${key}"]`);
