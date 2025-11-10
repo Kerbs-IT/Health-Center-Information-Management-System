@@ -1,4 +1,6 @@
-import 'bootstrap';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+// navigation bar:
+
 
 // Carousel
 
@@ -24,7 +26,7 @@ import 'bootstrap';
             }
 
             cardCarousel.scrollTo({ left: scrollPosition, behavior: 'smooth' });
-        }, 4000); // slide every 4 seconds
+        }, 4000); 
     };
 
     const resetAutoSlide = () => {
@@ -65,6 +67,8 @@ import 'bootstrap';
     });
 
     startAutoSlide(); // start auto-sliding on load
+
+
 
 
 
