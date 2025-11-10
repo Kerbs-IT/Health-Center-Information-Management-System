@@ -98,7 +98,7 @@
             <div class="upper-box d-flex gap-1 mb-2">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
                 <div class="blood-donation d-flex w-100">
-                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan"  id="donor_name_input">
+                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan" id="donor_name_input">
                     <button type="button" class="btn btn-success" id="donor_name_add_btn">Add</button>
                 </div>
                 <!-- hidden input since madami to -->

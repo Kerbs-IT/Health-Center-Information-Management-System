@@ -84,6 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const street = document.getElementById("street");
         const brgy = document.getElementById("brgy");
         const handled_by = document.getElementById("handled_by");
+        const errors = { fname, lname, street, brgy, handled_by };
+
+        Object.values(errors).forEach(element => {
+            element.style.border =  "" ;
+        });
 
         if (typeSelect.value === "") {
             Swal.fire({
@@ -121,6 +126,19 @@ document.addEventListener("DOMContentLoaded", () => {
             return; // stop the function here
         }
 
+         const patient_name_view = document.getElementById(
+             "vaccination_patient_name_view"
+         );
+         if (patient_name_view) {
+             const fname = document.getElementById("first_name");
+             const MI = document.getElementById("middle_initial");
+             const lname = document.getElementById("last_name");
+
+             const fullname = fname.value + " " + MI.value + " " + lname.value;
+
+             patient_name_view.value = fullname.trim();
+         }
+
         currentStep++;
         showStep(currentStep);
     };
@@ -155,6 +173,8 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".third-row")
                 .classList.replace("d-none", "d-flex");
+            
+           
         } else if (dropdownValue == "prenatal") {
             // hide the vaccination
             document
