@@ -26,7 +26,7 @@ class SeniorCitizenController extends Controller
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric',
+                'age' => 'sometimes|nullable|numeric|min:60',
                 'sex' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',

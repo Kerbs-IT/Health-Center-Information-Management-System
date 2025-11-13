@@ -54,8 +54,6 @@ editBTN.forEach((btn) => {
         const checkupId = btn.dataset.checkupId;
         console.log(checkupId);
 
-        
-
         const response = await fetch(
             `/prenatal/view-pregnancy-checkup-info/${checkupId}`
         );
@@ -74,11 +72,18 @@ editBTN.forEach((btn) => {
                             document.getElementById(`edit_${key}`).value =
                                 value;
                         } else if (key == "patient_name") {
-                           document.getElementById("edit_patient_name").value = value;
+                            document.getElementById("edit_patient_name").value =
+                                value;
                             // set the hidden input - matches the name attribute that gets validated
-                            document.getElementById("edit_check_up_full_name").value = value;
-                            console.log('name', value);
-                            console.log(document.getElementById("edit_check_up_full_name").value);
+                            document.getElementById(
+                                "edit_check_up_full_name"
+                            ).value = value;
+                            console.log("name", value);
+                            console.log(
+                                document.getElementById(
+                                    "edit_check_up_full_name"
+                                ).value
+                            );
                         } else if (value == "Yes" || value == "No") {
                             document.getElementById(
                                 `edit_${key}_${value}`
@@ -108,7 +113,6 @@ updateBTN.addEventListener("click", async (e) => {
     const form = document.getElementById("edit-check-up-form");
     const formData = new FormData(form);
 
-
     for (const [key, value] of formData.entries()) {
         console.log(key, value);
     }
@@ -123,16 +127,44 @@ updateBTN.addEventListener("click", async (e) => {
         body: formData,
     });
 
+    const data = response.json();
+
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
             title: "Prenatal Patient",
-            text: "Error occur updating Patient is not Successful.",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
-        const data = await response.json();
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Prenatal check-Up Info",
             text: data.message,
@@ -142,3 +174,6 @@ updateBTN.addEventListener("click", async (e) => {
         });
     }
 });
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

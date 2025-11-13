@@ -415,34 +415,57 @@ updateSaveBtn.addEventListener("click", async (e) => {
     );
 
     const data = await response.json();
+    // error elements
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Update",
-            text: "There's an error", // this will make the text capitalize each word
+            title: "Update Case Information",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
+    } else {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's no error
+        Swal.fire({
+            title: "Update",
+            text: data.message,
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
     }
-
-    // if there's no error
-    Swal.fire({
-        title: "Update",
-        text: data.message
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" "), // this will make the text capitalize each word,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-    });
 });
 
 // ARCHIVE FUNCTIONALITY
 const archiveBtns = document.querySelectorAll(".archive-record-icon");
 
 archiveBtns.forEach((btn) => {
-    btn.addEventListener("click",(e) => {
+    btn.addEventListener("click", (e) => {
         Swal.fire({
             title: "Are you sure?",
             text: "The Vaccination Case Record will be deleted.",
@@ -453,7 +476,7 @@ archiveBtns.forEach((btn) => {
             confirmButtonText: "Archive",
         }).then(async (result) => {
             if (result.isConfirmed) {
-               const caseId = e.target.dataset.bsCaseId;
+                const caseId = e.target.dataset.bsCaseId;
                 console.log(caseId);
                 const response = await fetch(
                     `/delete-vaccination-case/${caseId}`,
@@ -470,6 +493,10 @@ archiveBtns.forEach((btn) => {
                 e.target.closest("tr").remove();
             }
         });
-       
     });
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+

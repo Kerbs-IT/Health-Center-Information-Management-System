@@ -413,8 +413,11 @@ editSaveBtn.addEventListener("click", async (e) => {
     );
 
     const data = await response.json();
-
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Family Planning Patient",
             text: data.message, // this will make the text capitalize each word
@@ -423,6 +426,16 @@ editSaveBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
+        // reset
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // handles the validation error
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
         let message = "";
 
         if (data.errors) {
@@ -492,36 +505,50 @@ side_b_save_record_btn.addEventListener('click', async (e) => {
     const data = await response.json();
     
     // handle the response, its either success or there are errors
+     const errorElements = document.querySelectorAll(".error-text");
 
-     if (response.ok) {
+    if (response.ok) {
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
          Swal.fire({
              title: "Family Planning Patient",
-             text: data.message, // this will make the text capitalize each word
+             text: capitalizeEachWord(data.message), // this will make the text capitalize each word
              icon: "success",
              confirmButtonColor: "#3085d6",
              confirmButtonText: "OK",
          });
-     } else {
-         let message = "";
+    } else {
+        // reset
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // handles the validation error
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+        let message = "";
 
-         if (data.errors) {
-             if (typeof data.errors == "object") {
-                 message = Object.values(data.errors).flat().join("\n");
-             } else {
-                 message = data.errors;
-             }
-         } else {
-             message = "An unexpected error occurred.";
-         }
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
 
-         Swal.fire({
-             title: "Family Planning Patient",
-             text: capitalizeEachWord(message), // this will make the text capitalize each word
-             icon: "error",
-             confirmButtonColor: "#3085d6",
-             confirmButtonText: "OK",
-         });
-     }
+        Swal.fire({
+            title: "Family Planning Patient",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+    }
 })
 // add side A (in case the record is deleted)
 
@@ -577,16 +604,29 @@ side_A_upload_btn.addEventListener('click', async (e) => {
     const data = await response.json();
 
     // handle the response, its either success or there are errors
-
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
         Swal.fire({
             title: "Family Planning Patient",
-            text: data.message, // this will make the text capitalize each word
+            text: capitalizeEachWord(data.message), // this will make the text capitalize each word
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
+        // reset
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // handles the validation error
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
         let message = "";
 
         if (data.errors) {
@@ -596,7 +636,7 @@ side_A_upload_btn.addEventListener('click', async (e) => {
                 message = data.errors;
             }
         } else {
-            message = data.message??"An unexpected error occurred.";
+            message = data.message ?? "An unexpected error occurred.";
         }
 
         Swal.fire({

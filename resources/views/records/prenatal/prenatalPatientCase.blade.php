@@ -212,12 +212,12 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- view medical record -->
+                        <!-- view case record -->
                         <div class="modal fade" id="viewPrenatalMedicalRecordModal" tabindex="-1" aria-labelledby="vaccinationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header bg-success text-white">
-                                        <h5 class="modal-title" id="vaccinationModalLabel">Prenatal Medical Record Details</h5>
+                                        <h5 class="modal-title" id="vaccinationModalLabel">Prenatal Case Record Details</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);"></button>
                                     </div>
 
@@ -269,6 +269,7 @@
                                                 <div class="mb-2 w-100">
                                                     <label for="time_of_vaccination">Time</label>
                                                     <input type="time" class="form-control" name="check_up_time">
+                                                    <small class="text-danger error-text" id="check_up_time_error"></small>
                                                 </div>
 
                                                 <div class="vital-sign w-100 border-bottom">
@@ -277,14 +278,17 @@
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Blood Pressure:</label>
                                                             <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="check_up_blood_pressure">
+                                                            <small class="text-danger error-text" id="check_up_blood_pressure_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Temperature:</label>
                                                             <input type="number" class="form-control w-100" placeholder="00 C" name="check_up_temperature">
+                                                            <small class="text-danger error-text" id="check_up_temperature_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Pulse Rate(Bpm):</label>
                                                             <input type="text" class="form-control w-100" placeholder=" 60-100" name="check_up_pulse_rate">
+                                                            <small class="text-danger error-text" id="check_up_pulse_rate_error"></small>
                                                         </div>
 
                                                     </div>
@@ -293,14 +297,17 @@
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Respiratory Rate (breaths/min):</label>
                                                             <input type="text" class="form-control w-100" placeholder="ex. 25" name="check_up_respiratory_rate">
+                                                            <small class="text-danger error-text" id="check_up_respiratory_rate_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Height(cm):</label>
                                                             <input type="number" class="form-control w-100" placeholder="00.00" name="check_up_height">
+                                                            <small class="text-danger error-text" id="check_up_height_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-50">
                                                             <label for="BP">Weight(kg):</label>
                                                             <input type="number" class="form-control w-100" placeholder=" 00.00" name="check_up_weight">
+                                                            <small class="text-danger error-text" id="check_up_weight_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- 3rd row -->
@@ -320,7 +327,9 @@
                                                                 <input class="" type="radio" name="abdomen_question" value="No" id="q1-no">
                                                                 <label class="form-check-label" for="q1-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="abdomen_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="abdomen_question_remarks">
+                                                            <small class="text-danger error-text" id="abdomen_question_remarks_error"></small>
                                                         </div>
                                                     </div>
 
@@ -336,7 +345,9 @@
                                                                 <input class="" type="radio" name="vaginal_question" value="No" id="q2-no">
                                                                 <label class="form-check-label" for="q2-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="vaginal_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="vaginal_question_remarks">
+                                                            <small class="text-danger error-text" id="vaginal_question_remarks_error"></small>
                                                         </div>
                                                     </div>
 
@@ -352,7 +363,9 @@
                                                                 <input class="" type="radio" name="swelling_question" value="No" id="q3-no">
                                                                 <label class="form-check-label" for="q3-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="swelling_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="swelling_question_remarks">
+                                                            <small class="text-danger error-text" id="swelling_question_remarks_error"></small>
                                                         </div>
                                                     </div>
 
@@ -368,7 +381,9 @@
                                                                 <input class="" type="radio" name="headache_question" value="No" id="q4-no">
                                                                 <label class="form-check-label" for="q4-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="headache_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="headache_question_remarks">
+                                                            <small class="text-danger error-text" id="headache_question_remarks_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- Question 5 -->
@@ -383,7 +398,9 @@
                                                                 <input class="" type="radio" name="blurry_vission_question" value="No" id="q5-no">
                                                                 <label class="form-check-label" for="q5-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="blurry_vission_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="blurry_vission_question_remarks">
+                                                            <small class="text-danger error-text" id="blurry_vission_question_remarks_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- Question 6 -->
@@ -398,7 +415,9 @@
                                                                 <input class="" type="radio" name="urination_question" value="No" id="q6-no">
                                                                 <label class="form-check-label" for="q6-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="urination_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="urination_question_remarks">
+                                                            <small class="text-danger error-text" id="urination_question_remarks_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- Question 7 -->
@@ -413,7 +432,9 @@
                                                                 <input class="" type="radio" name="baby_move_question" value="No" id="q7-no">
                                                                 <label class="form-check-label" for="q7-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="baby_move_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="baby_move_question_remarks">
+                                                            <small class="text-danger error-text" id="baby_move_question_remarks_error"></small>
                                                         </div>
                                                     </div>
 
@@ -429,7 +450,9 @@
                                                                 <input class="" type="radio" name="decreased_baby_movement" value="No" id="q9-no">
                                                                 <label class="form-check-label" for="q9-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="decreased_baby_movement_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="decreased_baby_movement_remarks">
+                                                            <small class="text-danger error-text" id="decreased_baby_movement_remarks_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- Question 10 -->
@@ -444,13 +467,16 @@
                                                                 <input class="" type="radio" name="other_symptoms_question" value="No" id="q10-no">
                                                                 <label class="form-check-label" for="q10-no">No</label>
                                                             </div>
+                                                            <small class="text-danger error-text" id="other_symptoms_question_error"></small>
                                                             <input type="text" class="form-control ms-3 mt-2 mt-sm-0 flex-grow-1" placeholder="Remarks (if any)" name="other_symptoms_question_remarks">
+                                                            <small class="text-danger error-text" id="other_symptoms_question_remarks_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- overall remarks -->
                                                     <div class="mb-2 w-100">
                                                         <label for="remarks">Remarks*</label>
                                                         <input type="text" class="form-control" name="overall_remarks">
+                                                        <small class="text-danger error-text" id="overall_remarks_error"></small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -483,26 +509,32 @@
                                                         <div class="item">
                                                             <label for="G">G</label>
                                                             <input type="number" name="G" class="form-control w-100" placeholder="0" id="grada_input">
+                                                            <small class="text-danger error-text error-text" id="G_error"></small>
                                                         </div>
                                                         <div class="item">
                                                             <label for="G">P</label>
                                                             <input type="number" name="P" class="form-control w-100" placeholder="0" id="para_input">
+                                                            <small class="text-danger error-text error-text" id="P_error"></small>
                                                         </div>
                                                         <div class="item">
                                                             <label for="T">T</label>
                                                             <input type="number" name="T" class="form-control w-100" placeholder="0" id="term_input">
+                                                            <small class="text-danger error-text error-text" id="T_error"></small>
                                                         </div>
                                                         <div class="item">
                                                             <label for="premature">Premature</label>
                                                             <input type="number" name="premature" class="form-control w-100" placeholder="0" id="premature_input">
+                                                            <small class="text-danger error-text error-text" id="premature_error"></small>
                                                         </div>
                                                         <div class="item">
                                                             <label for="abortion">Abortion</label>
                                                             <input type="number" name="abortion" class="form-control w-100" placeholder="0" id="abortion_input">
+                                                            <small class="text-danger error-text error-text" id="abortion_error"></small>
                                                         </div>
                                                         <div class="item">
                                                             <label for="living_children">Living Children</label>
                                                             <input type="number" name="living_children" class="form-control w-100" placeholder="0" id="living_children_input">
+                                                            <small class="text-danger error-text error-text" id="living_children_error"></small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -511,7 +543,7 @@
                                                     <div class="item">
                                                         <label for="year_of_pregnancy">Year of Pregnancy</label>
                                                         <input type="number" name="pregnancy_year" class="form-control w-100" id="pregnancy_year">
-                                                        <span class="text-danger" id="preg_year_error"></span>
+                                                        <span class="text-danger error-text" id="pregnancy_year_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="type_of_delivery">Type of Delivery</label>
@@ -527,17 +559,17 @@
                                                             <option value="Home Birth">Home Birth</option>
                                                             <option value="Emergency Cesarean">Emergency Cesarean</option>
                                                         </select>
-                                                        <span class="text-danger" id="type_of_delivery_error"></span>
+                                                        <span class="text-danger error-text" id="type_of_delivery_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="place_of_delivery">Place of Delivery</label>
                                                         <input type="text" name="place_of_delivery" class="form-control w-100" placeholder="trece" id="place_of_delivery">
-                                                        <span class="text-danger" id="place_of_delivery_error"></span>
+                                                        <span class="text-danger error-text" id="place_of_delivery_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="birth_attendant">Birth Attendant</label>
                                                         <input type="text" name="birth_attendant" class="form-control w-100" placeholder="Nurse joy" id="birth_attendant">
-                                                        <span class="text-danger" id="birth_attendant_error"></span>
+                                                        <span class="text-danger error-text" id="birth_attendant_error"></span>
                                                     </div>
                                                     <div class="item">
                                                         <label for="Complication">Complication</label>
@@ -554,7 +586,7 @@
                                                             <option value="stillbirth">Stillbirth (IUFD)</option>
                                                             <option value="living">Living Child</option>
                                                         </select>
-                                                        <span class="w-100 text-danger" id="outcome_error"></span>
+                                                        <span class="w-100 text-danger error-text" id="outcome_error"></span>
                                                     </div>
                                                     <div class="d-flex align-self-end mb-0">
                                                         <button type="button" class="btn btn-success" id="add-pregnancy-history-btn"> Add</button>
@@ -586,14 +618,17 @@
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">LMP</label>
                                                             <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input">
+                                                            <small class="text-danger error-text error-text" id="LMP_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">Expected Delivery</label>
                                                             <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input">
+                                                            <small class="text-danger error-text error-text" id="expected_delivery_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">Menarche</label>
                                                             <input type="text" name="menarche" class="form-control w-100" placeholder="trece" id="menarche_input">
+                                                            <small class="text-danger error-text error-text" id="menarche_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- next row -->
@@ -601,14 +636,17 @@
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">TT1</label>
                                                             <input type="text" name="tt1" class="form-control w-100" placeholder="YYYY" id="tt1_input">
+                                                            <small class="text-danger error-text error-text" id="tt1_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT2</label>
                                                             <input type="text" name="tt2" class="form-control w-100" placeholder="YYYY" id="tt2_input">
+                                                            <small class="text-danger error-text error-text" id="tt2_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT3</label>
                                                             <input type="text" name="tt3" class="form-control w-100" placeholder="YYYY" id="tt3_input">
+                                                            <small class="text-danger error-text error-text" id="tt3_error"></small>
                                                         </div>
                                                     </div>
                                                     <!-- last row -->
@@ -616,10 +654,12 @@
                                                         <div class="mb-2 w-100 ">
                                                             <label for="place_of_delivery">TT4</label>
                                                             <input type="text" name="tt4" class="form-control w-100" placeholder="YYYY" id="tt4_input">
+                                                            <small class="text-danger error-text error-text" id="tt4_error"></small>
                                                         </div>
                                                         <div class="mb-2 w-100">
                                                             <label for="expected_delivery">TT5</label>
                                                             <input type="text" name="tt5" class="form-control w-100" placeholder="YYYY" id="tt5_input">
+                                                            <small class="text-danger error-text error-text" id="tt5_error"></small>
                                                         </div>
                                                     </div>
 
@@ -701,15 +741,15 @@
                                                             <label for="midwife" class="fs-5 fw-medium text-nowrap">Ako ay papaanakin ni:</label>
                                                             <input type="text" class="flex-grow-1 form-control" name="midwife_name" placeholder="(pangalan ng doctor/nars/midwife, atbp.)" id="midwife_name">
                                                         </div>
-                                                        <small id="midwife_name_error" class="text-danger"></small>
+                                                        <small id="midwife_name_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- plano ko manganak -->
                                                     <div class="mb-3">
                                                         <div class="upper-box d-flex align-items-center gap-1">
                                                             <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Plano kong manganak sa:</label>
-                                                            <input type="text" class="flex-grow-1 form-control" name="place_of_birth" placeholder="(pangalan ng hospital/lying-in center/ maternity clinic)" id="place_of_birth">
+                                                            <input type="text" class="flex-grow-1 form-control" name="place_of_pregnancy" placeholder="(pangalan ng hospital/lying-in center/ maternity clinic)" id="place_of_pregnancy">
                                                         </div>
-                                                        <small id="place_of_birth_error" class="text-danger"></small>
+                                                        <small id="place_of_pregnancy_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- authorized by philheath -->
                                                     <div class="mb-3">
@@ -721,6 +761,7 @@
                                                                 <label for="no" class="fs-5">Hindi:</label>
                                                                 <input type="radio" name="authorized_by_philhealth" class="mb-0" value="no" id="authorized_by_philhealth_no">
                                                             </div>
+                                                            <small id="authorized_by_philhealth_error" class="text-danger error-text"></small>
                                                         </div>
                                                     </div>
                                                     <!-- cost of pregnancy -->
@@ -729,6 +770,7 @@
                                                             <label for="place_of_birth" class="fs-5 fw-medium w-100 text-nowrap ">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
                                                             <input type="number" class="flex-grow-1 form-control" name="cost_of_pregnancy" id="cost_of_pregnancy">
                                                         </div>
+                                                        <small id="cost_of_pregnancy_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- payment method -->
                                                     <div class="mb-3">
@@ -746,6 +788,7 @@
                                                                 <option value="Employer / Company Benefit">Employer / Company Benefit</option>
                                                             </select>
                                                         </div>
+                                                        <small id="payment_method_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- mode of transportation -->
                                                     <div class="mb-3">
@@ -762,10 +805,12 @@
                                                                 <option value="Taxi / Grab">Taxi / Grab</option>
                                                                 <option value="Others">Others</option>
                                                             </select>
+
                                                         </div>
                                                         <div class="low-box w-100 d-flex justify-content-center">
                                                             <small>(mode of transportation)</small>
                                                         </div>
+                                                        <small id="transportation_mode_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- person who will bring me to hospital -->
                                                     <div class="mb-3">
@@ -773,6 +818,7 @@
                                                             <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Taong magdadala sakin sa hospital: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="accompany_person_to_hospital" placeholder="Ilagay ang pangalan" id="accompany_person_to_hospital">
                                                         </div>
+                                                        <small id="accompany_person_to_hospital_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- guardian -->
                                                     <div class="mb-3">
@@ -780,6 +826,7 @@
                                                             <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Pangalan ng taong sasamahan ako sa panganganak: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="accompany_through_pregnancy" placeholder="Ilagay ang pangalan" id="accompany_through_pregnancy">
                                                         </div>
+                                                        <small id="accompany_through_pregnancy_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- mag-alalaga -->
                                                     <div class="mb-3">
@@ -787,6 +834,7 @@
                                                             <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Pangalan ng taong mag-aalaga sa akin sa panganganak: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="care_person" placeholder="Ilagay ang pangalan" id="care_person">
                                                         </div>
+                                                        <small id="care_person_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- magbibigay ng dugo -->
                                                     <div class="mb-3">
@@ -817,6 +865,7 @@
                                                             <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="emergency_person_name" placeholder="Ilagay ang pangalan" id="emergency_person_name">
                                                         </div>
+                                                        <small id="emergency_person_name_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- contact info -->
                                                     <div class="mb-3">
@@ -824,6 +873,7 @@
                                                             <label for="place_of_birth" class="fs-5">Tirahan: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="address" id="emergency_person_residency">
                                                         </div>
+                                                        <small id="emergency_person_residency_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- contact -->
                                                     <div class="mb-3">
@@ -831,6 +881,7 @@
                                                             <label for="place_of_birth" class="fs-5"> Telepono: </label>
                                                             <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="ex. 0936627872" id="emergency_person_contact_number">
                                                         </div>
+                                                        <small id="emergency_person_contact_number_error" class="text-danger error-text"></small>
                                                     </div>
                                                     <!-- patient name -->
                                                     <div class="mb-3">
@@ -838,6 +889,7 @@
                                                             <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan ng pasyente: </label>
                                                             <input type="text" class="flex-grow-1 form-control" name="patient_name" id="patient_name" placeholder="Ilagay ang pangalan" disabled>
                                                         </div>
+
                                                     </div>
                                                     <!-- signature -->
                                                     <div class="mb-3 w-100 d-flex flex-column border-bottom">
@@ -845,6 +897,7 @@
                                                         <input type="file" name="signature_image" id="signature_image" class="form-control" accept="image/*" required>
                                                         <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
                                                     </div>
+                                                    <small id="signature_image_error" class="text-danger error-text"></small>
                                                 </div>
                                             </div>
                                         </div>

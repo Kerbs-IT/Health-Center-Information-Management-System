@@ -14,6 +14,7 @@
                     <input type="radio" name="side_A_add_infection_abnormal_discharge_from_genital_area" id="side_A_add_infection_abnormal_discharge_from_genital_area_no" value="No">
                     <label for="side_A_add_infection_abnormal_discharge_from_genital_area_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_infection_abnormal_discharge_from_genital_area_error"></small>
             </div>
             <!-- follow up -->
             <div class="mb-2 d-flex align-items-center justify-content-between" style="padding-left: 50px;">
@@ -27,6 +28,7 @@
                     <input type="radio" name="side_A_add_origin_of_abnormal_discharge" id="side_A_add_origin_of_abnormal_discharge_no" value="Penis">
                     <label for="side_A_add_origin_of_abnormal_discharge_no" class="fs-5">Penis</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_origin_of_abnormal_discharge_error"></small>
             </div>
             <!-- next -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -40,6 +42,7 @@
                     <input type="radio" name="side_A_add_score_or_ulcer" id="side_A_add_score_or_ulcer_no" value="No">
                     <label for="side_A_add_score_or_ulcer_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_score_or_ulcer_error"></small>
             </div>
             <!-- q3 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -53,6 +56,7 @@
                     <input type="radio" name="side_A_add_pain_or_burning_sensation" id="side_A_add_pain_or_burning_sensation_no" value="No">
                     <label for="side_A_add_pain_or_burning_sensation_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_pain_or_burning_sensation_error"></small>
             </div>
             <!-- q4 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -66,6 +70,7 @@
                     <input type="radio" name="side_A_add_history_of_sexually_transmitted_infection" id="side_A_add_history_of_sexually_transmitted_infection_no" value="No">
                     <label for="side_A_add_history_of_sexually_transmitted_infection_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_history_of_sexually_transmitted_infection_error"></small>
             </div>
             <!-- q5 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -79,6 +84,7 @@
                     <input type="radio" name="side_A_add_sexually_transmitted_disease" id="side_A_add_sexually_transmitted_disease_no" value="No">
                     <label for="side_A_add_sexually_transmitted_disease_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_sexually_transmitted_disease_error"></small>
             </div>
         </div>
     </div>
@@ -96,6 +102,7 @@
                 <input type="radio" name="side_A_add_history_of_domestic_violence_of_VAW" id="side_A_add_history_of_domestic_violence_of_VAW_no" value="No">
                 <label for="side_A_add_history_of_domestic_violence_of_VAW_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_history_of_domestic_violence_of_VAW_error"></small>
         </div>
         <!-- q7 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -109,6 +116,7 @@
                 <input type="radio" name="side_A_add_unpleasant_relationship_with_partner" id="side_A_add_unpleasant_relationship_with_partner_no" value="No">
                 <label for="side_A_add_unpleasant_relationship_with_partner_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_unpleasant_relationship_with_partner_error"></small>
         </div>
         <!-- q8 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -122,6 +130,7 @@
                 <input type="radio" name="side_A_add_partner_does_not_approve" id="side_A_add_partner_does_not_approve_no">
                 <label for="side_A_add_partner_does_not_approve_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_partner_does_not_approve_error"></small>
         </div>
         <div class="reffered-to d-flex flex-column">
             <h5>Reffered to:</h5>
@@ -146,6 +155,7 @@
                         <input type="text" class="form-control w-50" name="side_A_add_reffered_to_others">
                     </div>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_referred_to_error"></small>
             </div>
         </div>
     </div>

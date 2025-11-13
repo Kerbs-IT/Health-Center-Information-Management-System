@@ -91,9 +91,8 @@ if (addTableBody) {
     });
 }
 
-
 // upload the data
-const tbDotsBtn = document.getElementById('tb_dots_save_record_btn');
+const tbDotsBtn = document.getElementById("tb_dots_save_record_btn");
 
 tbDotsBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -101,7 +100,7 @@ tbDotsBtn.addEventListener("click", async (e) => {
     const form = document.getElementById("add-patient-form");
     const formData = new FormData(form);
 
-    const response = await fetch('/patient-record/add/tb-dots', {
+    const response = await fetch("/patient-record/add/tb-dots", {
         method: "POST",
         headers: {
             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
@@ -111,7 +110,14 @@ tbDotsBtn.addEventListener("click", async (e) => {
         body: formData,
     });
 
+    const data = await response.json();
+
+    const errorElements = document.querySelectorAll(".error-text");
+
     if (response.ok) {
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
         Swal.fire({
             title: "Prenatal Patient",
             text: "Patient is Successfully added.", // this will make the text capitalize each word
@@ -120,12 +126,38 @@ tbDotsBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
+        
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Error occur Patient is not Successfully added.", // this will make the text capitalize each word
+            title: "TB Dots Patient",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

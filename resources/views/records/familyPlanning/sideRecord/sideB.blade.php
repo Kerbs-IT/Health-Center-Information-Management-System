@@ -7,6 +7,7 @@
         <div class="input-field">
             <label for="side_b_date_of_visit" class="w-100 fs-5">Date of Visit:</label>
             <input type="date" class="form-control w-100 py-2" name="side_b_date_of_visit" id="side_b_date_of_visit">
+            <small class="text-danger" id="side_b_date_of_visit_error"></small>
             <input type="hidden" name="side_b_medical_record_case_id" id="side_b_medical_record_case_id">
             <input type="hidden" name="side_b_health_worker_id" id="side_b_health_worker_id">
         </div>
@@ -14,19 +15,23 @@
             <label for="side_b_medical_findings" class="w-100 fs-5">Medical Findings:</label>
             <label for="side_b_medical_findings" class="w-100">(Medical observation/complaints, service rendered/procedures, laboratory examination, treatment and referrals)</label>
             <textarea name="side_b_medical_findings" id="side_b_medical_findings" class="bg-light border-1 w-100 h-[150px]"></textarea>
+            <small class="text-danger" id="side_b_medical_findings_error"></small>
         </div>
         <div class="input-field">
             <label for="side_b_method_accepted" class="fs-5">Method Accepted: </label>
             <input type="text" class="form-control w-100" name="side_b_method_accepted" id="side_b_method_accepted">
+            <small class="text-danger" id="side_b_method_accepted_error"></small>
         </div>
         <div class="input-field">
             <label for="side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
             <input type="file" id="side_b_name_n_signature" name="side_b_name_n_signature" accept="image/*" class="w-100 form-control">
+            <small class="text-danger" id="side_b_name_n_signature_error"></small>
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
             <label for="side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit:</label>
             <input type="date" class="form-control w-100 py-2" name="side_b_date_of_follow_up_visit" id="side_b_date_of_follow_up_visit">
+            <small class="text-danger" id="side_b_date_of_follow_up_visit_error"></small>
         </div>
     </div>
     <!-- follow up questions -->
@@ -44,6 +49,7 @@
                 <input type="radio" name="baby_Less_than_six_months_question" id="baby_Less_than_six_months_question_no" value="No">
                 <label for="baby_Less_than_six_months_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="baby_Less_than_six_months_question_error"></small>
         </div>
         <!-- q2 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -57,6 +63,7 @@
                 <input type="radio" name="sexual_intercouse_or_mesntrual_period_question" id="sexual_intercouse_or_mesntrual_period_question_no" value="No">
                 <label for="sexual_intercouse_or_mesntrual_period_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="sexual_intercouse_or_mesntrual_period_question_error"></small>
         </div>
         <!-- q3 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -70,6 +77,7 @@
                 <input type="radio" name="baby_last_4_weeks_question" id="baby_last_4_weeks_question_no" value="No">
                 <label for="baby_last_4_weeks_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="baby_last_4_weeks_question_error"></small>
         </div>
         <!-- q4 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -83,6 +91,7 @@
                 <input type="radio" name="menstrual_period_in_seven_days_question" id="menstrual_period_in_seven_days_question_no" value="No">
                 <label for="menstrual_period_in_seven_days_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="menstrual_period_in_seven_days_question_error"></small>
         </div>
         <!-- q5 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -96,6 +105,7 @@
                 <input type="radio" name="miscarriage_or_abortion_question" id="miscarriage_or_abortion_question_no" value="No">
                 <label for="miscarriage_or_abortion_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="miscarriage_or_abortion_question_error"></small>
         </div>
         <!-- q6 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -109,6 +119,7 @@
                 <input type="radio" name="contraceptive_question" id="contraceptive_question_no" value="No">
                 <label for="contraceptive_question_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger" id="contraceptive_question_error"></small>
         </div>
         <div class="notices">
             <p>- If the client answered YES to at least one of the questions and she is free of signs or sign or symptoma of pregnancy, provide client with desired method</p>

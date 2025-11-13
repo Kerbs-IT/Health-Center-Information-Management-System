@@ -70,7 +70,7 @@
                                         <td>{{$record->status}}</td>
 
                                         <td>
-                                            
+
                                             <div class="actions d-flex gap-2 justify-content-center align-items-center">
                                                 <button type="button" data-bs-toggle="modal" data-bs-target="#viewdetailsModal" class="viewCaseBtn" data-bs-case-id="{{$record->id}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -127,12 +127,14 @@
                                                     </div>
                                                     <h5>MEDICAL INFORMATION</h5>
                                                     <div class="mb-3">
-                                                        <label for="">Existing Medical Condition</label>
+                                                        <label for="new_existing_medical_condition">Existing Medical Condition</label>
                                                         <input type="text" class="form-control" name="add_existing_medical_condition" id="new_existing_medical_condition">
+                                                        <small class="text-danger error-text" id="add_existing_medical_condition_error"></small>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="">Alergies</label>
+                                                        <label for="new_alergies">Alergies</label>
                                                         <input type="text" class="form-control" name="add_alergies" id="new_alergies">
+                                                        <small class="text-danger error-text" id="add_alergies_error"></small>
                                                     </div>
                                                     <div class="maintenance-con d-flex gap-2 align-items-center ">
                                                         <div class="mb-3">
@@ -193,10 +195,12 @@
                                                     <div class="mb-3">
                                                         <label for="">Prescribing Nurse</label>
                                                         <input type="text" class="form-control" name="add_prescribe_by_nurse" id="add_prescribe_by_nurse">
+                                                        <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                     </div>
                                                     <div class="mb-3 border-bottom">
                                                         <label for="" class="text-nowrap">Remarks *</label>
                                                         <input type="text" class="form-control p-3" name="add_medication_maintenance_remarks">
+                                                        <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                     </div>
                                                 </div>
 
@@ -234,10 +238,12 @@
                                                     <div class="mb-3">
                                                         <label for="">Existing Medical Condition</label>
                                                         <input type="text" class="form-control" name="edit_existing_medical_condition" id="edit_existing_medical_condition">
+                                                        <small class="text-danger error-text" id="edit_existing_medical_condition_error"></small>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="">Alergies</label>
                                                         <input type="text" class="form-control" id="edit_alergies" name="edit_alergies">
+                                                        <small class="text-danger error-text" id="edit_alergies_error"></small>
                                                     </div>
                                                     <div class="maintenance-con d-flex gap-2 align-items-center ">
                                                         <div class="mb-3">
@@ -298,10 +304,12 @@
                                                     <div class="mb-3">
                                                         <label for="">Prescribing Nurse</label>
                                                         <input type="text" class="form-control p-3" name="edit_prescribe_by_nurse" id="edit_prescribe_by_nurse">
+                                                        <small class="text-danger error-text" id="edit_prescribe_by_nurse_error"></small>
                                                     </div>
                                                     <div class="mb-3 border-bottom">
                                                         <label for="" class="text-nowrap">Remarks*</label>
                                                         <input type="text" class="form-control p-3" name="edit_medication_maintenance_remarks" id="edit_remarks">
+                                                        <small class="text-danger error-text" id="edit_medication_maintenance_remarks_error"></small>
                                                     </div>
                                                 </div>
 

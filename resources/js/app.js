@@ -1,8 +1,8 @@
 import $ from 'jquery';
 window.$ = $;
 window.jQuery = $;
-import 'datatables.net-dt';
-import 'datatables.net-dt/css/dataTables.dataTables.css'; 
+// import 'datatables.net-dt';
+// import 'datatables.net-dt/css/dataTables.dataTables.css'; 
 
 import './bootstrap';
 import 'bootstrap';
@@ -122,32 +122,40 @@ const closeBtn = document.getElementById("closeSidebar");
   }
 })();
 
-toggleBtn.addEventListener("click", () => {
-  if(window.innerWidth  >= 992){
-    // Large screens → collapse sidebar
-    sidebar.classList.toggle("collapsed");
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+      if (window.innerWidth >= 992) {
+          // Large screens → collapse sidebar
+          sidebar.classList.toggle("collapsed");
 
-    // save state
-    if(sidebar.classList.contains("collapsed")){
-      localStorage.setItem("sidebarState", "collapsed");
-    }else{
-      localStorage.setItem("sidebarState", "expand");
-    }
-  }else{
-    // Medium/Small slider sidebar
-    sidebar.classList.add("show");
-    overlay.classList.add("active");
-  }
-});
-// Close Button
-closeBtn.addEventListener("click",() =>{
-  sidebar.classList.remove("show");
-  overlay.classList.remove("active");
-});
+          // save state
+          if (sidebar.classList.contains("collapsed")) {
+              localStorage.setItem("sidebarState", "collapsed");
+          } else {
+              localStorage.setItem("sidebarState", "expand");
+          }
+      } else {
+          // Medium/Small slider sidebar
+          sidebar.classList.add("show");
+          overlay.classList.add("active");
+      }
+  });
+}
+
+if (closeBtn) {
+    // Close Button
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.remove("show");
+        overlay.classList.remove("active");
+    });
+}
+
 // close outside the sidebar
+if (overlay) {
+  overlay.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("active");
+  });
+}
 
-overlay.addEventListener("click", () =>{
-  sidebar.classList.remove("show");
-  overlay.classList.remove("active")
-});
 

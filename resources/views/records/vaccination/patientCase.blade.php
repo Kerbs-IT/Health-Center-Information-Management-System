@@ -248,6 +248,7 @@
                                                     <select name="update_handled_by" id="update_handled_by" class="form-select w-100">
                                                         <option value="" selected disabled>Select the Health Worker</option>
                                                     </select>
+                                                    <small class="text-danger error-text" id="update_handled_by_error"></small>
                                                 </div>
                                                 @elseif(Auth::user()-> role == 'staff')
                                                 <div class="mb-2 w-100">
@@ -259,11 +260,13 @@
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
                                                     <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination">
+                                                    <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="time_of_vaccination">Time</label>
                                                     <input type="time" class="form-control" name="time_of_vaccination" id="edit-time-of-vaccination">
+                                                    <small class="text-danger error-text" id="time_of_vaccination_error"></small>
                                                 </div>
                                                 <!-- Hidden data -->
                                                 <div class="vaccine-administered" hidden id="vaccine-administered"></div>
@@ -276,6 +279,7 @@
                                                         </select>
                                                         <button type="button" class="btn btn-success" id="update-add-vaccine-btn">Add</button>
                                                     </div>
+                                                    <small class="text-danger error-text" id="vaccine_type_error"></small>
                                                 </div>
                                                 <!-- container of the vaccines -->
                                                 <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded gap-2 update-vaccine-container justify-content-center">
@@ -294,11 +298,13 @@
                                                         <option value="2">2nd Dose</option>
                                                         <option value="3">3rd Dose</option>
                                                     </select>
+                                                    <small class="text-danger error-text" id="dose_error"></small>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="remarks">Remarks*</label>
                                                     <input type="text" class="form-control" id="edit-remarks" name="remarks">
+                                                    <small class="text-danger error-text" id="remarks_error"></small>
                                                 </div>
                                             </div>
                                         </div>

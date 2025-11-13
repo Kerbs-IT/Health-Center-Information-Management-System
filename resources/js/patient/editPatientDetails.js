@@ -33,9 +33,6 @@ updateBtn.addEventListener("click", async (e) => {
 
     const patientId = updateBtn.dataset.bsPatientId;
 
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
     formData.append("_method", "PUT"); // to simulate PUT if your route uses Route::put()
     const response = await fetch(`/patient-record/update/${patientId}`, {
         method: "POST",
@@ -51,7 +48,14 @@ updateBtn.addEventListener("click", async (e) => {
 
     const data = await response.json();
 
+   
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
+        
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
         Swal.fire({
             title: "Update",
             text: data.message,
@@ -60,12 +64,39 @@ updateBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
+        // reset first
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
+        
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Update",
-            text: data.message,
+            title: "Update Details",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

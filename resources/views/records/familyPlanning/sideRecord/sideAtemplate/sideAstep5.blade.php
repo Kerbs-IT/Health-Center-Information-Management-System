@@ -6,11 +6,13 @@
             <div class="mb-2 w-50">
                 <label for="BP">Blood Pressure:</label>
                 <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="side_A_add_blood_pressure" id="side_A_add_blood_pressure">
+                <small class="text-danger error-text" id="side_A_add_blood_pressure_error"></small>
             </div>
 
             <div class="mb-2 w-50">
                 <label for="BP">Pulse Rate(Bpm):</label>
                 <input type="text" class="form-control w-100" placeholder=" 60-100" name="side_A_add_pulse_rate" id="side_A_add_pulse_rate">
+                <small class="text-danger error-text" id="side_A_add_pulse_rate_error"></small>
             </div>
         </div>
         <!-- 2nd row -->
@@ -19,10 +21,12 @@
             <div class="mb-2 w-50">
                 <label for="BP">Height(cm):</label>
                 <input type="number" class="form-control w-100" placeholder="00.00" name="side_A_add_height" id="side_A_add_height">
+                <small class="text-danger error-text" id="side_A_add_height_error"></small>
             </div>
             <div class="mb-2 w-50">
                 <label for="BP">Weight(kg):</label>
                 <input type="number" class="form-control w-100" placeholder=" 00.00" name="side_A_add_weight" id="side_A_add_weight">
+                <small class="text-danger error-text" id="side_A_add_weight_error"></small>
             </div>
         </div>
     </div>
@@ -51,6 +55,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_skin_type_error"></small>
                 </div>
                 <div class="CONJUCTIVA w-50">
                     <h5>CONJUCTIVA:</h5>
@@ -70,6 +75,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_conjuctiva_type_error"></small>
                 </div>
             </div>
             <!-- neck -->
@@ -92,6 +98,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_neck_type_error"></small>
                 </div>
                 <!-- Breast -->
                 <div class="Breast">
@@ -112,6 +119,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_breast_type_error"></small>
                 </div>
             </div>
             <div class="box d-flex">
@@ -134,6 +142,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_abdomen_type_error"></small>
                 </div>
                 <!-- extremites-->
                 <div class="extremites">
@@ -154,6 +163,7 @@
                             </div>
 
                         </div>
+                        <small class="text-danger error-text" id="side_A_add_extremites_type_error"></small>
                     </div>
                 </div>
             </div>
@@ -198,6 +208,7 @@
                                 <input type="radio" name="side_A_add_cervical_abnormalities_type" id="side_A_add_cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
                                 <label for="side_A_add_cervical_abnormalities_type_bloody_discharge" class="cervical_abnormalities_type">Bloody discharge</label>
                             </div>
+                            <small class="text-danger error-text" id="side_A_add_cervical_abnormalities_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="side_A_add_extremites_UID_type" id="side_A_add_extremites_UID_type_cervical_consistency" value="cervical consistency">
@@ -213,6 +224,7 @@
                                 <input type="radio" name="side_A_add_cervical_consistency_type" id="side_A_add_cervical_consistency_type_soft" value="soft">
                                 <label for="side_A_add_cervical_consistency_type_soft" class="cervical_consistency_type_label">Soft</label>
                             </div>
+                            <small class="text-danger error-text" id="side_A_add_cervical_consistency_type_error"></small>
                         </div>
                         <!-- tenderness -->
                         <div class="mb-2 d-flex align-items-center gap-2">
@@ -242,6 +254,7 @@
                                 <input type="radio" name="side_A_add_uterine_position_type" id="side_A_add_uterine_position_typer_retroflexed" value="Retroflexed">
                                 <label for="side_A_add_uterine_position_typer_retroflexed" class="uterine_position_type_label">Retroflexed</label>
                             </div>
+                            <small class="text-danger error-text" id="side_A_add_uterine_position_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="physical_examination_extremites_UID_type" id="side_A_add_uterine_depth" value="uterine depth">
@@ -251,6 +264,7 @@
                         </div>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_extremites_UID_type_error"></small>
             </div>
 
             <div class="cervical-consistency">
@@ -274,6 +288,8 @@
             <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement" id="side_A_add_date_of_acknowledgement">
         </div>
     </div>
+    <small class="text-danger error-text" id="signature_image_error"></small>
+    <small class="text-danger error-text" id="side_A_add_date_of_acknowledgement_error"></small>
     <div class="mb-3 w-100">
         <p class="text-center">I hereby consent to the inclusion of my FP 1 in the Family Health Registry</p>
     </div>
@@ -288,5 +304,7 @@
             <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement_consent" id="side_A_add_date_of_acknowledgement_consent">
         </div>
     </div>
+    <small class="text-danger error-text" id="signature_image_error"></small>
+    <small class="text-danger error-text" id="side_A_add_date_of_acknowledgement_consent_error"></small>
 
 </div>
