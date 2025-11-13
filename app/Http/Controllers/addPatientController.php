@@ -149,7 +149,7 @@ class addPatientController extends Controller
                 ]);
             }
 
-            return response()->json(['message' => 'Patient has been added'], 201);
+            return response()->json(['message' => 'Patient has been added'], 200);
         }catch(ValidationException $e){
             return response()->json([
                 'errors' => $e->errors()

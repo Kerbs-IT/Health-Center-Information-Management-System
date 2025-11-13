@@ -58,9 +58,9 @@ updateBTN.addEventListener("click", async (e) => {
     );
     const formData = new FormData(form);
 
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}: ${value}`);
+    // }
 
     const response = await fetch(
         `/update/prenatal-patient-details/${medicalRecordId}`,
@@ -77,56 +77,43 @@ updateBTN.addEventListener("click", async (e) => {
     );
     const data = await response.json();
 
+    // error elements
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
+
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Update",
-            text: Object.values(data.errors)
-                .map((err) => err) // convert array of errors to text
-                .join("\n"), // join with new lines
+            title: "Update Case Information",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
-
-        // show the error message
-        // const fname_error = document.getElementById("first_name_error");
-        // const middle_initial_error = document.getElementById('middle_initial_error');
-        // const last_name_error = document.getElementById("last_name_error");
-        // const birth_place_error = document.getElementById("birth_place_error");
-        // const date_of_birth_error = document.getElementById('date_of_birth_error');
-        // const age_error = document.getElementById('age_error');
-        // const sex_error = document.getElementById('sex_error');
-        // const contact_num_error = document.getElementById("contact_error");
-        // const nationality_error = document.getElementById("nationality_error");
-        // const date_of_registration_error = document.getElementById('date_of_registration_error');
-        // const handle_by_error = document.getElementById('handle_by_error');
-        // const head_of_family_error = document.getElementById('head_of_family_error');
-        // const civil_status_error = document.getElementById('civil_status_error');
-        // const blood_type_error = document.getElementById('blood_typee_error');
-        // const religion_error = document.getElementById('religion_error');
-        // const philhealth_error = document.getElementById("philhealth_error");
-        // const family_serial_error = document.getElementById('family_serial_error');
-        // const street_error = document.getElementById('street_error');
-        // const brgy_error = document.getElementById('brgy_error');
-        // const blood_pressure_error = document.getElementById('blood_pressure_error');
-        // const temperature_error = document.getElementById("temperature_error");
-        // const pulse_rate_error = document.getElementById("pulse_rate_error");
-        // const respiratory_rate_error = document.getElementById('respiratory_rate_error');
-
-        // so instead of manual typing of errors
-        // we rely on the input field name then added error since that is the id of the error text ex. first_name_error
-
-        // the response is object, so we use object.keys()
-
-        Object.keys(data.errors).forEach((error) => {
-            const message = data.errors[error];
-            document.getElementById(`${error}_error`).innerHTML = message[0];
-        });
     } else if (response.ok) {
         // empty the error messages
-        document.querySelectorAll(".text-errors").forEach((text) => {
-            text.innerHTML = "";
-        });
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
         Swal.fire({
             title: "Update",
             text: data.message,
@@ -136,3 +123,7 @@ updateBTN.addEventListener("click", async (e) => {
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

@@ -10,12 +10,12 @@
                         <div class="input-field w-50">
                             <label for="side_A_add_client_id">Client ID:</label>
                             <input type="text" id="side_A_add_client_id" placeholder="Enter the client ID" class="form-control" name="side_A_add_client_id">
-                            <small class="text-danger"></small>
+                            <small class="text-danger error-text" id="side_A_add_client_id_error"></small>
                         </div>
                         <div class="input-field w-50">
                             <label for="side_A_add_philhealth_no">Philhealth No:</label>
                             <input type="text" id="side_A_add_philhealth_no" placeholder="Enter the Religion" class="form-control" name="side_A_add_philhealth_no">
-                            <small class="text-danger"></small>
+                            <small class="text-danger error-text" id="side_A_add_philhealth_no_error"></small>
                         </div>
                         <div class="input-field w-50 ">
                             <label for="NHTS" class="">NHTS?:</label>
@@ -29,16 +29,27 @@
                                     <label for="nhts_no">No</label>
                                 </div>
                             </div>
+                            <small class="text-danger error-text" id="side_A_add_NHTS_error"></small>
                         </div>
                     </div>
 
                     <div class="mb-2">
                         <div class=" w-100 ">
                             <label for="name_of_spouse" class="text-nowrap">Name of Client:</label>
-                            <div class="group d-flex align-items-center justify-content-center gap-2">
-                                <input type="text" class="form-control" id="side_A_add_client_fname" name="side_A_add_client_fname" placeholder="FirstName">
-                                <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Middle Initial">
-                                <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
+                            <div class="group d-flex align-items-center justify-content-center gap-2 w-100">
+                                <div class="inputs-form w-50">
+                                    <input type="text" class="form-control" id="side_A_add_client_fname" name="side_A_add_client_fname" placeholder="FirstName">
+                                    <small class="text-danger error-text" id="side_A_add_client_fname_error"></small>
+                                </div>
+                                <div class="inputs-form w-50">
+                                    <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Middle Initial">
+                                    <small class="text-danger error-text" id="side_A_add_client_MI_error"></small>
+                                </div>
+                                <div class="inputs-form w-50">
+                                    <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
+                                    <small class="text-danger error-text" id="side_A_add_client_lname_error"></small>
+                                </div>
+
                             </div>
                             <!-- HIDDEN INPUTS -->
                             <input type="hidden" name="side_A_add_health_worker_id" id="side_A_add_health_worker_id">
@@ -49,24 +60,24 @@
                         <div class="input-field w-50">
                             <label for="side_A_add_client_date_of_birth">Date of Birth</label>
                             <input type="date" id="side_A_add_client_date_of_birth" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
-                            @error('date_of_birth')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
+
+                            <small class="text-danger error-text" id="side_A_add_client_date_of_birth_error"></small>
+
                         </div>
 
                         <!-- age -->
                         <div class="input-field w-50">
                             <label for="side_A_add_client_age">Age</label>
                             <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" name="side_A_add_client_age">
-                            <small class="text-danger"></small>
+                            <small class="text-danger error-text" id="side_A_add_client_age_error"></small>
                         </div>
                         <!-- place of birth -->
                         <div class="input-field w-50">
                             <label for="side_A_add_occupation">Occupation</label>
-                            <input type="text" id="side_A_add_occupation" placeholder="trece martires city" class="form-control" name="side_A_add_occupation" value="">
-                            @error('place_of_birth')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
+                            <input type="text" id="side_A_add_occupation" placeholder="Enter Occupation" class="form-control" name="side_A_add_occupation" value="">
+
+                            <small class="text-danger error-text" id="side_A_add_occupation_error"></small>
+
                         </div>
                     </div>
                     <div class="family-planning-inputs d-flex gap-1 mb-2">
@@ -77,14 +88,14 @@
                                 <option value="Married">Married</option>
                                 <option value="Divorce">Divorce</option>
                             </select>
-                            @error('civil_status')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
+
+                            <small class="text-danger error-text" id="side_A_add_client_civil_status_error"></small>
+
                         </div>
                         <div class="input-field w-50">
                             <label for="side_A_add_family_plan_religion">Religion</label>
                             <input type="text" id="side_A_add_client_religion" placeholder="Enter the Religion" class="form-control" name="side_A_add_client_religion">
-                            <small class="text-danger"></small>
+                            <small class="text-danger error-text" id="side_A_add_client_religion_error"></small>
                         </div>
                     </div>
                 </div>
@@ -93,9 +104,18 @@
                     <div class=" w-100 ">
                         <label for="name_of_spouse" class="text-nowrap">Name of Spouse:</label>
                         <div class="group d-flex align-items-center justify-content-center gap-2">
-                            <input type="text" class="form-control" id="side_A_add_spouse_fname" name="side_A_add_spouse_fname" placeholder="FirstName">
-                            <input type="text" class="form-control" id="side_A_add_spouse_MI" name="side_A_add_spouse_MI" placeholder="Middle Initial">
-                            <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
+                            <div class="input-form">
+                                <input type="text" class="form-control" id="side_A_add_spouse_fname" name="side_A_add_spouse_fname" placeholder="FirstName">
+                                <small class="text-danger error-text" id="side_A_add_spouse_fname_error"></small>
+                            </div>
+                            <div class="input-form">
+                                <input type="text" class="form-control" id="side_A_add_spouse_MI" name="side_A_add_spouse_MI" placeholder="Middle Initial">
+                                <small class="text-danger error-text" id="side_A_add_spouse_MI_error"></small>
+                            </div>
+                            <div class="input-form">
+                                <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
+                                <small class="text-danger error-text" id="side_A_add_spouse_lname_error"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,23 +123,23 @@
                     <div class="input-field w-50">
                         <label for="contact_number" class="">Contact Number</label>
                         <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light" id="side_A_add_spouse_contact_number" name="side_A_add_spouse_contact_number">
-                        @error('contact_number')
-                        <small class="text-danger">{{$message}}</small>
-                        @enderror
+
+                        <small class="text-danger error-text" id="side_A_add_spouse_contact_number_error"></small>
+
                     </div>
                     <div class="input-field w-50">
                         <label for="age">Age</label>
                         <input type="text" id="side_A_add_spouse_age" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_age">
-                        @error('age')
-                        <small class="text-danger">{{$message}}</small>
-                        @enderror
+
+                        <small class="text-danger error-text" id="side_A_add_spouse_age_error"></small>
+
                     </div>
                     <div class="input-field w-50">
                         <label for="age">Occupation</label>
                         <input type="text" id="side_A_add_spouse_occupation" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_occupation">
-                        @error('age')
-                        <small class="text-danger">{{$message}}</small>
-                        @enderror
+
+                        <small class="text-danger error-text" id="side_A_add_spouse_occupation_error"></small>
+
                     </div>
                 </div>
             </div>
@@ -127,24 +147,33 @@
         <div class="other-info">
             <h4>Children Information</h4>
             <div class="box d-flex align-items-center gap-2 border-bottom mb-3">
-                <div class="mb-3 d-flex align-items-center">
-                    <label for="No_of_children" class="text-nowrap">No. Of Living Children:</label>
-                    <input type="number" id="side_A_add_number_of_living_children" name="side_A_add_number_of_living_children" class="form-control">
-                </div>
-                <div class="mb-3 d-flex gap-2 align-items-center">
-                    <label for="" class="form-label text-nowrap mb-0">Plan To Have More Children?</label>
-                    <div class="radio-con d-flex gap-2 form-radio">
-                        <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_yes" value="Yes">
-                        <label for="children_plan_yes">Yes</label>
-                        <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_no" value="No">
-                        <label for="children_plan_no">No</label>
+                <div class="mb-3">
+                    <div class="input-form d-flex align-items-center">
+                        <label for="No_of_children" class="text-nowrap">No. Of Living Children:</label>
+                        <input type="number" id="side_A_add_number_of_living_children" name="side_A_add_number_of_living_children" class="form-control">
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_number_of_living_children_error"></small>
                 </div>
-                <div class="mb-3 d-flex align-items-center gap-1">
-                    <label for="montly_income" class="text-nowrap">Average Monthly Income</label>
-                    <input type="number" id="side_A_add_average_montly_income" name="side_A_add_average_montly_income" class="form-control">
+                <div class="input-form">
+                    <div class="mb-3 d-flex gap-2 align-items-center">
+                        <label for="" class="form-label text-nowrap mb-0">Plan To Have More Children?</label>
+                        <div class="radio-con d-flex gap-2 form-radio">
+                            <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_yes" value="Yes">
+                            <label for="children_plan_yes">Yes</label>
+                            <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_no" value="No">
+                            <label for="children_plan_no">No</label>
+                        </div>
+                    </div>
+                    <small class="text-danger error-text" id="side_A_add_plan_to_have_more_children_error"></small>
                 </div>
 
+                <div class="input-form">
+                    <div class="mb-3 d-flex align-items-center gap-1">
+                        <label for="montly_income" class="text-nowrap">Average Monthly Income</label>
+                        <input type="number" id="side_A_add_average_montly_income" name="side_A_add_average_montly_income" class="form-control">
+                    </div>
+                    <small class="text-danger error-text" id="side_A_add_average_montly_income_error"></small>
+                </div>
             </div>
         </div>
         <div class="d-flex gap-5 mb-3 border-bottom w-100">
@@ -174,7 +203,9 @@
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_dropout_restart" value="dropout restart">
                         <label for="side_A_add_dropout_restart">Dropout/Restart</label>
                     </div>
+                    <small class="text-danger error-text" id="side_A_add_current_user_type_error"></small>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_type_of_patient_error"></small>
             </div>
             <!-- reasons -->
             <div class="client-reasons">
@@ -192,6 +223,7 @@
                             <label for="">others</label>
                             <input type="text" name="side_A_add_new_acceptor_reason_text" id="side_A_add_new_acceptor_reason_text" class="flex-grow-1">
                         </div>
+                        <small class="text-danger error-text" id="side_A_add_new_acceptor_reason_for_FP_error"></small>
                     </div>
                 </div>
                 <!-- FP of current user -->
@@ -207,6 +239,7 @@
                             <label for="">others</label>
                             <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text">
                         </div>
+                        <small class="text-danger error-text" id="side_A_add_current_user_reason_for_FP_error"></small>
                     </div>
                 </div>
                 <!-- current method -->
@@ -220,6 +253,7 @@
                             <label for="">side effects</label>
                             <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason">
                         </div>
+                        <small class="text-danger error-text" id="side_A_add_current_method_reason_error"></small>
                     </div>
                 </div>
             </div>
@@ -299,6 +333,7 @@
                         </div>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_previously_used_method_error"></small>
             </div>
         </div>
     </div>

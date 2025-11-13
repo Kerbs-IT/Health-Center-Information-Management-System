@@ -135,6 +135,8 @@ Route::delete('/delete-vaccination-case/{id}', [RecordsController::class, 'delet
 Route::put('/vaccine/update/case-record/{id}', [RecordsController::class, 'updateVacciationCaseRecord'])->name('update.case.record');
 // ------- get vaccines
 Route::get('/vaccines', [vaccineController::class, 'getVaccines']);
+
+
 // -------------------------------------------- PRENATAL RECORD----------------------------------------------------------------
 Route::get('/patient-record/prenatal/view-records', [RecordsController::class, 'prenatalRecord'])->name('records.prenatal');
 Route::get('/patient-record/prenatal/view-details/{id}', [RecordsController::class, 'viewPrenatalDetail'])->name('record.view.prenatal');

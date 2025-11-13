@@ -120,9 +120,25 @@ saveBtn.addEventListener("click", async (e) => {
         }
     );
 
+    const data = await response.json();
+
+    const errorElements = document.querySelectorAll(".error-text");
+
     if (!response.ok) {
+
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
         Swal.fire({
-            title: "Update",
+            title: "Add new Medicine Maintenance Record",
             text: Object.values(data.errors)
                 .map((err) => err) // convert array of errors to text
                 .join("\n"), // join with new lines
@@ -131,13 +147,22 @@ saveBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
-        const data = await response.json();
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
         Swal.fire({
-            title: "Update",
-            text: data.message,
+            title: "Add new Medicine Maintenance Record",
+            text: capitalizeEachWord(data.message),
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+

@@ -24,10 +24,22 @@ saveBtn.addEventListener('click', async (e) => {
 
     const data = await response.json();
 
+     const errorElements = document.querySelectorAll(".error-text");
+
     if (!response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
 
         let errorMessage = "";
-    
+
         if (data.errors) {
             // Handle ValidationException
             errorMessage = Object.values(data.errors)
@@ -40,18 +52,22 @@ saveBtn.addEventListener('click', async (e) => {
             // Handle unexpected responses
             errorMessage = "An unexpected error occurred.";
         }
-    
+
         Swal.fire({
-            title: "Error",
-            text: errorMessage,
+            title: "Tb Dots Check-Up Record",
+            text: capitalizeEachWord(errorMessage),
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
-            title: "Update",
-            text: data.message,
+            title: "Tb Dots Check-Up Record",
+            text: capitalizeEachWord(data.message),
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
@@ -134,7 +150,21 @@ editSaveBtn.addEventListener('click', async (e) => {
 
     const data = await response.json();
 
+     const errorElements = document.querySelectorAll(".error-text");
+
     if (!response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+
         let errorMessage = "";
 
         if (data.errors) {
@@ -152,15 +182,21 @@ editSaveBtn.addEventListener('click', async (e) => {
 
         Swal.fire({
             title: "Error",
-            text: errorMessage,
+            text: capitalizeEachWord(errorMessage),
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
+
         Swal.fire({
             title: "Update",
-            text: data.message,
+            text: capitalizeEachWord(data.message),
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
@@ -168,3 +204,6 @@ editSaveBtn.addEventListener('click', async (e) => {
     }
 });
 
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

@@ -7,19 +7,25 @@
                  <input type="text" class="form-control" name="spouse_fname" placeholder=" Enter the FirstName">
                  <input type="text" class="form-control" name="spouse_MI" placeholder="Enter the Middle Initial">
              </div>
+             <small class="text-danger error-text" id="spouse_fname_error"></small>
+             <small class="text-danger error-text" id="spouse_lname_error"></small>
+             <small class="text-danger error-text" id="spouse_MI_error"></small>
          </div>
          <div class="box d-flex align-items-center w-100 gap-2">
              <div class="mb-3 w-50">
                  <label for="spouse_date_of_birth">Date of Birth</label>
                  <input type="date" name="spouse_date_of_birth" class="form-control">
+                 <small class="text-danger error-text" id="spouse_date_of_birth_error"></small>
              </div>
              <div class="mb-3 w-50">
                  <label for="spouse_age">Age</label>
                  <input type="number" name="spouse_age" class="form-control">
+                 <small class="text-danger error-text" id="spouse_age_error"></small>
              </div>
              <div class="mb-3 w-50">
                  <label for="occupation">Occupation</label>
                  <input type="text" name="spouse_occupation" class="form-control">
+                 <small class="text-danger error-text" id="spouse_occupation_error"></small>
              </div>
          </div>
          <!-- children info -->
@@ -27,6 +33,7 @@
              <div class="mb-3 w-50">
                  <label for="No_of_children" class="text-nowrap">No. Of Living Children:</label>
                  <input type="number" name="number_of_living_children" class="form-control" placeholder="Enter the number of living children">
+                 <small class="text-danger error-text" id="number_of_living_children_error"></small>
              </div>
              <div class="mb-3 gap-2 w-50">
                  <label for="" class="form-label text-nowrap mb-0">Plan To Have More Children?</label>
@@ -36,10 +43,12 @@
                      <input type="radio" name="plan_to_have_more_children" id="children_plan_no" value="No">
                      <label for="children_plan_no">No</label>
                  </div>
+                 <small class="text-danger error-text" id="plan_to_have_more_children_error"></small>
              </div>
              <div class="mb-3 w-50">
                  <label for="montly_income" class="text-nowrap">Average Monthly Income: </label>
                  <input type="number" class="form-control" name="average_montly_income">
+                 <small class="text-danger error-text" id="average_montly_income_error"></small>
              </div>
          </div>
          <!-- type of patient info -->
@@ -72,6 +81,8 @@
                          </div>
                      </div>
                  </div>
+                 <small class="text-danger error-text" id="family_planning_type_of_patient_error"></small>
+                 <small class="text-danger error-text" id="current_user_type_error"></small>
              </div>
              <!-- reasons -->
              <div class="client-reasons">
@@ -90,6 +101,7 @@
                              <input type="text" class="flex-grow-1" name="new_acceptor_reason_for_FP">
                          </div>
                      </div>
+                     <small class="text-danger error-text" id="new_acceptor_reason_for_FP_error"></small>
                  </div>
                  <!-- FP of current user -->
                  <div class="reason-con">
@@ -104,6 +116,7 @@
                              <label for="current_user_reason_for_FP_others" class="current_user_label">others</label>
                              <input type="text" name="current_user_reason_for_FP">
                          </div>
+                         <small class="text-danger error-text" id="current_user_reason_for_FP_error"></small>
                      </div>
                  </div>
                  <!-- current method -->
@@ -117,6 +130,7 @@
                              <label for="current_method_reason_side_effects" class="current_method_reason_label">side effects</label>
                              <input type="text" name="current_method_reason">
                          </div>
+                         <small class="text-danger error-text" id="current_method_reason_error"></small>
                      </div>
                  </div>
              </div>
@@ -192,6 +206,7 @@
                          </div>
                      </div>
                  </div>
+                 <small class="text-danger error-text" id="previously_used_method_error"></small>
              </div>
          </div>
      </div>

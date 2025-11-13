@@ -193,21 +193,63 @@ saveBtn.addEventListener("click", async (e) => {
         },
         body: formData,
     });
+
+    const data = await response.json();
+
+     const errorElements = document.querySelectorAll(".error-text");
+
     if (response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Patient is Successfully Updated.", // this will make the text capitalize each word
+            title: "Tuberculosis Medical Record Details Updated Successfully",
+            text: capitalizeEachWord(data.message), // this will make the text capitalize each word
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let errorMessage = "";
+
+        if (data.errors) {
+            // Handle ValidationException
+            errorMessage = Object.values(data.errors)
+                .flat() // flatten nested arrays if present
+                .join("\n");
+        } else if (data.message) {
+            // Handle general backend errors
+            errorMessage = data.message;
+        } else {
+            // Handle unexpected responses
+            errorMessage = "An unexpected error occurred.";
+        }
+
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Error occur Patient is not Successfully added.", // this will make the text capitalize each word
+            title: "Tuberculosis Medical Record Details Updated Successfully",
+            text: capitalizeEachWord(errorMessage), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

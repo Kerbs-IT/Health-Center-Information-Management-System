@@ -752,16 +752,28 @@ class FamilyPlanningController extends Controller
             // get the medical
             $medical_case_record = medical_record_cases::with(['patient', 'family_planning_medical_record'])->findOrFail($familyPlanCaseInfo->medical_record_case_id);
 
-            $patientData = $request->validate([
-                'edit_client_fname' => 'required|string',
-                'edit_client_MI' => 'sometimes|nullable|string|max:2',
-                'edit_client_lname' => 'required|string',
-                'edit_client_date_of_birth' => 'sometimes|nullable|date',
-                'edit_client_age' => 'sometimes|nullable|numeric|max:100',
-                'edit_occupation' => 'sometimes|nullable|string',
-                'edit_client_civil_status' => 'sometimes|nullable|string',
-                'edit_client_religion' => 'sometimes|nullable|string',
-            ]);
+            $patientData = $request->validate(
+                [
+                    'edit_client_fname' => 'required|string',
+                    'edit_client_MI' => 'required|string|max:2',
+                    'edit_client_lname' => 'required|string',
+                    'edit_client_date_of_birth' => 'sometimes|nullable|date',
+                    'edit_client_age' => 'sometimes|nullable|numeric|max:100',
+                    'edit_occupation' => 'sometimes|nullable|string',
+                    'edit_client_civil_status' => 'sometimes|nullable|string',
+                    'edit_client_religion' => 'sometimes|nullable|string',
+                ],[],
+                [ // Custom attribute names
+                    'edit_client_fname' => 'first name',
+                    'edit_client_MI' => 'middle initial',
+                    'edit_client_lname' => 'last name',
+                    'edit_client_date_of_birth' => 'date of birth',
+                    'edit_client_age' => 'age',
+                    'edit_occupation' => 'occupation',
+                    'edit_client_civil_status' => 'civil status',
+                    'edit_client_religion' => 'religion',
+                ]
+            );
 
             $caseData = $request->validate([
                 'edit_client_id' => 'sometimes|nullable|string',
@@ -794,7 +806,35 @@ class FamilyPlanningController extends Controller
                 'edit_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'edit_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'edit_current_user_type' => 'sometimes|nullable|string'
-            ]);
+            ],
+                [],
+                [ // ✅ Custom attribute names is for removing the edit_
+                    'edit_client_id' => 'client ID',
+                    'edit_philhealth_no' => 'PhilHealth number',
+                    'edit_NHTS' => 'NHTS status',
+                    'edit_spouse_lname' => 'spouse last name',
+                    'edit_spouse_fname' => 'spouse first name',
+                    'edit_spouse_MI' => 'spouse middle initial',
+                    'edit_spouse_date_of_birth' => 'spouse date of birth',
+                    'edit_spouse_age' => 'spouse age',
+                    'edit_spouse_occupation' => 'spouse occupation',
+
+                    'edit_number_of_living_children' => 'number of living children',
+                    'edit_plan_to_have_more_children' => 'plan to have more children',
+                    'edit_average_montly_income' => 'average monthly income',
+                    'edit_family_planning_type_of_patient' => 'type of family planning patient',
+                    'edit_new_acceptor_reason_for_FP' => 'reason for new acceptor of family planning',
+                    'edit_current_user_reason_for_FP' => 'reason for current user of family planning',
+                    'edit_current_method_reason' => 'reason for current method',
+                    'edit_previously_used_method' => 'previously used method',
+
+                    'edit_choosen_method' => 'chosen method',
+                    'edit_family_planning_signature_image' => 'client signature',
+                    'edit_family_planning_date_of_acknowledgement' => 'date of acknowledgement',
+                    'edit_family_planning_acknowlegement_consent_signature_image' => 'consent signature',
+                    'edit_family_planning_date_of_acknowledgement_consent' => 'date of acknowledgement consent',
+                    'edit_current_user_type' => 'current user type',
+                ]);
 
             // medical history
             $medicalHistoryData = $request->validate([

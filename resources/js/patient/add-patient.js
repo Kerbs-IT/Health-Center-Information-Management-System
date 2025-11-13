@@ -86,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const handled_by = document.getElementById("handled_by");
         const errors = { fname, lname, street, brgy, handled_by };
 
-        Object.values(errors).forEach(element => {
-            element.style.border =  "" ;
+        Object.values(errors).forEach((element) => {
+            element.style.border = "";
         });
 
         if (typeSelect.value === "") {
@@ -126,22 +126,36 @@ document.addEventListener("DOMContentLoaded", () => {
             return; // stop the function here
         }
 
-         const patient_name_view = document.getElementById(
-             "vaccination_patient_name_view"
-         );
-         if (patient_name_view) {
-             const fname = document.getElementById("first_name");
-             const MI = document.getElementById("middle_initial");
-             const lname = document.getElementById("last_name");
+        const patient_name_view = document.getElementById(
+            "vaccination_patient_name_view"
+        );
+        const MI = document.getElementById("middle_initial");
+        if (patient_name_view) {
+            insertNameValue(fname, MI, lname, patient_name_view);
+        }
+        // give all the patient name id
+        const senior_patient_name = document.getElementById(
+            "senior_patient_name"
+        );
 
-             const fullname = fname.value + " " + MI.value + " " + lname.value;
+        if (senior_patient_name) {
+            insertNameValue(fname, MI, lname, senior_patient_name);
+        }
+        const tb_dots_patient_name = document.getElementById("tb_patient_name");
 
-             patient_name_view.value = fullname.trim();
-         }
+        if (tb_dots_patient_name) {
+            insertNameValue(fname, MI, lname, tb_dots_patient_name);
+        }
 
         currentStep++;
         showStep(currentStep);
     };
+
+    function insertNameValue(fname, MI, lname, element) {
+        const fullname = fname.value + " " + MI.value + " " + lname.value;
+
+        element.value = fullname.trim();
+    }
 
     window.prevStep = function () {
         currentStep--;
@@ -173,8 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".third-row")
                 .classList.replace("d-none", "d-flex");
-            
-           
         } else if (dropdownValue == "prenatal") {
             // hide the vaccination
             document
@@ -230,7 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .forEach((element) => {
                     element.classList.replace("d-none", "d-flex");
                 });
-
         } else if (dropdownValue == "senior-citizen") {
             document
                 .querySelector(".vaccination-inputs")
@@ -386,7 +397,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const data = response.json();
+
+          
+        const errorElements = document.querySelectorAll(".error-text");
         if (response.ok) {
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
             Swal.fire({
                 title: "Add",
                 text: "Vaccination Patient Information is successfully Added",
@@ -395,9 +412,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmButtonText: "OK",
             });
         } else {
+            // reset the error element text first
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
+            // if there's an validation error load the error text
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let message = "";
+
+            if (data.errors) {
+                if (typeof data.errors == "object") {
+                    message = Object.values(data.errors).flat().join("\n");
+                } else {
+                    message = data.errors;
+                }
+            } else {
+                message = "An unexpected error occurred.";
+            }
+
             Swal.fire({
-                title: "Update",
-                text: "Adding Vaccination Patient Information failed",
+                title: "Vaccination Patient",
+                text: capitalizeEachWord(message), // this will make the text capitalize each word
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -405,3 +445,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+

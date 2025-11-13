@@ -172,7 +172,7 @@ function toggleCurrentMethod() {
 
 const saveBTN = document.getElementById("family_planning_submit_btn");
 
-saveBTN.addEventListener('click', async (e) => {
+saveBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const form = document.getElementById("add-patient-form");
@@ -186,20 +186,35 @@ saveBTN.addEventListener('click', async (e) => {
             Accept: "application/json",
         },
         body: formData,
-    }); 
+    });
 
     const data = await response.json();
 
+    // get all the error elements
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
-         
-            Swal.fire({
-                title: "Family Planning Patient",
-                text: data.message, // this will make the text capitalize each word
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        Swal.fire({
+            title: "Family Planning Patient",
+            text: data.message, // this will make the text capitalize each word
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
     } else {
+        // reset
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // handles the validation error
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
         let message = "";
 
         if (data.errors) {
@@ -208,7 +223,6 @@ saveBTN.addEventListener('click', async (e) => {
             } else {
                 message = data.errors;
             }
-          
         } else {
             message = "An unexpected error occurred.";
         }
@@ -220,11 +234,10 @@ saveBTN.addEventListener('click', async (e) => {
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
-           
     }
-})
+});
 
 // Helper function to capitalize each word
 function capitalizeEachWord(str) {
-    return str.replace(/\b\w/g, char => char.toUpperCase());
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

@@ -115,7 +115,7 @@ class PrenatalController extends Controller
 
             $pregnancy_plan = $request->validate([
                 'midwife_name' => 'sometimes|nullable|string',
-                'place_of_birth' => 'sometimes|nullable|string',
+                'place_of_pregnancy' => 'sometimes|nullable|string',
                 'authorized_by_philhealth' => 'sometimes|nullable|string',
                 'cost_of_pregnancy' => 'sometimes|nullable|number',
                 'payment_method' => 'sometimes|nullable|string',
@@ -272,7 +272,7 @@ class PrenatalController extends Controller
                 'medical_record_case_id' => $medicalCaseId,
                 'patient_name' => $prenatalPatient->full_name,
                 'midwife_name' => $pregnancy_plan['midwife_name'] ?? null,
-                'place_of_birth' => $pregnancy_plan['place_of_birth'] ?? null,
+                'place_of_pregnancy' => $pregnancy_plan['place_of_pregnancy'] ?? null,
                 'authorized_by_philhealth' => $pregnancy_plan['authorized_by_philhealth'] ?? null,
                 'cost_of_pregnancy' => $pregnancy_plan['cost_of_pregnancy'] ?? null,
                 'payment_method' => $pregnancy_plan['payment_method'] ?? null,
@@ -554,7 +554,7 @@ class PrenatalController extends Controller
 
             $data = $request->validate([
                 'midwife_name' => 'sometimes|nullable|string',
-                'place_of_birth' => 'sometimes|nullable|string',
+                'place_of_pregnancy' => 'sometimes|nullable|string',
                 'authorized_by_philhealth' => 'sometimes|nullable|string',
                 'cost_of_pregnancy' => 'sometimes|nullable|numeric',
                 'payment_method' => 'sometimes|nullable|string',
@@ -573,7 +573,7 @@ class PrenatalController extends Controller
 
             $pregnancyPlanRecord->update([
                 'midwife_name' => $data['midwife_name'] ?? $pregnancyPlanRecord->midwife_name,
-                'place_of_birth' => $data['place_of_birth'] ?? $pregnancyPlanRecord->place_of_birth,
+                'place_of_pregnancy' => $data['place_of_pregnancy'] ?? $pregnancyPlanRecord->place_of_pregnancy,
                 'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? $pregnancyPlanRecord->authorized_by_philhealth,
                 'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? $pregnancyPlanRecord->cost_of_pregnancy,
                 'payment_method' => $data['payment_method'] ?? $pregnancyPlanRecord->payment_method,

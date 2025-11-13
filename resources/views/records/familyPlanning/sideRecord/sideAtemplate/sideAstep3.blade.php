@@ -7,29 +7,35 @@
                 <div class="box1 d-flex  gap-2">
                     <div class="mb-3 d-flex align-items-center">
                         <label for="">G:</label>
-                        <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_G" id="side_A_add_G">
+                        <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_G" id="side_A_add_G">f
+                        <small class="text-danger error-text" id="side_A_add_G_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="side_A_add_P">P:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_P" id="side_A_add_P">
+                        <small class="text-danger error-text" id="side_A_add_P_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="side_A_add_full_term" class="text-nowrap">Full Term:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_full_term" id="side_A_add_full_term">
+                        <small class="text-danger error-text" id="side_A_add_full_term_error"></small>
                     </div>
                 </div>
                 <div class="box-2 d-flex gap-2">
                     <div class="mb-3 d-flex align-items-center">
                         <label for="side_A_add_abortion" class="text-nowrap">Abortion:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_abortion" id="side_A_add_abortion">
+                        <small class="text-danger error-text" id="side_A_add_abortion_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="side_A_add_premature" class="text-nowrap">Premature:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_premature" id="side_A_add_premature">
+                        <small class="text-danger error-text" id="side_A_add_premature_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="side_A_add_living_children" class="text-nowrap">Living Children:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="side_A_add_living_children" id="side_A_add_living_children">
+                        <small class="text-danger error-text" id="side_A_add_living_children_error"></small>
                     </div>
                 </div>
             </div>
@@ -46,16 +52,19 @@
                     <input type="radio" id="side_A_add_type_of_last_delivery_cesarean" name="side_A_add_type_of_last_delivery" value="Cesarean Section">
                     <label for="side_A_add_type_of_last_delivery_cesarean">Cesarean Section</label>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_type_of_last_delivery_error"></small>
             </div>
             <!-- last menstrual period -->
             <div class="mb-3">
                 <label for="side_A_add_date_of_last_delivery_menstrual_period" class="text-nowrap">Last menstrual period:</label>
                 <input type="date" name="side_A_add_date_of_last_delivery_menstrual_period" id="side_A_add_date_of_last_delivery_menstrual_period" class="form-control">
+                <small class="text-danger error-text" id="side_A_add_date_of_last_delivery_menstrual_period_error"></small>
             </div>
             <!-- previous -->
             <div class="mb-3">
                 <label for="side_A_add_date_of_previous_delivery_menstrual_period" class="text-nowrap">Previous menstrual period:</label>
                 <input type="date" name="side_A_add_date_of_previous_delivery_menstrual_period" id="side_A_add_date_of_previous_delivery_menstrual_period" class="form-control">
+                <small class="text-danger error-text" id="side_A_add_date_of_previous_delivery_menstrual_period_error"></small>
             </div>
             <!-- mesntrual flow -->
             <div class="mb-3 d-flex flex-column">
@@ -74,21 +83,25 @@
                         <label for="side_A_add_heavy"> heavy ( +5 pads per day)</label>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="side_A_add_type_of_menstrual_error"></small>
             </div>
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" name="side_A_add_Dysmenorrhea" id="side_A_add_Dysmenorrhea" value="Yes">
                 <label for="side_A_add_Dysmenorrhea">Dysmenorrhea</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_Dysmenorrhea_error"></small>
             <!-- hydaildiform -->
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" id="side_A_add_hydatidiform_mole" name="side_A_add_hydatidiform_mole" value="Yes">
                 <label for="side_A_add_hydatidiform_mole">hydatidiform mole (within the last 12 months)</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_hydatidiform_mole_error"></small>
             <!-- history of ectopic pregnancy -->
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" id="side_A_add_ectopic_pregnancy" name="side_A_add_ectopic_pregnancy" value="Yes">
                 <label for="side_A_add_ectopic_pregnancy">History of ectopic pregnancy</label>
             </div>
+            <small class="text-danger error-text" id="side_A_add_ectopic_pregnancy_error"></small>
         </div>
     </div>
 

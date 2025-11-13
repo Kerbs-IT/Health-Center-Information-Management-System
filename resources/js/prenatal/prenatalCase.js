@@ -104,9 +104,9 @@ viewBtn.addEventListener("click", async (e) => {
         data.caseInfo.prenatal_assessment.drug_intake ?? "no";
 
     // decision
-    const decision = document.getElementById("decision_value");
+    // const decision = document.getElementById("decision_value");
 
-    const caseDecision = (decision.innerHTML = data.caseInfo.decision);
+    // const caseDecision = (decision.innerHTML = data.caseInfo.decision);
 
     console.log("datas:", data);
 });
@@ -163,7 +163,7 @@ pregnancyPlanviewBtn.addEventListener("click", async (e) => {
     // load the value
 
     midwifeName.innerHTML = data.pregnancyPlan.midwife_name ?? "N/A";
-    placeOfPregnancy.innerHTML = data.pregnancyPlan.place_of_birth ?? "N/A";
+    placeOfPregnancy.innerHTML = data.pregnancyPlan.place_of_pregnancy ?? "N/A";
     authorizedByPH.innerHTML =
         data.pregnancyPlan.authorized_by_philhealth ?? "N/A";
     costOfPregnancy.innerHTML = data.pregnancyPlan.cost_of_pregnancy ?? "N/A";
@@ -194,7 +194,13 @@ caseEditBtn.addEventListener("click", async (e) => {
     const medicalId = viewBtn.dataset.bsMedicalId;
 
     const response = await fetch(
-        `/view-case/case-record/prenatal/${medicalId}`
+        `/view-case/case-record/prenatal/${medicalId}`,
+        {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+        }
     );
 
     const data = await response.json();
@@ -439,9 +445,9 @@ saveRecordBtn.addEventListener("click", async (e) => {
     const form = document.getElementById("update-prenatal-case-record-form");
     const formData = new FormData(form);
 
-    for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    // }
 
     const response = await fetch(
         `/patient-record/update/prenatal-case/${medicalId}`,
@@ -459,18 +465,48 @@ saveRecordBtn.addEventListener("click", async (e) => {
 
     const data = await response.json();
 
+    // get all the error elements
+    const errorElements = document.querySelectorAll(".error-text");
+
     if (response.ok) {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
-            title: "Prenatal Patient",
+            title: "Prenatal case Update",
             text: data.message, // this will make the text capitalize each word
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     } else {
+        // reset first
+
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Error occur updating Patient is not Successful.", // this will make the text capitalize each word
+            title: "Prenatal case Update",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
@@ -635,7 +671,11 @@ if (updateBTN) {
 
         const data = await response.json();
 
+        const errorElements = document.querySelectorAll(".error-text");
         if (response.ok) {
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
             Swal.fire({
                 title: "Prenatal Patient",
                 text: data.message, // this will make the text capitalize each word
@@ -644,9 +684,31 @@ if (updateBTN) {
                 confirmButtonText: "OK",
             });
         } else {
+            // reset the error element text first
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+            // if there's an validation error load the error text
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let message = "";
+
+            if (data.errors) {
+                if (typeof data.errors == "object") {
+                    message = Object.values(data.errors).flat().join("\n");
+                } else {
+                    message = data.errors;
+                }
+            } else {
+                message = "An unexpected error occurred.";
+            }
             Swal.fire({
                 title: "Prenatal Patient",
-                text: "Error occur updating Patient is not Successful.", // this will make the text capitalize each word
+                text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -701,24 +763,54 @@ uploadBTN.addEventListener("click", async (e) => {
         body: formData,
     });
 
+    const data = response.json();
+    
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
         Swal.fire({
             title: "Prenatal Patient",
-            text: "Error occur updating Patient is not Successful.", 
+            text: capitalizeEachWord(message),
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
-    } else{
-        const data = await response.json();
+    } else {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
         Swal.fire({
             title: "Prenatal check-Up Info",
-            text: data.message, 
+            text: data.message,
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
-
-
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

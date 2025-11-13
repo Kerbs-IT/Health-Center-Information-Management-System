@@ -206,12 +206,12 @@ class RecordsController extends Controller
 
             return response()->json([
                 'message' => 'Patient information is successfully updated'
-            ]);
+            ],200);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Patient information is not successfully updated',
-                'error' => $e->errors()
-            ]);
+                'errors' => $e->errors()
+            ],422);
         }
     }
     public function vaccinationCase($id)
