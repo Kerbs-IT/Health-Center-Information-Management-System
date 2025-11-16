@@ -18,9 +18,9 @@
     'resources/css/manageInterface.css',
     'resources/js/manageInterface/manageInterface.js'])
 
-    <div class="ms-0 ps-0 d-flex w-100">
+    <div class="ms-0 ps-0 d-flex w-100 min-vh-100">
         <!-- aside contains the sidebar menu -->
-        <div class="d-flex w-100">
+        <div class="d-flex w-100 min-vh-100">
             <aside>
                 @include('layout.menuBar')
             </aside>
@@ -29,7 +29,7 @@
             <div class="flex-grow-1 ">
                 @include('layout.header')
                 <main class=" mt-4 d-flex align-items-center justify-content-center flex-grow-1">
-                    <div class="color-pallette  h-[700px] bg-light w-[900px] p-3 d-flex align-items-center flex-column  rounded">
+                    <div class="color-pallette  min-h-[700px] bg-light max-w-[900px] p-3 d-flex align-items-center flex-column  rounded w-full">
                         <div class="pallet-con w-50">
                             <h2 class="text-center fw-bold text-dark"> Change Color Pallete </h2>
                             <div class="colors mt-5">
