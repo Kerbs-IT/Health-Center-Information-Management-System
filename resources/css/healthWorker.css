@@ -48,3 +48,6 @@ form{
     border-radius: 10px;
     background-color: white;
 }
+label{
+    font-size: clamp(12px, 3vw, 21px) !important;
+}
