@@ -762,7 +762,8 @@ class FamilyPlanningController extends Controller
                     'edit_occupation' => 'sometimes|nullable|string',
                     'edit_client_civil_status' => 'sometimes|nullable|string',
                     'edit_client_religion' => 'sometimes|nullable|string',
-                ],[],
+                ],
+                [],
                 [ // Custom attribute names
                     'edit_client_fname' => 'first name',
                     'edit_client_MI' => 'middle initial',
@@ -775,38 +776,39 @@ class FamilyPlanningController extends Controller
                 ]
             );
 
-            $caseData = $request->validate([
-                'edit_client_id' => 'sometimes|nullable|string',
-                'edit_philhealth_no' => [
-                    'sometimes',
-                    'nullable',
-                    'regex:/^\d{2}-\d{9}-\d{1}$/'
+            $caseData = $request->validate(
+                [
+                    'edit_client_id' => 'sometimes|nullable|string',
+                    'edit_philhealth_no' => [
+                        'sometimes',
+                        'nullable',
+                        'regex:/^\d{2}-\d{9}-\d{1}$/'
+                    ],
+                    'edit_NHTS' => 'sometimes|nullable|string',
+                    'edit_spouse_lname' => 'sometimes|nullable|string',
+                    'edit_spouse_fname' => 'sometimes|nullable|string',
+                    'edit_spouse_MI' => 'sometimes|nullable|string|max:2',
+                    'edit_spouse_date_of_birth' => 'sometimes|nullable|date',
+                    'edit_spouse_age' => 'sometimes|nullable|numeric|max:100',
+                    'edit_spouse_occupation' => 'sometimes|nullable|string',
+
+                    'edit_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
+                    'edit_plan_to_have_more_children' => 'sometimes|nullable|string',
+                    'edit_average_montly_income' => 'sometimes|nullable|numeric',
+                    'edit_family_planning_type_of_patient' => 'sometimes|nullable|string',
+                    'edit_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
+                    'edit_current_user_reason_for_FP' => 'sometimes|nullable|string',
+                    'edit_current_method_reason' => 'sometimes|nullable|string',
+                    'edit_previously_used_method' => 'sometimes|nullable|array',
+
+                    // acknowledgement
+                    'edit_choosen_method' => 'sometimes|nullable|string',
+                    'edit_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                    'edit_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
+                    'edit_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                    'edit_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
+                    'edit_current_user_type' => 'sometimes|nullable|string'
                 ],
-                'edit_NHTS' => 'sometimes|nullable|string',
-                'edit_spouse_lname' => 'sometimes|nullable|string',
-                'edit_spouse_fname' => 'sometimes|nullable|string',
-                'edit_spouse_MI' => 'sometimes|nullable|string|max:2',
-                'edit_spouse_date_of_birth' => 'sometimes|nullable|date',
-                'edit_spouse_age' => 'sometimes|nullable|numeric|max:100',
-                'edit_spouse_occupation' => 'sometimes|nullable|string',
-
-                'edit_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
-                'edit_plan_to_have_more_children' => 'sometimes|nullable|string',
-                'edit_average_montly_income' => 'sometimes|nullable|numeric',
-                'edit_family_planning_type_of_patient' => 'sometimes|nullable|string',
-                'edit_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
-                'edit_current_user_reason_for_FP' => 'sometimes|nullable|string',
-                'edit_current_method_reason' => 'sometimes|nullable|string',
-                'edit_previously_used_method' => 'sometimes|nullable|array',
-
-                // acknowledgement
-                'edit_choosen_method' => 'sometimes|nullable|string',
-                'edit_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'edit_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
-                'edit_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'edit_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
-                'edit_current_user_type' => 'sometimes|nullable|string'
-            ],
                 [],
                 [ // ✅ Custom attribute names is for removing the edit_
                     'edit_client_id' => 'client ID',
@@ -834,7 +836,8 @@ class FamilyPlanningController extends Controller
                     'edit_family_planning_acknowlegement_consent_signature_image' => 'consent signature',
                     'edit_family_planning_date_of_acknowledgement_consent' => 'date of acknowledgement consent',
                     'edit_current_user_type' => 'current user type',
-                ]);
+                ]
+            );
 
             // medical history
             $medicalHistoryData = $request->validate([

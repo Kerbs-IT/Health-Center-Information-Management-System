@@ -49,7 +49,7 @@
                         <div class="tables d-flex flex-column p-3">
                             <div class="add-btn mb-3 d-flex justify-content-between">
                                 <a href="{{route('record.vaccination')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
-                                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add-vaccination-case-record-btn">Add Record</button>
+                                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add-vaccination-case-record-btn" data-health-worker-id="{{$medical_record_case ->vaccination_medical_record->health_worker_id}}">Add Record</button>
                                 <!-- <div>{{$medical_record_case ->id}}</div> -->
                             </div>
                             <table class="w-100 table ">
@@ -151,10 +151,11 @@
                                                 @if(Auth::user()-> role == 'nurse')
                                                 <div class="mb-2 w-100">
                                                     <label for="update_handled_by" class="w-100 form-label">Handled By:</label>
-                                                    <select name="add_handled_by" id="add_handled_by" class="form-select w-100" required>
+                                                    <select name="dissabled_add_handled_by" id="dissabled_add_handled_by" class="form-select w-100" required>
                                                         <option value="" selected disabled>Select the Health Worker</option>
                                                     </select>
                                                     <small class="text-danger w-100" id="add-health-worker-error"></small>
+                                                    <input type="hidden" name="add_handled_by" id="hidden_add_handled_by">
                                                 </div>
                                                 @elseif(Auth::user()-> role == 'staff')
                                                 <div class="mb-2 w-100">
@@ -179,7 +180,7 @@
                                                     <label for="vaccine_type">Vaccine Type:</label>
                                                     <div class="d-flex gap-2">
                                                         <select id="add_vaccine_type" class="form-select w-100">
-                                                            <option value="" selected dissabled>Select Vaccine</option>
+                                                            <option value="" selected disabled>Select Vaccine</option>
                                                         </select>
                                                         <button type="button" class="btn btn-success" id="add-vaccination-btn">Add</button>
                                                     </div>
