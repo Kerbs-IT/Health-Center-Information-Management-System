@@ -210,6 +210,10 @@ Route::put('/patient-record/tb-dots/update-checkup/{id}', [TbDotsController::cla
 Route::get('/masterlist/vaccination', [masterListController::class, 'viewVaccinationMasterList'])->name('masterlist.vaccination');
 Route::get('/masterlist/women-of-reproductive-age', [masterListController::class, 'viewWRAMasterList'])->name('masterlist.wra');
 
+// get the vaccination masterlist information
+Route::get('/masterist/{typeOfMasterlist}/{id}', [masterListController::class, 'getInfo']);
+Route::put('/masterlist/update/vaccination/{id}', [masterListController::class, 'updateVaccinationMasterlist']);
+
 // ------------------------------------------- Manage User -----------------------------------------------------
 Route::get('/manager-users', [manageUserController::class, 'viewUsers'])->name('manager.users');
 

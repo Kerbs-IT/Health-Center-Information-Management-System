@@ -96,4 +96,11 @@ class staff extends Model
     {
         return $this->hasMany(family_planning_side_b_records::class, 'health_worker_id', 'user_id');
     }
+
+    // vaccination masterlist
+    public function vaccination_masterlist(){
+        return $this->hasMany(vaccination_masterlists::class, 'health_worker_id','id');
+    }
+    
+    
 }

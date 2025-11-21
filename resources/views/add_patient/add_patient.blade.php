@@ -400,12 +400,12 @@
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Birth Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
-                                                <small class="text-danger error-text" id="birth_height_error"></small>
+                                                <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Birth Weight(kg):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight">
-                                                <small class="text-danger error-text" id="birth_weight_error"></small>
+                                                <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>
                                     </div>
