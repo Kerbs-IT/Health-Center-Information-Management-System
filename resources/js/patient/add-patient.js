@@ -381,9 +381,9 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const form = document.getElementById("add-patient-form");
         const formData = new FormData(form);
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
 
         const response = await fetch("/add-patient/vaccination", {
             method: "POST",
@@ -396,7 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData,
         });
 
-        const data = response.json();
+        const data = await response.json();
 
           
         const errorElements = document.querySelectorAll(".error-text");
@@ -423,21 +423,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            let message = "";
+             let message = "";
 
-            if (data.errors) {
-                if (typeof data.errors == "object") {
-                    message = Object.values(data.errors).flat().join("\n");
-                } else {
-                    message = data.errors;
-                }
-            } else {
-                message = "An unexpected error occurred.";
-            }
+             if (data.errors) {
+                 if (typeof data.errors == "object") {
+                     message = Object.values(data.errors).flat().join("\n");
+                 } else {
+                     message = data.errors;
+                 }
+             } else {
+                 message = data.message ?? "An unexpected error occurred.";
+             }
 
             Swal.fire({
                 title: "Vaccination Patient",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                html: capitalizeEachWord(message).replace(/\n/g,"<br>"), // this will make the text capitalize each word
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",

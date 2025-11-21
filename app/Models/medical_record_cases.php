@@ -70,5 +70,11 @@ class medical_record_cases extends Model
     public function family_planning_side_b_record(){
         return $this->hasOne(family_planning_side_b_records::class, 'medical_record_case_id', 'id');
     }
+
+    // vaccination masterlist
+    public function vaccination_masterlist()
+    {
+        return $this->hasOne(vaccination_masterlists::class, 'medical_record_case_id', 'id');
+    }
     
 }

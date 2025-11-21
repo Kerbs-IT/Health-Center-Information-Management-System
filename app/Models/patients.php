@@ -40,4 +40,7 @@ class patients extends Model
     public function medical_record_case(){
         return $this->hasMany(medical_record_cases::class,'patient_id','id');
     }
+    public function patient(){
+        return $this->hasOne(vaccination_masterlists::class,'patient_id','id');
+    }
 }
