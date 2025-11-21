@@ -96,7 +96,8 @@
                                                 </svg>
                                             </a>
                                             <a href="/patient-record/vaccination/edit-details/{{$record->patient->id}}" class="btn btn-info text-white fw-bold px-3">Edit</a>
-                                            <a href="/patient-record/vaccination/case/{{$record->patient->id}}" class="btn btn-dark text-white fw-bold px-3">Case</a>
+                                            
+                                            <a href="/patient-record/vaccination/case/{{$record->id}}" class="btn btn-dark text-white fw-bold px-3">Case</a>
                                         </div>
                                     </td>
                                 </tr>
