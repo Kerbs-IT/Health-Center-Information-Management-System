@@ -18,13 +18,189 @@
 }
 .inner{
     box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.2);
-    padding: 10px;
+    padding: 1rem;
+
+}
+.vaccination{
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.vaccination-content{
+  display: flex;
+  flex-direction: column;
 }
 input,
 select{
     background-color: rgba(128,128,128,0.1) !important;
+    flex-direction: column !important;
 }
 /* .basic-info {
     overflow-y: auto;
     min-height: 0;
 } */
+
+/* Make all flex rows wrap on smaller screens */
+.d-flex .main-container, .mb-2, .vaccination-inputs,
+.prenatal-inputs,
+.family-planning-inputs,
+.senior-citizen-inputs .form-select{
+  flex-wrap: wrap;
+}
+
+.step {
+  width: 100%;
+  overflow-x: hidden;
+}
+.vaccination{
+  width: 50%;
+  max-width: 700px;
+  transition: all 0.3s ease;
+}
+.vaccination .buttons{
+  flex: wrap;
+}
+.vaccination .buttons .btn{
+  font-size: 1rem;
+  font-weight: 500;
+}
+.buttons .btn:hover {
+  transform: scale(1.02);
+}
+/* xs devices */
+@media (max-width: 600px){
+  .input-field, .address,.vitals, .form-select, .input-field.w-25, .vaccination-vitals, .form-select{
+    flex: 1 1 100% !important;
+  }
+
+  .vaccination {
+    width: 100%;
+    padding: 10px;
+    border-radius: 0;
+  }
+  input,
+  select,
+  button {
+    font-size: 14px !important;
+  }
+
+   .vaccination-content .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .vaccination-content .d-flex.gap-2 button {
+    width: 100%;
+  }
+    .vaccination .buttons{
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+  }
+    .vaccination .buttons .btn{
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 12px;
+  }
+}
+/* small devices */
+@media (min-width: 600px){
+  .input-field,.address,.vitals, .vaccination-vitals {
+        flex: 1 1 45%;
+  }
+
+  /* vaccination */
+  .vaccination {
+    width: 95%;
+    padding: 12px;
+    border-radius: 0;
+  }
+  .vaccination-content .d-flex.gap-2 button {
+    width: 10%;
+  }
+
+}
+
+/* medium devices */
+@media(min-width: 768px){
+  .vaccination{
+    width: 90%;
+    max-width: none;
+    padding: 15px;
+  }
+  .vaccination .buttons{
+    justify-content: center;
+  }
+
+  .w-md-50 {
+    width: 50% !important;
+  }
+  .w-md-75{
+    width: 75%;
+  }
+}
+/* Large devices */
+@media(min-width: 992px){
+  .input-field, .mb-2.w-50, .vaccination-vitals{
+    flex: 1 1 calc(33.33% - 10px);
+  }
+  .address{
+    flex: 1 1 calc(33.33%- 20px) !important;
+  }
+  .vitals{
+    flex: 1 1 25%;
+  }
+.mb-2.d-flex.gap-1,
+.mb-2.d-flex.gap-2,
+.mb-2.d-flex.gap-3 {
+  flex-wrap: wrap;
+}
+.step {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.button,
+.buttons {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+  .vaccination{
+    max-width: 650px;
+    padding: 18px;
+  }
+
+  /* lg 25% width */
+  .w-lg-25 {
+    width: 25% !important;
+}
+.w-lg-75{
+    width: 75%;
+  }
+}
+
+/* xtra large */
+@media(min-width: 1200px){
+  aside{
+    min-height: auto;
+  }
+  .first-row{
+    flex: 1 1 33.33%;
+  }
+  /* vaccination */
+}
+
+
+
+/* Responsive Prenatal step 3 */
+.prenatal-planning-body h4{
+  font-size: clamp(20px, 5vw, 30px);
+}
+.prenatal-planning-body label{
+  font-size: clamp(13px, 3vw, 20px) !important;
+}
+.medical-history p, .medical-history label{
+  font-size: clamp(11, 3vw, 20px);
+}
