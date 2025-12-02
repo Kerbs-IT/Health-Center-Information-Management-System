@@ -1,43 +1,43 @@
-<div class="prenatal-planning d-flex flex-column align-items-center">
+<div class="prenatal-planning d-flex flex-column justify-content-center align-items-center w-100" >
     <h1 class="text-center mb-2 planning-header">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
 
-    <div class="prenatal-planning-body d-flex flex-column w-75 p-4 shadow card">
+    <div class="prenatal-planning-body d-flex flex-column p-2 p-md-4 shadow card flex-wrap w-100 max-w-[1500px]">
         <h4>Mahahalagang Impormasyon:</h4>
         <div class="mb-3 w-100">
-            <div class="upper-box d-flex align-items-center gap-1">
-                <label for="midwife" class="fs-5 fw-medium text-nowrap">Ako ay papaanakin ni:</label>
-                <input type="text" class="flex-grow-1 form-control" name="midwife_name" placeholder="(pangalan ng doctor/nars/midwife, atbp.)">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
+                <label for="midwife" class="fs-5 fw-medium text-wrap text-lg-nowrap">Ako ay papaanakin ni:</label>
+                <input type="text" class=" flex-grow-1 form-control" name="midwife" placeholder="(pangalan ng doctor/nars/midwife, atbp.)">
             </div>
         </div>
         <!-- plano ko manganak -->
-        <div class="mb-3">
-            <div class="upper-box d-flex align-items-center gap-1">
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Plano kong manganak sa:</label>
                 <input type="text" class="flex-grow-1 form-control" name="place_of_pregnancy" placeholder="(pangalan ng hospital/lying-in center/ maternity clinic)">
             </div>
         </div>
         <!-- authorized by philheath -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
                 <label for="midwife" class="fs-5 fw-medium text-nowrap">Ito ay pasilid na otorisado ng Philheath:</label>
-                <div class="authorize-radio d-flex gap-3 align-items-center">
+                <div class="authorize-radio d-flex gap-3">
                     <label for="yes" class="fs-5"> Yes:</label>
-                    <input type="radio" name="authorized_by_philhealth" value="yes">
+                    <input type="radio" name="authorized_by_philhealth">
                     <label for="no" class="fs-5">Hindi:</label>
-                    <input type="radio" name="authorized_by_philhealth" class="mb-0" value="no">
+                    <input type="radio" name="authorized_by_philhealth" class="mb-0">
                 </div>
             </div>
         </div>
         <!-- cost of pregnancy -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
-                <label for="place_of_birth" class="fs-5 fw-medium w-100 text-nowrap ">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
+                <label for="place_of_birth" class="fs-5 fw-medium w-100 text-wrap text-lg-nowrap">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
                 <input type="number" class="flex-grow-1 form-control" name="cost_of_pregnancy">
             </div>
         </div>
         <!-- payment method -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Ang Paraan ng pagbabayad ay:</label>
                 <select name="payment_method" id="pregnancy_payment_method" class="form-select flex-grow-1">
                     <option value="" disabled selected>Select Payment Method</option>
@@ -53,8 +53,8 @@
             </div>
         </div>
         <!-- mode of transportation -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-lg-row">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Paraan ng pagbiyahe patungo sa pasilidad ay:</label>
                 <select name="transportation_mode" id="transportation_mode" class="form-select flex-grow-1" required>
                     <option value="" disabled selected>Select Mode of Transportation</option>
@@ -73,37 +73,37 @@
             </div>
         </div>
         <!-- person who will bring me to hospital -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-md-row">
                 <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Taong magdadala sakin sa hospital: </label>
                 <input type="text" class="flex-grow-1 form-control" name="accompany_person_to_hospital" placeholder="Ilagay ang pangalan">
             </div>
         </div>
         <!-- guardian -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
-                <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Pangalan ng taong sasamahan ako sa panganganak: </label>
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-md-row">
+                <label for="place_of_birth" class="fs-5 fw-medium text-wrap text-md-nowrap">Pangalan ng taong sasamahan ako sa panganganak: </label>
                 <input type="text" class="flex-grow-1 form-control" name="accompany_through_pregnancy" placeholder="Ilagay ang pangalan">
             </div>
         </div>
         <!-- mag-alalaga -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1">
-                <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Pangalan ng taong mag-aalaga sa akin sa panganganak: </label>
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-md-row">
+                <label for="place_of_birth" class="fs-5 fw-medium  text-wrap text-md-nowrap">Pangalan ng taong mag-aalaga sa akin sa panganganak: </label>
                 <input type="text" class="flex-grow-1 form-control" name="care_person" placeholder="Ilagay ang pangalan">
             </div>
         </div>
         <!-- magbibigay ng dugo -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1 mb-2">
-                <label for="place_of_birth" class="fs-5 fw-medium text-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
+        <div class="mb-3 w-100">
+            <div class="upper-box d-flex gap-1 flex-column flex-md-row mb-2">
+                <label for="place_of_birth" class="fs-5 fw-medium  text-wrap text-md-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
                 <div class="blood-donation d-flex w-100">
-                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan"  id="donor_name_input">
-                    <button type="button" class="btn btn-success" id="donor_name_add_btn">Add</button>
+                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="" placeholder="Ilagay ang pangalan" id="blood_donor_input">
+                    <button type="button" class="btn btn-success" id="blood_donor_add_btn">Add</button>
                 </div>
                 <!-- hidden input since madami to -->
             </div>
-            <div class="lower-box p-3 bg-secondary w-100 justify-self-center blood-donor-name-container d-flex gap-3">
+            <div class="lower-box p-3 bg-secondary w-75 justify-self-center blood-donor-name-container gap-3 w-100">
                 <!-- <div class=" d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
                     <h5 class="mb-0">Jan Loiue Salimbago</h5>
                     <div class="delete-icon d-flex align-items-center justify-content-center">
@@ -114,44 +114,44 @@
                 </div> -->
             </div>
         </div>
-        <h5 class="mb-3">Kung magkaroon ng komplikasyon, kailangan sabihan kaagad si:</h5>
+        <h5 class="mb-3 w-100">Kung magkaroon ng komplikasyon, kailangan sabihan kaagad si:</h5>
         <!-- persons info -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1 align-items-center">
+        <div class="mb-3 w-100 flex-wrap">
+            <div class="upper-box d-flex gap-1 flex-md-row flex-column">
                 <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan: </label>
                 <input type="text" class="flex-grow-1 form-control" name="emergency_person_name" placeholder="Ilagay ang pangalan">
             </div>
         </div>
         <!-- house info -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1 align-items-center">
+        <div class="mb-3 w-100 w-100 flex-wrap">
+            <div class="upper-box d-flex gap-1 flex-md-row flex-column">
                 <label for="place_of_birth" class="fs-5">Tirahan: </label>
                 <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="address">
             </div>
         </div>
         <!-- contact -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1 align-items-center">
+        <div class="mb-3 w-100 flex-wrap">
+            <div class="upper-box d-flex gap-1 flex-md-row flex-column">
                 <label for="place_of_birth" class="fs-5"> Telepono: </label>
                 <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="0936627872">
             </div>
         </div>
         <!-- patient name -->
-        <div class="mb-3">
-            <div class="upper-box d-flex gap-1 align-items-center">
+        <div class="mb-3 w-100 flex-wrap">
+            <div class="upper-box d-flex gap-1 flex-md-row flex-column">
                 <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan ng pasyente: </label>
                 <input type="text" class="flex-grow-1 form-control" name="name_of_patient" placeholder="Ilagay ang pangalan">
             </div>
         </div>
         <!-- signature -->
-        <div class="mb-3 w-100 d-flex flex-column border-bottom">
+        <div class="mb-3 w-100 flex-wrap w-100 d-flex flex-column border-bottom">
             <label for="signature_image">Upload Signature</label>
             <input type="file" name="signature_image" id="signature_image" class="form-control" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
         </div>
         <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2">
-            <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-            <button type="submit" class="btn btn-success px-5 py-2 fs-5" id="prenatal-save-btn">Save Record</button>
+            <button type="button" class="btn btn-danger px-3 px-md-5 py-2 fs-6 fs-lg-5" onclick="prevStep()">Back</button>
+            <button type="submit" class="btn btn-success px-3 px-md-5 py-2 fs-6 fs-lg-5" id="prenatal-save-btn">Save Record</button>
         </div>
     </div>
 </div>
