@@ -525,12 +525,13 @@
                             </div>
                         </div>
                         <!-- PRENATAL -->
-                        <div class="prenatal d-none patient-type overflow-auto" id="prenatal-con">
+                        <div class="prenatal d-none patient-type overflow-hidden" id="prenatal-con">
                             @include('add_patient.prenatal')
-                            <div class="buttons  align-self-center d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
+                            <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+                                <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
                             </div>
+
                         </div>
                         <!-- TB DOTS -->
                         <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">
@@ -549,7 +550,7 @@
                     </div>
                     <!-- STEP 3 PRENATAL & family planning -->
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step3">
-                        <div id="prenatal-step3" class="d-none">@include('add_patient.prenatalPlanning')</div>
+                        <div id="prenatal-step3" class="d-none justify-content-center">@include('add_patient.prenatalPlanning')</div>
                         <div id="family-planning-step3" class="d-none flex-grow-1 flex-column h-100 w-100">@include('add_patient.familyPlanning.step3')</div>
                     </div>
                     <!-- STEP 4 -->
