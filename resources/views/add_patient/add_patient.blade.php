@@ -27,10 +27,9 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex flex-column overflow-x-auto" style="min-height: 0;">
+        <div class="flex-grow-1 d-flex flex-column overflow-x-auto">
             @include('layout.header')
-            <main class="main-container flex-grow-1 py-2 px-1 px-md-4 basic-info" style="overflow-y: auto; min-height: 0;">
-
+            <main class="main-container flex-grow-1 py-2 px-1 px-md-4 basic-info">
                 <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="add-patient-form">
                     @csrf
                     <h1 class=" d-flex align-self-start justify-self-start mb-1" id="head-text">Basic Information</h1>
@@ -139,7 +138,7 @@
                                     </div>
                                     <!-- data of registration -->
                                     <div class="mb-2 d-flex gap-1 flex-wrap">
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
                                             @error('date_of_birth')
@@ -159,7 +158,7 @@
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
                                         </div>
-                                        <div class="mb-2 w-50 tb-dots-inputs d-none flex-column">
+                                        <div class="mb-2 flex-fill tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
                                             <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
                                         </div>
@@ -280,7 +279,7 @@
                                     <!-- Senior Citizen inputs -->
                                     <div class="senior-citizen-inputs mb-2 d-none flex-column gap-1 flex-wrap">
                                         <div class="mb-2 w-100 d-flex gap-2  flex-md-row flex-column">
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill">
                                                 <label for="civil_status" class="">Civil Status</label>
                                                 <select name="civil_status" id="civil_status" class="form-select">
                                                     <option value="Single">Single</option>
@@ -291,7 +290,7 @@
                                                 <small class="text-danger">{{$message}}</small>
                                                 @enderror
                                             </div>
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill">
                                                 <label for="blood_type">Occupation</label>
                                                 <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             </div>
@@ -440,7 +439,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="button align-self-end mt-auto">
+                            <div class="button align-self-end d-flex flex-fill  mt-auto">
                                 <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()" id="first_next">Next</button>
                             </div>
                         </div>
@@ -539,7 +538,7 @@
 
                         </div>
                         <!-- SENIOR CITIZEN -->
-                        <div class="senior-citizen patient-type d-none flex-column align-self-center w-75 card shadow" id="senior-citizen-con">
+                        <div class="senior-citizen patient-type w-100 d-none justify-content-center" id="senior-citizen-con">
                             @include('add_patient.senior-citizen.senior-citizen')
                         </div>
                         <!-- Family Planning -->
