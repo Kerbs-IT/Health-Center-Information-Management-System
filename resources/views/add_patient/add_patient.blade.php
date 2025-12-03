@@ -34,7 +34,7 @@
                     @csrf
                     <h1 class=" d-flex align-self-start justify-self-start mb-1" id="head-text">Basic Information</h1>
 
-                    <div class="step  d-flex flex-column w-100 rounded  px-0 px-md-2" id="step1">
+                    <div class="step  d-none flex-column w-100 rounded  px-0 px-md-2" id="step1">
                         <div class="info card shadow  p-3">
                             <div class="mb-2 border-bottom">
                                 <div class="user-info w-100">
@@ -542,7 +542,7 @@
                             @include('add_patient.senior-citizen.senior-citizen')
                         </div>
                         <!-- Family Planning -->
-                        <div class="family-planning patient-type flex-grow-1 d-none flex-column align-items-center h-100 w-100" id="family-planning-con">
+                        <div class="family-planning patient-type flex-grow-1 d-none flex-column align-items-xl-center h-100 w-100" id="family-planning-con">
                             @include('add_patient.familyPlanning.step2')
 
                         </div>
@@ -563,7 +563,7 @@
                         @include('add_patient.familyPlanning.step5')
                     </div>
                     <!-- STEP 6 -->
-                    <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step6">
+                    <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1" id="step6">
                         <!-- family planning -->
                         @include('add_patient.familyPlanning.step6')
                     </div>
