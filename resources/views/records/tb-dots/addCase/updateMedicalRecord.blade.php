@@ -1,11 +1,11 @@
-<div class="tb-dots card shadow p-4">
-    <div class="mb-2">
+<div class="tb-dots card shadow p-xl-4 p-md-2 p-1">
+    <div class="mb-2 xl:w-[25%] md:w-[50%] w-full">
         <label for="patient_name">Patient Name</label>
-        <input type="text" class="form-control w-25" id="patient_name" name="patient_name" disabled value="{{$patient_name}}">
+        <input type="text" class="form-control" id="patient_name" name="patient_name" disabled value="{{$patient_name}}">
     </div>
     <h4>MEDICAL INFORMATION</h4>
-    <div class="mb-2 d-flex gap-2 w-100">
-        <div class="mb-2 w-50">
+    <div class="mb-2 d-flex gap-2 w-100 flex-wrap flex-xl-nowrap">
+        <div class="mb-2 xl:w-[50%] flex-fill">
             <label for="tb-type">Type of Tuberculosis(TB):</label>
             <select id="edit_type_of_tuberculosis" name="edit_type_of_tuberculosis" class="form-select">
                 <option value="">-- Select Type --</option>
@@ -24,7 +24,7 @@
                 <option value="Rr">Drug-Resistant TB - RR-TB</option>
             </select>
         </div>
-        <div class="mb-2 w-50">
+        <div class="mb-2 xl:w-[50%] flex-fill">
             <label for="tb-case-type">Type of TB Case:</label>
             <select name="edit_type_of_tb_case" id="edit_type_of_tb_case" class="form-select">
                 <option value="" disabled>-- Select Case Type --</option>
@@ -38,17 +38,17 @@
                 <option value="Unknown">Unknown</option>
             </select>
         </div>
-        <div class="mb-2 w-50">
+        <div class="mb-2 xl:w-[50%] flex-fill">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="edit_date_of_diagnosis" id="edit_date_of_diagnosis">
         </div>
     </div>
-    <div class="mb-2 d-flex gap-2">
-        <div class="mb-2 w-50">
+    <div class="mb-2 d-flex gap-2 flex-wrap flex-xl-nowrap">
+        <div class="mb-2 xl:w-[50%] flex-fill">
             <label for="name-of-physician">Name of Physician</label>
             <input type="text" class="form-control" name="edit_name_of_physician" id="edit_name_of_physician">
         </div>
-        <div class="mb-2 w-50">
+        <div class="mb-2 xl:w-[50%] flex-fill">
             <label for="sputum">Sputum Test Results</label>
             <input type="text" class="form-control" name="edit_sputum_test_results" id="edit_sputum_test_results">
         </div>
@@ -56,7 +56,7 @@
     </div>
     <h3>Medication</h3>
     <div class="mb-2 d-flex gap-2 w-100 ">
-        <div class="mb-2 w-25">
+        <div class="mb-2 xl:w-[25%] md:w-[50%] w-full">
             <label for="tb-medicine">TB Medicine Name:</label>
             <select id="edit_tb_medicine" class="form-select">
                 <option value="">-- Select Medicine --</option>
@@ -81,30 +81,30 @@
                 <option value="kanamycin">Kanamycin (KM)</option>
             </select>
         </div>
-        <div class="mb-2 d-flex gap-2 w-100">
-            <div class="mb-2 w-50">
+        <div class="mb-2 d-flex gap-2 w-100 flex-wrap flex-xl-nowrap flex-column flex-md-row">
+            <div class="mb-2 xl:w-[50%] flex-fill">
                 <label for="dosage-frequency">Dosage / Frequency</label>
                 <input type="text" class="form-control" id="edit_tb_dosage_n_frequency">
             </div>
-            <div class="mb-2 w-50">
+            <div class="mb-2 xl:w-[50%] flex-fill">
                 <label for="duration">Quantity</label>
                 <input type="number" class="form-control" id="edit_tb_quantity">
             </div>
-            <div class="mb-2 w-50">
+            <div class="mb-2 xl:w-[50%] flex-fill">
                 <label for="duration">Start Date</label>
                 <input type="date" class="form-control" id="edit_tb_start_date">
             </div>
-            <div class="mb-2 w-50">
+            <div class="mb-2 xl:w-[50%] flex-fill">
                 <label for="duration">End Date</label>
                 <input type="date" class="form-control" id="edit_tb_end_date">
             </div>
-            <div class="mb2">
+            <div class="mb2 d-flex justify-content-end">
                 <label for="" class="text-white">e</label>
                 <button type="button" class="btn btn-success px-4" id="edit_tb_medicine_add_btn">Add</button>
             </div>
         </div>
     </div>
-    <div class="mb-2">
+    <div class="mb-2 table-responsive">
         <!-- table -->
         <table class="w-100 table">
             <thead>
@@ -127,7 +127,7 @@
         </table>
     </div>
     <div class="mb-2 d-flex gap-2 w-100">
-        <div class="mb-2 w-50 ">
+        <div class="mb-2 w-100 ">
             <div class="mb-2 w-100">
                 <label for="tb-medicine">Treatment Category:</label>
                 <select name="edit_treatment_category" id="edit_treatment_category" class="form-select">
@@ -158,12 +158,12 @@
     </div>
     <h4>MONITORING & PROGRESS</h4>
     <!-- monitoring progress -->
-    <div class="mb-2 d-flex gap-2">
-        <div class="mb-2 w-50">
+    <div class="mb-2 d-flex gap-2 flex-md-row flex-column flex-lg-nowrap">
+        <div class="mb-2 lg:w-[50%] w-full">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="edit_date_administered" id="edit_date_administered">
         </div>
-        <div class="mb-2 w-50">
+        <div class="mb-2 lg:w-[50%] w-full">
             <label for="date_of_diagnosis">Side effect(if any)</label>
             <input type="text" class="form-control" name="edit_side_effect" id="edit_side_effect">
         </div>
