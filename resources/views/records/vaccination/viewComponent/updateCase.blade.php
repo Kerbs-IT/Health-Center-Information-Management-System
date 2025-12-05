@@ -1,5 +1,5 @@
-<div class="">
-    <div class="card-body">
+<div class="table-responsive">
+    <div class="card-body table-responsive">
 
         <table class="table table-bordered">
             <tbody>
