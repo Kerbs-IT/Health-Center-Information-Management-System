@@ -6,69 +6,74 @@
 
     <div class="modal-body">
         <div class="d-flex p-4 flex-column">
-            <div class="contents ">
-                <table class="table table-bordered  table-light">
-                    <tbody>
-                        <!-- Full Name Row -->
-                        <tr>
-                            <td colspan="2" class="w-25 fw-semibold">Full Name:</td>
-                            <td colspan="5" class="w-75 bg-white" id="view_patient_name">Jan Louie Salimbago</td>
-                        </tr>
+            <div class="contents table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-bordered  table-light w-100">
+                        <tbody>
+                            <!-- Full Name Row -->
+                            <tr>
+                                <td colspan="2" class="w-25 fw-semibold">Full Name:</td>
+                                <td colspan="5" class="w-75 bg-white" id="view_patient_name">Jan Louie Salimbago</td>
+                            </tr>
 
-                        <!-- Section Header -->
-                        <tr>
-                            <td colspan="7" class=" text-uppercase fw-bold ">
-                                Medical Information
-                            </td>
-                        </tr>
+                            <!-- Section Header -->
+                            <tr>
+                                <td colspan="7" class=" text-uppercase fw-bold ">
+                                    Medical Information
+                                </td>
+                            </tr>
 
-                        <!-- Existing Medical Condition -->
-                        <tr>
-                            <td colspan="2" class="w-25 fw-semibold">Existing Medical Condition:</td>
-                            <td colspan="5" class="w-75 bg-white" id="view_existing_medical_condition">None</td>
-                        </tr>
+                            <!-- Existing Medical Condition -->
+                            <tr>
+                                <td colspan="2" class="w-25 fw-semibold">Existing Medical Condition:</td>
+                                <td colspan="5" class="w-75 bg-white" id="view_existing_medical_condition">None</td>
+                            </tr>
 
-                        <!-- Allergies -->
-                        <tr>
-                            <td colspan="2" class="w-25 fw-semibold">Allergies:</td>
-                            <td colspan="5" class="w-75 bg-white" id="view_alergies">None</td>
-                        </tr>
-                    </tbody>
-
-                </table>
-
+                            <!-- Allergies -->
+                            <tr>
+                                <td colspan="2" class="w-25 fw-semibold">Allergies:</td>
+                                <td colspan="5" class="w-75 bg-white" id="view_alergies">None</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- table -->
-                <table class="w-100 table">
-                    <thead>
-                        <tr class="table-header">
-                            <th>Maintenance Medication</th>
-                            <th>Dosage & Frequency</th>
-                            <th>Duration</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="viewCaseBody">
-                        <!-- <tr>
-                            <td>Amlodipine 5mg</td>
-                            <td>1x/day</td>
-                            <td>90 days</td>
-                            <td>2025-01-01</td>
-                            <td>2025-02-01</td>
-                        </tr> -->
-                    </tbody>
-                </table>
+                 <div class="table-responsive">
+                    <table class="w-100 table">
+                        <thead>
+                            <tr class="table-header">
+                                <th>Maintenance Medication</th>
+                                <th>Dosage & Frequency</th>
+                                <th>Duration</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="viewCaseBody">
+                            <!-- <tr>
+                                <td>Amlodipine 5mg</td>
+                                <td>1x/day</td>
+                                <td>90 days</td>
+                                <td>2025-01-01</td>
+                                <td>2025-02-01</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                 </div>
+
                 <!-- nurse -->
-                <table class="table table-bordered">
-                    <tr>
-                        <td colspan="2" class="w-25 fw-semibold bg-light">Prescribe by:</td>
-                        <td colspan="5" class="w-75 bg-white" id="view_prescribe_by_nurse">Nurse Joy</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="bg-light">Remarks*</td>
-                        <td colspan="5" id="view_remarks">none</td>
-                    </tr>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td colspan="2" class="w-25 fw-semibold bg-light">Prescribe by:</td>
+                            <td colspan="5" class="w-75 bg-white" id="view_prescribe_by_nurse">Nurse Joy</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="bg-light">Remarks*</td>
+                            <td colspan="5" id="view_remarks">none</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
