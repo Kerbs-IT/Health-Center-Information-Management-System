@@ -7,7 +7,7 @@
     margin: 0;
     box-sizing: border-box;
 }
-.print-icon{
+.print-icon, .arrow-right{
     fill: var(--secondaryColor)!important;
     cursor: pointer;
 }
@@ -58,7 +58,7 @@ tbody{
 /* 🔹 General Button Styles */
 .download-btn, .print-btn {
   border-radius: 0.5rem;
-  font-size: clamp(0.75rem, 1vw, 0.875rem);
+  font-size: clamp(0.75rem, 1vw, 1rem) !important;
   padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.6rem, 1.5vw, 1rem);
 }
 
@@ -153,3 +153,4 @@ table tr th{
 
 /* test add for vaccination */
 /* test add for seniorCitizen */
+/* test add for tbDots */

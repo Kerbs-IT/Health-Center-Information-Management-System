@@ -22,22 +22,22 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <main class="flex-column p-2">
                 <h1>TB - Tuberculosis</h1>
                 <!-- body part -->
-                <div class="mb-3 w-100 px-5">
-                    <div class="filters d-flex justify-content-between">
-                        <div class="mb-3 w-25 ">
+                <div class="mb-3 w-100 px-lg-5 px-md-3 px-1">
+                    <div class="filters d-flex justify-content-lg-between justify-content-end">
+                        <div class="mb-md-3 mb-0 flex-fill">
                             <small>Show Entries</small>
                             <input type="number" class="form-control bg-light" value="10">
                         </div>
-                        <div class="mb-3 w-25">
+                        <div class="mb-md-3 mb-0 flex-fill">
                             <small>Search</small>
                             <input type="text" class="form-control bg-light" value="Search here....">
                         </div>
-                        <div class="mb-3 w-25">
+                        <div class="mb-md-3 mb-0 flex-fill">
                             <small>Filter</small>
                             <select name="filter_option" id="" class="form-select bg-light">
                                 <option value="" disabled selected>Filter by Age</option>
@@ -58,7 +58,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="tables ">
+                    <div class="tables table-responsive mt-2">
                         <table class="w-100 table ">
                             <thead class="table-header">
                                 <tr>

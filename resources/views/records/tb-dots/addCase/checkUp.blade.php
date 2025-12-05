@@ -1,7 +1,7 @@
 <div class="card shadow">
     <div class="card-body">
         <!-- Date of Visit -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="visit_date" class="form-label">Date of Visit</label>
             <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>">
             <input type="hidden" name="patient_name" value="{{$patient_name}}">
@@ -11,32 +11,32 @@
         <!-- Weight / Vitals -->
         <div class="vital-sign w-100">
             <h5>Vital Sign</h5>
-            <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
-                <div class="mb-2 w-50">
+            <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 first-row flex-wrap flex-xl-nowrap">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Blood Pressure:</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
                 </div>
-                <div class="mb-2 w-50">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Temperature:</label>
                     <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
                 </div>
-                <div class="mb-2 w-50">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Pulse Rate(Bpm):</label>
                     <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
                 </div>
 
             </div>
             <!-- 2nd row -->
-            <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
-                <div class="mb-2 w-50">
+            <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-wrap flex-wrap flex-xl-nowrap">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
                 </div>
-                <div class="mb-2 w-50">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Height(cm):</label>
                     <input type="number" class="form-control w-100" placeholder="00.00" name="height">
                 </div>
-                <div class="mb-2 w-50">
+                <div class="mb-md-2 mb-0 xl:w-[50%] flex-fill">
                     <label for="BP">Weight(kg):</label>
                     <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
                 </div>
@@ -55,19 +55,19 @@
         </div>
 
         <!-- Side Effects -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="side_effects" class="form-label">Side Effects</label>
             <input type="text" class="form-control" id="side_effects" name="side_effect" placeholder="e.g., nausea, rashes">
         </div>
 
         <!-- Progress Note -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="progress_note" class="form-label">Progress Note</label>
             <textarea class="form-control" id="progress_note" name="progress_note" rows="3" placeholder="Enter doctor's or nurse's notes here"></textarea>
         </div>
 
         <!-- Sputum Test Result -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="sputum_result" class="form-label">Sputum Test Result</label>
             <select class="form-select" id="sputum_result" name="sputum_test_result">
                 <option value="">-- Select Result --</option>
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Treatment Phase -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="treatment_phase" class="form-label">Treatment Phase</label>
             <select class="form-select" id="treatment_phase" name="treatment_phase">
                 <option value="">-- Select Phase --</option>
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Outcome Update -->
-        <div class="mb-3">
+        <div class="mb-md-3 mb-1">
             <label for="treatment_outcome" class="form-label">Outcome Update</label>
             <select class="form-select" id="treatment_outcome" name="outcome">
                 <option value="">-- Select Outcome --</option>
