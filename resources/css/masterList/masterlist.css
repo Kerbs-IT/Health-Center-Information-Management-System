@@ -6,43 +6,75 @@
 .head-part{
     border-bottom: 2px solid #2E8B57;
 }
-.table-header th {
+.table-header th,     th[colspan] {
     white-space: nowrap;
     text-align: center;
-    padding: 5px;
+    /* padding: 5px; */
+    font-size: clamp(0.75rem, 0.9vw + 0.4rem, 1rem);
 }
 .table-con {
-    overflow-x: auto !important;
-        overflow-y: auto !important;
-        /* Add this */
-        width: 100% !important;
-        height: 500px !important;
+    width: 100% !important;
+      height: clamp(300px, 60vh, 500px);
+    /* height: 500px !important; */
 }
 
 
 .table-con table,
 tr,th,td{
+
     border: 1px solid black;
     border-collapse: collapse;
 }
-
-.main-content {
+.table-con td {
+  /* padding: 5px; */
+  font-size: clamp(0.75rem, 0.8vw + 0.3rem, 1rem);
+}
+/* .main-content {
     overflow: hidden !important;
-}
-.table-header th.need-space {
-    width: 200px !important;
-    min-width: 200px !important;
-}
+} */
+
+
 .table-header th{
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 100% !important;
+    /* min-width: 100px !important; */
     text-wrap: wrap;
-    font-size: 15px;
     font-weight: 500;
 
 }
 
-.table-con table tr{
+/* .table-con table tr{
     height: 30px !important;
     min-height: 30px !important;
+} */
+
+
+/* masterlist for vaccination */
+
+  .title {
+    font-size: clamp(1.25rem, 2vw + 0.5rem, 2rem); /* fluid between 20px–32px */
+    font-weight: 700;
+  }
+
+  .sub-title {
+    font-size: clamp(0.9rem, 1.2vw + 0.5rem, 1.25rem); /* fluid between 14px–20px */
+  }
+
+
+@media(max-width: 576px){
+    table, tr, th, td{
+        padding: 0.5rem !important;
+    }
 }
+
+.table-responsive {
+    position: relative !important;
+}
+.sticky-col{
+    position: sticky !important;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    left: 0;
+    border: 1px solid black;
+}
+
