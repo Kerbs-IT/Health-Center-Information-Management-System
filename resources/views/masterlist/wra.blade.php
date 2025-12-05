@@ -18,44 +18,44 @@
     'resources/js/patient/add-patient.js',
     'resources/css/patient/record.css',
     'resources/css/masterList/masterlist.css'])
-    <div class="masterList-vaccination vh-100 d-flex">
+    <div class="masterList-vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column w-100 overflow-x-hidden">
+        <div class="d-flex flex-grow-1 flex-column w-100 overflow-x-hidden min-vh-100">
             @include('layout.header')
-            <div class="d-flex flex-column flex-grow-1 p-3 overflow-y-auto">
+            <div class="d-flex flex-column flex-grow-1 p-md-3 p-1 overflow-y-visible">
                 <main class="flex-column">
                     <div class="head-part d-flex justify-content-between align-items-center mb-3">
                         <h2 class="main-header w-100">{{ $page ?? 'none'}}</h2>
                         <div class="direction d-flex gap-2 align-items-center">
                             <a href="#" class="text-decoration-none text-black">
-                                <h5 class="fw-light text-nowrap mb-0">Master List</h5>
+                                <h5 class="fw-light text-nowrap mb-0 d-none d-sm-block">Master List</h5>
                             </a>
 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right d-none d-sm-block" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
                             <a href="#" class="text-decoration-none text-black">
-                                <h5 class="fw-light text-nowrap mb-0">WRA</h5>
+                                <h5 class="fw-light text-nowrap mb-0 d-none d-sm-block">WRA</h5>
                             </a>
                         </div>
                     </div>
-                    <div class="main-content card shadow d-flex flex-column p-3 w-100  ">
-                        <div class="banner">
+                    <div class="main-content card shadow d-flex flex-column p-md-3 p-1 w-100  ">
+                        <div class="banner  ">
                             <h5>Vaccination Patient</h5>
                         </div>
-                        <div class="mb-3 d-flex justify-content-between w-100 gap-5">
-                            <div class="input-group flex-column w-25">
+                        <div class="mb-md-3 mb-1 d-flex justify-content-between w-100  gap-lg-5 gap-md-3 gap-1 flex-wrap">
+                            <div class="flex-column flex-fill">
                                 <label for="">Show</label>
                                 <input type="number" value="10" class="form-control w-100 rounded bg-light">
                                 <!-- <label for="">entries</label> -->
                             </div>
-                            <div class="input-group flex-column w-25 ">
+                            <div class="flex-column flex-fill ">
                                 <label for="">Search</label>
                                 <input type="number" value="" class="form-control w-100 rounded rounded bg-light" placeholder="Search here.....">
                             </div>
-                            <div class="input-group flex-column w-25">
+                            <div class="flex-column flex-fill">
                                 <label for="">Filter (age)</label>
                                 <select name="age_range" class="form-select w-100 bg-light rounded">
                                     <option value="" selected>All Ages</option>
@@ -68,7 +68,7 @@
                                 </select>
                             </div>
                             @if((Auth::user() -> role) == 'nurse')
-                            <div class="iput-group flex-column w-25">
+                            <div class="flex-column flex-fill">
                                 <label for="">Brgy*</label>
                                 <select name="month" class="form-select">
                                     <option value="">Brgy</option>
@@ -94,16 +94,16 @@
                             </div>
                         </div>
                         <div class="mb-3 text-center">
-                            <h2>MASTER LIST OF 0-59 MONTHS</h2>
+                            <h2 class="title">MASTER LIST OF 0-59 MONTHS</h2>
                         </div>
-                        <div class="mb-3 d-flex justify-content-between">
-                            <h4 class="w-50 text-center">Name of Barangay: <span class="fw-light text-decoration-underline">Karlaville Park Homes</span></h4>
-                            <h4 class="w-50 text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
-                            <h4 class="w-50 text-center">Date Prepared: <span class="fw-light text-decoration-underline">06 - 01 - 2025</span></h4>
+                        <div class="mb-3 d-flex justify-content-start justify-content-md-between  flex-wrap">
+                            <h4 class="flex-fill text-center sub-title">Name of Barangay: <span class="fw-bold text-decoration-underline">Karlaville Park Homes</span></h4>
+                            <h4 class="flex-fill text-center sub-title">Name of Midwife: <span class="fw-bold text-decoration-underline">Nurse Joy</span></h4>
+                            <h4 class="flex-fill text-center sub-title">Date Prepared: <span class="fw-bold text-decoration-underline">06 - 01 - 2025</span></h4>
                         </div>
-                        <div class="table-con">
-                            <table>
-                                <thead class="table-header ">
+                        <div class="table-con table-responsive">
+                            <table class="table ">
+                                <thead class="table-header" >
                                     <tr>
                                         <th rowspan="3">No.</th>
                                         <th rowspan="3">
@@ -133,7 +133,7 @@
                                             <p>SE Status </p>
                                             <p>(6)</p>
                                         </th>
-                                        <th class="need-space" colspan="3">
+                                        <th class="need-space" colspan="3" >
                                             <p>Do you plan to have more children?</p>
                                             <p>(Place a check)</p>
                                             <p>(7)</p>
