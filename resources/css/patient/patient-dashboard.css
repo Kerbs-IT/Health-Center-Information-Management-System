@@ -10,3 +10,15 @@
     height: 150px !important;
     width: 150px !important;
 }
+
+.main_patient_dashboard{
+    font-family: 'Poppins' !important;
+}
+
+.main_patient_dashboard h5{
+    font-size: clamp(1rem, 3vw, 1.3rem);
+}
+
+.main_patient_dashboard .full-address{
+    font-size: clamp(1rem, 3vw, 1.3rem);
+}
