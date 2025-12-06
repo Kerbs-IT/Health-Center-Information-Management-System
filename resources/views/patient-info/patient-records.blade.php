@@ -18,27 +18,27 @@
     'resources/css/patient/record.css',
     'resources/js/record/record.js'])
 
-    <div class="vaccination vh-100 d-flex">
+    <div class="vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <main class="flex-column p-3 overflow-y-auto">
                 <h1>PATIENT CASES</h1>
                 <!-- body part -->
-                <div class="mb-3 w-100 px-5 h-[700px] record-con">
+                <div class="mb-3 w-100 px-xl-5 px-lg-4 px-md-3 px-3 h-[700px] record-con">
                     <!-- <a href="{{route('all.record')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a> -->
-                    <div class="filters d-flex justify-content-between">
-                        <div class="mb-3 w-25 ">
+                    <div class="filters d-flex justify-content-between flex-wrap flex-xl-nowrap flex-column flex-md-row mb-3">
+                        <div class="mb-md-3 mb-0 flex-fill xl:w-[25%]">
                             <small>Show Entries</small>
                             <input type="number" class="form-control bg-light" value="10">
                         </div>
-                        <div class="mb-3 w-25">
+                        <div class="mb-md-3 mb-0 flex-fill xl:w-[25%]">
                             <small>Search</small>
                             <input type="text" class="form-control bg-light" value="Search the record num">
                         </div>
-                        <div class="mb-3 w-25">
+                        <div class="mb-md-3 mb-0 flex-fill xl:w-[25%]">
                             <small>Filter</small>
                             <select name="filter_option" id="" class="form-select bg-light">
                                 <option value="" disabled selected>Filter by date</option>
@@ -46,8 +46,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="tables">
-                        <table class="w-100 table ">
+                    <div class="tables table-responsive">
+                        <table class="w-100 table table-hover">
                             <thead class="table-header">
                                 <tr>
                                     <th>Patient No.</th>
@@ -77,7 +77,7 @@
                                                 </svg>
                                             </a>
                                             <button type="button" class="btn btn-info text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="#patient_edit_detail_modal">Edit</button>
-                                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="print-icon" style="width: 30px; height:30px;" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                 <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
                                             </svg>
                                         </div>
@@ -101,7 +101,7 @@
                                                 </svg>
                                             </a>
                                             <button type="button" class="btn btn-info text-white fw-bold px-3" data-bs-toggle="modal" data-bs-target="patient_edit_detail_modal">Edit</button>
-                                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="print-icon" style="width: 30px; height:30px;" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                                 <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
                                             </svg>
                                         </div>
@@ -120,13 +120,15 @@
     <div class="modal fade" id="patient_detail_modal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
+                <div class="modal-header bg-success text-white d-flex justify-content-between">
                     <h5 class="modal-title" id="simpleModalLabel">VIEW PATIENT MEDICAL RECORD</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                    <button type="button" class="btn btn-danger"  data-bs-dismiss="modal" aria-label="Close">
+                          <i class="fa-solid fs-5 fa-xmark"></i>
+                    </button>
                 </div>
-                <div class="moda-body p-5">
+                <div class="moda-body p-lg-5 px-2 pt-2">
                     <div class="">
-                        <div class="card-body">
+                        <div class="card-body table-responsive">
 
                             <table class="table table-bordered">
                                 <tbody>
@@ -161,7 +163,7 @@
                                     </tr>
                                     <tr>
                                         <th>Remarks</th>
-                                        <td>No complications after administration</td>
+                                        <td class="text-wrap">No complications after administration</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -180,9 +182,11 @@
     <div class="modal fade" id="patient_edit_detail_modal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
+                <div class="modal-header bg-success text-white d-flex justify-content-between">
                     <h5 class="modal-title" id="simpleModalLabel">EDIT PATIENT MEDICAL RECORD</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                    <button type="button" class="btn btn-danger"  data-bs-dismiss="modal" aria-label="Close">
+                          <i class="fa-solid fs-5 fa-xmark"></i>
+                    </button>
                 </div>
                 <div class="moda-body p-5">
                     <form action="" class="flex-column">
@@ -249,7 +253,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger px-4" data-bs-dismiss="modal" id="cancel-btn">Cancel</button>
                     <button type="submit" class="btn btn-success">Save changes</button>
                 </div>
             </div>
