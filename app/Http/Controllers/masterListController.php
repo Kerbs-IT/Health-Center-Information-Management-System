@@ -251,6 +251,14 @@ class masterListController extends Controller
                                 
                             }else{
                                 // no conflict
+                                // just update
+                                $vaccination_masterlist-> update([
+                                    $name => $date
+                                ]);
+                                $record -> update([
+                                    'date_of_vaccination' => $date
+                                ]);
+
                             }
 
                             // update all of the patient name on each records
