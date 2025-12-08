@@ -9,6 +9,7 @@ use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
+use App\Models\wra_masterlists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -17,18 +18,19 @@ class masterListController extends Controller
 {
     public function viewVaccinationMasterList()
     {
-        $vaccination_masterlist = vaccination_masterlists::all();
+        $vaccination_masterlist = vaccination_masterlists::OrderBy('name_of_child','ASC')->get();
         return view('masterlist.vaccination', ['isActive' => true, 'page' => 'VACCINATION', 'pageHeader' => 'MASTERLIST', 'vaccinationMasterlist' => $vaccination_masterlist]);
     }
     public function viewWRAMasterList()
     {
-        return view('masterlist.wra', ['isActive' => true, 'page' => 'WOMEN OF REPRODUCTIVE AGE', 'pageHeader' => 'MASTERLIST']);
+        $wra_masterList = wra_masterlists::where('status','!=','Archived')->orderBy('name_of_wra','ASC')->get();
+        return view('masterlist.wra', ['isActive' => true, 'page' => 'WOMEN OF REPRODUCTIVE AGE', 'pageHeader' => 'MASTERLIST','masterlistRecords'=> $wra_masterList]);
     }
 
-    public function getInfo($typeOrRecord, $id)
+    public function getInfo($typeOfRecord, $id)
     {
 
-        if ($typeOrRecord == 'vaccination') {
+        if ($typeOfRecord == 'vaccination') {
             try {
                 $vaccinationMasterlistInfo = vaccination_masterlists::findOrFail($id);
 
@@ -42,7 +44,22 @@ class masterListController extends Controller
             } catch (\Exception $e) {
                 return response()->json([
                     'errors' => $e->getMessage()
-                ]);
+                ],402);
+            }
+        }elseif($typeOfRecord == 'wra'){
+            try {
+                $wraMasterlistInfo = wra_masterlists::findOrFail($id);
+                $patientAddress = patient_addresses::findOrFail($wraMasterlistInfo->address_id);
+                $patientDetails = patients::findOrFail($wraMasterlistInfo->patient_id);
+                return response()->json([
+                    'info' => $wraMasterlistInfo,
+                    'address_info' =>  $patientAddress,
+                    'patientDetails' => $patientDetails
+                ],200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ],402);
             }
         }
     }
@@ -106,6 +123,7 @@ class masterListController extends Controller
                 'first_name' => $data['vaccination_masterlist_fname'] ?? $vaccination_masterlist->patient->first_name,
                 'middle_initial' => $data['vaccination_masterlist_MI'] ?? $vaccination_masterlist->patient->middle_initial,
                 'last_name' => $data['vaccination_masterlist_lname'] ?? $vaccination_masterlist->patient->last_name,
+                'full_name'=> trim(($data['vaccination_masterlist_fname'] . " " . $data['vaccination_masterlist_MI'] . "." . $data['vaccination_masterlist_lname']), " "),
                 'sex' => $data['sex'] ?? $vaccination_masterlist->patient->sex,
                 'age' => $data['age'] ?? $vaccination_masterlist->patient->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $vaccination_masterlist->patient->date_of_birth,

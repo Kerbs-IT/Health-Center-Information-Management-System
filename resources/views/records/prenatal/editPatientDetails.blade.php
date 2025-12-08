@@ -72,7 +72,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{optional($prenatalRecord)->patient?->date_of_birth->format('Y-m-d')??''}}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{ optional($prenatalRecord?->patient?->date_of_birth)->format('Y-m-d') ?? '' }}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
 
@@ -152,7 +152,7 @@
                                         <div class="mb-2 w-100 d-flex gap-2">
                                             <div class="input-field w-50">
                                                 <label for="motherName">Head of the Family</label>
-                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control bg-light border-dark" name="family_head" value="{{optional($prenatalRecord)->prenatal_medical_record->family_head_name??'N/A'}}">
+                                                <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control bg-light border-dark" name="family_head" value="{{optional($prenatalRecord)->prenatal_medical_record->family_head_name??''}}">
 
                                                 <small class="text-danger error-text" id="head_of_family_error"></small>
 
@@ -172,7 +172,7 @@
                                             </div>
                                             <div class="input-field w-50">
                                                 <label for="blood_type">Blood Type</label>
-                                                <select name="blood_type" id="blood_type" class="form-select bg-light border-dark" required data-bs-blood-type="{{optional($prenatalRecord)->prenatal_medical_record -> blood_type??'N/A'}}">
+                                                <select name="blood_type" id="blood_type" class="form-select bg-light border-dark" required data-bs-blood-type="{{optional($prenatalRecord)->prenatal_medical_record -> blood_type??''}}">
                                                     <option value="" disabled selected>Select Blood Type</option>
                                                     <option value="A+">A+</option>
                                                     <option value="A-">A-</option>
@@ -192,7 +192,7 @@
                                             <!-- Religion -->
                                             <div class="input-field w-25">
                                                 <label for="religion" class="form-label">Religion</label>
-                                                <input type="text" id="religion" placeholder="Enter the Religion" class="form-control bg-light border-dark" name="religion" value="{{optional($prenatalRecord)->prenatal_medical_record -> religion??'N/A'}}">
+                                                <input type="text" id="religion" placeholder="Enter the Religion" class="form-control bg-light border-dark" name="religion" value="{{optional($prenatalRecord)->prenatal_medical_record -> religion??''}}">
 
                                                 <small class="text-danger error-text" id="religion_error"></small>
 
@@ -203,12 +203,12 @@
                                                 <label class="form-label">PhilHealth</label>
                                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                                     <div class="form-check">
-                                                        <input class=" bg-light border-dark" type="radio" name="philhealth" id="philhealth_yes" value="yes" {{optional($prenatalRecord)->prenatal_medical_record -> philHealth_number?'checked':'N/A'}}>
+                                                        <input class=" bg-light border-dark" type="radio" name="philhealth" id="philhealth_yes" value="yes" {{optional($prenatalRecord)->prenatal_medical_record -> philHealth_number?'checked':''}}>
                                                         <label class="form-check-label" for="philhealth_yes">(Yes)</label>
                                                     </div>
                                                     <div class="d-flex align-items-center gap-1">
                                                         <label class="form-label mb-0">Number:</label>
-                                                        <input type="text" class="form-control form-control-sm bg-light border-dark" name="philhealth_number" id="philhealth_number" style="width: 120px;" value="{{optional($prenatalRecord)->prenatal_medical_record -> philHealth_number??'N/A'}}">
+                                                        <input type="text" class="form-control form-control-sm bg-light border-dark" name="philhealth_number" id="philhealth_number" style="width: 120px;" value="{{optional($prenatalRecord)->prenatal_medical_record -> philHealth_number??''}}">
                                                     </div>
                                                     <div class="form-check">
                                                         <input class=" bg-light border-dark" type="radio" name="philhealth" id="philhealth_no" value="no" {{ optional(optional($prenatalRecord)->prenatal_medical_record)->philHealth_number ? '' : 'checked' }}>
@@ -274,17 +274,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="ex. 120/80" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? 'N/A' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="ex. 120/80" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? '' }}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="00 C" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? 'N/A' }}">
+                                                <input type="number" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="00 C" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? '' }}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder=" 60-100" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? 'N/A' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder=" 60-100" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? '' }}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -293,17 +293,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="ex. 25" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? 'N/A' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="ex. 25" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? '' }}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder="00.00" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? 'N/A' }}">
+                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder="00.00" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? '' }}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder=" 00.00" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? 'N/A' }}">
+                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder=" 00.00" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? '' }}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

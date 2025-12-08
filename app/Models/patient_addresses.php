@@ -28,4 +28,8 @@ class patient_addresses extends Model
     public function vaccination_masterlist(){
         return $this->belongsTo(vaccination_masterlists::class,'address_id','id');
     }
+    // wra masterlist
+    public function wra_masterlist(){
+        return $this->belongsTo(wra_masterlists::class, 'address_id', 'id');
+    }
 }

@@ -1,20 +1,19 @@
-import $ from 'jquery';
+import $ from "jquery";
 window.$ = $;
 window.jQuery = $;
-// import 'datatables.net-dt';
-// import 'datatables.net-dt/css/dataTables.dataTables.css'; 
 
-import './bootstrap';
-import 'bootstrap';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Swal from 'sweetalert2';
+import "./bootstrap";
 
+// ⭐ Import Bootstrap correctly
+import * as bootstrap from "bootstrap";
+window.bootstrap = bootstrap;
 
-
+import Swal from "sweetalert2";
+window.Swal = Swal;
 
 const root = document.querySelector(":root");
-const logoutBtn = document.getElementById('logout-btn');
-const logoutUrl = "{{ route('logout') }}"; 
+const logoutBtn = document.getElementById("logout-btn");
+const logoutUrl = "{{ route('logout') }}";
 
 function logout(btn) {
     if (btn) {
@@ -40,10 +39,8 @@ function logout(btn) {
 // logout on the sidebar
 logout(logoutBtn);
 // logout on the header bar
-const headerLogout = document.getElementById('headerLogOut');
+const headerLogout = document.getElementById("headerLogOut");
 logout(headerLogout);
-
-
 
 // get the current color pallete
 
@@ -53,15 +50,14 @@ async function currentColorPallete() {
         const data = await response.json();
 
         // console.log('current color pallete: ', data);
-        root.style.setProperty('--primaryColor', data.primaryColor);
-        root.style.setProperty('--secondaryColor', data.secondaryColor);
-        root.style.setProperty('--tertiaryColor', data.tertiaryColor);
-
+        root.style.setProperty("--primaryColor", data.primaryColor);
+        root.style.setProperty("--secondaryColor", data.secondaryColor);
+        root.style.setProperty("--tertiaryColor", data.tertiaryColor);
 
         const rootTextBarProperty = "--menu-text-color";
         const rootActiveProperty = "--active-menu-text";
         const rootPrimaryTextProperty = "--primary-bg-text";
-        const wrapperElement = document.querySelectorAll('.wrapper a.active');
+        const wrapperElement = document.querySelectorAll(".wrapper a.active");
         // console.log(wrapperElement);
         if (wrapperElement) {
             // console.log("active");
@@ -69,9 +65,7 @@ async function currentColorPallete() {
         }
         hexToRgb(data.secondaryColor, rootTextBarProperty);
         hexToRgb(data.primaryColor, rootPrimaryTextProperty);
-    } catch (error) {   
-        
-    }
+    } catch (error) {}
 }
 
 function hexToRgb(hex, rootElement) {
@@ -103,8 +97,6 @@ function hexToRgb(hex, rootElement) {
 }
 
 currentColorPallete();
-  
-
 
 // Sidebar responsive
 // Sidebar responsive
@@ -115,31 +107,31 @@ const overlay = document.getElementById("sidebarOverlay");
 const closeBtn = document.getElementById("closeSidebar");
 
 // ✅ Apply saved state BEFORE browser paints (fix flicker)
-(function(){
-  const sidebarState = localStorage.getItem("sidebarState");
-  if(sidebarState === "collapsed" && window.innerWidth > 992){
-    sidebar.classList.add("collapsed");
-  }
+(function () {
+    const sidebarState = localStorage.getItem("sidebarState");
+    if (sidebarState === "collapsed" && window.innerWidth > 992) {
+        sidebar.classList.add("collapsed");
+    }
 })();
 
 if (toggleBtn) {
-  toggleBtn.addEventListener("click", () => {
-      if (window.innerWidth >= 992) {
-          // Large screens → collapse sidebar
-          sidebar.classList.toggle("collapsed");
+    toggleBtn.addEventListener("click", () => {
+        if (window.innerWidth >= 992) {
+            // Large screens → collapse sidebar
+            sidebar.classList.toggle("collapsed");
 
-          // save state
-          if (sidebar.classList.contains("collapsed")) {
-              localStorage.setItem("sidebarState", "collapsed");
-          } else {
-              localStorage.setItem("sidebarState", "expand");
-          }
-      } else {
-          // Medium/Small slider sidebar
-          sidebar.classList.add("show");
-          overlay.classList.add("active");
-      }
-  });
+            // save state
+            if (sidebar.classList.contains("collapsed")) {
+                localStorage.setItem("sidebarState", "collapsed");
+            } else {
+                localStorage.setItem("sidebarState", "expand");
+            }
+        } else {
+            // Medium/Small slider sidebar
+            sidebar.classList.add("show");
+            overlay.classList.add("active");
+        }
+    });
 }
 
 if (closeBtn) {
@@ -152,10 +144,8 @@ if (closeBtn) {
 
 // close outside the sidebar
 if (overlay) {
-  overlay.addEventListener("click", () => {
-      sidebar.classList.remove("show");
-      overlay.classList.remove("active");
-  });
+    overlay.addEventListener("click", () => {
+        sidebar.classList.remove("show");
+        overlay.classList.remove("active");
+    });
 }
-
-

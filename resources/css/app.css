@@ -424,5 +424,17 @@ div h3,
     margin: auto !important;
 }
 }
+/* profile section */
+.right-info {
+    position: relative;
+    z-index: 9998 !important;
+}
 
+.profile-img {
+    position: relative;
+    z-index: 9999 !important;
+}
+/* * {
+    outline: 1px solid red;
+} */
 

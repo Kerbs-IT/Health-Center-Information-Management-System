@@ -12,6 +12,10 @@
                     <td>Nurse Joy</td>
                 </tr>
                 <tr>
+                    <th>Handled By</th>
+                    <td id="view-handled-by">Nurse Joy</td>
+                </tr>
+                <tr>
                     <th>Date of Vaccination</th>
                     <td id="view-date-of-vaccination">2025-06-25</td> <!-- Replace with dynamic value -->
                 </tr>
