@@ -12,9 +12,12 @@ use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str as SupportStr;
+use Illuminate\Validation\Rule as ValidationRule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Psy\Util\Str;
 
 class addPatientController extends Controller
@@ -22,7 +25,16 @@ class addPatientController extends Controller
     public function dashboard(){
         $healthworkers = staff::orderBy('first_name','ASC')->get();
         $vaccines = vaccines::get();
-        return view('add_patient.add_patient', ['isActive' => true, 'page' => 'ADD PATIENT', 'healthworkers' => $healthworkers, 'vaccines'=> $vaccines]);
+        $staffFullName = '';
+        if(Auth::user() -> role == 'staff'){
+            $staff = staff::where("user_id", Auth::user()->id)->first();
+            $staffFullName = $staff->full_name;
+        }
+        return view('add_patient.add_patient', ['isActive' => true, 
+        'page' => 'ADD PATIENT', 
+        'healthworkers' => $healthworkers, 
+        'vaccines'=> $vaccines,
+        'healthWorkerFullName'=> $staffFullName]);
     }
 
     public function addVaccinationPatient(Request $request){
@@ -30,8 +42,11 @@ class addPatientController extends Controller
             // validates the data
             $data = $request->validate([
                 'type_of_patient' =>'required',
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
+                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
+                'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',

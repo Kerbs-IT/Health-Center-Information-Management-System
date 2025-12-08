@@ -12,8 +12,8 @@
 <body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
-    'resources/js/menudropdown.js',
     'resources/js/header.js',
+    'resources/js/menudropdown.js',
     'resources/css/profile.css',
     'resources/js/patient/add-patient.js',
     'resources/css/patient/add-patient.css',
@@ -119,12 +119,13 @@
                                     </div>
                                     <!-- data of registration -->
                                     <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-grow-1">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <!-- administered by -->
+                                        @if(Auth::user()->role == 'nurse')
                                         <div class="mb-2 w-50">
                                             <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
                                             <select name="handled_by" id="handled_by" class="form-select ">
@@ -135,6 +136,14 @@
                                             </select>
                                             <small class="text-danger error-text" id="health_worker_id_error"></small>
                                         </div>
+                                        @elseif(Auth::user()->role == 'staff')
+
+
+                                        <div class="hidden-handled-by">
+                                            <input type="hidden" name="handled_by" id="handled_by" value="{{Auth::user()->id}}" data-health-worker-name="{{$healthWorkerFullName}}">
+                                        </div>
+                                        @endif
+
                                         <div class="mb-2 w-50 tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
                                             <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
@@ -541,6 +550,10 @@
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step6">
                         <!-- family planning -->
                         @include('add_patient.familyPlanning.step6')
+                    </div>
+                    <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step7">
+                        <!-- family planning -->
+                        @include('add_patient.familyPlanning.side_b.sideB')
                     </div>
                 </form>
             </main>

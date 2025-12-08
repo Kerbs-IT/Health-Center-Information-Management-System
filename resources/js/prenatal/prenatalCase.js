@@ -5,7 +5,10 @@ const viewBtn = document.getElementById("viewCaseBtn");
 
 const medicalId = viewBtn.dataset.bsMedicalId;
 
-viewBtn.addEventListener("click", async (e) => {
+document.addEventListener("click", async (e) => {
+    const viewBtn = e.target.closest(".viewCaseBtn");
+    if (!viewBtn) return;
+    const medicalId = viewBtn.dataset.bsMedicalId;
     const response = await fetch(
         `/view-case/case-record/prenatal/${medicalId}`
     );
@@ -22,16 +25,14 @@ viewBtn.addEventListener("click", async (e) => {
     const livingChildren = document.getElementById("livingChildren_value");
 
     // load the value
-    gravida.innerHTML = data.caseInfo.G ? data.caseInfo.G : "0";
-    para.innerHTML = data.caseInfo.P ? data.caseInfo.P : "0";
-    term.innerHTML = data.caseInfo.T ? data.caseInfo.T : "0";
+    gravida.innerHTML = data.caseInfo.G ?? "0";
+    para.innerHTML = data.caseInfo.P ??"0";
+    term.innerHTML = data.caseInfo.T ??"0";
     premature.innerHTML = data.caseInfo.premature
-        ? data.caseInfo.premature
-        : "0";
-    abortion.innerHTML = data.caseInfo.abortion ? data.caseInfo.abortion : "0";
+        ??"0";
+    abortion.innerHTML = data.caseInfo.abortion ??"0";
     livingChildren.innerHTML = data.caseInfo.living_children
-        ? data.caseInfo.living_children
-        : "0";
+        ??"0";
 
     // load the pregnancy timeline
     const tableBody = document.getElementById("pregnancy_history_body");
@@ -48,6 +49,12 @@ viewBtn.addEventListener("click", async (e) => {
                 <td>${record.outcome}</td>
             </tr>`;
     });
+    if (tableBody.children.length == 0) {
+        tableBody.innerHTML += ` 
+            <tr class="text-center">
+               <td colspan='12'>No available records</td>
+            </tr>`;
+    }
 
     // subjective info
     const lmp = document.getElementById("lmp_value");
@@ -108,14 +115,16 @@ viewBtn.addEventListener("click", async (e) => {
 
     // const caseDecision = (decision.innerHTML = data.caseInfo.decision);
 
-    console.log("datas:", data);
+    // console.log("datas:", data);
 });
 
 // pregnancy plan view
-const pregnancyPlanviewBtn = document.getElementById("pregnancy-plan-view-btn");
 
-// add event listener and load the data to the modal
-pregnancyPlanviewBtn.addEventListener("click", async (e) => {
+document.addEventListener("click", async (e) => {
+    const pregnancyPlanviewBtn = e.target.closest(".pregnancy-plan-view-btn");
+
+    if (!pregnancyPlanviewBtn) return;
+
     const pregnancyPlanId = pregnancyPlanviewBtn.dataset.bsId;
 
     // fetch the pregnancy plan information from the database
@@ -185,13 +194,15 @@ pregnancyPlanviewBtn.addEventListener("click", async (e) => {
         data.pregnancyPlan.emergency_person_contact_number ?? "N/A";
     patientName.innerHTML = data.pregnancyPlan.patient_name ?? "N/A";
 });
+// add event listener and load the data to the modal
 
 // fetch the same data for viewing the case
-const caseEditBtn = document.getElementById("case-edit-icon");
-
-caseEditBtn.addEventListener("click", async (e) => {
+document.addEventListener("click", async (e) => {
+    const caseEditBtn = e.target.closest(".case-edit-icon");
+    if (!caseEditBtn) return;
+    console.log("working tong case");
     // this is the id of the case record itself
-    const medicalId = viewBtn.dataset.bsMedicalId;
+    const medicalId = caseEditBtn.dataset.bsMedicalId;
 
     const response = await fetch(
         `/view-case/case-record/prenatal/${medicalId}`,
@@ -206,15 +217,25 @@ caseEditBtn.addEventListener("click", async (e) => {
     const data = await response.json();
 
     // input fields
-    const grada = document.getElementById("grada_input");
-    const para = document.getElementById("para_input");
-    const term = document.getElementById("term_input");
-    const premature = document.getElementById("premature_input");
-    const abortion = document.getElementById("abortion_input");
-    const livingChildren = document.getElementById("living_children_input");
+    const grada = document.getElementById("grada_input") ?? null;
+    const para = document.getElementById("para_input") ?? null;
+    const term = document.getElementById("term_input") ?? null;
+    const premature = document.getElementById("premature_input") ?? null;
+    const abortion = document.getElementById("abortion_input") ?? null;
+    const livingChildren =
+        document.getElementById("living_children_input") ?? null;
 
     // load the data
-
+    if (
+        grada == null ||
+        para == null ||
+        term == null ||
+        premature == null ||
+        abortion == null ||
+        abortion == null ||
+        livingChildren == null
+    )
+        return;
     grada.value = data.caseInfo.G ?? 0;
     para.value = data.caseInfo.P ?? 0;
     term.value = data.caseInfo.T ?? 0;
@@ -224,16 +245,17 @@ caseEditBtn.addEventListener("click", async (e) => {
 
     // -------------------------- handle the interaction adding and removing pregnancy timeline history ----------------------------------------
     const addBtn = document.getElementById("add-pregnancy-history-btn");
-    const year = document.getElementById("pregnancy_year");
-    const typeOfDelivery = document.getElementById("type_of_delivery");
-    const placeOfDelivery = document.getElementById("place_of_delivery");
-    const birthAttendant = document.getElementById("birth_attendant");
-    const complication = document.getElementById("complication");
-    const outcome = document.getElementById("outcome");
+    const year = document.getElementById("pregnancy_year") ?? null;
+    const typeOfDelivery = document.getElementById("type_of_delivery") ?? null;
+    const placeOfDelivery =
+        document.getElementById("place_of_delivery") ?? null;
+    const birthAttendant = document.getElementById("birth_attendant") ?? null;
+    const complication = document.getElementById("complication") ?? null;
+    const outcome = document.getElementById("outcome") ?? null;
 
     // errors variables
 
-    const yearError = document.getElementById("preg_year_error");
+    const yearError = document.getElementById("pregnancy_year_error");
     const typeOfDeliveryError = document.getElementById(
         "type_of_delivery_error"
     );
@@ -256,40 +278,50 @@ caseEditBtn.addEventListener("click", async (e) => {
     tableBody.innerHTML = "";
     pregnancyTimeline.forEach((timeline) => {
         tableBody.innerHTML += `
-                    <tr class="text-center prenatal-record">
-                        <td>${timeline.year}</td>
-                        <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.year
-                        }>
-                        <td>${timeline.type_of_delivery}</td>
-                        <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.type_of_delivery
-                        }>
-                        <td>${timeline.place_of_delivery}</td>
-                        <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.place_of_delivery
-                        }>
-                        <td>${timeline.birth_attendant}</td>
-                        <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.birth_attendant
-                        }>
-                        <td>${timeline.compilation}</td>
-                        <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.compilation ?? "none"
-                        }>
-                        <td>${timeline.outcome}</td>
-                        <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                            timeline.outcome
-                        }>
-                        <td>
-                            <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
-                        </td>
-                    </tr>`;
+                        <tr class="text-center prenatal-record">
+                            <td>${timeline.year}</td>
+                            <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.year
+                            }>
+                            <td>${timeline.type_of_delivery}</td>
+                            <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.type_of_delivery
+                            }>
+                            <td>${timeline.place_of_delivery}</td>
+                            <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.place_of_delivery
+                            }>
+                            <td>${timeline.birth_attendant}</td>
+                            <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.birth_attendant
+                            }>
+                            <td>${timeline.compilation}</td>
+                            <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.compilation ?? "none"
+                            }>
+                            <td>${timeline.outcome}</td>
+                            <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
+                                timeline.outcome
+                            }>
+                            <td>
+                                <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
+                            </td>
+                        </tr>`;
     });
 
     // ------------------------ UPDATE ADD BTN -----------------------------------
     let firstclicked = true;
+    if (addBtn == null) return;
     addBtn.addEventListener("click", (e) => {
+        if (
+            year == null ||
+            typeOfDelivery == null ||
+            placeOfDelivery == null ||
+            birthAttendant == null ||
+            outcome == null
+        )
+            return;
+
         if (
             year.value == "" ||
             typeOfDelivery.value == "" ||
@@ -322,6 +354,12 @@ caseEditBtn.addEventListener("click", async (e) => {
 
             return;
         }
+        // add a condition for year if it is greater than the current year then return
+        const currentYear = new Date().getFullYear();
+        if (year.value > currentYear || year.value < 1000) {
+            yearError.innerHTML = "The year entered is not valid";
+            return;
+        }
         // if no error then
         yearError.innerHTML = "";
         typeOfDeliveryError.innerHTML = "";
@@ -347,23 +385,23 @@ caseEditBtn.addEventListener("click", async (e) => {
         // after validating the inputs proceed to inserting the
 
         tableBody.innerHTML += `
-                    <tr class="text-center prenatal-record">
-                        <td>${year.value}</td>
-                        <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${year.value}>
-                        <td>${typeOfDelivery.value}</td>
-                        <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${typeOfDelivery.value}>
-                        <td>${placeOfDelivery.value}</td>
-                        <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${placeOfDelivery.value}>
-                        <td>${birthAttendant.value}</td>
-                        <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${birthAttendant.value}>
-                        <td>${complication.value}</td>
-                        <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${complication.value}>
-                        <td>${outcome.value}</td>
-                        <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${outcome.value}>
-                        <td>
-                            <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
-                        </td>
-                    </tr>`;
+                        <tr class="text-center prenatal-record">
+                            <td>${year.value}</td>
+                            <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${year.value}>
+                            <td>${typeOfDelivery.value}</td>
+                            <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${typeOfDelivery.value}>
+                            <td>${placeOfDelivery.value}</td>
+                            <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${placeOfDelivery.value}>
+                            <td>${birthAttendant.value}</td>
+                            <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${birthAttendant.value}>
+                            <td>${complication.value}</td>
+                            <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${complication.value}>
+                            <td>${outcome.value}</td>
+                            <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${outcome.value}>
+                            <td>
+                                <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
+                            </td>
+                        </tr>`;
 
         // reset the inputs
         year.value = "";
@@ -437,92 +475,103 @@ caseEditBtn.addEventListener("click", async (e) => {
 });
 
 // update the case
-const saveRecordBtn = document.getElementById("update-save-btn");
+const saveRecordBtn = document.getElementById("update-save-btn") ?? null;
 
-saveRecordBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+if (saveRecordBtn) {
+    saveRecordBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-    const form = document.getElementById("update-prenatal-case-record-form");
-    const formData = new FormData(form);
+        const form = document.getElementById(
+            "update-prenatal-case-record-form"
+        );
+        const formData = new FormData(form);
 
-    // for (const [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        // }
 
-    const response = await fetch(
-        `/patient-record/update/prenatal-case/${medicalId}`,
-        {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
-            },
-            body: formData,
-        }
-    );
-
-    const data = await response.json();
-
-    // get all the error elements
-    const errorElements = document.querySelectorAll(".error-text");
-
-    if (response.ok) {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Swal.fire({
-            title: "Prenatal case Update",
-            text: data.message, // this will make the text capitalize each word
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        // reset first
-
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+        const response = await fetch(
+            `/patient-record/update/prenatal-case/${medicalId}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
             }
-        });
+        );
 
-        let message = "";
+        const data = await response.json();
 
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
-            } else {
-                message = data.errors;
-            }
+        // get all the error elements
+        const errorElements = document.querySelectorAll(".error-text");
+
+        if (response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+            Swal.fire({
+                title: "Prenatal case Update",
+                text: data.message, // this will make the text capitalize each word
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("editPrenatalCaseModal")
+                    );
+                    modal.hide();
+                    form.reset();
+                }
+            });
         } else {
-            message = "An unexpected error occurred.";
+            // reset first
+
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let message = "";
+
+            if (data.errors) {
+                if (typeof data.errors == "object") {
+                    message = Object.values(data.errors).flat().join("\n");
+                } else {
+                    message = data.errors;
+                }
+            } else {
+                message = "An unexpected error occurred.";
+            }
+
+            Swal.fire({
+                title: "Prenatal case Update",
+                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
         }
-
-        Swal.fire({
-            title: "Prenatal case Update",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    }
-});
-
+    });
+}
 // edit section of pregnancy plan -- viewing pregnancy plan value
-
-const pregnancyPlanEditBTN = document.getElementById("pregnancy_plan_edit_btn");
 
 // this is the btn in modal to save the new information
 const updateBTN = document.getElementById("pregnancy_plan_update_btn");
 
-pregnancyPlanEditBTN.addEventListener("click", async (e) => {
-    const pregnancyPlanId = pregnancyPlanviewBtn.dataset.bsId;
+document.addEventListener("click", async (e) => {
+    const pregnancyPlanEditBTN = e.target.closest(".pregnancy_plan_edit_btn");
+    if (!pregnancyPlanEditBTN) return;
+    const pregnancyPlanId = pregnancyPlanEditBTN.dataset.bsId;
     // let set the custom variable for the save btn since i place it outside this event listener to avoid redundancy and overlapping
     updateBTN.dataset.pregnancyPlanId = pregnancyPlanId;
 
@@ -673,15 +722,23 @@ if (updateBTN) {
 
         const errorElements = document.querySelectorAll(".error-text");
         if (response.ok) {
-             errorElements.forEach((element) => {
-                 element.textContent = "";
-             });
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
             Swal.fire({
                 title: "Prenatal Patient",
                 text: data.message, // this will make the text capitalize each word
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("case2PrenatalModal")
+                    );
+                    modal.hide();
+                    form.reset();
+                }
             });
         } else {
             // reset the error element text first
@@ -764,7 +821,7 @@ uploadBTN.addEventListener("click", async (e) => {
     });
 
     const data = response.json();
-    
+
     const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
         // reset the error element text first
@@ -802,15 +859,193 @@ uploadBTN.addEventListener("click", async (e) => {
             element.textContent = "";
         });
 
+        // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
+        Livewire.dispatch("prenatalRefreshTable");
+
         Swal.fire({
             title: "Prenatal check-Up Info",
             text: data.message,
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("prenatalCheckupModal")
+                );
+                modal.hide();
+                form.reset();
+            }
         });
     }
 });
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+// ===== DELETE PATIENT CASE RECORD
+document.addEventListener("click", async (e) => {
+    const deleteBtn = e.target.closest(".case-archive-record-icon");
+
+    if (!deleteBtn) return;
+    const id = deleteBtn.dataset.caseId;
+
+    // Validate case ID
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+
+    try {
+        // ✅ Show confirmation dialog FIRST
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "Prenatal Case Record will be Deleted.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Archive",
+            cancelButtonText: "Cancel",
+        });
+
+        // ✅ Exit if user cancelled
+        if (!result.isConfirmed) return;
+
+        // ✅ Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            throw new Error("CSRF token not found. Please refresh the page.");
+        }
+
+        const response = await fetch(
+            `/patient-record/prenatal/case-record/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken.content,
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(
+                data.message || `HTTP error! status: ${response.status}`
+            );
+        }
+
+        // Success - refresh table
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+        }
+
+        // Remove the row from DOM
+        const row = deleteBtn.closest("tr");
+        if (row) {
+            row.remove();
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Archived!",
+            text: "Prenatal Case Record has been archived.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+        });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
+});
+
+document.addEventListener("click", async (e) => {
+    const deleteBtn = e.target.closest(".pregnancy-plan-archive-record-icon");
+
+    if (!deleteBtn) return;
+    const id = deleteBtn.dataset.caseId;
+
+    // Validate case ID
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+
+    try {
+        // ✅ Show confirmation dialog FIRST
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "Pregnancy Plan Record will be Deleted.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Archive",
+            cancelButtonText: "Cancel",
+        });
+
+        // ✅ Exit if user cancelled
+        if (!result.isConfirmed) return;
+
+        // ✅ Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            throw new Error("CSRF token not found. Please refresh the page.");
+        }
+
+        const response = await fetch(
+            `/patient-record/prenatal/pregnancy-plan/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken.content,
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(
+                data.message || `HTTP error! status: ${response.status}`
+            );
+        }
+
+        // Success - refresh table
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+        }
+
+        // Remove the row from DOM
+        const row = deleteBtn.closest("tr");
+        if (row) {
+            row.remove();
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Archived!",
+            text: "Pregnancy Plan Record has been archived.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+        });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
+});
+
+// event delegation for 

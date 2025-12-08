@@ -152,6 +152,8 @@ saveBtn.addEventListener("click", async (e) => {
             element.textContent = "";
         });
 
+        Livewire.dispatch("seniorCitizenRefreshTable");
+
         Swal.fire({
             title: "Add new Medicine Maintenance Record",
             text: capitalizeEachWord(data.message),

@@ -47,6 +47,7 @@ export function addVaccineInteraction(
     selectedVaccinesCon,
     selectedVaccines
 ) {
+    if (!btn) return;
     btn.addEventListener("click", (e) => {
         //  const vaccineInput = document.getElementById("vaccine_input");
         console.log("current selected vaccine:", selectedVaccines);

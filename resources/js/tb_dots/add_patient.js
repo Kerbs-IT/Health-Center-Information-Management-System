@@ -124,6 +124,13 @@ tbDotsBtn.addEventListener("click", async (e) => {
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // reset the steps
+                form.reset();
+                window.currentStep = 1;
+                window.showStep(window.currentStep);
+            }
         });
     } else {
          errorElements.forEach((element) => {

@@ -25,7 +25,8 @@ class patients extends Model
         'nationality',
         'profile_image',
         'date_of_registration',
-        'place_of_birth'
+        'place_of_birth',
+        'status'
 
     ];
     protected $casts = [
@@ -40,7 +41,12 @@ class patients extends Model
     public function medical_record_case(){
         return $this->hasMany(medical_record_cases::class,'patient_id','id');
     }
-    public function patient(){
+    public function vaccination_masterlist(){
         return $this->hasOne(vaccination_masterlists::class,'patient_id','id');
     }
+    //wra masterlist
+    public function wra_masterlist(){
+        return $this->hasOne(wra_masterlists::class, 'patient_id', 'id');
+    }
+    
 }

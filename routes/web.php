@@ -22,7 +22,9 @@ use App\Http\Controllers\RecordsController;
 use App\Http\Controllers\SeniorCitizenController;
 use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
+use App\Http\Controllers\wraMasterlistController;
 use App\Models\color_pallete;
+use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
@@ -156,6 +158,15 @@ Route::get('/prenatal/view-pregnancy-checkup-info/{id}', [PrenatalController::cl
 // update the checkup
 Route::put('/update/prenatal-check-up/{id}', [PrenatalController::class, 'updatePregnancyCheckUp']);
 
+// archived the record
+Route::post('prenatal/check-up/delete/{id}', [PrenatalController::class,'archive']);
+// add case record
+Route::post('/prenatal/add-prenatal-case-record',[PrenatalController::class,'addCase']);
+Route::post('/prenatal/add-pregnancy-plan/{medicalRecordCaseId}',[PrenatalController::class,'addPregnancyPlan']);
+
+// delete case record or pregnancy record
+Route::post('/patient-record/prenatal/{typeOfRecord}/{id}',[PrenatalController::class,'removeRecord']);
+
 
 
 
@@ -165,6 +176,7 @@ Route::get('/patient-record/senior-citizen/view-detail/{id}', [RecordsController
 Route::get('/patient-record/senior-citizen/edit-details/{id}', [RecordsController::class, 'editSeniorCitizenDetail'])->name('record.senior.citizen.edit');
 Route::get('/patient-record/senior-citizen/view-case/{id}', [RecordsController::class, 'viewSeniorCitizenCases'])->name('record.senior.citizen.case');
 // Route::get('/patient-record/senior-citizen/view-case-info/id', [RecordsController::class, 'viewSeniorCitizenCaseInfo']) -> name('record.case.view.Senior.citizen.info');
+Route::post('/patient-record/senior-citizen/case/delete/{id}',[SeniorCitizenController::class,'removeCase']);
 
 // SENIOR CITIZEN ADD PATIENT
 Route::post('/patient-record/add/senior-citizen-record', [SeniorCitizenController::class, "addPatient"]);
@@ -190,12 +202,19 @@ Route::get('/patient-record/family-planning/view/side-b-record/{id}', [FamilyPla
 Route::put('/patient-record/family-planning/update/side-b-record/{id}',[FamilyPlanningController::class, 'updateSideBrecord']);
 // add new side A if ever the record is deleted
 Route::post('/patient-record/family-planning/add/side-a-record/{id}', [FamilyPlanningController::class, 'addSideAcaseInfo']);
+// delete side b or side a records
+Route::post('/patient-record/family-planning/case-record/delete/{type_of_record}/{id}',[FamilyPlanningController::class,'removeRecord']);
+
+
 
 // --------------------------------------------- TB DOTS -------------------------------------------------------------------------------
 Route::get('/patient-record/tb-dots/view-records', [RecordsController::class, 'tb_dotsRecord'])->name('record.tb-dots');
 Route::get('/patient-record/tb-dots/view-detail/{id}', [RecordsController::class, 'tb_dotsDetail'])->name('record.tb-dots.view');
 Route::get('/patient-record/tb-dots/edit-details/{id}', [RecordsController::class, 'editTb_dotsDetail'])->name('record.tb-dots.edit');
 Route::get('/patient-record/tb-dots/view-case/{id}', [RecordsController::class, 'viewTb_dotsCase'])->name('record.tb-dots.case');
+
+// delete a checkup record
+Route::post('/patient-record/tb-dots/checkup/delete/{id}',[TbDotsController::class,'removeCheckup']);
 
 // add patient
 Route::post('/patient-record/add/tb-dots', [TbDotsController::class, 'addPatient']);
@@ -205,6 +224,10 @@ Route::put('/patient-case/tb-dots/update/{id}', [TbDotsController::class, 'updat
 Route::post('/patient-record/add/check-up/tb-dots/{id}', [TbDotsController::class, 'addPatientCheckUp']);
 Route::get('/patient-record/view-check-up/tb-dots/{id}', [TbDotsController::class, 'viewPatientCheckUp']);
 Route::put('/patient-record/tb-dots/update-checkup/{id}', [TbDotsController::class, 'updatePatientCheckUpInfo']);
+// add case
+Route::post("/patient-record/tb-dots/add/case-record/{medicalRecordId}",[TbDotsController::class,'addCase']);
+// archive case
+Route::post("/patient-record/tb-dots/case-record/delete/{caseId}",[TbDotsController::class,'removeCase']);
 
 // -------------------------------------------- MASTER LIST ----------------------------------------------------------------------------
 Route::get('/masterlist/vaccination', [masterListController::class, 'viewVaccinationMasterList'])->name('masterlist.vaccination');
@@ -213,6 +236,8 @@ Route::get('/masterlist/women-of-reproductive-age', [masterListController::class
 // get the vaccination masterlist information
 Route::get('/masterist/{typeOfMasterlist}/{id}', [masterListController::class, 'getInfo']);
 Route::put('/masterlist/update/vaccination/{id}', [masterListController::class, 'updateVaccinationMasterlist']);
+// -----------------------------WRA MASTERLIST------------------------------------
+Route::put('/masterlist/update/wra/{id}', [wraMasterlistController::class,'update']);
 
 // ------------------------------------------- Manage User -----------------------------------------------------
 Route::get('/manager-users', [manageUserController::class, 'viewUsers'])->name('manager.users');
@@ -280,3 +305,19 @@ Route::post('/add-patient/vaccination', [addPatientController::class, 'addVaccin
 // health worker list 
 
 Route::get('/health-worker-list', [healthWorkerController::class, 'healthWorkerList']);
+
+// ================== HEATMAP SECTION ===========================================
+Route::get('/test-geocoding', function () {
+    $geocodingService = app(\App\Services\GeocodingService::class);
+
+    // Test with a simple address in Imus, Cavite
+    $result = $geocodingService->geocodeAddress([
+        'house_number' => 'blk 9 lot 17',
+        'street' => 'Greenbelt Street',
+        'purok' => 'Sugarlan Subdivision',
+        'city' => 'Trece Martires City',
+        'province' => 'Cavite'
+    ]);
+
+    return response()->json($result);
+});

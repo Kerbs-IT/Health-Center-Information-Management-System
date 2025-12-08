@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (result.isConfirmed) {
                     const response = await fetch(
                         `/patient-record/vaccination/delete/${patientId}`,
-                        {
+                        { 
                             method: "DELETE",
                             headers: {
                                 "Content-type": "Application/json",

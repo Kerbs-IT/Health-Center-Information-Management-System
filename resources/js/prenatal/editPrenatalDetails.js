@@ -7,14 +7,17 @@ const healthWorkerDropDown = document.getElementById("edit_handled_by");
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
 console.log("health-worker-id", healthWorkerId);
 
-fetchHealthworkers().then((result) => {
-    result.healthWorkers.forEach((element) => {
-        console.log(element);
-        healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
-            healthWorkerId == element.id ? "selected" : ""
-        }>${element.staff.full_name}</option>`;
-    });
-});
+if (healthWorkerDropDown) {
+     fetchHealthworkers().then((result) => {
+         result.healthWorkers.forEach((element) => {
+             console.log(element);
+             healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
+                 healthWorkerId == element.id ? "selected" : ""
+             }>${element.staff.full_name}</option>`;
+         });
+     });
+}
+   
 
 // add the selected in blood type
 const blood_type = document.getElementById("blood_type");
