@@ -1,10 +1,11 @@
 import Swal from "sweetalert2";
-
+import { addVaccineInteraction } from "../patient/healthWorkerList";
+window.currentStep = 1;
 document.addEventListener("DOMContentLoaded", () => {
-    let currentStep = 1;
+    
     const typeSelect = document.getElementById("type-of-patient");
 
-    function showStep(step) {
+    window.showStep = function (step) {
         const selected = document.getElementById("type-of-patient").value;
         if (currentStep == 1) {
             document.getElementById("head-text").innerHTML =
@@ -76,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("step" + step).classList.add("d-flex");
             document.getElementById("step" + step).classList.add("flex-column");
         }
-    }
+    };
+
+     
     window.nextStep = function () {
         // get important values
         const fname = document.getElementById("first_name");
@@ -84,6 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const street = document.getElementById("street");
         const brgy = document.getElementById("brgy");
         const handled_by = document.getElementById("handled_by");
+        const errors = { fname, lname, street, brgy, handled_by };
+
+        Object.values(errors).forEach((element) => {
+            element.style.border = "";
+        });
 
         if (typeSelect.value === "") {
             Swal.fire({
@@ -121,13 +129,40 @@ document.addEventListener("DOMContentLoaded", () => {
             return; // stop the function here
         }
 
-        currentStep++;
-        showStep(currentStep);
+        const patient_name_view = document.getElementById(
+            "vaccination_patient_name_view"
+        );
+        const MI = document.getElementById("middle_initial");
+        if (patient_name_view) {
+            insertNameValue(fname, MI, lname, patient_name_view);
+        }
+        // give all the patient name id
+        const senior_patient_name = document.getElementById(
+            "senior_patient_name"
+        );
+
+        if (senior_patient_name) {
+            insertNameValue(fname, MI, lname, senior_patient_name);
+        }
+        const tb_dots_patient_name = document.getElementById("tb_patient_name");
+
+        if (tb_dots_patient_name) {
+            insertNameValue(fname, MI, lname, tb_dots_patient_name);
+        }
+
+        window.currentStep++;
+        window.showStep(window.currentStep);
     };
 
+    function insertNameValue(fname, MI, lname, element) {
+        const fullname = fname.value + " " + MI.value + " " + lname.value;
+
+        element.value = fullname.trim();
+    }
+
     window.prevStep = function () {
-        currentStep--;
-        showStep(currentStep);
+        window.currentStep--;
+        window.showStep(window.currentStep);
     };
 
     window.showAdditional = function () {
@@ -210,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .forEach((element) => {
                     element.classList.replace("d-none", "d-flex");
                 });
-
         } else if (dropdownValue == "senior-citizen") {
             document
                 .querySelector(".vaccination-inputs")
@@ -292,18 +326,25 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const handled_by = document.getElementById("handled_by");
+    const handledByViewInput = document.getElementById("handle_by_view_input");
 
-    handled_by.addEventListener("change", (e) => {
-        if (typeSelect.value == "vaccination") {
-            const selectedText =
-                handled_by.options[handled_by.selectedIndex].text;
-            const handledByViewInput = document.getElementById(
-                "handle_by_view_input"
-            );
-            // console.log(selectedText);
-            handledByViewInput.value = selectedText;
+    if (handled_by && handledByViewInput) {
+        if (handled_by.tagName.toLowerCase() === "select") {
+            handled_by.addEventListener("change", (e) => {
+                if (typeSelect.value === "vaccination") {
+                    const selectedText =
+                        handled_by.options[handled_by.selectedIndex].text;
+                    handledByViewInput.value = selectedText;
+                }
+            });
+        } else if (handled_by.type === "hidden") {
+            handledByViewInput.value =
+                handled_by.dataset.healthWorkerName || "";
         }
-    });
+    }
+
+
+   
 
     // handle adding the vaccine
 
@@ -312,33 +353,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedVaccinesCon = document.getElementById("selected_vaccines");
     const selectedVaccines = [];
 
-    function addInteraction(btn) {
-        btn.addEventListener("click", (e) => {
-            const vaccineInput = document.getElementById("vaccine_input");
-            const selectedText =
-                vaccineInput.options[vaccineInput.selectedIndex].text;
-            const selectedId =
-                vaccineInput.options[vaccineInput.selectedIndex].value;
+    const vaccineInput = document.getElementById("vaccine_input");
 
-            if (!selectedVaccines.includes(selectedId) && selectedId != "") {
-                vaccinesContainer.innerHTML += ` <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${selectedId}>
-                    <p class="mb-0">${selectedText}</p>
-                    <div class="delete-icon d-flex align-items-center justify-content-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
-                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                        </svg>
-                    </div>
-                </div>`;
-                // push the id to the selectedVaccines array
-                selectedVaccines.push(selectedId);
-                selectedVaccinesCon.value = selectedVaccines.toString();
-                selectedVaccinesCon.value = selectedVaccinesCon.value.trim();
-                console.log(selectedVaccinesCon.value);
+
+    addVaccineInteraction(
+        addVaccineBtn,
+        vaccineInput,
+        vaccinesContainer,
+        selectedVaccinesCon,
+        selectedVaccines
+    );
+    
+    if (vaccinesContainer) {
+        vaccinesContainer.addEventListener("click", (e) => {
+            console.log("before deletion:", selectedVaccines);
+            if (e.target.closest(".vaccine")) {
+                const vaccineId = e.target.closest(".vaccine").dataset.bsId;
+                console.log("id of element:", vaccineId);
+                const deleteBtn = e.target.closest(".delete-icon");
+                if (deleteBtn) {
+                    if (selectedVaccines.includes(Number(vaccineId))) {
+                        const selectedElement = selectedVaccines.indexOf(
+                            Number(vaccineId)
+                        );
+                        console.log("index", selectedElement);
+                        selectedVaccines.splice(selectedElement, 1);
+                        selectedVaccinesCon.value = selectedVaccines.join(",");
+                    }
+                    e.target.closest(".vaccine").remove();
+                }
+
+                console.log("update with deleted id:", selectedVaccines);
+                console.log("updated value:", selectedVaccinesCon.value);
             }
         });
     }
-
-    addInteraction(addVaccineBtn);
 
     // SUBMIT THE FORM FOR VACCINATION
 
@@ -346,13 +395,14 @@ document.addEventListener("DOMContentLoaded", () => {
         "vaccination-submit-btn"
     );
 
+    if (!vaccinationSubmitBtn) return;
     vaccinationSubmitBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const form = document.getElementById("add-patient-form");
         const formData = new FormData(form);
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
 
         const response = await fetch("/add-patient/vaccination", {
             method: "POST",
@@ -365,19 +415,55 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData,
         });
 
-        const data = response.json();
+        const data = await response.json();
+
+          
+        const errorElements = document.querySelectorAll(".error-text");
         if (response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
             Swal.fire({
                 title: "Add",
                 text: "Vaccination Patient Information is successfully Added",
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // reset the steps
+                    form.reset();
+                    window.currentStep = 1;
+                    window.showStep(window.currentStep);
+                }
             });
         } else {
+            // reset the error element text first
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
+            // if there's an validation error load the error text
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+             let message = "";
+
+             if (data.errors) {
+                 if (typeof data.errors == "object") {
+                     message = Object.values(data.errors).flat().join("\n");
+                 } else {
+                     message = data.errors;
+                 }
+             } else {
+                 message = data.message ?? "An unexpected error occurred.";
+             }
+
             Swal.fire({
-                title: "Update",
-                text: "Adding Vaccination Patient Information failed",
+                title: "Vaccination Patient",
+                html: capitalizeEachWord(message).replace(/\n/g,"<br>"), // this will make the text capitalize each word
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -385,3 +471,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+
