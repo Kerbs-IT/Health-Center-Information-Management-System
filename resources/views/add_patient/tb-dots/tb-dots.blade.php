@@ -1,7 +1,7 @@
 <div class="tb-dots card shadow p-4">
     <div class="mb-2">
         <label for="patient_name">Patient Name</label>
-        <input type="text" class="form-control w-25" id="patient_name" name="patient_name" disabled value="Jan Louie Samlimbago">
+        <input type="text" class="form-control w-25" id="tb_patient_name" name="patient_name" disabled value="Jan Louie Samlimbago">
     </div>
     <h4>MEDICAL INFORMATION</h4>
     <div class="mb-2 d-flex gap-2 w-100">
@@ -23,6 +23,7 @@
                 <option value="Xdr">Drug-Resistant TB - XDR-TB</option>
                 <option value="Rr">Drug-Resistant TB - RR-TB</option>
             </select>
+            <small class="text-danger error-text" id="type_of_tuberculosis_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="tb-case-type">Type of TB Case:</label>
@@ -37,20 +38,24 @@
                 <option value="Previously Treated">Previously Treated</option>
                 <option value="Unknown">Unknown</option>
             </select>
+            <small class="text-danger error-text" id="type_of_tb_case_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="tb_date_of_diagnosis">
+            <small class="text-danger error-text" id="date_of_diagnosis_error"></small>
         </div>
     </div>
     <div class="mb-2 d-flex gap-2">
         <div class="mb-2 w-50">
             <label for="name-of-physician">Name of Physician</label>
             <input type="text" class="form-control" name="name_of_physician">
+            <small class="text-danger error-text" id="name_of_physician_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="sputum">Sputum Test Results</label>
             <input type="text" class="form-control" name="sputum_result">
+            <small class="text-danger error-text" id="sputum_test_results_error"></small>
         </div>
     </div>
     <h3>Medication</h3>
@@ -79,23 +84,28 @@
                 <option value="amikacin">Amikacin (AMK)</option>
                 <option value="kanamycin">Kanamycin (KM)</option>
             </select>
+            <small class="text-danger error-text" id="medicine_name_error"></small>
         </div>
         <div class="mb-2 d-flex gap-2 w-100">
             <div class="mb-2 w-50">
                 <label for="dosage-frequency">Dosage / Frequency</label>
                 <input type="text" class="form-control" id="tb_dosage_n_frequency">
+                <small class="text-danger error-text" id="dosage_n_frequency_error"></small>
             </div>
             <div class="mb-2 w-50">
                 <label for="duration">Quantity</label>
                 <input type="number" class="form-control" id="tb_quantity">
+                <small class="text-danger error-text" id="quantity_error"></small>
             </div>
             <div class="mb-2 w-50">
                 <label for="duration">Start Date</label>
                 <input type="date" class="form-control" id="tb_start_date">
+                <small class="text-danger error-text" id="start_date_error"></small>
             </div>
             <div class="mb-2 w-50">
                 <label for="duration">End Date</label>
                 <input type="date" class="form-control" id="tb_end_date">
+                <small class="text-danger error-text" id="end_date_error"></small>
             </div>
             <div class="mb2">
                 <label for="" class="text-white">e</label>
@@ -160,6 +170,7 @@
                     <option value="amikacin">Amikacin (AMK)</option>
                     <option value="kanamycin">Kanamycin (KM)</option>
                 </select>
+                <small class="text-danger error-text" id="treatment_category_error"></small>
             </div>
         </div>
 
@@ -170,19 +181,23 @@
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Date of Medication Administered</label>
             <input type="date" class="form-control" name="tb_date_of_medication_administered">
+            <small class="text-danger error-text" id="date_administered_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Side effect(if any)</label>
             <input type="text" class="form-control" name="treatment_side_effect">
+            <small class="text-danger error-text" id="side_effect_error"></small>
         </div>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Remarks</label>
         <input type="text" class="form-control" name="tb_remarks">
+        <small class="text-danger error-text" id="tb_remarks_error"></small>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Outcome</label>
         <input type="text" class="form-control" name="tb_outcome">
+        <small class="text-danger error-text" id="tb_outcome_error"></small>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-5">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>

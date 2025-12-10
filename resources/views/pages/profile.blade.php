@@ -21,13 +21,11 @@
             <!-- the main content -->
             <!-- we use flex-grow-1 to take the remaining space of the right side -->
             <div class="flex-grow-1">
-                <header class=" d-flex align-items-center px-3 ">
+                <header class=" d-flex align-items-center px-1 ">
                     <nav class="d-flex justify-content-between align-items-center w-100 ">
                         <div class="left-side d-flex align-items-center justify-content-center gap-3">
-                            <button>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icons" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                                    <path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z" />
-                                </svg>
+                            <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
+                                <i class="fa-solid fa-bars fs-2"></i>
                             </button>
                             <h1 class="mb-0">Profile</h1>
                         </div>
@@ -54,10 +52,10 @@
                                 </span>
                             </button>
                             <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2">
-                                <img src="{{ optional(Auth::user()->nurses)->profile_image 
-                        ? asset(optional(Auth::user()->nurses)->profile_image) 
-                        : (optional(Auth::user()->staff)->profile_image 
-                            ? asset(optional(Auth::user()->staff)->profile_image) 
+                                <img src="{{ optional(Auth::user()->nurses)->profile_image
+                        ? asset(optional(Auth::user()->nurses)->profile_image)
+                        : (optional(Auth::user()->staff)->profile_image
+                            ? asset(optional(Auth::user()->staff)->profile_image)
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-img" id="profile_img">
                                 <div class="username-n-role">
                                     <h5 class="mb-0">{{ optional(Auth::user()->nurses)-> full_name
@@ -79,14 +77,14 @@
                         <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
                     </div>
 
-                    <form action="{{ route('user.update-profile') }}" method="post" class="p-4 gap-3 w-100 " enctype="multipart/form-data">
+                    <form action="{{ route('user.update-profile') }}" method="post" class="p-4 gap-3 w-100 flex-column flex-md-row" enctype="multipart/form-data">
                         @csrf
                         <!-- profile image section -->
-                        <div class="profile-image p-3  mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
-                            <img src="{{ optional(Auth::user()->nurses)->profile_image 
-                        ? asset(optional(Auth::user()->nurses)->profile_image) 
-                        : (optional(Auth::user()->staff)->profile_image 
-                            ? asset(optional(Auth::user()->staff)->profile_image) 
+                        <div class="profile-image p-3   mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
+                            <img src="{{ optional(Auth::user()->nurses)->profile_image
+                        ? asset(optional(Auth::user()->nurses)->profile_image)
+                        : (optional(Auth::user()->staff)->profile_image
+                            ? asset(optional(Auth::user()->staff)->profile_image)
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
                             <h3 class="text-black">{{optional(Auth::user() -> staff) -> full_name ?? optional(Auth::user() -> nurses) -> full_name ?? 'none'}}</h3>
                             <h5 class="mb-3 text-muted text-capitalize fw-normal">{{ optional(Auth::user()) -> role ?? 'none'}}</h5>
@@ -101,10 +99,10 @@
 
                         </div>
                         <!-- USER INFORMATION -->
-                        <div class="user-info flex-grow-1 card p-2 ">
+                        <div class="user-info flex-grow-1  card p-2 ">
                             <h4>Personal Info</h4>
-                            <div class="mb-2 d-flex gap-1">
-                                <div class="input-field w-50">
+                            <div class="mb-2 flex-wrap d-flex  flex-column flex-md-row gap-1">
+                                <div class="input-field flex-fill">
                                     <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="{{ optional(Auth::user() -> staff) -> first_name ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> first_name ?? null }}">
                                     @error('first_name')
@@ -112,15 +110,15 @@
                                     @enderror
 
                                 </div>
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill"styl>
                                     <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{ optional(Auth::user() -> staff) -> middle_initial ??
-                                                                                                                                                optional(Auth::user() -> nurses) -> middle_initial ?? null }}">
+                                                                                                                                                 optional(Auth::user() -> nurses) -> middle_initial ?? null }}">
                                     @error('middle_initial')
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
 
                                 </div>
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{ optional(Auth::user() -> staff) -> last_name ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> last_name ?? null }}">
                                     @error('last_name')
@@ -129,8 +127,8 @@
                                 </div>
                             </div>
                             <!-- age -->
-                            <div class="mb-2 d-flex gap-1">
-                                <div class="input-field w-50">
+                            <div class="mb-2 flex-wrap d-flex gap-1">
+                                <div class="input-field flex-fill">
                                     <label for="age">Age</label>
                                     <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{ optional(Auth::user() -> staff) -> age ??
                                                                                                                           optional(Auth::user() -> nurses) -> age ?? null }}">
@@ -138,7 +136,7 @@
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
                                 </div>
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="birthdate">Date of Birth</label>
                                     <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{ optional(Auth::user() -> staff) -> date_of_birth ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> date_of_birth ?? null }}">
@@ -146,7 +144,7 @@
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
                                 </div>
-                                <div class="input-field w-25">
+                                <div class="input-field flex-fill">
                                     <label for="sex">Sex</label>
                                     <div class="input-field d-flex align-items-center p-2">
                                         @php
@@ -165,8 +163,8 @@
                                 </div>
                             </div>
                             <!-- civil status, contact number, nationality -->
-                            <div class="mb-2 d-flex gap-1">
-                                <div class="input-field w-50">
+                            <div class="mb-2 flex-wrap d-flex gap-1">
+                                <div class="input-field flex-fill">
                                     <label for="civil_status" class="">Civil Status</label>
                                     <!-- to display the current status -->
                                     @php
@@ -183,7 +181,7 @@
                                     @enderror
                                 </div>
                                 <!-- contact -->
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="contact_number" class="">Contact Number</label>
                                     <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> contact_number ?? null }}">
@@ -191,7 +189,7 @@
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
                                 </div>
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="nationality" class="">Nationality</label>
                                     <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="{{ optional(Auth::user() -> staff) -> nationality ??
                                                                                                                                     optional(Auth::user() -> nurses) -> nationality ?? null }}">
@@ -200,9 +198,9 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="mb-2 d-flex gap-1">
+                            <div class="mb-2 flex-wrap d-flex gap-1">
                                 <!-- username -->
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="username" class="">Username</label>
                                     <input type="text" placeholder="ex. yato" id="username" class="form-control" name="username" value="{{ optional(Auth::user()) -> username ?? null }}">
                                     @error('username')
@@ -210,7 +208,7 @@
                                     @enderror
                                 </div>
                                 <!-- email -->
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="email" class="">Email</label>
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="{{ optional(Auth::user()) -> email  ?? null }}">
                                     @error('email')
@@ -218,7 +216,7 @@
                                     @enderror
                                 </div>
                                 <!-- password
-                                <div class="input-field w-50">
+                                <div class="input-field flex-fill">
                                     <label for="password" class="">Password</label>
                                     <input type="password" id="password" class="form-control" name="password">
                                     <small class="text-muted">Leave blank if you don't want to change it.</small>
@@ -228,7 +226,7 @@
                                 </div> -->
                             </div>
                             @if(Auth::user()-> staff)
-                            <div class="mb-2 d-flex align-items-center w-25 gap-2">
+                            <div class="mb-2 flex-wrap d-flex align-items-center w-25 gap-2">
                                 <label for="assigned_area" class="text-nowrap">Assigned Area:</label>
                                 @php
                                 $brgy_area = \App\Models\brgy_unit::OrderBy('brgy_unit')-> get();
@@ -242,10 +240,10 @@
                             </div>
                             @endif
                             <!-- address -->
-                            <div class="mb-2 d-flex gap-1 flex-column border-bottom">
+                            <div class="mb-2 flex-wrap d-flex gap-1 flex-column border-bottom">
                                 <h4>Address</h4>
-                                <div class="input-field d-flex gap-2">
-                                    <div class="address w-50">
+                                <div class="input-field d-flex flex-wrap gap-2">
+                                    <div class="address flex-fill">
                                         <label for="" class="">Street & Lot</label>
                                         <input type="text" placeholder="Blk & Lot n Street" class="form-control flex-grow-1 bg-light lg py-2" name="street" value="{{ optional(Auth::user()) -> addresses -> street ?? 'null'}}">
                                         @error('street')
@@ -253,7 +251,7 @@
                                         @enderror
                                     </div>
 
-                                    <div class="postal w-50">
+                                    <div class="postal flex-fill">
                                         <label for="postal">Postal Code</label>
                                         <input type="number" placeholder="0123" name="postal_code" class="form-control bg-light py-2 " value="{{ optional(Auth::user()) -> addresses -> postal_code ?? 'null'}}">
                                         @error('postal_code')
@@ -262,10 +260,10 @@
                                     </div>
 
                                 </div>
-                                <div class="input-field d-flex gap-2">
+                                <div class="input-field d-flex flex-column flex-md-row gap-2 flex-wrap">
                                     <!-- region -->
-                                    <div class="mb-2 w-50">
-                                        <label for="region">Region*</label>
+                                    <div class="mb-2 flex-fill flex-wrap">
+                                        <label for="region">Region <span style="color: red;">*</span></label>
                                         <select name="region" id="region" class="form-select bg-light" data-selected="{{ optional(Auth::user())-> addresses-> region_id }}">
                                             @php
                                             $region_id = optional(Auth::user()) -> addresses -> region_id;
@@ -280,7 +278,7 @@
                                         @enderror
                                     </div>
                                     <!-- province -->
-                                    <div class="mb-2 w-50">
+                                    <div class="mb-2 flex-fill">
                                         <label for="province">Province*</label>
                                         <select name="province" id="province" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> province_id }}">
                                             <option value="">Select a province</option>
@@ -292,9 +290,9 @@
                                 </div>
 
                                 <!-- city n brgy -->
-                                <div class="input-field d-flex gap-2">
+                                <div class="input-field d-flex  gap-2 flex-wrap">
                                     <!-- city -->
-                                    <div class="mb-2 w-50">
+                                    <div class="mb-2 flex-wrap flex-fill">
                                         <label for="city">City*</label>
                                         <select name="city" id="city" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> city_id }}">
                                             <option value="">Select a city</option>
@@ -304,7 +302,7 @@
                                         @enderror
                                     </div>
                                     <!-- brgy -->
-                                    <div class="mb-2 w-50">
+                                    <div class="mb-2 flex-wrap flex-fill">
                                         <label for="brgy">Barangay*</label>
                                         <select name="brgy" id="brgy" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> brgy_id }}">
                                             <option value="">Select a brgy</option>
@@ -316,7 +314,7 @@
                                 </div>
                             </div>
                             <!-- save button -->
-                            <div class="mb-2 d-flex justify-content-end">
+                            <div class="mb-2 flex-wrap d-flex justify-content-end">
                                 <input type="submit" value="Save" class="btn btn-success px-4 py-2 fs-5">
                             </div>
                         </div>

@@ -69,6 +69,7 @@ function toggleSubRadioInputs(inputs, label, checked) {
     label.forEach((label) => {
         label.classList.toggle("text-muted", !checked);
     });
+  
 }
 
 // initial check
@@ -133,6 +134,17 @@ function toggleTypeOfClient() {
     const new_acceptor = document.getElementById("new-acceptor");
     const isNew = new_acceptor.checked;
 
+    // for the new acceptor
+    const new_acceptor_reasons = document.querySelectorAll(
+        'input[name="new_acceptor_reason_for_FP"]'
+    );
+    const new_acceptor_label = document.querySelectorAll(".new_acceptor_label");
+    toggleSubRadioInputs(
+        new_acceptor_reasons,
+        new_acceptor_label,
+        isNew
+    );
+
     if (isNew) {
         const current_method = document.getElementById(
             "family_planning_current-method"
@@ -146,6 +158,9 @@ function toggleTypeOfClient() {
         current_method.checked = false;
         toggleSubRadioInputs(current_method_type, current_method_label, false);
     } else {
+        const new_acceptor_reasons = document.querySelectorAll(
+            "input[name='new_acceptor_reason_for_FP']"
+        );
         toggleCurrentMethod();
     }
 }
@@ -172,7 +187,7 @@ function toggleCurrentMethod() {
 
 const saveBTN = document.getElementById("family_planning_submit_btn");
 
-saveBTN.addEventListener('click', async (e) => {
+saveBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const form = document.getElementById("add-patient-form");
@@ -186,20 +201,47 @@ saveBTN.addEventListener('click', async (e) => {
             Accept: "application/json",
         },
         body: formData,
-    }); 
+    });
 
     const data = await response.json();
 
+    // get all the error elements
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
-         
-            Swal.fire({
-                title: "Family Planning Patient",
-                text: data.message, // this will make the text capitalize each word
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        Swal.fire({
+            title: "Family Planning Patient",
+            text: data.message, // this will make the text capitalize each word
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // reset the steps
+                form.reset();
+                window.currentStep = 1;
+                window.showStep(window.currentStep);
+            }
+        });
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("wraMasterlistRefreshTable");
+        } else {
+            console.warn("Livewire is not available");
+        }
     } else {
+        // reset
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // handles the validation error
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
         let message = "";
 
         if (data.errors) {
@@ -208,7 +250,6 @@ saveBTN.addEventListener('click', async (e) => {
             } else {
                 message = data.errors;
             }
-          
         } else {
             message = "An unexpected error occurred.";
         }
@@ -220,11 +261,10 @@ saveBTN.addEventListener('click', async (e) => {
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
-           
     }
-})
+});
 
 // Helper function to capitalize each word
 function capitalizeEachWord(str) {
-    return str.replace(/\b\w/g, char => char.toUpperCase());
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

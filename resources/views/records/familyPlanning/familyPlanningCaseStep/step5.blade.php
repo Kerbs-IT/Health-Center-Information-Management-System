@@ -6,11 +6,13 @@
             <div class="mb-2 w-50">
                 <label for="BP">Blood Pressure:</label>
                 <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="edit_blood_pressure" id="edit_blood_pressure">
+                <small class="text-danger error-text" id="edit_blood_pressure_error"></small>
             </div>
 
             <div class="mb-2 w-50">
                 <label for="BP">Pulse Rate(Bpm):</label>
                 <input type="text" class="form-control w-100" placeholder=" 60-100" name="edit_pulse_rate" id="edit_pulse_rate">
+                <small class="text-danger error-text" id="edit_pulse_rate_error"></small>
             </div>
         </div>
         <!-- 2nd row -->
@@ -19,10 +21,12 @@
             <div class="mb-2 w-50">
                 <label for="BP">Height(cm):</label>
                 <input type="number" class="form-control w-100" placeholder="00.00" name="edit_height" id="edit_height">
+                <small class="text-danger error-text" id="edit_height_error"></small>
             </div>
             <div class="mb-2 w-50">
                 <label for="BP">Weight(kg):</label>
                 <input type="number" class="form-control w-100" placeholder=" 00.00" name="edit_weight" id="edit_weight">
+                <small class="text-danger error-text" id="edit_weight_error"></small>
             </div>
         </div>
     </div>
@@ -51,6 +55,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_skin_type_error"></small>
                 </div>
                 <div class="CONJUCTIVA w-50">
                     <h5>CONJUCTIVA:</h5>
@@ -70,6 +75,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_conjuctiva_type_error"></small>
                 </div>
             </div>
             <!-- neck -->
@@ -92,6 +98,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_neck_type_error"></small>
                 </div>
                 <!-- Breast -->
                 <div class="Breast">
@@ -112,6 +119,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_breast_type_error"></small>
                 </div>
             </div>
             <div class="box d-flex">
@@ -134,6 +142,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_abdomen_type_error"></small>
                 </div>
                 <!-- extremites-->
                 <div class="extremites">
@@ -155,6 +164,7 @@
 
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_extremites_type_error"></small>
                 </div>
             </div>
         </div>
@@ -184,20 +194,21 @@
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_warts" value="warts">
-                                <label for="edit_cervical_abnormalities_type_warts" class="cervical_abnormalities_type">Warts</label>
+                                <label for="edit_cervical_abnormalities_type_warts" class="edit_cervical_abnormalities_type">Warts</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_Polyp" value="Polyp or cyst">
-                                <label for="edit_cervical_abnormalities_type_Polyp" class="cervical_abnormalities_type">Polyp or cyst</label>
+                                <label for="edit_cervical_abnormalities_type_Polyp" class="edit_cervical_abnormalities_type">Polyp or cyst</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_inflamation_or_erosion" value="inflammation or erosion">
-                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="cervical_abnormalities_type">inflammation or erosion</label>
+                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="edit_cervical_abnormalities_type">inflammation or erosion</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
-                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="cervical_abnormalities_type">Bloody discharge</label>
+                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="edit_cervical_abnormalities_type">Bloody discharge</label>
                             </div>
+                            <small class="text-danger error-text" id="edit_cervical_abnormalities_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="edit_extremites_UID_type" id="edit_extremites_UID_type_cervical_consistency" value="cervical consistency">
@@ -207,12 +218,13 @@
                         <div class="inner-type-abnormalities d-flex gap-3" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_firm" value="firm">
-                                <label for="edit_cervical_consistency_type_firm" class="cervical_consistency_type_label">Firm</label>
+                                <label for="edit_cervical_consistency_type_firm" class="edit_cervical_consistency_type_label">Firm</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_soft" value="soft">
-                                <label for="edit_cervical_consistency_type_soft" class="cervical_consistency_type_label">Soft</label>
+                                <label for="edit_cervical_consistency_type_soft" class="edit_cervical_consistency_type_label">Soft</label>
                             </div>
+                            <small class="text-danger error-text" id="edit_cervical_consistency_type_error"></small>
                         </div>
                         <!-- tenderness -->
                         <div class="mb-2 d-flex align-items-center gap-2">
@@ -226,30 +238,33 @@
                         </div>
                         <!-- uterine position -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="edit_extremites_UID_type" id="physical_examination_extremites_UID_type_uterine" value="uterine position">
-                            <label for="physical_examination_extremites_UID_type_uterine">Uterine position</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_physical_examination_extremites_UID_type_uterine" value="uterine position">
+                            <label for="edit_physical_examination_extremites_UID_type_uterine">Uterine position</label>
                         </div>
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_mid" value="Mid">
-                                <label for="edit_uterine_position_type_mid" class="uterine_position_type_label">Mid</label>
+                                <label for="edit_uterine_position_type_mid" class="edit_uterine_position_type_label">Mid</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_anteflexed" value="Anteflexed">
-                                <label for="edit_uterine_position_type_anteflexed" class="uterine_position_type_label">Anteflexed</label>
+                                <label for="edit_uterine_position_type_anteflexed" class="edit_uterine_position_type_label">Anteflexed</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_typer_retroflexed" value="Retroflexed">
-                                <label for="edit_uterine_position_typer_retroflexed" class="uterine_position_type_label">Retroflexed</label>
+                                <label for="edit_uterine_position_typer_retroflexed" class="edit_uterine_position_type_label">Retroflexed</label>
                             </div>
+                            <small class="text-danger error-text" id="edit_uterine_position_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="physical_examination_extremites_UID_type" id="edit_uterine_depth" value="uterine depth">
                             <label for="edit_uterine_depth">Uterine depth</label>
                             <input type="text" class="w-25" name="edit_uterine_depth_text" id="edit_uterine_depth_text">
                             <small>cm</small>
+                            <small class="text-danger error-text" id="edit_uterine_depth_text_error"></small>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="edit_extremites_UID_type_error"></small>
                 </div>
             </div>
 
@@ -265,8 +280,8 @@
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2">
         <div class="mb-3 w-50 d-flex flex-column">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
+            <label for="edit_family_planning_signature_image">Upload Signature</label>
+            <input type="file" name="edit_family_planning_signature_image" id="edit_family_planning_signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
         </div>
         <div class="mb-3 w-50">
@@ -279,8 +294,8 @@
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2 border-bottom">
         <div class="mb-3 w-50 d-flex flex-column">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
+            <label for="edit_family_planning_acknowlegement_consent_signature_image">Upload Signature</label>
+            <input type="file" name="edit_family_planning_acknowlegement_consent_signature_image" id="edit_family_planning_acknowlegement_consent_signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
         </div>
         <div class="mb-3 w-50">
