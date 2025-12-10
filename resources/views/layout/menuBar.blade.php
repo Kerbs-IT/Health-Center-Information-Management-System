@@ -160,7 +160,39 @@
             </div>
 
         </div>
-        <!-- Inventory  here, tinanggal ko muna-->
+        <!-- Inventory System -->
+        <div class="wrapper w-100 d-flex justify-content-center flex-column">
+            <a href="#" class="menu-items d-flex align-items-center gap-3 text-decoration-none  menu-option w-100 px-3 py-2">
+                <div class="menu-text d-flex align-items-center my-auto gap-3 ">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <h4 class="mb-0 fs-5">Inventory</h4>
+                </div>
+                <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
+
+
+            </a>
+            <div class="sub-menu  patient-menu w-75 align-self-end">
+                <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_vaccination">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h5 class="mb-0">Add Category</h5>
+                </a>
+                <!-- senior citizen -->
+                <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <h5 class="mb-0">Add Medicine</h5>
+                </a>
+                <!-- TB dots -->
+                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <h5 class="mb-0">Report</h5>
+                </a>
+                <!-- family planning
+                <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
+                    <i class="fa-solid fa-people-roof"></i>
+                    <h5 class="mb-0">WRA</h5>
+                </a> -->
+            </div>
+        </div>
 
         @endif
         <!-- -----------------------------------PATIENT DASHBOARD CONTENT -->
