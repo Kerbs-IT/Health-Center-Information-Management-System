@@ -21,10 +21,10 @@
     ])
 </head>
 
- @include('layout.navbar')
-<body class="d-flex flex-column min-vh-100" style="background-color: #e8f5e9;">
+<body class="d-flex flex-column min-vh-100">
 
-
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/login.js','resources/css/auth/login.css'])
+     @include('layout.navbar')
 
     <main class="d-flex align-items-center justify-content-center flex-grow-1" style="background-color:#e8f5e9;">
          @yield('content')
@@ -32,8 +32,8 @@
         <div class="container d-flex justify-content-center">
             <div class="row login-container login-card border">
                 <!-- Left Image -->
-                <div class=" col-md-6 d-none d-md-block p-0">
-                    <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="login-img">
+                <div class=" p-0">
+                    <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="login-img d-none d-sm-block">
                 </div>
                 <!-- Right Form -->
                 <div class=" col-md-6 login-form-con">
@@ -83,23 +83,24 @@
         @include('layout.footer')
     </footer>
 
-</html>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eye-icon");
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const passwordInput = document.getElementById("password");
-    const eyeIcon = document.getElementById("eye-icon");
+        eyeIcon.addEventListener("click", function () {
+            const isPassword = passwordInput.type === "password";
 
-    eyeIcon.addEventListener("click", function () {
-        const isPassword = passwordInput.type === "password";
+            // Toggle input type
+            passwordInput.type = isPassword ? "text" : "password";
 
-        // Toggle input type
-        passwordInput.type = isPassword ? "text" : "password";
-
-        // Swap icon
-        this.classList.toggle("fa-eye");
-        this.classList.toggle("fa-eye-slash");
+            // Swap icon
+            this.classList.toggle("fa-eye");
+            this.classList.toggle("fa-eye-slash");
+        });
     });
-});
+
+    </script>
+</body>
 
 </script>
