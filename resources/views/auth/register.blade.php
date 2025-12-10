@@ -37,7 +37,7 @@
 
                         <!-- username -->
                         <div class="mb-3">
-                            <label for="username" class="mb-1 h6 fw-light">Username:</label>
+                            <label for="username" class="mb-1 h6 fw-medium">Username:</label>
                             <input type="text" placeholder="Enter your username" name="username" class="form-control bg-light" autocomplete="off" value="{{old('username')}}">
                             @error('username')
                             <small class="text-danger">{{$message}}</small>
@@ -45,7 +45,7 @@
                         </div>
                         <!-- full name -->
                         <div class="mb-3">
-                            <label for="" class="mb-1 h6 fw-light">Personal Info:</label>
+                            <label for="" class="mb-1 h6 fw-medium">Personal Info:</label>
                             <div class="row g-2">
                                 <div class="col-lg-4 col-md-6">
                                      <input type="text" placeholder="First Name" name="first_name" class=" form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
