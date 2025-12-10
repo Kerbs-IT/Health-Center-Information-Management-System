@@ -2,12 +2,12 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar  min-vh-100" > 
+<div class="menu-bar  min-vh-100">
     <!-- Close button for mobile/tablet -->
     <button id="closeSidebar" class=" d-lg-none">&times;</button>
 
     <div class="logo-con d-flex justify-content-center p-3 mb-1 mt-3">
-        <img src="{{asset(path: 'images/hugoperez_logo.png')}}"  alt="logo" class="logo">
+        <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
         <!-- Dashboard -->
@@ -18,7 +18,7 @@
             $routeName = 'dashboard.' . $role; // e.g., 'dashboard.admin'
             @endphp
             <a href="{{ route($routeName)}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="dashboard">
-                <i class="fa-solid fs-5 fa-house"></i>                
+                <i class="fa-solid fs-5 fa-house"></i>
                 <h4 class="mb-0 fs-5">Dashboard</h4>
             </a>
         </div>
@@ -33,7 +33,7 @@
         @endif
         <!-- Heatmap -->
         <div class="wrapper w-100 d-flex justify-content-center">
-            <a href="#" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="heatmap">
+            <a href="{{route('health-map.index')}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="heatmap">
                 <i class="fa-solid fs-5 fa-map"></i>
                 <h4 class="mb-0 fs-5">Heatmap</h4>
             </a>
@@ -84,7 +84,7 @@
                 <div class="menu-text d-flex align-items-center my-auto gap-3 ">
                     <i class="fa-solid fs-5 fa-folder-open"></i>
                     <h4 class="mb-0 fs-6">Records</h4>
-                </div>      
+                </div>
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
@@ -160,6 +160,7 @@
             </div>
 
         </div>
+        <!-- Inventory  here, tinanggal ko muna-->
 
         @endif
         <!-- -----------------------------------PATIENT DASHBOARD CONTENT -->

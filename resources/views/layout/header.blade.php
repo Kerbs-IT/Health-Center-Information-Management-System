@@ -1,8 +1,8 @@
-<header class=" d-flex align-items-center pe-5 w-100 position-sticky top-0">
+<header class=" d-flex align-items-center px-3 ">
   <nav class="d-flex justify-content-between align-items-center w-100 ">
     <div class="box d-flex gap-3 align-items-center justify-content-center">
     <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
-        <i class="fa-solid fa-bars fs-2"></i>
+        <i class="fa-solid fa-bars fs-1"></i>
     </button>
       @if ($page === 'DASHBOARD')
       <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
@@ -10,7 +10,7 @@
       <h1 class="mb-0">{{ $page }}</h1>
       @endif
     </div>
-    <div class="right-info d-flex align-items-center justify-content-center gap-3">
+    <div class="right-info d-flex align-items-center justify-content-center gap-3 z-1">
       <button type="button" class="btn position-relative p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationModal">
         <!-- Bell SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
@@ -45,7 +45,7 @@
       }
       @endphp
       <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-        <img src="{{ $profileImage }}" alt=" profile picture" class="profile-img" id="profile_img">
+        <img src="{{ $profileImage }}" alt=" profile picture" class="profile-img z-1" id="profile_img">
         <div class="username-n-role">
           <h5 class="mb-0">{{ optional(Auth::user()->nurses)->full_name
                                         ?? optional(Auth::user()->staff)->full_name

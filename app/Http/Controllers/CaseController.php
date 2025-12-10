@@ -17,11 +17,11 @@ class CaseController extends Controller
 
             if($typeOfRecord == 'prenatal'){
                 $case = prenatal_case_records::with('pregnancy_timeline_records', 'prenatal_assessment')->findOrFail($id);
-                $healthwoker = staff::where('user_id', $case->health_worker_id)->findOrFail();
+                $healthwoker = staff::where('user_id', $case->health_worker_id)->firstOrFail();
                 return response()->json([
                     'caseInfo' => $case,
                     
-                ], 200);
+                ],200);
             }
            
         } catch (\Exception $e) {

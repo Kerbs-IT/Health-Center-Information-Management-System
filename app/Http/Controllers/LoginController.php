@@ -20,18 +20,22 @@ class LoginController extends Controller
             
         ]);
         $remember = $request->has('remember');
- 
+        
+
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            $data = Auth::user();
+
             if (Auth::user()->status !== 'active') {
+                $status = Auth::user()->status;
                 Auth::logout(); // force logout if not active
                 return back()->withErrors([
-                    'email' => 'Your account is ' . Auth::user()->status . '. Please wait for approval.',
+                    'email' => 'Your account is ' . $data->status  . '. Please wait for approval.',
                 ])->onlyInput('email');
             }
 
-            $data = Auth::user(); // gets the whole information of the user
+             // gets the whole information of the user
             $role = $data -> role; // this gets the role of the user from the table
 
             if($remember){
@@ -48,9 +52,7 @@ class LoginController extends Controller
                 case 'patient':
                      return redirect() -> route('dashboard.patient');
                 case 'nurse':
-                    
                     return redirect() -> route('dashboard.nurse');
-                    break;
                 case 'staff':
                     return redirect() -> route('dashboard.staff');
                 default:
