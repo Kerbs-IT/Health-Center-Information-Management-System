@@ -134,8 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --------------------------------------------- ADD BLOOD DONOR SECTION ------------------------------------------------------------
 
-    const addBloodDonorBtn = document.getElementById("blood_donor_add_btn");
-    const bloodDonorInput = document.getElementById("blood_donor_input");
+    const addBloodDonorBtn = document.getElementById("donor_name_add_btn");
+    const bloodDonorInput = document.getElementById("donor_name_input");
     const bloodDonorContainer = document.querySelector(
         ".blood-donor-name-container"
     );
@@ -180,9 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // });
         });
     }
-        
-
-    
 
     // handle the remove of the selected donor
     bloodDonorContainer.addEventListener("click", (e) => {
@@ -212,64 +209,101 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // handle the patient full name info
 
-    const firstNext = document.getElementById('first_next');
-    firstNext.addEventListener('click', e => {
-          const fname = document.getElementById("first_name");
-          const middle_initial = document.getElementById("middle_initial");
-          const lname = document.getElementById("last_name");
-          const fullNameCon = document.getElementById(
-              "prenatal_patient_full_name"
-          );
+    const firstNext = document.getElementById("first_next");
+    firstNext.addEventListener("click", (e) => {
+        const fname = document.getElementById("first_name");
+        const middle_initial = document.getElementById("middle_initial");
+        const lname = document.getElementById("last_name");
+        const fullNameCon = document.getElementById(
+            "prenatal_patient_full_name"
+        );
 
-          // it combines the value, removing the empty such as the middle initial
-          fullNameCon.value = [fname.value, middle_initial.value, lname.value]
-              .filter(Boolean) // removes empty strings
-              .join(" ");
+        // it combines the value, removing the empty such as the middle initial
+        fullNameCon.value = [fname.value, middle_initial.value, lname.value]
+            .filter(Boolean) // removes empty strings
+            .join(" ");
 
-          console.log(fullNameCon);
-    })
-
-
+        console.log(fullNameCon);
+    });
 });
 
 // upload the data on the database
 
 const prenatalAddBtn = document.getElementById("prenatal-save-btn");
 
-prenatalAddBtn.addEventListener('click', async (e) => {
+prenatalAddBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const form = document.getElementById("add-patient-form");
     const formData = new FormData(form);
 
     // call the route
     const response = await fetch("/add-prenatal-patient", {
-        method: 'POST',
-        headers:{"X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
+                .content,
             Accept: "application/json",
         },
-        body:formData
+        body: formData,
     });
+    const data = await response.json();
+
+    // get all the error elements
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
-          Swal.fire({
-              title: "Prenatal Patient",
-              text: "Patient is Successfully added.", // this will make the text capitalize each word
-              icon: "success",
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "OK",
-          });
-            
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
+        Swal.fire({
+            title: "Prenatal Patient",
+            text: "Patient is Successfully added.", // this will make the text capitalize each word
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // reset the steps
+                form.reset();
+                
+                window.currentStep = 1;
+                window.showStep(window.currentStep);
+            }
+        });
     } else {
-          Swal.fire({
-              title: "Prenatal Patient",
-              text: "Error occur Patient is not Successfully added.", // this will make the text capitalize each word
-              icon: "error",
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "OK",
-          });
-            
+        // reset first
+
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
+        
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let message = "";
+
+        if (data.errors) {
+            if (typeof data.errors == "object") {
+                message = Object.values(data.errors).flat().join("\n");
+            } else {
+                message = data.errors;
+            }
+        } else {
+            message = "An unexpected error occurred.";
+        }
+
+        Swal.fire({
+            title: "Prenatal Patient",
+            text: capitalizeEachWord(message), // this will make the text capitalize each word
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
     }
+});
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
 
-
-})

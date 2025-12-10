@@ -3,23 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\medical_record_cases;
+use App\Models\nurses;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\staff;
+use App\Models\User;
 use App\Models\vaccination_case_records;
+use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str as SupportStr;
+use Illuminate\Validation\Rule as ValidationRule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Psy\Util\Str;
 
 class addPatientController extends Controller
 {
     public function dashboard(){
         $healthworkers = staff::orderBy('first_name','ASC')->get();
         $vaccines = vaccines::get();
-        return view('add_patient.add_patient', ['isActive' => true, 'page' => 'ADD PATIENT', 'healthworkers' => $healthworkers, 'vaccines'=> $vaccines]);
+        $staffFullName = '';
+        if(Auth::user() -> role == 'staff'){
+            $staff = staff::where("user_id", Auth::user()->id)->first();
+            $staffFullName = $staff->full_name;
+        }
+        return view('add_patient.add_patient', ['isActive' => true, 
+        'page' => 'ADD PATIENT', 
+        'healthworkers' => $healthworkers, 
+        'vaccines'=> $vaccines,
+        'healthWorkerFullName'=> $staffFullName]);
     }
 
     public function addVaccinationPatient(Request $request){
@@ -27,8 +44,11 @@ class addPatientController extends Controller
             // validates the data
             $data = $request->validate([
                 'type_of_patient' =>'required',
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
+                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
+                'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
@@ -79,7 +99,7 @@ class addPatientController extends Controller
             // dd($patient->id);
             $blk_n_street = explode(',', $data['street']);
             // dd($blk_n_street);
-            patient_addresses::create([
+            $patientAddress = patient_addresses::create([
                 'patient_id' => $vaccinationPatientId,
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
                 'street' => $blk_n_street[1] ?? null,
@@ -149,10 +169,56 @@ class addPatientController extends Controller
                 ]);
             }
 
-            return response()->json(['message' => 'Patient has been added'], 201);
+            // vaccination masterlist
+
+            $vaccinationRecord = medical_record_cases::with(['patient', 'vaccination_medical_record'])->where('type_of_case','vaccination')->where('id', $medicalCaseId)->first();
+
+            $fullAddress = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
+            // create the record
+            // nurse
+            $nurse = User::where("role",'nurse')->first();
+            $nurseInfo = nurses::where("user_id",$nurse->id)->first();
+            $nurseFullname = $nurseInfo -> full_name;
+            $vaccinationMasterlist = vaccination_masterlists::create([
+                'brgy_name' => $patientAddress-> purok,
+                'midwife'=> "Nurse ". $nurseFullname??null,
+                'health_worker_id' => $data['handled_by'],
+                'medical_record_case_id'=> $medicalCaseId,
+                'name_of_child' => $vaccinationPatient->full_name,
+                'patient_id'=> $vaccinationPatient->id,
+                'address_id'=> $patientAddress->id,
+                'Address' => trim($fullAddress," "),
+                'sex'=> $vaccinationPatient->sex,
+                'age'=> $vaccinationPatient->age,
+                'date_of_birth' => $vaccinationPatient->date_of_birth
+            ]);
+
+            
+
+            //  loop through
+            foreach($vaccines as $vaccineId){
+                $vaccine = vaccines::find($vaccineId);
+                $vaccineText = $vaccine->vaccine_acronym == 'Hepatitis B'? $vaccine->vaccine_acronym : SupportStr::upper($vaccine->vaccine_acronym);
+                $itemColumn = $vaccineText == 'Hepatitis B'? $vaccineText: $vaccineText . "_" . $medicalCaseRecord->dose_number;
+
+                $vaccineTypes = ['BCG','Hepatitis B','PENTA_1','PENTA_2','PENTA_3','OPV_1','OPV_2','OPV_3','PCV_1','PCV_2','PCV_3','IPV_1','IPV_2','MCV_1','MCV_2'];
+                if(in_array($itemColumn,$vaccineTypes)){
+                    $vaccinationMasterlist->update([
+                        "$itemColumn" => $medicalCaseRecord->date_of_vaccination
+                    ]);
+                }
+            }
+
+
+
+            return response()->json(['message' => 'Patient has been added'], 200);
         }catch(ValidationException $e){
             return response()->json([
                 'errors' => $e->errors()
+            ], 422);
+        }catch(\Exception $e){
+            return response()->json([
+                'errors' => $e->getMessage()
             ], 422);
         }
 
