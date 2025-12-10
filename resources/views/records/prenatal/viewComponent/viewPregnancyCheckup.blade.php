@@ -3,15 +3,15 @@
         <tbody>
             <tr>
                 <th>Patient Name</th>
-                <td  id="checkup_patient_name"></td>
+                <td id="checkup_patient_name"></td>
             </tr>
             <tr>
                 <th>Administered By</th>
-                <td  id="health_worker_name"></td>
+                <td id="health_worker_name"></td>
             </tr>
             <tr>
                 <th>Time</th>
-                <td id="check_up_time" ></td>
+                <td id="check_up_time"></td>
             </tr>
         </tbody>
     </table>
