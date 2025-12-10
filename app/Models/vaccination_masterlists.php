@@ -35,7 +35,8 @@ class vaccination_masterlists extends Model
         'IPV_2',
         'MCV_1',
         'MCV_2',
-        'remarks'
+        'remarks',
+        'status'
     ];
     protected $casts = [
         'date_of_birth' => 'date'

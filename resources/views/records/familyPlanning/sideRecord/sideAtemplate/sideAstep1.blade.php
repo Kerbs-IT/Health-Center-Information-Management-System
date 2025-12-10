@@ -98,6 +98,29 @@
                             <small class="text-danger error-text" id="side_A_add_client_religion_error"></small>
                         </div>
                     </div>
+                    <div class="input-group mb-2">
+                        <h5>Address</h5>
+                        <div class="input-field d-flex gap-2 align-items-center w-100">
+                            <div class=" mb-2 w-50">
+                                <label for="street">Street*</label>
+                                <input type="text" id="add_street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="add_street" value="">
+                                <small class="text-danger error-text" id="street_error"></small>
+                            </div>
+                            <div class="mb-2 w-50">
+                                <label for="brgy">Barangay*</label>
+                                @php
+                                $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
+                                @endphp
+                                <select name="add_brgy" id="add_brgy" class="form-select py-2">
+                                    <option value="" disabled selected>Select a brgy</option>
+                                    @foreach($brgy as $brgy_unit)
+                                    <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-danger error-text" id="brgy_error"></small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <h5>Spouse Information</h5>
                 <div class="mb-2">
@@ -267,7 +290,7 @@
                 <div class="methods d-flex gap-3">
                     <div class="method-row">
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="implant">
+                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="Implant">
                             <label for="implant">Implant</label>
                         </div>
                         <!-- injectable -->

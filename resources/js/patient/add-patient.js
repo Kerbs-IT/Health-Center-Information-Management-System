@@ -1,10 +1,11 @@
 import Swal from "sweetalert2";
-
+import { addVaccineInteraction } from "../patient/healthWorkerList";
+window.currentStep = 1;
 document.addEventListener("DOMContentLoaded", () => {
-    let currentStep = 1;
+    
     const typeSelect = document.getElementById("type-of-patient");
 
-    function showStep(step) {
+    window.showStep = function (step) {
         const selected = document.getElementById("type-of-patient").value;
         if (currentStep == 1) {
             document.getElementById("head-text").innerHTML =
@@ -76,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("step" + step).classList.add("d-flex");
             document.getElementById("step" + step).classList.add("flex-column");
         }
-    }
+    };
+
+     
     window.nextStep = function () {
         // get important values
         const fname = document.getElementById("first_name");
@@ -147,8 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
             insertNameValue(fname, MI, lname, tb_dots_patient_name);
         }
 
-        currentStep++;
-        showStep(currentStep);
+        window.currentStep++;
+        window.showStep(window.currentStep);
     };
 
     function insertNameValue(fname, MI, lname, element) {
@@ -158,8 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.prevStep = function () {
-        currentStep--;
-        showStep(currentStep);
+        window.currentStep--;
+        window.showStep(window.currentStep);
     };
 
     window.showAdditional = function () {
@@ -323,18 +326,25 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const handled_by = document.getElementById("handled_by");
+    const handledByViewInput = document.getElementById("handle_by_view_input");
 
-    handled_by.addEventListener("change", (e) => {
-        if (typeSelect.value == "vaccination") {
-            const selectedText =
-                handled_by.options[handled_by.selectedIndex].text;
-            const handledByViewInput = document.getElementById(
-                "handle_by_view_input"
-            );
-            // console.log(selectedText);
-            handledByViewInput.value = selectedText;
+    if (handled_by && handledByViewInput) {
+        if (handled_by.tagName.toLowerCase() === "select") {
+            handled_by.addEventListener("change", (e) => {
+                if (typeSelect.value === "vaccination") {
+                    const selectedText =
+                        handled_by.options[handled_by.selectedIndex].text;
+                    handledByViewInput.value = selectedText;
+                }
+            });
+        } else if (handled_by.type === "hidden") {
+            handledByViewInput.value =
+                handled_by.dataset.healthWorkerName || "";
         }
-    });
+    }
+
+
+   
 
     // handle adding the vaccine
 
@@ -343,33 +353,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedVaccinesCon = document.getElementById("selected_vaccines");
     const selectedVaccines = [];
 
-    function addInteraction(btn) {
-        btn.addEventListener("click", (e) => {
-            const vaccineInput = document.getElementById("vaccine_input");
-            const selectedText =
-                vaccineInput.options[vaccineInput.selectedIndex].text;
-            const selectedId =
-                vaccineInput.options[vaccineInput.selectedIndex].value;
+    const vaccineInput = document.getElementById("vaccine_input");
 
-            if (!selectedVaccines.includes(selectedId) && selectedId != "") {
-                vaccinesContainer.innerHTML += ` <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${selectedId}>
-                    <p class="mb-0">${selectedText}</p>
-                    <div class="delete-icon d-flex align-items-center justify-content-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
-                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                        </svg>
-                    </div>
-                </div>`;
-                // push the id to the selectedVaccines array
-                selectedVaccines.push(selectedId);
-                selectedVaccinesCon.value = selectedVaccines.toString();
-                selectedVaccinesCon.value = selectedVaccinesCon.value.trim();
-                console.log(selectedVaccinesCon.value);
+
+    addVaccineInteraction(
+        addVaccineBtn,
+        vaccineInput,
+        vaccinesContainer,
+        selectedVaccinesCon,
+        selectedVaccines
+    );
+    
+    if (vaccinesContainer) {
+        vaccinesContainer.addEventListener("click", (e) => {
+            console.log("before deletion:", selectedVaccines);
+            if (e.target.closest(".vaccine")) {
+                const vaccineId = e.target.closest(".vaccine").dataset.bsId;
+                console.log("id of element:", vaccineId);
+                const deleteBtn = e.target.closest(".delete-icon");
+                if (deleteBtn) {
+                    if (selectedVaccines.includes(Number(vaccineId))) {
+                        const selectedElement = selectedVaccines.indexOf(
+                            Number(vaccineId)
+                        );
+                        console.log("index", selectedElement);
+                        selectedVaccines.splice(selectedElement, 1);
+                        selectedVaccinesCon.value = selectedVaccines.join(",");
+                    }
+                    e.target.closest(".vaccine").remove();
+                }
+
+                console.log("update with deleted id:", selectedVaccines);
+                console.log("updated value:", selectedVaccinesCon.value);
             }
         });
     }
-
-    addInteraction(addVaccineBtn);
 
     // SUBMIT THE FORM FOR VACCINATION
 
@@ -377,6 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "vaccination-submit-btn"
     );
 
+    if (!vaccinationSubmitBtn) return;
     vaccinationSubmitBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const form = document.getElementById("add-patient-form");
@@ -401,15 +420,22 @@ document.addEventListener("DOMContentLoaded", () => {
           
         const errorElements = document.querySelectorAll(".error-text");
         if (response.ok) {
-             errorElements.forEach((element) => {
-                 element.textContent = "";
-             });
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
             Swal.fire({
                 title: "Add",
                 text: "Vaccination Patient Information is successfully Added",
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // reset the steps
+                    form.reset();
+                    window.currentStep = 1;
+                    window.showStep(window.currentStep);
+                }
             });
         } else {
             // reset the error element text first

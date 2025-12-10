@@ -134,8 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --------------------------------------------- ADD BLOOD DONOR SECTION ------------------------------------------------------------
 
-    const addBloodDonorBtn = document.getElementById("blood_donor_add_btn");
-    const bloodDonorInput = document.getElementById("blood_donor_input");
+    const addBloodDonorBtn = document.getElementById("donor_name_add_btn");
+    const bloodDonorInput = document.getElementById("donor_name_input");
     const bloodDonorContainer = document.querySelector(
         ".blood-donor-name-container"
     );
@@ -260,6 +260,14 @@ prenatalAddBtn.addEventListener("click", async (e) => {
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // reset the steps
+                form.reset();
+                
+                window.currentStep = 1;
+                window.showStep(window.currentStep);
+            }
         });
     } else {
         // reset first

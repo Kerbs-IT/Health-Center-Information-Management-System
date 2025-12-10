@@ -10,6 +10,7 @@ use App\Models\senior_citizen_maintenance_meds;
 use App\Models\senior_citizen_medical_records;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SeniorCitizenController extends Controller
@@ -21,7 +22,10 @@ class SeniorCitizenController extends Controller
         try{
             $patientData = $request->validate([
                 'type_of_patient' => 'required',
-                'first_name' => 'sometimes|nullable|string',
+                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
                 'last_name' => 'sometimes|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
@@ -390,6 +394,24 @@ class SeniorCitizenController extends Controller
             return response()->json([
                 'errors' => $e->errors()
             ], 422);
+        }
+    }
+
+    public function removeCase($id){
+        try {
+           $seniorCitizenCase = senior_citizen_case_records::findOrFail($id);
+           if($seniorCitizenCase){
+            $seniorCitizenCase->update([
+                'status'=>'Archived'
+            ]);
+           }
+           return response()->json([
+            'mesage'=> 'Senior Citizen Case is successfully deleted'
+           ],200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ],422);
         }
     }
 }

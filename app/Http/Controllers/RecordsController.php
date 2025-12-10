@@ -7,6 +7,7 @@ use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\pregnancy_plans;
 use App\Models\prenatal_case_records;
 use App\Models\senior_citizen_case_records;
 use App\Models\staff;
@@ -17,8 +18,10 @@ use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
+use App\Models\wra_masterlists;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -131,10 +134,12 @@ class RecordsController extends Controller
                 $vaccineText = $vaccine == 'Hepatitis B' ? $vaccine : Str::upper($vaccine);
                 $itemColumn = $vaccineText == 'Hepatitis B' ? $vaccineText : $vaccineText . "_" . $vaccinationCase->dose_number;
 
+                if($vaccinationMasterlist){
+                    $vaccinationMasterlist->update([
+                        $itemColumn => null
+                    ]);
+                }
                 
-                $vaccinationMasterlist->update([
-                    $itemColumn => null
-                ]);
 
                
                 
@@ -177,7 +182,10 @@ class RecordsController extends Controller
 
             // update again the master list
             //  loop through
-            $vaccinationMasterlist->refresh();
+            if($vaccinationMasterlist){
+                $vaccinationMasterlist->refresh();
+            }
+            
             foreach ($vaccines as $vaccineId) {
                 $vaccine = vaccines::find($vaccineId);
                 $vaccineText = $vaccine->vaccine_acronym == 'Hepatitis B' ? $vaccine->vaccine_acronym : Str::upper($vaccine->vaccine_acronym);
@@ -185,9 +193,12 @@ class RecordsController extends Controller
 
                 $vaccineTypes = ['BCG', 'Hepatitis B', 'PENTA_1', 'PENTA_2', 'PENTA_3', 'OPV_1', 'OPV_2', 'OPV_3', 'PCV_1', 'PCV_2', 'PCV_3', 'IPV_1', 'IPV_2', 'MCV_1', 'MCV_2'];
                 if (in_array($itemColumn, $vaccineTypes)) {
-                    $vaccinationMasterlist->update([
-                        "$itemColumn" => $data['date_of_vaccination']
-                    ]);
+                    if($vaccinationMasterlist){
+                        $vaccinationMasterlist->update([
+                            "$itemColumn" => $data['date_of_vaccination']
+                        ]);
+                    }
+                    
                 }
             }
             // end of updating
@@ -231,6 +242,11 @@ class RecordsController extends Controller
             $patient_address = patient_addresses::where('patient_id', $id)->firstOrFail();
             // update the full name of vaccination case record
             $vaccination_case_record = vaccination_case_records::where('medical_record_case_id', $medical_record_case->id)->get();
+
+            // get the masterlist record of the patient
+            $vaccinationMasterlist = vaccination_masterlists::where('patient_id',$id)->first();
+
+            if(!$vaccinationMasterlist)return;
 
             $data = $request->validate([
                 'first_name' => 'sometimes|nullable|string',
@@ -295,9 +311,15 @@ class RecordsController extends Controller
             // refresh the record
             $patient_address->refresh();
 
-            $newAddress = $patient_address->house_number . ", " . $patient_address->street . ",". $patient_address-> purok . "," . $patient_address-> barangay. "," . $patient_address->city . ",". $patient_address->province;
+            $newAddress = implode(', ', array_filter([
+                $patient_address->house_number,
+                $patient_address->street,
+                $patient_address->purok,
+                $patient_address->barangay,
+                $patient_address->city,
+                $patient_address->province
+            ]));
             // update the masterlist 
-            $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $medical_record_case->id)->first();
             if($vaccinationMasterlist){
                 $vaccinationMasterlist->update([
                     'name_of_child'=> trim(
@@ -312,6 +334,8 @@ class RecordsController extends Controller
                 ]);
             }
 
+           
+
             return response()->json([
                 'message' => 'Patient information is successfully updated'
             ], 200);
@@ -320,10 +344,20 @@ class RecordsController extends Controller
                 'message' => 'Patient information is not successfully updated',
                 'errors' => $e->errors()
             ], 422);
-        }
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Patient information is not successfully updated',
+                'errors' => $e->getMessage()
+            ], 422);
+        } 
     }
     public function vaccinationCase($id)
     {
+        $healthWorkerName = '';
+        if (Auth::user()->role == 'staff') {
+            $staffInfo = staff::where("user_id", Auth::user()->id)->first();
+            $healthWorkerName = $staffInfo->full_name;
+        }
         $medical_record_case = medical_record_cases::with(['patient', 'vaccination_medical_record'])->findOrFail($id);
         $vaccination_case_record = vaccination_case_records::where('medical_record_case_id', $medical_record_case->id)->where('status', '!=','Archived')->get();
         // dd($vaccination_case_record);
@@ -331,14 +365,28 @@ class RecordsController extends Controller
 
         // $vaccine_administered = vaccineAdministered::where('vaccination_case_record_id', $vaccination_case_record[0]->id)->get();
         // dd($medical_record_case, $vaccination_case_record, $vaccine_administered);
-        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD', 'vaccination_case_record' => $vaccination_case_record, 'medical_record_case' => $medical_record_case]);
+        return view('records.vaccination.patientCase', ['isActive' => true, 'page' => 'RECORD', 
+        'vaccination_case_record' => $vaccination_case_record, 
+        'medical_record_case' => $medical_record_case,
+            'healthWorkerName' => $healthWorkerName]);
     }
     public function vaccinationViewCase($id)
     {
 
         try {
+            $healthWorkerName = '';
+            
             $vaccinationCase = vaccination_case_records::findOrFail($id);
 
+            if (Auth::user()->role == 'staff') {
+                $staffInfo = staff::where("user_id", Auth::user()->id)->first();
+                $healthWorkerName = $staffInfo->full_name;
+            }else{
+                if(Auth::user()->role == 'nurse'){
+                    $staffInfo = staff::where("user_id", $vaccinationCase->health_worker_id )->first();
+                    $healthWorkerName = $staffInfo->full_name;
+                }
+            }
             $vaccineAdministered = vaccineAdministered::where(
                 'vaccination_case_record_id',
                 $vaccinationCase->id
@@ -346,7 +394,8 @@ class RecordsController extends Controller
 
             return response()->json([
                 'vaccinationCase'     => $vaccinationCase,
-                'vaccineAdministered' => $vaccineAdministered
+                'vaccineAdministered' => $vaccineAdministered,
+                'healthWorkerName' => $healthWorkerName
             ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -360,26 +409,43 @@ class RecordsController extends Controller
             ], 500);
         }
     }
-    public function vaccinationDelete($id)
+    public function deletePatient($typeOfPatient, $id,)
     {
         try {
-            $patient = patients::where('id', $id)->firstOrFail();
+            $patient = patients::findOrFail($id);
 
-            if ($patient->delete()) {
-                return response()->json(['message' => 'Patient Record has been deleted successfully']);
-            } else {
-                return response()->json(['message' => 'Failed to delete patient record'], 500);
+            // if(!$patient)return;
+
+            $patient->update([
+                'status'=>'Archived'
+            ]);
+
+            if($typeOfPatient === 'vaccination'){
+                $vaccinationMasterlistRecord = vaccination_masterlists::where("patiend_id", $id)->first();
+                $vaccinationMasterlistRecord->update([
+                    'status' => 'Archived'
+                ]);
             }
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => "There's an error deleting patient record",
-                'error' => $e->getMessage()
-            ], 422);
-        } catch (\Exception $e) {
+            if($typeOfPatient == 'prenatal' || $typeOfPatient == 'family-planning' ){
+                $wraMasterlistRecord = wra_masterlists::where("patient_id",$id)->first();
+                if($wraMasterlistRecord){
+                    $wraMasterlistRecord->update([
+                        'status' => 'Archived'
+                    ]);
+                }
+                
+            }
+            
+
+            
+           
+            return response()->json(['message' => 'Patient Record has been deleted successfully']);
+        }
+         catch (\Exception $e) {
             return response()->json([
                 'message' => "Unexpected error occurred",
                 'error' => $e->getMessage()
-            ], 500);
+            ], 422);
         }
     }
 
@@ -478,7 +544,7 @@ class RecordsController extends Controller
             }
 
             // vaccination Masterlist list
-            $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $id)->firstOrFail();
+            $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $id)->first();
 
             //  loop through
             foreach ($vaccines as $vaccineId) {
@@ -488,9 +554,12 @@ class RecordsController extends Controller
 
                 $vaccineTypes = ['BCG', 'Hepatitis B', 'PENTA_1', 'PENTA_2', 'PENTA_3', 'OPV_1', 'OPV_2', 'OPV_3', 'PCV_1', 'PCV_2', 'PCV_3', 'IPV_1', 'IPV_2', 'MCV_1', 'MCV_2'];
                 if (in_array($itemColumn, $vaccineTypes)) {
-                    $vaccinationMasterlist->update([
-                        "$itemColumn" => $data['add_date_of_vaccination']
-                    ]);
+                    if($vaccinationMasterlist){
+                        $vaccinationMasterlist->update([
+                            "$itemColumn" => $data['add_date_of_vaccination']
+                        ]);
+                    }
+                    
                 }
             }
 
@@ -568,15 +637,53 @@ class RecordsController extends Controller
     }
     public function prenatalCase($caseId)
     {
-        $prenatalCaseRecords = medical_record_cases::with('prenatal_case_record.pregnancy_timeline_records', 'pregnancy_plan', 'pregnancy_checkup')->where('id', $caseId)->firstOrFail();
-        return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 'page' => 'RECORD', 'prenatalCaseRecords' => $prenatalCaseRecords]);
+        $prenatalCaseRecords = medical_record_cases::with('pregnancy_checkup')->where('id', $caseId)->firstOrFail();
+        
+        $familyPlanningMedicalCase = medical_record_cases::where('patient_id', $prenatalCaseRecords->patient_id)->where('type_of_case','family-planning')->first() ?? null;
+        // dd($familyPlanningMedicalCase);
+        $patientInfo = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $caseId)->first();
+
+        $prenatal_case_record = prenatal_case_records::with('pregnancy_timeline_records')->where("medical_record_case_id", $caseId)->where("status", '!=', 'Archived')
+            ->get();
+        $pregnancy_plan = pregnancy_plans::where("medical_record_case_id", $caseId)->where("status", '!=', 'Archived')->first();
+
+        if(!$familyPlanningMedicalCase){
+            return view('records.prenatal.prenatalPatientCase', ['isActive' => true, 
+            'page' => 'RECORD', 
+            'prenatalCaseRecords' => $prenatalCaseRecords, 
+            'familyPlanningRecord' => null, 
+            'familyPlanSidebRecord' => null,
+            'caseId' => $caseId,
+            'patientInfo' => $patientInfo,
+            'prenatal_case_record' => $prenatal_case_record,
+            'pregnancy_plan' => $pregnancy_plan
+            ]);
+        }
+        $familyPlanCaseInfo = family_planning_case_records::with(['medical_history', 'obsterical_history', 'risk_for_sexually_transmitted_infection', 'physical_examinations'])
+        ->where('medical_record_case_id', $familyPlanningMedicalCase->id)->first() ?? null;
+        // dd($familyPlanCaseInfo);
+        $familyPlanSideB = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)->first() ?? null;
+
+        return view('records.prenatal.prenatalPatientCase', 
+        ['isActive' => true, 'page' => 'RECORD', 
+        'prenatalCaseRecords' => $prenatalCaseRecords,
+        'familyPlanningRecord'=> $familyPlanCaseInfo,
+        'familyPlanSidebRecord'=> $familyPlanSideB,
+        'patientInfo' => $patientInfo,
+        'caseId'=> $caseId,
+        'prenatal_case_record' => $prenatal_case_record,
+        'pregnancy_plan' => $pregnancy_plan  ]);
     }
 
     // senior Citizen
 
     public function seniorCitizenRecord()
     {
-        $seniorCitizenRecords = medical_record_cases::with('patient')->where('type_of_case', 'senior-citizen')->get();
+        $seniorCitizenRecords = medical_record_cases::with('patient')->where('type_of_case', 'senior-citizen')
+            ->whereHas('patient', function ($query) {
+                $query->where('status', '!=', 'Archived');
+            })
+            ->get();
         return view('records.seniorCitizen.seniorCitizen', ['isActive' => true, 'page' => 'RECORD', 'seniorCitizenRecords' => $seniorCitizenRecords]);
     }
     public function seniorCitizenDetail($id)
@@ -596,9 +703,14 @@ class RecordsController extends Controller
     }
     public function viewSeniorCitizenCases($id)
     {
-        $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id', $id)->get();
+        $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id', $id)->where('status', '!=', 'Archived')->get();
         $patientRecord = medical_record_cases::with('patient', 'senior_citizen_medical_record')->findOrFail($id);
-        return view('records.seniorCitizen.seniorCitizenPatientCase', ['isActive' => true, 'page' => 'RECORD', 'seniorCaseRecords' =>  $seniorCaseRecords, 'patient_name' => $patientRecord->patient->full_name, 'healthWorkerId' => $patientRecord->senior_citizen_medical_record->health_worker_id, 'medicalRecordId' => $id]);
+        return view('records.seniorCitizen.seniorCitizenPatientCase',
+         ['isActive' => true, 'page' => 'RECORD', 
+         'seniorCaseRecords' =>  $seniorCaseRecords, 
+         'patient_name' => $patientRecord->patient->full_name, 
+         'healthWorkerId' => $patientRecord->senior_citizen_medical_record->health_worker_id, 
+         'medicalRecordId' => $id]);
     }
     public function viewSeniorCitizenCaseInfo()
     {
@@ -608,7 +720,10 @@ class RecordsController extends Controller
     // -------------------------- family planning
     public function familyPlanningRecord()
     {
-        $familyPlanning = medical_record_cases::with('patient')->where('type_of_case', 'family-planning')->get();
+        $familyPlanning = medical_record_cases::with('patient')
+        ->where('type_of_case', 'family-planning')
+        ->where('status', '!=','Archived')
+        ->get();
         return view('records.familyPlanning.familyPlanning', ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecords' => $familyPlanning]);
     }
     public function familyPlanningDetail($id)
@@ -624,16 +739,30 @@ class RecordsController extends Controller
     }
     public function viewFamilyPlanningCase($id)
     {
-        $familyPlanningCases = family_planning_case_records::where('medical_record_case_id', $id)->get();
-        $familyPlanningSideB = family_planning_side_b_records::where('medical_record_case_id', $id)->get();
-        $patientInfo = medical_record_cases::with(['family_planning_medical_record', 'patient'])->findOrFail($id);
-        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD', 'familyPlanningCases' => $familyPlanningCases, 'patientInfo' => $patientInfo, 'familyPlanningSideB' => $familyPlanningSideB]);
+        $familyPlanningCases = family_planning_case_records::where('medical_record_case_id', $id)
+        ->where('status', '!=','Archived')
+        ->get();
+        $familyPlanningSideB = family_planning_side_b_records::where('medical_record_case_id', $id)
+            ->where('status', '!=', 'Archived')
+            ->get();
+        $patientInfo = medical_record_cases::with(['family_planning_medical_record', 'patient'])
+            ->where('status', '!=', 'Archived')
+            ->findOrFail($id);
+        $address = patient_addresses::where("patient_id", $patientInfo->patient->id)->first() ?? null;
+        return view('records.familyPlanning.familyPlanningCase', ['isActive' => true, 'page' => 'RECORD', 
+        'familyPlanningCases' => $familyPlanningCases, 
+        'patientInfo' => $patientInfo, 
+        'familyPlanningSideB' => $familyPlanningSideB,
+        'medicalRecordCaseId' => $id,
+        'address'=> $address]);
     }
 
     // --------------------------- tb dots ----------------------------------------
     public function tb_dotsRecord()
     {
-        $tbRecords = medical_record_cases::with('patient')->where('type_of_case', 'tb-dots')->get();
+        $tbRecords = medical_record_cases::with('patient')->where('type_of_case', 'tb-dots')
+        ->where('status', "!=",'Archived')
+        ->get();
         return view('records.tb-dots.tb-dots', ['isActive' => true, 'page' => 'RECORD', 'tbRecords' => $tbRecords]);
     }
     public function tb_dotsDetail($id)
@@ -661,12 +790,22 @@ class RecordsController extends Controller
     }
     public function viewTb_dotsCase($id)
     {
-        $tbDotsCaseRecords = tb_dots_case_records::where('medical_record_case_id', $id)->get();
-        $patientRecord = medical_record_cases::with('patient', 'tb_dots_medical_record')->findOrFail($id);
+        $tbDotsCaseRecords = tb_dots_case_records::where('medical_record_case_id', $id)
+        ->where('status', '!=','Archived')
+        ->get();
+        $patientRecord = medical_record_cases::with('patient', 'tb_dots_medical_record')
+        ->where('status','!=','Archived')
+        ->findOrFail($id);
 
         // check up 
 
         $checkUpRecords = tb_dots_check_ups::where('medical_record_case_id', $id)->get();
-        return view('records.tb-dots.tb_dotsCase', ['isActive' => true, 'page' => 'RECORD', 'tbDotsRecords' =>  $tbDotsCaseRecords, 'checkUpRecords' => $checkUpRecords, 'patient_name' => $patientRecord->patient->full_name, 'healthWorkerId' => $patientRecord->tb_dots_medical_record->health_worker_id, 'medicalRecordId' => $id]);
+        return view('records.tb-dots.tb_dotsCase', ['isActive' => true, 'page' => 'RECORD', 
+        'tbDotsRecords' =>  $tbDotsCaseRecords, 
+        'checkUpRecords' => $checkUpRecords, 
+        'patient_name' => $patientRecord->patient->full_name, 
+        'healthWorkerId' => $patientRecord->tb_dots_medical_record->health_worker_id, 
+        'medicalRecordId' => $id,
+        'patientInfo' => $patientRecord ]);
     }
 }

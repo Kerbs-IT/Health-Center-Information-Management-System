@@ -1,0 +1,11 @@
+tr th,
+tr th div p,
+th p{
+    font-size: 12px;
+
+}
+tr td
+ {
+    white-space: nowrap;
+    padding: 0 10px;
+}

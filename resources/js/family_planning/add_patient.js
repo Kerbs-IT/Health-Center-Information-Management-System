@@ -69,6 +69,7 @@ function toggleSubRadioInputs(inputs, label, checked) {
     label.forEach((label) => {
         label.classList.toggle("text-muted", !checked);
     });
+  
 }
 
 // initial check
@@ -133,6 +134,17 @@ function toggleTypeOfClient() {
     const new_acceptor = document.getElementById("new-acceptor");
     const isNew = new_acceptor.checked;
 
+    // for the new acceptor
+    const new_acceptor_reasons = document.querySelectorAll(
+        'input[name="new_acceptor_reason_for_FP"]'
+    );
+    const new_acceptor_label = document.querySelectorAll(".new_acceptor_label");
+    toggleSubRadioInputs(
+        new_acceptor_reasons,
+        new_acceptor_label,
+        isNew
+    );
+
     if (isNew) {
         const current_method = document.getElementById(
             "family_planning_current-method"
@@ -146,6 +158,9 @@ function toggleTypeOfClient() {
         current_method.checked = false;
         toggleSubRadioInputs(current_method_type, current_method_label, false);
     } else {
+        const new_acceptor_reasons = document.querySelectorAll(
+            "input[name='new_acceptor_reason_for_FP']"
+        );
         toggleCurrentMethod();
     }
 }
@@ -202,7 +217,19 @@ saveBTN.addEventListener("click", async (e) => {
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // reset the steps
+                form.reset();
+                window.currentStep = 1;
+                window.showStep(window.currentStep);
+            }
         });
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("wraMasterlistRefreshTable");
+        } else {
+            console.warn("Livewire is not available");
+        }
     } else {
         // reset
         errorElements.forEach((element) => {

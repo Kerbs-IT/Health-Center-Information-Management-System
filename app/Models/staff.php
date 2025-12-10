@@ -102,5 +102,9 @@ class staff extends Model
         return $this->hasMany(vaccination_masterlists::class, 'health_worker_id','id');
     }
     
+    // wra masterlist
+    public function wra_masterlist(){
+        return $this->hasMany(wra_masterlists::class,'health_worker_id','id');
+    }
     
 }
