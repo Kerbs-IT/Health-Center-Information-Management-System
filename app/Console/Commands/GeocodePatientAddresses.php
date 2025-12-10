@@ -11,7 +11,8 @@ class GeocodePatientAddresses extends Command
     protected $signature = 'patients:geocode 
                           {--force : Force geocode even if coordinates exist}
                           {--limit= : Limit number of addresses to geocode}
-                          {--delay=1 : Delay between requests in seconds}';
+                          {--delay=1 : Delay between requests in seconds}
+                          {--debug : Show detailed debug info}';
 
     protected $description = 'Geocode patient addresses that are missing latitude/longitude';
 
@@ -28,8 +29,20 @@ class GeocodePatientAddresses extends Command
         $force = $this->option('force');
         $limit = $this->option('limit');
         $delay = $this->option('delay');
+        $debug = $this->option('debug');
 
-        // Get addresses without coordinates
+        // 🔧 DEBUG: Show available puroks from config
+        if ($debug) {
+            $this->info('=== AVAILABLE PUROKS IN CONFIG ===');
+            $coordinates = config('coordinates.hugo_perez');
+            if (isset($coordinates['puroks'])) {
+                foreach (array_keys($coordinates['puroks']) as $purok) {
+                    $this->line("  - '{$purok}'");
+                }
+            }
+            $this->newLine();
+        }
+
         $query = patient_addresses::query();
 
         if (!$force) {
@@ -51,6 +64,16 @@ class GeocodePatientAddresses extends Command
             return 0;
         }
 
+        // 🔧 DEBUG: Show unique puroks from database
+        if ($debug) {
+            $this->info('=== UNIQUE PUROKS IN DATABASE ===');
+            $uniquePuroks = $addresses->pluck('purok')->unique()->filter()->values();
+            foreach ($uniquePuroks as $purok) {
+                $this->line("  - '{$purok}'");
+            }
+            $this->newLine();
+        }
+
         $this->info("Found {$total} addresses to geocode.");
         $bar = $this->output->createProgressBar($total);
         $bar->start();
@@ -58,12 +81,14 @@ class GeocodePatientAddresses extends Command
         $successCount = 0;
         $failureCount = 0;
         $skippedCount = 0;
+        $errors = []; // Track unique errors
 
         foreach ($addresses as $address) {
-            // Skip if address is incomplete
             if (!$this->isAddressComplete($address)) {
-                $this->newLine();
-                $this->warn("Skipping incomplete address for patient ID: {$address->patient_id}");
+                if ($debug) {
+                    $this->newLine();
+                    $this->warn("Skipping incomplete address for patient ID: {$address->patient_id}");
+                }
                 $skippedCount++;
                 $bar->advance();
                 continue;
@@ -79,10 +104,17 @@ class GeocodePatientAddresses extends Command
                 'postal_code' => $address->postal_code,
             ];
 
+            // 🔧 DEBUG: Show what we're trying to geocode
+            if ($debug && $failureCount < 3) { // Only show first 3 to avoid spam
+                $this->newLine();
+                $this->info("Attempting patient ID: {$address->patient_id}");
+                $this->line("  Purok: '{$address->purok}'");
+                $this->line("  Barangay: '{$address->barangay}'");
+            }
+
             $result = $this->geocodingService->geocodeAddress($addressComponents);
 
             if ($result['success']) {
-                // Validate coordinates are within expected area
                 if ($this->geocodingService->validateCoordinates(
                     $result['latitude'],
                     $result['longitude']
@@ -92,20 +124,32 @@ class GeocodePatientAddresses extends Command
                         'longitude' => $result['longitude']
                     ]);
                     $successCount++;
+
+                    if ($debug) {
+                        $this->info("  ✓ Success via: {$result['source']}");
+                    }
                 } else {
-                    $this->newLine();
-                    $this->warn("Coordinates out of bounds for patient ID: {$address->patient_id}");
+                    if ($debug) {
+                        $this->newLine();
+                        $this->warn("Coordinates out of bounds for patient ID: {$address->patient_id}");
+                    }
                     $failureCount++;
+                    $errors['out_of_bounds'] = ($errors['out_of_bounds'] ?? 0) + 1;
                 }
             } else {
-                $this->newLine();
-                $this->error("Failed to geocode patient ID {$address->patient_id}: {$result['error']}");
+                if ($debug) {
+                    $this->newLine();
+                    $this->error("Failed to geocode patient ID {$address->patient_id}: {$result['error']}");
+                }
                 $failureCount++;
+
+                // Track error types
+                $errorKey = $result['error'] ?? 'unknown';
+                $errors[$errorKey] = ($errors[$errorKey] ?? 0) + 1;
             }
 
             $bar->advance();
 
-            // Delay to respect API rate limits
             if ($delay > 0) {
                 sleep($delay);
             }
@@ -126,12 +170,20 @@ class GeocodePatientAddresses extends Command
             ]
         );
 
+        // 🔧 Show error breakdown
+        if (!empty($errors)) {
+            $this->newLine();
+            $this->warn('Error breakdown:');
+            foreach ($errors as $error => $count) {
+                $this->line("  - {$error}: {$count}");
+            }
+        }
+
         return 0;
     }
 
     private function isAddressComplete($address)
     {
-        // Minimum required fields
         return !empty($address->barangay) &&
             !empty($address->city) &&
             !empty($address->province);

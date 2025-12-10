@@ -459,85 +459,91 @@ const updateSaveBtn = document.getElementById("update-save-btn");
 
 updateSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const form = document.getElementById("edit-vaccination-case-form");
-    const formData = new FormData(form);
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
+    try {
+          const form = document.getElementById("edit-vaccination-case-form");
+          const formData = new FormData(form);
+          for (let [key, value] of formData.entries()) {
+              console.log(`${key}: ${value}`);
+          }
+
+          const caseId = document.getElementById("case_record_id");
+
+          const response = await fetch(
+              `/vaccine/update/case-record/${caseId.value}`,
+              {
+                  method: "POST", // Yes, use POST
+                  headers: {
+                      "X-CSRF-TOKEN": document.querySelector(
+                          'meta[name="csrf-token"]'
+                      ).content,
+                      Accept: "application/json",
+                  },
+                  body: formData,
+              }
+          );
+
+          const data = await response.json();
+          // error elements
+          const errorElements = document.querySelectorAll(".error-text");
+          if (!response.ok) {
+              errorElements.forEach((element) => {
+                  element.textContent = "";
+              });
+              Object.entries(data.errors).forEach(([key, value]) => {
+                  if (document.getElementById(`${key}_error`)) {
+                      document.getElementById(`${key}_error`).textContent =
+                          value;
+                  }
+              });
+
+              let message = "";
+
+              if (data.errors) {
+                  if (typeof data.errors == "object") {
+                      message = Object.values(data.errors).flat().join("\n");
+                  } else {
+                      message = data.errors;
+                  }
+              } else {
+                  message = "An unexpected error occurred.";
+              }
+
+              Swal.fire({
+                  title: "Update Case Information",
+                  text: capitalizeEachWord(message), // this will make the text capitalize each word
+                  icon: "error",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "OK",
+              });
+          } else {
+              // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
+              Livewire.dispatch("refreshTable");
+
+              errorElements.forEach((element) => {
+                  element.textContent = "";
+              });
+              // if there's no error
+              Swal.fire({
+                  title: "Update",
+                  text: data.message,
+                  icon: "success",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "OK",
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      const modal = bootstrap.Modal.getInstance(
+                          document.getElementById("editVaccinationModal")
+                      );
+                      modal.hide();
+                  }
+              });
+
+              // close the modal
+          }
+    } catch (error) {
+        console.error(error);
     }
-
-    const caseId = document.getElementById("case_record_id");
-
-    const response = await fetch(
-        `/vaccine/update/case-record/${caseId.value}`,
-        {
-            method: "POST", // Yes, use POST
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
-            },
-            body: formData,
-        }
-    );
-
-    const data = await response.json();
-    // error elements
-    const errorElements = document.querySelectorAll(".error-text");
-    if (!response.ok) {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
-            }
-        });
-
-        let message = "";
-
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
-            } else {
-                message = data.errors;
-            }
-        } else {
-            message = "An unexpected error occurred.";
-        }
-
-        Swal.fire({
-            title: "Update Case Information",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
-        Livewire.dispatch("refreshTable");
-
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's no error
-        Swal.fire({
-            title: "Update",
-            text: data.message,
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("editVaccinationModal")
-                );
-                modal.hide();
-            }
-        });
-
-        // close the modal
-    }
+  
 });
 
 // ARCHIVE FUNCTIONALITY

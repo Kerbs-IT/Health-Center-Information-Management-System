@@ -18,6 +18,7 @@ use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
+use App\Models\wra_masterlists;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -343,7 +344,12 @@ class RecordsController extends Controller
                 'message' => 'Patient information is not successfully updated',
                 'errors' => $e->errors()
             ], 422);
-        }
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Patient information is not successfully updated',
+                'errors' => $e->getMessage()
+            ], 422);
+        } 
     }
     public function vaccinationCase($id)
     {
@@ -403,14 +409,34 @@ class RecordsController extends Controller
             ], 500);
         }
     }
-    public function vaccinationDelete($id)
+    public function deletePatient($typeOfPatient, $id,)
     {
         try {
-            $patient = patients::where('id', $id)->first()??null;
+            $patient = patients::findOrFail($id);
+
+            // if(!$patient)return;
 
             $patient->update([
                 'status'=>'Archived'
             ]);
+
+            if($typeOfPatient === 'vaccination'){
+                $vaccinationMasterlistRecord = vaccination_masterlists::where("patiend_id", $id)->first();
+                $vaccinationMasterlistRecord->update([
+                    'status' => 'Archived'
+                ]);
+            }
+            if($typeOfPatient == 'prenatal' || $typeOfPatient == 'family-planning' ){
+                $wraMasterlistRecord = wra_masterlists::where("patient_id",$id)->first();
+                if($wraMasterlistRecord){
+                    $wraMasterlistRecord->update([
+                        'status' => 'Archived'
+                    ]);
+                }
+                
+            }
+            
+
             
            
             return response()->json(['message' => 'Patient Record has been deleted successfully']);
