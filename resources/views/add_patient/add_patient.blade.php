@@ -12,8 +12,8 @@
 <body>
     @vite(['resources/css/app.css',
     'resources/js/app.js',
-    'resources/js/menudropdown.js',
     'resources/js/header.js',
+    'resources/js/menudropdown.js',
     'resources/css/profile.css',
     'resources/js/patient/add-patient.js',
     'resources/css/patient/add-patient.css',
@@ -53,23 +53,15 @@
                                     <div class="mb-2 d-flex gap-1">
                                         <div class="input-field w-50">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
-                                            @error('first_name')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
-
+                                            <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
-                                            @error('middle_initial')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
-
+                                            <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
-                                            @error('last_name')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
                                     </div>
                                     <!-- age -->
@@ -78,25 +70,19 @@
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
                                             <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
-                                            @error('date_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
                                         <!-- place of birth -->
                                         <div class="input-field w-50">
                                             <label for="place_of_birth">Place of Birth</label>
                                             <input type="text" id="place_of_birth" placeholder="trece martires city" class="form-control" name="place_of_birth" value="">
-                                            @error('place_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="place_of_birth_error"></small>
                                         </div>
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
                                             <input type="number" id="age" placeholder="20" class="form-control" name="age" value="">
-                                            @error('age')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>
                                     <!-- civil status, contact number, nationality -->
@@ -113,25 +99,19 @@
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0">
                                                     <label for="female">Female</label>
                                                 </div>
-                                                @error('sex')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <small class="text-danger error-text" id="sex_error"></small>
                                             </div>
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field w-50">
                                             <label for="contact_number" class="">Contact Number</label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="">
-                                            @error('contact_number')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="contact_number_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="nationality" class="">Nationality</label>
                                             <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="">
-                                            @error('nationality')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="nationality_error"></small>
                                         </div>
 
                                     </div>
@@ -140,12 +120,12 @@
                                         <div class="input-field flex-fill">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
-                                            @error('date_of_birth')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 flex-fill">
+                                        @if(Auth::user()->role == 'nurse')
+                                        <div class="mb-2 w-50">
                                             <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
                                             <select name="handled_by" id="handled_by" class="form-select ">
                                                 <option value="" disabled selected>Select a person</option>
@@ -153,31 +133,31 @@
                                                 <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>
                                                 @endforeach
                                             </select>
-                                            @error('brgy')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="health_worker_id_error"></small>
+                                        </div>
+                                        @elseif(Auth::user()->role == 'staff')
+
+
+                                        <div class="hidden-handled-by">
+                                            <input type="hidden" name="handled_by" id="handled_by" value="{{Auth::user()->id}}" data-health-worker-name="{{$healthWorkerFullName}}">
                                         </div>
                                         <div class="mb-2 flex-fill tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
                                             <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
+                                            <small class="text-danger error-text" id="philhealth_id_no_error"></small>
                                         </div>
                                     </div>
                                     <div class="vaccination-inputs mb-2 d-none gap-1">
                                         <div class="input-field w-50">
                                             <label for="motherName">Mother Name</label>
                                             <input type="text" id="mother_name" placeholder="mother name" class="form-control" name="mother_name" value="">
-                                            @error('mother_name')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
-
+                                            <!-- ERROR HANDLING -->
+                                            <small class="text-danger error-text" id="mother_name_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="fatherName">Father Name</label>
                                             <input type="text" id="fatherName" placeholder="Father Name" class="form-control" name="father_name" value="">
-                                            @error('middle_initial')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
-
+                                            <small class="text-danger error-text" id="father_name_error"></small>
                                         </div>
                                     </div>
                                     <div class="prenatal-inputs mb-2 d-none flex-column gap-1">
@@ -185,9 +165,7 @@
                                             <div class="input-field flex-fill">
                                                 <label for="motherName">Head of the Family</label>
                                                 <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="family_head_name" value="">
-                                                @error('mother_name')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <small class="text-danger error-text" id="family_head_name_error"></small>
 
                                             </div>
                                             <div class="input-field flex-fill">
@@ -197,9 +175,7 @@
                                                     <option value="Married">Married</option>
                                                     <option value="Divorce">Divorce</option>
                                                 </select>
-                                                @error('civil_status')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <small class="text-danger error-text" id="civil_status_error"></small>
                                             </div>
                                             <div class="input-field flex-fill">
                                                 <label for="blood_type">Blood Type</label>
@@ -214,8 +190,8 @@
                                                     <option value="O+">O+</option>
                                                     <option value="O-">O-</option>
                                                 </select>
+                                                <small class="text-danger error-text" id="blood_type_error"></small>
                                             </div>
-
                                         </div>
                                         <div class="mb-3 w-100 d-flex gap-3 flex-wrap">
 
@@ -223,9 +199,9 @@
                                             <div class="input-field flex-fill">
                                                 <label for="religion" class="form-label">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion" value="">
-                                                @error('religion')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <!-- ERROR HANDLING -->
+                                                <small class="text-danger error-text" id="religion_error"></small>
+
                                             </div>
 
                                             <!-- PhilHealth -->
@@ -245,6 +221,7 @@
                                                         <label class="form-check-label" for="philhealth_no">(No)</label>
                                                     </div>
                                                 </div>
+                                                <small class="text-danger error-text" id="philHealth_number_error"></small>
                                             </div>
 
                                             <!-- Family Planning -->
@@ -264,6 +241,7 @@
                                                         <label class="form-check-label" for="planning_undecided">Undecided</label>
                                                     </div>
                                                 </div>
+                                                <small class="text-danger error-text" id="family_planning_decision_error"></small>
                                             </div>
 
                                         </div>
@@ -271,37 +249,33 @@
                                             <div class="input-field">
                                                 <label for="family_serial_no" class="form-label w-100">Family Serial No.</label>
                                                 <input type="number" name="family_serial_no" placeholder="enter family serial no." class="w-100 form-control">
+                                                <small class="text-danger error-text" id="family_serial_no_error"></small>
                                             </div>
                                         </div>
 
                                     </div>
                                     <!-- Senior Citizen inputs -->
-                                    <div class="senior-citizen-inputs mb-2 d-none flex-column gap-1 flex-wrap">
-                                        <div class="mb-2 w-100 d-flex gap-2  flex-md-row flex-column">
-                                            <div class="input-field flex-fill">
-                                                <label for="civil_status" class="">Civil Status</label>
-                                                <select name="civil_status" id="civil_status" class="form-select">
+                                    <div class="senior-citizen-inputs mb-2 d-none flex-column gap-1">
+                                        <div class="mb-2 w-100 d-flex gap-2">
+                                            <div class="input-field w-50">
+                                                <label for="senior_citizen_civil_status" class="">Civil Status</label>
+                                                <select name="civil_status" id="senior_citizen_civil_status" class="form-select">
                                                     <option value="Single">Single</option>
                                                     <option value="Married">Married</option>
                                                     <option value="Divorce">Divorce</option>
                                                 </select>
-                                                @error('civil_status')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <small class="text-danger error-text" id="civil_status_error"></small>
                                             </div>
                                             <div class="input-field flex-fill">
                                                 <label for="blood_type">Occupation</label>
                                                 <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
+                                                <small class="text-danger error-text" id="occupation_error"></small>
                                             </div>
-                                            <div class="d-flex flex-wrap w-100">
-                                                <div class="mb-3 flex-fill d-flex gap-2">
-                                                    <div class="input-field w-100">
-                                                        <label for="motherName">Religion</label>
-                                                        <input type="text" id="head_of_the_family" placeholder="Enter the Religion" class="form-control" name="religion">
-                                                        @error('mother_name')
-                                                        <small class=" text-danger">{{$message}}</small>
-                                                        @enderror
-                                                    </div>
+                                            <div class="mb-3 w-50 d-flex gap-2">
+                                                <div class="input-field w-100">
+                                                    <label for="senior_religion">Religion</label>
+                                                    <input type="text" id="senior_religion" placeholder="Enter the Religion" class="form-control" name="religion">
+                                                    <small class=" text-danger" id="religion_error"></small>
                                                 </div>
                                                 <div class="mb-2 flex-fill  d-flex">
                                                     <label for=""> Member of Social Security System (SSS):</label>
@@ -312,30 +286,29 @@
                                                         <label for="female">No</label>
                                                     </div>
                                                 </div>
+                                                <small class="text-danger error-text" id="SSS_error"></small>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="family-planning-inputs d-none gap-1 mb-2 flex-wrap">
-                                        <div class="input-field w-100 w-md-50">
-                                            <label for="civil_status" class="">Civil Status</label>
-                                            <select name="civil_status" id="civil_status" class="form-select">
+                                    <div class="family-planning-inputs d-none gap-1 mb-2">
+                                        <div class="input-field w-50">
+                                            <label for="family_planning_civil_status" class="">Civil Status</label>
+                                            <select name="civil_status" id="family_planning_civil_status" class="form-select">
                                                 <option value="Single">Single</option>
                                                 <option value="Married">Married</option>
                                                 <option value="Divorce">Divorce</option>
                                             </select>
-                                            @error('civil_status')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="civil_status_error"></small>
                                         </div>
                                         <div class="input-field w-25">
                                             <label for="family_plan_religion">Religion</label>
                                             <input type="text" id="family_plan_religion" placeholder="Enter the Religion" class="form-control" name="religion">
-                                            <small class="text-danger"></small>
+                                            <small class="text-danger error-text" id="religion_error"></small>
                                         </div>
                                         <div class="input-field w-25">
                                             <label for="family_plan_occupation">Occupation</label>
                                             <input type="text" id="family_plan_patient_occupation" placeholder="Enter the Occupation" class="form-control" name="family_plan_occupation" value="">
-                                            <small class="text-danger"></small>
+                                            <small class="text-danger error-text" id="occupation_error"></small>
                                         </div>
                                     </div>
                                     <!-- family planning 2nd inputs -->
@@ -343,12 +316,12 @@
                                         <div class="input-field w-50">
                                             <label for="client_id">Client ID:</label>
                                             <input type="text" id="client_id" placeholder="Enter the client ID" class="form-control" name="client_id">
-                                            <small class="text-danger"></small>
+                                            <small class="text-danger error-text" id="client_id_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="philhealth_no">Philhealth No:</label>
                                             <input type="text" id="philhealth_no" placeholder="Enter the Religion" class="form-control" name="philhealth_no">
-                                            <small class="text-danger"></small>
+                                            <small class="text-danger error-text" id="philhealth_no_error"></small>
                                         </div>
                                         <div class="input-field w-50 ">
                                             <label for="NHTS" class="">NHTS?:</label>
@@ -362,6 +335,7 @@
                                                     <label for="nhts_no">No</label>
                                                 </div>
                                             </div>
+                                            <small class="text-danger error-text" id="NHTS_error"></small>
                                         </div>
                                     </div>
 
@@ -371,10 +345,8 @@
                                         <div class="address d-flex gap-1 flex-wrap">
                                             <div class="mb-2  input-field w-100">
                                                 <label for="street">Street*</label>
-                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 me-2" name="street" value="">
-                                                @error('street')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="">
+                                                <small class="text-danger error-text" id="street_error"></small>
                                             </div>
                                             <div class="mb-2  input-field">
                                                 <label for="brgy">Barangay*</label>
@@ -387,9 +359,7 @@
                                                     <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('brgy')
-                                                <small class="text-danger">{{$message}}</small>
-                                                @enderror
+                                                <small class="text-danger error-text" id="brgy_error"></small>
                                             </div>
                                         </div>
                                     </div>
@@ -403,10 +373,12 @@
                                             <div class="vitals mb-2">
                                                 <label for="BP">Temperature:</label>
                                                 <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
+                                                <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="vitals  mb-2">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
+                                                <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
                                         </div>
                                         <!-- 2nd row -->
@@ -414,14 +386,17 @@
                                             <div class="vitals mb-2">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
                                                 <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
+                                                <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="vitals mb-2">
                                                 <label for="BP">Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="height">
+                                                <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="vitals mb-2">
                                                 <label for="BP">Weight(kg):</label>
                                                 <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
+                                                <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>
                                         <!-- 3rd row -->
@@ -429,10 +404,12 @@
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
+                                                <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Weight(kg):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight">
+                                                <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>
                                     </div>
@@ -451,7 +428,7 @@
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
                                         <label for="patient_name">Patient Name</label>
-                                        <input type="text" class="form-control w-100 bg-light" disabled placeholder="Jan Louie Salimbago">
+                                        <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
                                 <div class="mb-2 w-100">
@@ -470,12 +447,14 @@
                                     <div class="mb-2 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
                                         <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
+                                        <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
                                 </div>
                                 <div class="mb-2 w-100">
                                     <div class="mb-2 w-100">
                                         <label for="time">Time</label>
                                         <input type="time" class="form-control" name="time_of_vaccination" required>
+                                        <small class="text-danger error-text" id="time_error"></small>
                                     </div>
                                 </div>
                                 <div class="mb-2">
@@ -510,10 +489,12 @@
                                         <option value="3">3rd Dose</option>
                                         <!-- <option value="booster">Booster</option> -->
                                     </select>
+                                    <small class="text-danger error-text" id="dose_number_error"></small>
                                 </div>
                                 <div class="mb-2 w-100">
                                     <label for="remarks">Remarks*</label>
                                     <input type="text" class="form-control" id="remarks" name="remarks">
+                                    <small class="text-danger error-text" id="remarks_error"></small>
                                 </div>
 
                             </div>
@@ -565,6 +546,10 @@
                     <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step6">
                         <!-- family planning -->
                         @include('add_patient.familyPlanning.step6')
+                    </div>
+                    <div class="step d-none flex-column align-self-center w-100 h-100 rounded gap-1" id="step7">
+                        <!-- family planning -->
+                        @include('add_patient.familyPlanning.side_b.sideB')
                     </div>
                 </form>
             </main>
