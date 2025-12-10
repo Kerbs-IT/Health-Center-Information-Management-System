@@ -9,20 +9,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugo_perez_logo.png')}}">
 
-    <link href="{{ asset('homepage.css') }}" rel="stylesheet"> {{-- Optional Custom Styling --}}
+
     <title>Barangay Health Center System</title>
-    @vite(['resources/css/homepage.css', 'resources/js/homepage.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
 </head>
 
 <body>
-    @include('layout.navbar')
-
-    <main>
-        @yield('content')
+    <main class="bg-light">
+     @include('layout.navbar')
+    @yield('content')
     </main>
     <footer>
-        @include('layout.footer')
+    @include('layout.footer')
     </footer>
-</body>
 
+</body>
 </html>
