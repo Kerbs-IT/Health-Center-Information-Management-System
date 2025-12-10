@@ -18,28 +18,20 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugo_perez_logo.png')}}">
 
-    <title>Barangay Health Center System</title>
 
-    {{-- Load Bootstrap + Homepage styles/scripts via Vite --}}
-    @vite([
-        'resources/css/navbar.css',
-        'resources/css/app.css',
-        'resources/js/app.js',
-        'resources/css/homepage.css',
-        'resources/js/homepage.js'
-    ])
+    <title>Barangay Health Center System</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
 </head>
 
 
 <body>
-    @include('layout.navbar')
-
-    <main>
-        @yield('content')
+    <main class="bg-light">
+     @include('layout.navbar')
+    @yield('content')
     </main>
 
     <footer>
-        @include('layout.footer')
+    @include('layout.footer')
     </footer>
     <script>
   document.addEventListener("DOMContentLoaded", function() {
