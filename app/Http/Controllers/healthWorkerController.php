@@ -58,7 +58,7 @@ class healthWorkerController extends Controller
         try{
             $data = $request->validate([
                 'username' => 'required',
-                'email' => ['required', 'email'],
+                'email' => 'required|email|unique:users,email',
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'role' => 'required|in:staff,patient',
                 'first_name' => 'required',
