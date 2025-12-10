@@ -91,7 +91,7 @@
                                     <tr>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">BirthDay:</h6> <span class="fw-light">{{optional($prenatalRecord)->patient?->date_of_birth->format('M d Y')??'N/A'}}</span>
+                                                <h6 class="mb-0">BirthDay:</h6> <span class="fw-light">{{ optional(optional($prenatalRecord)->patient?->date_of_birth)->format('M d Y') ?? 'N/A' }}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
