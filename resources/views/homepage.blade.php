@@ -1,35 +1,18 @@
 @extends('layout.app')
 
 @section('content')
-<section class="hero-section" id="home">
-        <!-- Swiper Background Carousel -->
-        <div class="swiper mySwiperBackground">
-            <div class="swiper-wrapper">
-            <div class="swiper-slide bg1"></div>
-            <div class="swiper-slide bg2"></div>
-            <div class="swiper-slide bg3"></div>
-            </div>
-        </div>
-
-        <!-- HERO CONTENT -->
-        <div class="hero-content w-100">
-            <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
-            <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
-            <a href="#" class="hero-btn">Join us Now</a>
-        </div>
-
-</section>
 
 {{-- Home Section --}}
-<!-- <section id="home" class=" home-section fullscreen-section d-flex align-items-center justify-content-center text-white">
+<section id="home" class=" home-section fullscreen-section d-flex align-items-center justify-content-center text-white">
     <div class="container text-center d-flex justify-content-center">
         <div class="col-lg-9">
+            <!--  col-lg-6 mb-4 mb-lg-0 -->
             <h1 class="display-5 fw-bold text-light mb-5" style="font-size:60px;">Bringing Better <span class="" style="color: #4CAF50;font-size:60px;">Healthcare to the Barangay</span> – Digitally</h1>
             <p class="lead text-light mt-5" style="font-size: 2.3rem;">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
             <button type="button" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#viewMoreModal">View More</button>
         </div>
     </div>
-</section> -->
+</section>
 <!-- Modal -->
 <div class="modal fade" id="viewMoreModal" tabindex="-1" aria-labelledby="viewMoreModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -40,7 +23,7 @@
             </div>
             <div class="modal-body text-center">
                 <img src="{{ asset('images/hugo_perez.jpg') }}" alt="System Overview" class="img-fluid rounded mb-3" style="max-height: 400px;">
-                <p class="">Our Healthcare Information System streamlines patient records, tracks vaccinations, and empowers better health services in Barangay Hugo Perez.</p>
+                <p class="fs-5">Our Healthcare Information System streamlines patient records, tracks vaccinations, and empowers better health services in Barangay Hugo Perez.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal">Close</button>
@@ -48,45 +31,40 @@
         </div>
     </div>
 </div>
-<!-- About Section -->
-<section class="about-section min-h-80 mb-1 mb-md-5 w-full mt-1 mt-md-5 pt-0 pt-md-5" id="about">
-    <h2 class="text-center mt-5 md:mb-5 mb-0 about-header">About Our Health Center</h2>
-    <div class="min-h-80 flex flex-col lg:flex-row md:gap-10 gap-3 p-0 p-md-5 px-4  md:m-5 m-0 w-full mt-5">
-        <div class="flex flex-column flex-1 order-2 order-md-1">
-            <div>
-                <h4 class="about-sub-heading fw-bold text-center">Empowering <span>Healthcare Workers</span></h4>
-                <h5 class="text-info text-center">Enhancing Community Wellness</h5>
-                <p class="about-content text-justify md:mb-5 mb-0">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi ullam beatae, officiis iste dolore, quis, odio deleniti pariatur assumenda eaque saepe inventore. Recusandae, repellat cumque quisquam voluptate in tenetur commodi.
-                    Animi vitae doloremque quod quam alias possimus ratione libero laboriosam fuga nostrum soluta doloribus obcaecati magnam, earum fugiat odio nulla nobis dolores, a vero necessitatibus ducimus quisquam sapiente! Recusandae, itaque?
-                    Dignissimos ratione explicabo eligendi quaerat eveniet quasi. Ea quasi facere natus magnam sequi! Animi dicta voluptates iste. Hic esse nemo incidunt repellendus numquam sunt, sint, nesciunt debitis cum suscipit voluptas.
+
+{{-- About Section --}}
+<section class="py-5 min-vh-100 d-flex align-items-center justify-content-center" id="about">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-3">About Health Center</h1>
+                <h4 class="text-primary fw-bold">Empowering <span>Healthcare Workers</span></h4>
+                <h5 class="text-info">Enhancing Community Wellness</h5>
+
+                <div class="mb-3">
+                    <button class="btn btn-outline-success me-2 active-btn" id="btn-about" onclick="changeContent('about')">ABOUT</button>
+                    <button class="btn btn-outline-success me-2" id="btn-mission" onclick="changeContent('mission')">MISSION</button>
+                    <button class="btn btn-outline-success me-2" id="btn-vision" onclick="changeContent('vision')">VISION</button>
+                    <button class="btn btn-outline-success" id="btn-history" onclick="changeContent('history')">HISTORY</button>
+                </div>
+
+                <p id="about-content" class="fade-content">
+                    The Health Center in Barangay Hugo Perez, Trece Martires City is a friendly and welcoming place where residents can get the care they need.
+                    It offers free general check-ups, vaccinations, TB-DOTS, and health programs for moms, kids, and the whole family. The center works closely with the City Health Office to bring medical missions and health services right to the community.
+                    It's here to help everyone stay healthy and live better every day.
                 </p>
+            </div>s
+
+            <div class="col-md-5">
+                <img src="{{ asset('images/about.jpg') }}" alt="healthcare team" class="img-fluid rounded shadow h-100">
             </div>
-            <div class="bottom-content flex flex-col md:flex-row items-center justify-center md:justify-between md:mt-5 mt-1 w-full">
-
-                <div class="social-icons flex items-center gap-1 md:gap-3">
-                    <a href=""><i class="fa-brands fa-facebook"></i></a>
-                    <a href=""><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href=""><i class="fa-solid fa-envelope"></i></a>
-                    <a href=""><i class="fa-brands fa-instagram"></i></a>
-                    <a href=""><i class="fa-brands fa-youtube"></i></a>
-                </div>
-
-                <div class="mt-3 md:mt-0">
-                    <a href="{{ route('about.full') }}" class="btn btn-success">See More</a>
-                </div>
-
-            </div>
-
-        </div>
-        <div class="flex-1 order-1 order-md-2 hover:scale-105 transition-transform duration-300 object-cover hover:shadow-lg">
-            <img src="{{ asset('images/consult.jpg') }}"  class="rounded-md drop-shadow-md w-100 h-auto block"  alt="">
         </div>
     </div>
 </section>
 
-<!-- Services -->
-<section class="services fullscreen-section py-5" id="services" style="background-color: #EBF9FF;">
+
+
+<section class="fullscreen-section py-5" id="services" style="background-color: #EBF9FF;">
     <div class="container py-5">
         <div class="text-center mb-5">
             <span class="badge rounded-pill text-success border border-success px-3 py-2 fs-6">Our Health Services</span>
@@ -105,7 +83,7 @@
                         </div>
                         <h5 class="card-title fw-bold">Vaccination Services</h5>
                         <p class="card-text">Track, schedule, and manage vaccine records digitally.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('vaccine-service')}}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#vaccinationModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -119,7 +97,7 @@
                         </div>
                         <h5 class="card-title fw-bold">Prenatal Care</h5>
                         <p class="card-text">Monitor maternal health and schedule regular checkups.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('prenatal-service') }}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#prenatalModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -133,7 +111,7 @@
                         </div>
                         <h5 class="card-title fw-bold">Family Planning</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('familyPlanning-service') }}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#familyPlanningModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -146,7 +124,7 @@
                         </div>
                         <h5 class="card-title fw-bold">Senior Citizen</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('seniorCitizen-service') }}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#seniorCitizenModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -159,7 +137,7 @@
                         </div>
                         <h5 class="card-title fw-bold">TB Dots</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('tbDots-service') }}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tbdotsModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -172,7 +150,7 @@
                         </div>
                         <h5 class="card-title fw-bold">General Consultation</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('generalConsultation-service') }}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#generalconsultModal">Read More</button>
                     </div>
                 </div>
             </div>
@@ -281,237 +259,214 @@
     </div>
 </section>
 
-<!-- Our specialist -->
-<section class="slider-content container  px-3 px-md-5" id="specialist">
-    <h2 class="mb-2 mb-md-5">Our Specialists</h2>
-    <p class="specialist-text mb-1 mb-md-4 text-center">
-        Our dedicated team of <strong>healthcare workers</strong> is here to serve the community of
-        Barangay Hugo Perez. Get to know the professionals behind your care.
-    </p>
-    <div class="swiper specialist-slider">
-        <div class="swiper-wrapper py-2 py-md-5">
+<!-- Our Specialists Section -->
+<section id="specialist" class="specialist min-vh-100 mb-5">
+    <div class="container my-5 text-center">
+        <h4 class="text-info fw-bold mb-3">Our Specialists</h4>
+        <p class="mb-4">
+            Our dedicated team of <strong>healthcare workers</strong> is here to serve the community of
+            Barangay Hugo Perez. Get to know the professionals behind your care.
+        </p>
 
-        <!-- Slide 1 -->
-        <div class="swiper-slide specialist-card">
-            <div class="img-slider">
-                <div class="img-overlay"></div>
-                <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
+        <div class="my-5">
+            <select id="roleFilter" class="form-select w-auto mx-auto">
+                <option value="all">All</option>
+                <option value="Nurse">Nurse</option>
+                <option value="BHW">BHW</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <button id="prevBtn" class="btn btn-outline-info rounded-circle"><i class="bi bi-chevron-left"></i></button>
+            <div class="d-flex overflow-hidden" style="width: 100vw;" id="cardCarousel">
+                <div class="d-flex transition" id="cardContainer">
+                    <!-- Card 1 -->
+                    <div class="card specialist-card m-2" data-role="Nurse">
+                        <img src="{{ asset('images/nurse.jpg') }}" class="card-img-top" alt="Kerby Buan">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Rn. Jane Maria</h5>
+                            <p class="card-text">Nurse</p>
+
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw.png') }}" class="card-img-top" alt="Padre Damaso">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Dolores Santa Ana</h5>
+                            <p>Area: Karla Ville Ph. 1</p>
+                            <p class="card-text">BHW</p>
+
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw7.jpg') }}" class="card-img-top" alt="Padre Damaso">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Catherine Mendoza</h5>
+                            <p>Area: Sugarland</p>
+                            <p class="card-text">BHW</p>
+
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw8.jpg') }}" class="card-img-top" alt="Padre Damaso">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Michelle Ramos</h5>
+                            <p>Area: Purok 1</p>
+                            <p class="card-text">BHW</p>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw9.jpg') }}" class="card-img-top" alt="Padre Damaso">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Rosemarie Castillo</h5>
+                            <p>Area: Kaia Homes Ph. 2</p>
+                            <p class="card-text">BHW</p>
+
+                        </div>
+                    </div>
+
+
+                    <!-- Repeat other cards similarly... -->
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw1.png') }}" class="card-img-top" alt="Jane Marie Andrada">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Jane Marie Andrada</h5>
+                            <p>Area: Gawad Kalinga</p>
+                            <p class="card-text">BHW</p>
+
+                        </div>
+                    </div>
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw2.png') }}" class="card-img-top" alt="Jane Marie Andrada">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Karen Villanueva</h5>
+                            <p>Area: Purok 2</p>
+                            <p class="card-text">BHW</p>
+                        </div>
+                    </div>
+                    <div class="card specialist-card m-2" data-role="BHW">
+                        <img src="{{ asset('images/bhw4.png') }}" class="card-img-top" alt="Jack Roberto">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Jack Roberto</h5>
+                            <p>Area: Golden Horizon</p>
+                            <p class="card-text">BHW</p>
+
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h3 class="slide-title">Joy Andala</h3>
-            <p class="slide-text">Kaia Homesp</p>
-            <p class="slide-text">Nurse</p>
+            <button id="nextBtn" class="btn btn-outline-info rounded-circle"><i class="bi bi-chevron-right"></i></button>
         </div>
-
-        <!-- Slide 2 -->
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Gina Lopez</h3>
-            <p class="slide-text">Purok 2</p>
-            <p class="slide-text">BHW</p>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Katrina Mae Apostol</h3>
-            <p class="slide-text">Purok 3</p>
-            <p class="slide-text">BHW</p>
-        </div>
-
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Trisha Cortez</h3>
-            <p class="slide-text">Golden Horizon</p>
-            <p class="slide-text">BHW</p>
-        </div>
-
-
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Gerge Salimbago</h3>
-            <p class="slide-text">Pabahay</p>
-            <p class="slide-text">Staff</p>
-        </div>
-    </div>
-
-
-    <!-- Navigation + Pagination -->
-    <div class="swiper-pagination"></div>
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
     </div>
 </section>
-<!-- FAQs -->
-<section id="faq" class="faqs fullscreen-section" style="background-color: #EBF9FF;">
+<!-- FAQ -->
+<section id="faq" class="fullscreen-section" style="background-color: #0b2c56;">
     <div class="container-fluid">
         <div class="container text-white">
-            <div class="text-center pm-5 mb-2 mb-md-5">
-                <span class="">
-                    <h2>Frequent Asked Questions </h2>
+            <div class="text-center pm-5 mb-5">
+                <span class="badge rounded-pill text-success border border-success px-3 py-2 fs-6 bg-white">
+                    <h1>Frequent Asked Questions </h1>
                 </span>
-                <h4 class="mt-3 text-black">
+                <h4 class="mt-3">
                     Quick answers to common questions about using our health information system.
                 </h4>
             </div>
 
             <div class="row align-items-center">
                 <!-- FAQ Column -->
-                <div class="col-md-6 order-2 order-md-1">
-                    <div class="accordion gap-col" id="faqAccordion">
-                        <!-- Accordion Item 1 -->
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(1)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>Anong oras nagbubukas ang health Center?</span>
-                                <span id="icon-1" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                Material Tailwind is a framework that enhances Tailwind CSS with additional styles and components.
+                <div class="col-md-6">
+                    <div class="accordion" id="faqAccordion">
+
+                        <!-- Question 1 -->
+                        <div class="accordion-item bg-transparent border-0 mb-2">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button bg-info text-white rounded-pill px-4 py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <span class="me-2 bg-white text-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">1</span>
+                                    What are the operating hours of the health center?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white px-4 py-2">
+                                    Our health center is open Monday to Friday, from 8:00 AM to 5:00 PM, excluding holidays. Emergency cases may be coordinated with the barangay health workers or referred to the nearest hospital
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Accordion Item 2 -->
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(2)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>How to use Material Tailwind?</span>
-                                <span id="icon-2" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                You can use Material Tailwind by importing its components into your Tailwind CSS project.
+                        <!-- Question 2 -->
+                        <div class="accordion-item bg-transparent border-0 mb-2">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed bg-info text-white rounded-pill px-4 py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <span class="me-2 bg-white text-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</span>
+                                    Do I need to bring any documents when visiting the health center?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white px-4 py-2">
+                                    Yes. Please bring any valid ID and your barangay health ID or booklet, especially for prenatal check-ups, immunizations, and TB-DOTS. For new patients, a brief registration form will be filled out.
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Accordion Item 3 -->
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(3)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-3" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                        <!-- Question 3 -->
+                        <div class="accordion-item bg-transparent border-0 mb-2">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed bg-info text-white rounded-pill px-4 py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <span class="me-2 bg-white text-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</span>
+                                    How can I schedule a prenatal check-up?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white px-4 py-2">
+                                    You can walk in during clinic hours or coordinate with your barangay health worker to schedule a prenatal visit. Make sure to bring your mother’s book or prenatal record.
+
+
                                 </div>
                             </div>
                         </div>
-                        <!-- Accordion Item 4 -->
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(4)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-4" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-4" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+
+                        <!-- Question 4 -->
+                        <div class="accordion-item bg-transparent border-0 mb-2">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed bg-info text-white rounded-pill px-4 py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    <span class="me-2 bg-white text-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">4</span>
+                                    Who should I contact for health emergencies after clinic hours?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-white px-4 py-2">
+                                    For emergencies after 5:00 PM, you may contact your barangay health worker or proceed to the nearest hospital. The health center does not operate 24/7.
                                 </div>
                             </div>
                         </div>
-                        <!-- Accordion Item 5 -->
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(5)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-5" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(6)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-6" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(7)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-7" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-7" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <button onclick="toggleAccordion(8)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
-                                <span id="icon-8" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
-                                </span>
-                            </button>
-                            <div id="content-8" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                                <div class="pb-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
                 <!-- Image Column -->
-                 <div class="col-md-6 order-1 order-md-2  md:mb-0 mb-3 px-3">
-                    <img src="{{ asset('images/immunization.webp') }}"
-                        alt="Doctor Consultation"
-                        class="max-w-full h-auto lg:h-[600px] rounded shadow-lg hover:scale-105 transition-transform duration-300 object-cover">
-                 </div>
-
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <img src="{{ asset('images/doctor.webp') }}" alt="Doctor Consultation" class="img-fluid rounded">
+                </div>
             </div>
         </div>
     </div>
 </section>
-<!-- Events -->
-<section id="events" class="events fullscreen-section">
+<section id="events" class="fullscreen-section">
     <div class="container text-center my-5">
         <div class="mb-3">
-            <span class="">
+            <span class="event-badge">
                 <h2>Upcoming Health Center Events</h2>
             </span>
         </div>
         <h5 class="mb-4">Stay informed about important medical services and community health initiatives.</h5>
 
-        <div class="row  gap-4 gap-md-0 gap-lg-0">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             <!-- Event Card -->
-            <div class=" col-12 col-md-6 col-lg-4">
+            <div class="col">
                 <div class="card event-card h-100">
                     <img src="{{ asset('images/mpox.jpg') }} " class="card-img-top event-image" alt="Vaccination Image">
                     <div class="card-body">
@@ -522,7 +477,9 @@
                     </div>
                 </div>
             </div>
-            <div class=" col-12 col-md-6 col-lg-4">
+
+            <!-- Duplicate the above card for more -->
+            <div class="col">
                 <div class="card event-card h-100">
                     <img src="{{ asset('images/medical mission1.jpg') }}" class="card-img-top event-image" alt="Vaccination Image">
                     <div class="card-body">
@@ -534,7 +491,7 @@
                 </div>
             </div>
 
-            <div class=" col-12 col-md-6 col-lg-4 mt-0 mt-md-3 mt-lg-0">
+            <div class="col">
                 <div class="card event-card h-100">
                     <img src="{{ asset('images/hiv_testing.jpg') }}" class="card-img-top event-image" alt="Vaccination Image">
                     <div class="card-body">
@@ -552,35 +509,7 @@
 {{-- Add more sections: Specialists, FAQ, Events --}}
 
 @endsection
-<script>
-  function toggleAccordion(index) {
-    const content = document.getElementById(`content-${index}`);
-    const icon = document.getElementById(`icon-${index}`);
 
-    // SVG for Down icon
-    const downSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-      </svg>
-    `;
-
-    // SVG for Up icon
-    const upSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-      </svg>
-    `;
-
-    // Toggle the content's max-height for smooth opening and closing
-    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-      content.style.maxHeight = '0';
-      icon.innerHTML = upSVG;
-    } else {
-      content.style.maxHeight = content.scrollHeight + 'px';
-      icon.innerHTML = downSVG;
-    }
-  }
-</script>
 
 <script>
     function changeContent(type) {
@@ -599,24 +528,24 @@
         setTimeout(() => {
             if (type === 'about') {
                 content.innerHTML = `
-                The Health Center in Barangay Hugo Perez, Trece Martires City is a friendly and welcoming place where residents can get the care they need.
+                The Health Center in Barangay Hugo Perez, Trece Martires City is a friendly and welcoming place where residents can get the care they need. 
                 It offers free general check-ups, vaccinations, TB-DOTS, and health programs for moms, kids, and the whole family. The center works closely with the City Health Office to bring medical missions and health services right to the community.
                 It's here to help everyone stay healthy and live better every day.
             `;
             } else if (type === 'mission') {
                 content.innerHTML = `
-                Our mission is to provide quality, accessible, and compassionate healthcare services to all residents of Barangay Hugo Perez.
+                Our mission is to provide quality, accessible, and compassionate healthcare services to all residents of Barangay Hugo Perez. 
                 We are committed to promoting health, preventing disease, and ensuring the well-being of every individual and family in our community.
             `;
             } else if (type === 'vision') {
                 content.innerHTML = `
-                We envision a healthy, safe, and empowered community where every resident has access to proper healthcare, reliable medical services,
+                We envision a healthy, safe, and empowered community where every resident has access to proper healthcare, reliable medical services, 
                 and health education — guided by care, integrity, and dedication from our health workers.
             `;
             } else if (type === 'history') {
                 content.innerHTML = `
-                The Health Center in Barangay Hugo Perez has been a vital part of the community for years, providing essential healthcare services
-                to residents. Through partnerships with the City Health Office and dedicated healthcare workers, it has grown to serve families with
+                The Health Center in Barangay Hugo Perez has been a vital part of the community for years, providing essential healthcare services 
+                to residents. Through partnerships with the City Health Office and dedicated healthcare workers, it has grown to serve families with 
                 expanded medical programs and continuous health education.
             `;
             }
