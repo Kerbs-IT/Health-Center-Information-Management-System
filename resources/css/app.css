@@ -1,7 +1,7 @@
-@import 'tailwindcss';
+
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import '@fortawesome/fontawesome-free/css/all.min.css';
-
+@import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -209,6 +209,10 @@ header nav h1 span{
 .form-group{
      width: 100%;
 }
+input.form-control, #fa-eye { 
+    border: 1px solid rgba(108, 108, 108, 0.1);
+    font-size: clamp(18px,3vw,22px);
+    
 
 input.form-control, #fa-eye {
     border: 1px solid rgba(108, 108, 108, 0.1);
@@ -336,7 +340,7 @@ div h3,
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media  (min-width: 768px) {
-    input.form-control{
+    input.form-control{ 
     border: 1px solid rgba(108, 108, 108, 0.1);
     font-size: clamp(15px,3vw,18px);
     }
@@ -389,7 +393,7 @@ div h3,
   }
 
   .logo {
-    width: clamp(70px, 15vw, 140px);
+    width: clamp(70px, 15vw, 120px);
     transition: transform 0.3s ease;
     transform-origin: 30% 0;
   }

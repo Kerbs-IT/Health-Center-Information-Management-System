@@ -57,6 +57,7 @@
                                 <label for="skin_type_hematoma">Hematoma</label>
                             </div>
                         </div>
+                        <small class="text-danger error-text" id="physical_examination_skin_type_error"></small>
                     </div>
                 </div>
                 <div class="CONJUCTIVA w-50">
@@ -77,6 +78,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="physical_examination_conjuctiva_type_error"></small>
                 </div>
             </div>
             <!-- neck -->
@@ -99,6 +101,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="physical_examination_neck_type_error"></small>
                 </div>
                 <!-- Breast -->
                 <div class="Breast">
@@ -119,6 +122,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="physical_examination_breast_type_error"></small>
                 </div>
             </div>
             <div class="box d-flex">
@@ -141,6 +145,7 @@
                             </div>
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="physical_examination_abdomen_type_error"></small>
                 </div>
                 <!-- extremites-->
                 <div class="extremites">
@@ -162,6 +167,7 @@
 
                         </div>
                     </div>
+                    <small class="text-danger error-text" id="physical_examination_extremites_type_error"></small>
                 </div>
             </div>
         </div>
@@ -205,6 +211,7 @@
                                 <input type="radio" name="cervical_abnormalities_type" id="cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
                                 <label for="cervical_abnormalities_type_bloody_discharge" class="cervical_abnormalities_type">Bloody discharge</label>
                             </div>
+                            <small class="text-danger error-text" id="cervical_abnormalities_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="physical_examination_extremites_UID_type" id="extremites_UID_type_cervical_consistency" value="cervical consistency">
@@ -220,6 +227,8 @@
                                 <input type="radio" name="cervical_consistency_type" id="cervical_consistency_type_soft" value="soft">
                                 <label for="cervical_consistency_type_soft" class="cervical_consistency_type_label">Soft</label>
                             </div>
+                            <!-- ERROR HANDLING -->
+                            <small class="text-danger error-text" id="cervical_consistency_type_error"></small>
                         </div>
                         <!-- tenderness -->
                         <div class="mb-2 d-flex align-items-center gap-2">
@@ -249,15 +258,20 @@
                                 <input type="radio" name="uterine_position_type" id="uterine_position_typer_retroflexed" value="Retroflexed">
                                 <label for="uterine_position_typer_retroflexed" class="uterine_position_type_label">Retroflexed</label>
                             </div>
+                            <!-- error handling -->
+                            <small class="text-danger error-text" id="uterine_position_type_error"></small>
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <input type="radio" name="physical_examination_extremites_UID_type" id="current-method" value="uterine depth">
                             <label for="current-method">Uterine depth</label>
                             <input type="text" class="w-25" name="uterine_depth_text">
                             <small>cm</small>
+
                         </div>
+                        <small class="text-danger error-text" id="uterine_depth_text_error"></small>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="physical_examination_extremites_UID_type_error"></small>
             </div>
 
             <div class="cervical-consistency">
@@ -270,33 +284,40 @@
         explained to me the different methods available in the family planning
         and i freely choose the <input type="text border-bottom" class="rounded" name="choosen_method"> method.
     </div>
+    <small class="text-danger error-text" id="choosen_method_error"></small>
     <div class="signature d-flex justify-content-even w-100 gap-2">
         <div class="mb-3 w-50 d-flex flex-column">
             <label for="signature_image">Upload Signature</label>
             <input type="file" name="family_planning_signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+            <small class="text-danger error-text" id="family_planning_signature_image_error"></small>
         </div>
         <div class="mb-3 w-50">
             <label for="signature_image" class="text-white">Upload Signature</label>
             <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement">
+            <small class="text-danger error-text" id="family_planning_date_of_acknowledgement_error"></small>
         </div>
     </div>
+
     <div class="mb-3 w-100">
         <p class="text-center">I hereby consent to the inclusion of my FP 1 in the Family Health Registry</p>
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2 border-bottom">
         <div class="mb-3 w-50 d-flex flex-column">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="family_planning_acknowlegement_consent_signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
+            <label for="family_planning_acknowlegement_consent_signature_image">Upload Signature</label>
+            <input type="file" name="family_planning_acknowlegement_consent_signature_image" id="family_planning_acknowlegement_consent_signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+            <!-- ERROR HANDLING -->
+            <small class="text-danger error-text" id="family_planning_acknowlegement_consent_signature_image_error"></small>
         </div>
         <div class="mb-3 w-50">
-            <label for="signature_image" class="text-white">Upload Signature</label>
-            <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement_consent">
+            <label for="family_planning_date_of_acknowledgement_consent" class="text-white">Upload Signature</label>
+            <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement_consent" id="family_planning_date_of_acknowledgement_consent">
+            <small class="text-danger error-text" id="family_planning_date_of_acknowledgement_consent_error"></small>
         </div>
     </div>
-    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2">
+    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-        <button type="submit" class="btn btn-success px-5 py-2 fs-5" id="family_planning_submit_btn">Submit</button>
+        <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
     </div>
 </div>

@@ -4,9 +4,19 @@ import Swal from "sweetalert2";
 const viewBtn = document.querySelectorAll(".viewCaseBtn");
 const viewTbody = document.getElementById("view-table-body");
 
-viewBtn.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-        const id = btn.dataset.caseId;
+// Add event delegation for view
+document.addEventListener("click", async (e) => {
+    const viewBtn = e.target.closest(".viewCaseBtn");
+    if (!viewBtn) return;
+    // initialize the id
+    const id = viewBtn.dataset.caseId;
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+
+    try {
         const response = await fetch(`/patient/tb-dots/get-case-info/${id}`);
 
         if (!response.ok) {
@@ -18,6 +28,8 @@ viewBtn.forEach((btn) => {
                     document.getElementById(`view_${key}`).innerHTML = value;
                 }
             });
+            // reset the table first
+            viewTbody.innerHTML = "";
 
             data.caseInfo.tb_dots_maintenance_med.forEach((meds) => {
                 viewTbody.innerHTML += `
@@ -41,16 +53,32 @@ viewBtn.forEach((btn) => {
                 ${data.healthWorker.last_name ?? ""}
             `.trim();
         }
-    });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
 });
 
 // edit case
-const editBtn = document.querySelectorAll(".editCaseBtn");
 const editTable = document.getElementById("edit_tb_tbody");
 let saveBtn = document.getElementById("edit_save_btn");
-editBtn.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-        const id = btn.dataset.caseId;
+// event delegation for edit
+document.addEventListener("click", async (e) => {
+    const editBtn = e.target.closest(".editCaseBtn");
+    if (!editBtn) return;
+    const id = editBtn.dataset.caseId;
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+
+    try {
         const response = await fetch(`/patient/tb-dots/get-case-info/${id}`);
 
         if (!response.ok) {
@@ -86,7 +114,15 @@ editBtn.forEach((btn) => {
         }
 
         saveBtn.dataset.caseId = id;
-    });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
 });
 
 // remove element
@@ -193,21 +229,151 @@ saveBtn.addEventListener("click", async (e) => {
         },
         body: formData,
     });
+
+    const data = await response.json();
+
+    const errorElements = document.querySelectorAll(".error-text");
+
     if (response.ok) {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Patient is Successfully Updated.", // this will make the text capitalize each word
+            title: "Tuberculosis Medical Record Details Updated Successfully",
+            text: capitalizeEachWord(data.message), // this will make the text capitalize each word
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("edit_Tb_dots_Record_Modal")
+                );
+                modal.hide();
+                form.reset();
+            }
         });
     } else {
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+
+        let errorMessage = "";
+
+        if (data.errors) {
+            // Handle ValidationException
+            errorMessage = Object.values(data.errors)
+                .flat() // flatten nested arrays if present
+                .join("\n");
+        } else if (data.message) {
+            // Handle general backend errors
+            errorMessage = data.message;
+        } else {
+            // Handle unexpected responses
+            errorMessage = "An unexpected error occurred.";
+        }
+
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Error occur Patient is not Successfully added.", // this will make the text capitalize each word
+            title: "Tuberculosis Medical Record Details Updated Successfully",
+            text: capitalizeEachWord(errorMessage), // this will make the text capitalize each word
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+// == event delegation for archive record
+document.addEventListener('click', async (e) => {
+    const deleteBtn = e.target.closest(".archiveCaseBtn");
+     if (!deleteBtn) return;
+        const id = deleteBtn.dataset.caseId;
+    
+        // Validate case ID
+        if (!id || id === "undefined" || id === "null") {
+            console.error("Invalid case ID:", id);
+            alert("Unable to archive: Invalid ID");
+            return;
+        }
+    
+        try {
+            // ✅ Show confirmation dialog FIRST
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "Tb dots Case Record will be Deleted.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Archive",
+                cancelButtonText: "Cancel",
+            });
+    
+            // ✅ Exit if user cancelled
+            if (!result.isConfirmed) return;
+    
+            // ✅ Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                throw new Error("CSRF token not found. Please refresh the page.");
+            }
+    
+            const response = await fetch(
+                `/patient-record/tb-dots/case-record/delete/${id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken.content,
+                        Accept: "application/json",
+                    },
+                }
+            );
+    
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(
+                    data.message || `HTTP error! status: ${response.status}`
+                );
+            }
+    
+            // Success - refresh table
+            if (typeof Livewire !== "undefined") {
+                Livewire.dispatch("tbRefreshTable"); // ✅ Update dispatch name if needed
+            }
+    
+            // Remove the row from DOM
+            const row = deleteBtn.closest("tr");
+            if (row) {
+                row.remove();
+            }
+    
+            // Show success message
+            Swal.fire({
+                title: "Archived!",
+                text: "Tb dots Case Record has been archived.",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+            });
+        } catch (error) {
+            console.error("Error archiving case:", error);
+            Swal.fire({
+                title: "Error",
+                text: `Failed to archive record: ${error.message}`,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+            });
+        }
+})
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

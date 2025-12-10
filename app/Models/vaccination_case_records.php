@@ -18,7 +18,8 @@ class vaccination_case_records extends Model
         'dose_number',
         'remarks',
         'type_of_record',
-        'health_worker_id'
+        'health_worker_id',
+        'status'
 
     ];
 
