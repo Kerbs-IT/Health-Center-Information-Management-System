@@ -15,14 +15,17 @@
                 <div class="mb-2 w-50">
                     <label for="BP">Blood Pressure:</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 120/80" id="edit_checkup_blood_pressure" name="edit_checkup_blood_pressure">
+                    <small class="text-danger error-text" id="edit_checkup_blood_pressure_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Temperature:</label>
                     <input type="number" class="form-control w-100" placeholder="00 C" id="edit_checkup_temperature" name="edit_checkup_temperature">
+                    <small class="text-danger error-text" id="edit_checkup_temperature_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Pulse Rate(Bpm):</label>
                     <input type="text" class="form-control w-100" placeholder=" 60-100" id="edit_checkup_pulse_rate" name="edit_checkup_pulse_rate">
+                    <small class="text-danger error-text" id="edit_checkup_pulse_rate_error"></small>
                 </div>
 
             </div>
@@ -31,14 +34,17 @@
                 <div class="mb-2 w-50">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 25" id="edit_checkup_respiratory_rate" name="edit_checkup_respiratory_rate">
+                    <small class="text-danger error-text" id="edit_checkup_respiratory_rate_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Height(cm):</label>
                     <input type="number" class="form-control w-100" placeholder="00.00" id="edit_checkup_height" name="edit_checkup_height">
+                    <small class="text-danger error-text" id="edit_checkup_height_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Weight(kg):</label>
                     <input type="number" class="form-control w-100" placeholder=" 00.00" id="edit_checkup_weight" name="edit_checkup_weight">
+                    <small class="text-danger error-text" id="edit_checkup_weight_error"></small>
                 </div>
             </div>
         </div>
@@ -52,18 +58,21 @@
                 <option value="Missed 1-2">Missed 1–2 doses</option>
                 <option value="Missed Multiple">Missed multiple doses</option>
             </select>
+            <small class="text-danger error-text" id="edit_checkup_adherence_of_treatment_error"></small>
         </div>
 
         <!-- Side Effects -->
         <div class="mb-3">
             <label for="side_effects" class="form-label">Side Effects</label>
             <input type="text" class="form-control" id="edit_checkup_side_effect" name="edit_checkup_side_effect" placeholder="e.g., nausea, rashes">
+            <small class="text-danger error-text" id="edit_checkup_side_effect_error"></small>
         </div>
 
         <!-- Progress Note -->
         <div class="mb-3">
             <label for="progress_note" class="form-label">Progress Note</label>
             <textarea class="form-control" id="edit_checkup_progress_note" name="edit_checkup_progress_note" rows="3" placeholder="Enter doctor's or nurse's notes here"></textarea>
+            <small class="text-danger error-text" id="edit_checkup_progress_note_error"></small>
         </div>
 
         <!-- Sputum Test Result -->
@@ -75,6 +84,7 @@
                 <option value="Positive">Positive</option>
                 <option value="Negative">Negative</option>
             </select>
+            <small class="text-danger error-text" id="edit_checkup_sputum_test_result_error"></small>
         </div>
 
         <!-- Treatment Phase -->
@@ -85,6 +95,7 @@
                 <option value="intensive">Intensive Phase</option>
                 <option value="continuation">Continuation Phase</option>
             </select>
+            <small class="text-danger error-text" id="edit_checkup_treatment_phase_error"></small>
         </div>
 
         <!-- Outcome Update -->
@@ -99,6 +110,7 @@
                 <option value="died">Died</option>
                 <option value="treatment_failed">Treatment Failed</option>
             </select>
+            <small class="text-danger error-text" id="edit_checkup_outcome_error"></small>
         </div>
     </div>
 </div>
