@@ -1,13 +1,13 @@
-<header class=" d-flex align-items-center px-3 ">
+<header class=" d-flex align-items-center pe-3 w-100 position-sticky top-0">
   <nav class="d-flex justify-content-between align-items-center w-100 ">
     <div class="box d-flex gap-3 align-items-center justify-content-center">
     <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
-        <i class="fa-solid fa-bars fs-1"></i>
+        <i class="fa-solid fa-bars fs-2"></i>
     </button>
       @if ($page === 'DASHBOARD')
       <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
       @else
-      <h1 class="mb-0">{{ $page }}</h1>
+    <h1 class="mb-0">{{ $page }}</h1>
       @endif
     </div>
     <div class="right-info d-flex align-items-center justify-content-center gap-3 z-1">

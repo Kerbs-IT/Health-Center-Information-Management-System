@@ -2,12 +2,12 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar  min-vh-100">
+<div class="menu-bar  min-vh-100" >
     <!-- Close button for mobile/tablet -->
     <button id="closeSidebar" class=" d-lg-none">&times;</button>
 
     <div class="logo-con d-flex justify-content-center p-3 mb-1 mt-3">
-        <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
+        <img src="{{asset(path: 'images/hugoperez_logo.png')}}"  alt="logo" class="logo">
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
         <!-- Dashboard -->
@@ -69,7 +69,7 @@
         <!-- patient -->
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="{{ route('add-patient')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none   w-100 px-3 py-2" id="add-patient">
-                <div class="d-flex align-items-center gap-3 ">
+                <div class="d-flex align-items-center gap-3 w-100">
                     <i class="fa-solid fs-5 fa-hospital-user"></i>
                     <h4 class="mb-0 fs-5">Add Patients</h4>
                 </div>
@@ -190,3 +190,5 @@
     </div>
 </div>
  <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
+
+ <!-- test for medicine -->

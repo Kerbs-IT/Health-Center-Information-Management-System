@@ -80,8 +80,9 @@ h5{
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
 } */
+
 .table td h5 {
-  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-size: clamp(15px, 3vw, 20px);
   font-weight: 600;
 }
 
@@ -104,12 +105,12 @@ body{
 
 .menu-items i,
 .menu-items svg {
-  font-size: clamp(12px, 2.2vw, 19px) !important; 
+  font-size: clamp(12px, 2.2vw, 19px) !important;
 }
 .menu-items h4,
 .menu-items h5{
-  font-size: clamp(12px, 2.2vw, 19px) !important; 
-  
+  font-size: clamp(12px, 2.2vw, 19px) !important;
+
   line-height: 1.2; /* prevent wrapping in tight space */
   font-family: 'Poppins', sans-serif;
 }
@@ -127,7 +128,7 @@ body{
     width: 280px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
     transition: width 0.3s ease, all 0.3s ease;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 .sub-menu{
     display: none;
@@ -178,7 +179,7 @@ header nav h1 span{
     cursor: pointer;
     border-radius: 50%;
     border: 2px solid rgba(0,0,0,0.3);
-    
+
 }
 /* header hamburger */
 
@@ -213,6 +214,11 @@ input.form-control, #fa-eye {
     font-size: clamp(18px,3vw,22px);
     
 
+input.form-control, #fa-eye {
+    border: 1px solid rgba(108, 108, 108, 0.1);
+    font-size: clamp(18px,3vw,22px);
+
+
 }
 /* eye opener */
 .input-pass{
@@ -230,7 +236,7 @@ input.form-control, #fa-eye {
     /* padding: 1vw; */
 }
 #eye-icon:hover {
-    color: #000; 
+    color: #000;
 }
 
 .wrapper a{
@@ -349,7 +355,7 @@ div h3,
     }
     .menu-bar{
         position: fixed;
-        left: -260px;
+        left: -280px;
         top: 0;
         transition: left 0.5s ease;
         z-index: 9999;
@@ -399,12 +405,21 @@ div h3,
     .menu-bar.collapsed {
         width: 80px; /* icon-only */
         transition: all 0.4s ease;
-        
-
+    }
+    .menu-bar.collapsed #dashboard i,
+    .menu-bar.collapsed #manage-interface i,
+    .menu-bar.collapsed #heatmap i,
+    .menu-bar.collapsed #healthWorker i,
+    .menu-bar.collapsed #manage_user i,
+    .menu-bar.collapsed #profile i,
+    .menu-bar.collapsed #add-patient i,
+    .menu-bar.collapsed #logout-btn i{
+        width: 100%;
+        text-align: center;
     }
     .menu-bar.collapsed h4,
     .menu-bar.collapsed h5 {
-        display: none; /* hide text */
+        display: none;
         opacity: 0;
         transition: opacity 0.2s ease;
 
