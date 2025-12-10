@@ -24,7 +24,8 @@ class pregnancy_plans extends Model
         'emergency_person_residency',
         'emergency_person_contact_number',
         'signature',
-        'type_of_record'
+        'type_of_record',
+        'status'
 
     ];
 

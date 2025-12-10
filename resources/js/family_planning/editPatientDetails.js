@@ -42,36 +42,55 @@ saveBtn.addEventListener("click", async (e) => {
     });
 
     const data = await response.json();
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
-       let errorMessage = "";
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
+        let errorMessage = "";
 
-       if (data.errors) {
-           // Handle ValidationException
-           errorMessage = Object.values(data.errors)
-               .flat() // flatten nested arrays if present
-               .join("\n");
-       } else if (data.message) {
-           // Handle general backend errors
-           errorMessage = data.message;
-       } else {
-           // Handle unexpected responses
-           errorMessage = "An unexpected error occurred.";
-       }
+        if (data.errors) {
+            // Handle ValidationException
+            errorMessage = Object.values(data.errors)
+                .flat() // flatten nested arrays if present
+                .join("\n");
+        } else if (data.message) {
+            // Handle general backend errors
+            errorMessage = data.message;
+        } else {
+            // Handle unexpected responses
+            errorMessage = "An unexpected error occurred.";
+        }
 
-       Swal.fire({
-           title: "Error",
-           text: errorMessage,
-           icon: "error",
-           confirmButtonColor: "#3085d6",
-           confirmButtonText: "OK",
-       });
+        Swal.fire({
+            title: "Error",
+            text: capitalizeEachWord(errorMessage),
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
     } else {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Update",
-            text: data.message,
+            text: capitalizeEachWord(data.message),
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         });
     }
 });
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
