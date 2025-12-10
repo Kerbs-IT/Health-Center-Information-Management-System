@@ -2,14 +2,3 @@
     object-fit: cover;
     object-position: center;
 }
-nav {
-    /* background-color: var(--main--color) !important ; */
-    color: white !important;
-}
-nav .container-fluid a h3 {
-    color: white;
-}
-
-ul li a {
-    color: white !important;
-}
