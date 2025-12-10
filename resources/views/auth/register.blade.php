@@ -89,7 +89,7 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3">
-                            <label for="re-type-pass" class="mb-1 fw-medium h6">Retype password:</label>
+                            <label for="re-type-pass" class="mb-1 fw-light h6">Retype password:</label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="form-control py-1 px-2 bg-light" id="re-type-pass">
                                 <i class="fa-solid fa-eye p-2 bg-primary text-white" id="Retype-eye-icon"></i>

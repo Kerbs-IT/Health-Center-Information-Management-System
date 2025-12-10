@@ -2,16 +2,18 @@
     <div class="contents bottom-border">
         <div class="mb-3">
             <label for="">Patient Name:</label>
-            <input type="text" id="patient_name" class="form-control">
+            <input type="text" id="senior_patient_name" class="form-control" disabled>
         </div>
         <h5>MEDICAL INFORMATION</h5>
         <div class="mb-3">
             <label for="">Existing Medical Condition</label>
             <input type="text" class="form-control" name="existing_medical_condition" id="existing_medical_condition">
+            <small class="text-danger error-text" id="existing_medical_condition_error"></small>
         </div>
         <div class="mb-3">
             <label for="">Alergies</label>
             <input type="text" class="form-control" name="alergies" id="alergies">
+            <small class="text-danger error-text" id="alergies_error"></small>
         </div>
         <div class="maintenance-con d-flex gap-2 align-items-center ">
             <div class="mb-3">
@@ -77,10 +79,12 @@
         <div class="mb-3">
             <label for="">Prescribe by Nurse</label>
             <input type="text" class="form-control" name="prescribe_by_nurse" id="prescribe_by_nurse">
+            <small class="text-danger error-text" id="prescribe_by_nurse_error"></small>
         </div>
         <div class="mb-3 border-bottom">
             <label for="" class="text-nowrap">Remarks *</label>
             <input type="text" class="form-control p-3" name="medication_maintenance_remarks" id="medication_maintenance_remarks">
+            <small class="text-danger error-text" id="remarks_error"></small>
         </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
