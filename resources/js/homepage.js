@@ -1,65 +1,5 @@
-import 'bootstrap';
-import Swiper from 'swiper/bundle';
-
-
-
-// Homepage Carousel
-var swiper = new Swiper(".mySwiperBackground", {
-    effect: "fade",
-    loop: true,
-    autoplay: {
-        delay: 2000,
-        disableOnInteraction: false,
-
-    },
-    navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-    },
-});
-
-// Teams slider
-    var swiper = new Swiper(".specialist-slider", {
-        effect: "slide",
-        grabCursor: true,
-        spaceBetween: 30,
-        loop: true,
-
-        autoplay: {
-            delay: 3500,
-            disableOnInteraction: false,
-        },
-
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-
-        breakpoints: {
-            0: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            992: {slidesPerView: 3},
-            1200: { slidesPerView: 4 },
-        }
-    });
-    var swiper = new Swiper(".mySwiperBackground", {
-    effect: "fade",
-    loop: true,
-    autoplay: {
-        delay: 3500,
-        disableOnInteraction: false,
-    },
-    navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-    },
-});
-
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+// navigation bar:
 
 // Carousel
 
@@ -151,27 +91,25 @@ function changeContent(type) {
 
     if (type === "about") {
         content.innerHTML = `
-            The Health Center in Barangay Hugo Perez, Trece Martires City is a friendly and welcoming place where residents can get the care they need.
+            The Health Center in Barangay Hugo Perez, Trece Martires City is a friendly and welcoming place where residents can get the care they need. 
             It offers free general check-ups, vaccinations, TB-DOTS, and health programs for moms, kids, and the whole family. The center works closely with the City Health Office to bring medical missions and health services right to the community.
             It's here to help everyone stay healthy and live better every day.
         `;
     } else if (type === "mission") {
         content.innerHTML = `
-            Our mission is to provide quality, accessible, and compassionate healthcare services to all residents of Barangay Hugo Perez.
+            Our mission is to provide quality, accessible, and compassionate healthcare services to all residents of Barangay Hugo Perez. 
             We are committed to promoting health, preventing disease, and ensuring the well-being of every individual and family in our community.
         `;
     } else if (type === "vision") {
         content.innerHTML = `
-            We envision a healthy, safe, and empowered community where every resident has access to proper healthcare, reliable medical services,
+            We envision a healthy, safe, and empowered community where every resident has access to proper healthcare, reliable medical services, 
             and health education — guided by care, integrity, and dedication from our health workers.
         `;
     } else if (type === "history") {
         content.innerHTML = `
-            The Health Center in Barangay Hugo Perez has been a vital part of the community for years, providing essential healthcare services
-            to residents. Through partnerships with the City Health Office and dedicated healthcare workers, it has grown to serve families with
+            The Health Center in Barangay Hugo Perez has been a vital part of the community for years, providing essential healthcare services 
+            to residents. Through partnerships with the City Health Office and dedicated healthcare workers, it has grown to serve families with 
             expanded medical programs and continuous health education.
         `;
     }
 }
-
-
