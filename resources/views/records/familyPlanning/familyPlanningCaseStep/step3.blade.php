@@ -8,28 +8,34 @@
                     <div class="mb-3 d-flex align-items-center">
                         <label for="">G:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_G" id="edit_G">
+                        <small class="text-danger error-text" id="edit_G_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="edit_P">P:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_P" id="edit_P">
+                        <small class="text-danger error-text" id="edit_P_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="edit_full_term" class="text-nowrap">Full Term:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_full_term" id="edit_full_term">
+                        <small class="text-danger error-text" id="edit_full_term_error"></small>
                     </div>
                 </div>
                 <div class="box-2 d-flex gap-2">
                     <div class="mb-3 d-flex align-items-center">
                         <label for="edit_abortion" class="text-nowrap">Abortion:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_abortion" id="edit_abortion">
+                        <small class="text-danger error-text" id="edit_abortion_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="edit_premature" class="text-nowrap">Premature:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_premature" id="edit_premature">
+                        <small class="text-danger error-text" id="edit_premature_error"></small>
                     </div>
                     <div class="mb-3 d-flex align-items-center">
                         <label for="edit_living_children" class="text-nowrap">Living Children:</label>
                         <input type="text" placeholder="Enter the number" class="form-control" name="edit_living_children" id="edit_living_children">
+                        <small class="text-danger error-text" id="edit_living_children_error"></small>
                     </div>
                 </div>
             </div>
@@ -37,6 +43,7 @@
             <div class="mb-3">
                 <label for="edit_date_of_last_delivery" class="text-nowrap">Date of Last Delivery:</label>
                 <input type="date" name="edit_date_of_last_delivery" id="edit_date_of_last_delivery" class="form-control">
+                <small class="text-danger error-text" id="edit_date_of_last_delivery_error"></small>
             </div>
             <div class="mb-3 d-flex gap-2 w-100">
                 <label for="" class="text-nowrap">Type of Last Delivery:</label>
@@ -46,16 +53,19 @@
                     <input type="radio" id="edit_type_of_last_delivery_cesarean" name="edit_type_of_last_delivery" value="Cesarean Section">
                     <label for="edit_type_of_last_delivery_cesarean">Cesarean Section</label>
                 </div>
+                <small class="text-danger error-text" id="edit_type_of_last_delivery_error"></small>
             </div>
             <!-- last menstrual period -->
             <div class="mb-3">
                 <label for="edit_date_of_last_delivery_menstrual_period" class="text-nowrap">Last menstrual period:</label>
                 <input type="date" name="edit_date_of_last_delivery_menstrual_period" id="edit_date_of_last_delivery_menstrual_period" class="form-control">
+                <small class="text-danger error-text" id="edit_date_of_last_delivery_menstrual_period_error"></small>
             </div>
             <!-- previous -->
             <div class="mb-3">
                 <label for="edit_date_of_previous_delivery_menstrual_period" class="text-nowrap">Previous menstrual period:</label>
                 <input type="date" name="edit_date_of_previous_delivery_menstrual_period" id="edit_date_of_previous_delivery_menstrual_period" class="form-control">
+                <small class="text-danger error-text" id="edit_date_of_previous_delivery_menstrual_period_error"></small>
             </div>
             <!-- mesntrual flow -->
             <div class="mb-3 d-flex flex-column">
@@ -74,20 +84,24 @@
                         <label for="edit_heavy"> heavy ( +5 pads per day)</label>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="edit_type_of_menstrual_error"></small>
             </div>
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" name="edit_Dysmenorrhea" id="edit_Dysmenorrhea" value="Yes">
                 <label for="edit_Dysmenorrhea">Dysmenorrhea</label>
+                <small class="text-danger error-text" id="edit_Dysmenorrhea_error"></small>
             </div>
             <!-- hydaildiform -->
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" id="edit_hydatidiform_mole" name="edit_hydatidiform_mole" value="Yes">
                 <label for="edit_hydatidiform_mole">hydatidiform mole (within the last 12 months)</label>
+                <small class="text-danger error-text" id="edit_hydatidiform_mole_error"></small>
             </div>
             <!-- history of ectopic pregnancy -->
             <div class="mb-3 d-flex align-items-center gap-3">
                 <input type="checkbox" class="form-checkbox" id="edit_ectopic_pregnancy" name="edit_ectopic_pregnancy" value="Yes">
                 <label for="edit_ectopic_pregnancy">History of ectopic pregnancy</label>
+                <small class="text-danger error-text" id="edit_severe_headaches_migraine_error"></small>
             </div>
         </div>
     </div>

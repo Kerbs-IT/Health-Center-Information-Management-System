@@ -15,14 +15,17 @@
                 <div class="mb-2 w-50">
                     <label for="BP">Blood Pressure:</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
+                    <small class="text-danger error-text" id="blood_pressure_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Temperature:</label>
                     <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
+                    <small class="text-danger error-text" id="temperature_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Pulse Rate(Bpm):</label>
                     <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
+                    <small class="text-danger error-text" id="pulse_rate_error"></small>
                 </div>
 
             </div>
@@ -31,14 +34,17 @@
                 <div class="mb-2 w-50">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
                     <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
+                    <small class="text-danger error-text" id="respiratory_rate_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Height(cm):</label>
                     <input type="number" class="form-control w-100" placeholder="00.00" name="height">
+                    <small class="text-danger error-text" id="height_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Weight(kg):</label>
                     <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
+                    <small class="text-danger error-text" id="weight_error"></small>
                 </div>
             </div>
         </div>
@@ -52,18 +58,21 @@
                 <option value="Missed 1-2">Missed 1–2 doses</option>
                 <option value="Missed Multiple">Missed multiple doses</option>
             </select>
+            <small class="text-danger error-text" id="adherence_of_treatment_error"></small>
         </div>
 
         <!-- Side Effects -->
         <div class="mb-3">
             <label for="side_effects" class="form-label">Side Effects</label>
             <input type="text" class="form-control" id="side_effects" name="side_effect" placeholder="e.g., nausea, rashes">
+            <small class="text-danger error-text" id="side_effect_error"></small>
         </div>
 
         <!-- Progress Note -->
         <div class="mb-3">
             <label for="progress_note" class="form-label">Progress Note</label>
             <textarea class="form-control" id="progress_note" name="progress_note" rows="3" placeholder="Enter doctor's or nurse's notes here"></textarea>
+            <small class="text-danger error-text" id="progress_note_error"></small>
         </div>
 
         <!-- Sputum Test Result -->
@@ -75,6 +84,7 @@
                 <option value="Positive">Positive</option>
                 <option value="Negative">Negative</option>
             </select>
+            <small class="text-danger error-text" id="sputum_test_result_error"></small>
         </div>
 
         <!-- Treatment Phase -->
@@ -85,6 +95,7 @@
                 <option value="intensive">Intensive Phase</option>
                 <option value="continuation">Continuation Phase</option>
             </select>
+            <small class="text-danger error-text" id="treatment_phase_error"></small>
         </div>
 
         <!-- Outcome Update -->
@@ -99,6 +110,7 @@
                 <option value="died">Died</option>
                 <option value="treatment_failed">Treatment Failed</option>
             </select>
+            <small class="text-danger error-text" id="outcome_error"></small>
         </div>
     </div>
 </div>
