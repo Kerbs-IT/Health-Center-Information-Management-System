@@ -23,7 +23,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
 </head>
 
-
 <body>
     <main class="bg-light">
      @include('layout.navbar')
