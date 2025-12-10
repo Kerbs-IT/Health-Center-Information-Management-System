@@ -32,6 +32,13 @@ use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
+// livewireCOmponent
+use App\Livewire\CategoriesTable;
+use App\Livewire\Medicines;
+use App\Livewire\InventoryReport;
+
+
+
 Route::get('/', function () {
     return view('layout.app');
 });
@@ -383,4 +390,44 @@ Route::post('reset-password', [ResetPasswordController::class, 'reset'])
 
 
 
+// health worker list
 
+Route::get('/health-worker-list', [healthWorkerController::class, 'healthWorkerList']);
+
+
+// Homepage Routes:
+Route::get('/about-full', function () {
+    return view('about-full');
+})->name('about.full');
+
+Route::get('/Vaccine-Service', function(){
+    return view('service-pages.vaccine-service-page');
+})->name('vaccine-service');
+
+Route::get('/prenatal-service', function(){
+    return view('service-pages.prenatal-service-page');
+})->name('prenatal-service');
+Route::get('/familyPlanning-service', function(){
+    return view('service-pages.familyPlanning-service-page');
+})->name('familyPlanning-service');
+
+Route::get('/senior-citizen-service', function(){
+    return view('service-pages.SeniorCitizen-service-page');
+})->name('seniorCitizen-service');
+Route::get('/TB-Dots-service', function(){
+    return view('service-pages.tbDots-service-page');
+})->name('tbDots-service');
+
+Route::get('/General-Consultation-Service', function(){
+    return view('service-pages.general-consultation-service-page');
+})->name('generalConsultation-service');
+
+Route::get( '/inventory', function(){
+    return view('inventory_system.inventory');
+}) -> name('inventory');
+
+// Inventory Route
+Route::get('inventory/categories', CategoriesTable::class)->name('categories');
+Route::get('inventory/medicines', Medicines::class)->name('medicines');
+
+Route::get('inventory/report',InventoryReport::class)->name('inventory-report');
