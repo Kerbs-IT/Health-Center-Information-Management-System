@@ -2,7 +2,8 @@ import $ from "jquery";
 window.$ = $;
 window.jQuery = $;
 
-import "./bootstrap";
+// import styles bundle
+import 'swiper/css/bundle';
 
 // ⭐ Import Bootstrap correctly
 import * as bootstrap from "bootstrap";
@@ -12,7 +13,7 @@ import Swal from "sweetalert2";
 window.Swal = Swal;
 
 const root = document.querySelector(":root");
-const logoutBtn = document.getElementById("logout-btn");
+const logoutBtn = document.getElementById('logout-btn');
 const logoutUrl = "{{ route('logout') }}";
 
 function logout(btn) {
@@ -65,7 +66,9 @@ async function currentColorPallete() {
         }
         hexToRgb(data.secondaryColor, rootTextBarProperty);
         hexToRgb(data.primaryColor, rootPrimaryTextProperty);
-    } catch (error) {}
+    } catch (error) {
+
+    }
 }
 
 function hexToRgb(hex, rootElement) {
