@@ -601,7 +601,7 @@ class PrenatalController extends Controller
                 'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
                     return $query->where('first_name', $request->first_name)
                         ->where('last_name', $request->last_name);
-                })],
+                })->ignore($prenatalRecord->patient_id)],
                 'last_name' => 'required|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',

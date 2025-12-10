@@ -27,7 +27,10 @@ class PatientAddressObserver
         }
     }
 
-   
+    /**
+     * Handle the patient_addresses "updating" event.
+     * Re-geocode if address components change
+     */
     public function updating(patient_addresses $patientAddress)
     {
         // Check if any address component has changed
@@ -55,7 +58,9 @@ class PatientAddressObserver
         }
     }
 
-   
+    /**
+     * Perform geocoding on the address
+     */
     private function geocodeAddress(patient_addresses $patientAddress)
     {
         try {

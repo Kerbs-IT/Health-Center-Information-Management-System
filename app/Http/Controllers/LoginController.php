@@ -52,9 +52,7 @@ class LoginController extends Controller
                 case 'patient':
                      return redirect() -> route('dashboard.patient');
                 case 'nurse':
-                    
                     return redirect() -> route('dashboard.nurse');
-                    break;
                 case 'staff':
                     return redirect() -> route('dashboard.staff');
                 default:

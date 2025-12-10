@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\medical_record_cases;
+use App\Models\nurses;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\staff;
+use App\Models\User;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
@@ -173,9 +175,13 @@ class addPatientController extends Controller
 
             $fullAddress = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
             // create the record
+            // nurse
+            $nurse = User::where("role",'nurse')->first();
+            $nurseInfo = nurses::where("user_id",$nurse->id)->first();
+            $nurseFullname = $nurseInfo -> full_name;
             $vaccinationMasterlist = vaccination_masterlists::create([
                 'brgy_name' => $patientAddress-> purok,
-                'midwife'=> 'Nurse Maria',
+                'midwife'=> "Nurse ". $nurseFullname??null,
                 'health_worker_id' => $data['handled_by'],
                 'medical_record_case_id'=> $medicalCaseId,
                 'name_of_child' => $vaccinationPatient->full_name,
