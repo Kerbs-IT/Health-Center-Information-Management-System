@@ -265,6 +265,34 @@ Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'
 // ADD VACCINATION PATIENT
 Route::post('/add-patient/vaccination', [addPatientController::class, 'addVaccinationPatient'])->name('add-vaccination-patient');
 
-// health worker list 
+// health worker list
 
 Route::get('/health-worker-list', [healthWorkerController::class, 'healthWorkerList']);
+
+
+// Homepage Routes:
+Route::get('/about-full', function () {
+    return view('about-full');
+})->name('about.full');
+
+Route::get('/Vaccine-Service', function(){
+    return view('service-pages.vaccine-service-page');
+})->name('vaccine-service');
+
+Route::get('/prenatal-service', function(){
+    return view('service-pages.prenatal-service-page');
+})->name('prenatal-service');
+Route::get('/familyPlanning-service', function(){
+    return view('service-pages.familyPlanning-service-page');
+})->name('familyPlanning-service');
+
+Route::get('/senior-citizen-service', function(){
+    return view('service-pages.SeniorCitizen-service-page');
+})->name('seniorCitizen-service');
+Route::get('/TB-Dots-service', function(){
+    return view('service-pages.tbDots-service-page');
+})->name('tbDots-service');
+
+Route::get('/General-Consultation-Service', function(){
+    return view('service-pages.general-consultation-service-page');
+})->name('generalConsultation-service');
