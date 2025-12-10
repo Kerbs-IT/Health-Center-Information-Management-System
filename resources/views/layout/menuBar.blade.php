@@ -33,7 +33,7 @@
         @endif
         <!-- Heatmap -->
         <div class="wrapper w-100 d-flex justify-content-center">
-            <a href="#" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="heatmap">
+            <a href="{{route('health-map.index')}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="heatmap">
                 <i class="fa-solid fs-5 fa-map"></i>
                 <h4 class="mb-0 fs-5">Heatmap</h4>
             </a>
@@ -123,7 +123,7 @@
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="#" class="menu-items d-flex align-items-center gap-3 text-decoration-none  menu-option w-100 px-3 py-2">
                 <div class="menu-text d-flex align-items-center my-auto gap-3 ">
-                    <i class="fa-solid fa-list"></i>
+                    <i class="fa-solid fs-5 fa-folder-open"></i>
                     <h4 class="mb-0 fs-5">Master list</h4>
                 </div>
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>

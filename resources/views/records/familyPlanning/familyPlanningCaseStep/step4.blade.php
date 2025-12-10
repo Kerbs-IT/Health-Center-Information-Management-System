@@ -14,6 +14,7 @@
                     <input type="radio" name="edit_infection_abnormal_discharge_from_genital_area" id="edit_infection_abnormal_discharge_from_genital_area_no" value="No">
                     <label for="edit_infection_abnormal_discharge_from_genital_area_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="edit_infection_abnormal_discharge_from_genital_area_error"></small>
             </div>
             <!-- follow up -->
             <div class="mb-2 d-flex align-items-center justify-content-between" style="padding-left: 50px;">
@@ -27,6 +28,7 @@
                     <input type="radio" name="edit_origin_of_abnormal_discharge" id="edit_origin_of_abnormal_discharge_no" value="Penis">
                     <label for="edit_origin_of_abnormal_discharge_no" class="fs-5">Penis</label>
                 </div>
+                <small class="text-danger error-text" id="edit_origin_of_abnormal_discharge_error"></small>
             </div>
             <!-- next -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -40,6 +42,7 @@
                     <input type="radio" name="edit_score_or_ulcer" id="edit_score_or_ulcer_no" value="No">
                     <label for="edit_score_or_ulcer_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="edit_score_or_ulcer_error"></small>
             </div>
             <!-- q3 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -53,6 +56,7 @@
                     <input type="radio" name="edit_pain_or_burning_sensation" id="edit_pain_or_burning_sensation_no" value="No">
                     <label for="edit_pain_or_burning_sensation_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="edit_pain_or_burning_sensation_error"></small>
             </div>
             <!-- q4 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -66,6 +70,7 @@
                     <input type="radio" name="edit_history_of_sexually_transmitted_infection" id="edit_history_of_sexually_transmitted_infection_no" value="No">
                     <label for="edit_history_of_sexually_transmitted_infection_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="edit_history_of_sexually_transmitted_infection_error"></small>
             </div>
             <!-- q5 -->
             <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -79,6 +84,7 @@
                     <input type="radio" name="edit_sexually_transmitted_disease" id="edit_sexually_transmitted_disease_no" value="No">
                     <label for="edit_sexually_transmitted_disease_no" class="fs-5">No</label>
                 </div>
+                <small class="text-danger error-text" id="edit_sexually_transmitted_disease_error"></small>
             </div>
         </div>
     </div>
@@ -96,6 +102,7 @@
                 <input type="radio" name="edit_history_of_domestic_violence_of_VAW" id="edit_history_of_domestic_violence_of_VAW_no" value="No">
                 <label for="edit_history_of_domestic_violence_of_VAW_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_history_of_domestic_violence_of_VAW_error"></small>
         </div>
         <!-- q7 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -109,6 +116,7 @@
                 <input type="radio" name="edit_unpleasant_relationship_with_partner" id="edit_unpleasant_relationship_with_partner_no" value="No">
                 <label for="edit_unpleasant_relationship_with_partner_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_unpleasant_relationship_with_partner_error"></small>
         </div>
         <!-- q8 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -122,6 +130,7 @@
                 <input type="radio" name="edit_partner_does_not_approve" id="edit_partner_does_not_approve_no">
                 <label for="edit_partner_does_not_approve_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_partner_does_not_approve_error"></small>
         </div>
         <div class="reffered-to d-flex flex-column">
             <h5>Reffered to:</h5>
@@ -147,6 +156,7 @@
                     </div>
                 </div>
             </div>
+            <small class="text-danger error-text" id="edit_referred_to_error"></small>
         </div>
     </div>
 </div>

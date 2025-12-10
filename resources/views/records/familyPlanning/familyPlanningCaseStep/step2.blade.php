@@ -14,6 +14,7 @@
                 <input type="radio" name="edit_severe_headaches_migraine" id="edit_severe_headaches_migraine_no" value="No">
                 <label for="edit_severe_headaches_migraine_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_severe_headaches_migraine_error"></small>
         </div>
         <!-- q2 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -27,6 +28,7 @@
                 <input type="radio" name="edit_history_of_stroke" id="edit_history_of_stroke_no" value="No">
                 <label for="edit_history_of_stroke_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_history_of_stroke_error"></small>
         </div>
         <!-- q3 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -40,6 +42,7 @@
                 <input type="radio" name="edit_non_traumatic_hemtoma" id="edit_non_traumatic_hemtoma_no" value="No">
                 <label for="edit_non_traumatic_hemtoma_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_non_traumatic_hemtoma_error"></small>
         </div>
         <!-- q4 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -53,6 +56,7 @@
                 <input type="radio" name="edit_history_of_breast_cancer" id="edit_history_of_breast_cancer_no" value="No">
                 <label for="edit_history_of_breast_cancer_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_history_of_breast_cancer_error"></small>
         </div>
         <!-- q5 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -66,6 +70,7 @@
                 <input type="radio" name="edit_severe_chest_pain" id="edit_severe_chest_pain_no" value="No">
                 <label for="edit_severe_chest_pain_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_severe_chest_pain_error"></small>
         </div>
         <!-- q6 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -79,6 +84,7 @@
                 <input type="radio" name="edit_cough" id="edit_cough_no" value="No">
                 <label for="edit_cough_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_cough_error"></small>
         </div>
         <!-- q7 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -92,6 +98,7 @@
                 <input type="radio" name="edit_jaundice" id="edit_jaundice_no" value="No">
                 <label for="edit_jaundice_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_jaundice_error"></small>
         </div>
         <!-- q8 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -105,6 +112,7 @@
                 <input type="radio" name="edit_unexplained_vaginal_bleeding" id="edit_unexplained_vaginal_bleeding_no" value="No">
                 <label for="edit_unexplained_vaginal_bleeding_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_unexplained_vaginal_bleeding_error"></small>
         </div>
         <!-- q9 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -118,6 +126,7 @@
                 <input type="radio" name="edit_abnormal_vaginal_discharge" id="edit_abnormal_vaginal_discharge_no" value="No">
                 <label for="edit_abnormal_vaginal_discharge_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_abnormal_vaginal_discharge_error"></small>
         </div>
         <!-- q10 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -131,6 +140,7 @@
                 <input type="radio" name="edit_abnormal_phenobarbital" id="edit_abnormal_phenobarbital_no" value="no">
                 <label for="edit_abnormal_phenobarbital_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_abnormal_phenobarbital_error"></small>
         </div>
         <!-- q11 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -144,6 +154,7 @@
                 <input type="radio" name="edit_smoker" id="edit_smoker_no" value="No">
                 <label for="q11_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_smoker_error"></small>
         </div>
         <!-- q12 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
@@ -157,10 +168,12 @@
                 <input type="radio" name="edit_with_dissability" id="edit_with_dissability_no" value="No">
                 <label for="edit_with_dissability_no" class="fs-5">No</label>
             </div>
+            <small class="text-danger error-text" id="edit_with_dissability_error"></small>
         </div>
         <div class="mb-2 d-flex gap-2 align-items-center">
             <label for="dissability_yes" class="text-nowrap fs-5">(If YES please specify):</label>
             <input type="text" placeholder="Enter the dissability" class="form-control" id="edit_if_with_dissability_specification" name="edit_if_with_dissability_specification">
+            <small class="text-danger error-text" id="edit_if_with_dissability_specification_error"></small>
         </div>
     </div>
 </div>

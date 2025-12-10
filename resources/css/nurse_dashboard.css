@@ -8,7 +8,7 @@
 .dashboard-icons{
     width: 100px;
     height: 100px;
-    padding: 20px;     
+    padding: 20px;
     display: flex;
     align-items: center;
     color: #53c082;
@@ -142,7 +142,6 @@
 .canvas-container {
 
     height: 280px;
-    width: 50%;
     margin-top: 15px;
 }
 
@@ -186,7 +185,6 @@
 
 @media (max-width: 768px) {
     .charts {
-        flex-direction: column;
         gap: 20px;
     }
 
