@@ -28,6 +28,7 @@ body {
 /* Navigation Bar */
 /* Navigation Bar */
 
+
 nav {
     background-color: #F0F8FF;
 
@@ -43,19 +44,80 @@ nav .container div {
 }
 
 nav .container div ul li .btn-primary {
-    margin-left: 200px;
+    /* margin-left: 200px;  */
     background-color: var(--secondary--color);
     border: none;
 }
-
-nav .container div u li .nav-link {
-    color: black;
+.navbar-collapse {
+  z-index: 1050;
 }
 
+.nav-link {
+    color: var(--main--color);
+    font-family: Poppins;
+    padding-inline: 0.5em; 
+}
+.nav-link:hover{
+    color: var(--secondary--color);
+}
+li .nav-link::after{
+    content: '';
+    width: 0;
+    height: 4px;
+    background-color: var(--secondary--color);
+    margin: auto;
+    display: block;
+    border-radius: 50px;
+}
+li .nav-link:hover::after{
+    width: 100%;
+    transition: width 0.3s linear;
+}
+.nav .container div 
 nav .container div ul li .nav-link:hover {
     color: var(--main--color);
 }
+.navbar-light .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='green' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
 
+/* Custom toggler */
+.custom-toggler{
+    border: none;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    width: 40px;
+    height: 40px;
+      position: relative;
+  z-index: 1051; /* Above the navbar collapse */
+}
+/* Hamburger-lines */
+.custom-toggler .toggler-line{
+    width: 28px;
+    height: 3px;
+    background-color: var(--main--color);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    
+}
+/* Animation states when active */
+.custom-toggler.active .toggler-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 7.5px);
+  background: red;
+}
+
+.custom-toggler.active .toggler-line:nth-child(2) {
+  opacity: 0;
+}
+
+.custom-toggler.active .toggler-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -7.5px);
+  background: red;
+}
 .fullscreen-section {
     min-height: 100vh;
     display: flex;
@@ -65,7 +127,6 @@ nav .container div ul li .nav-link:hover {
     /* adjust if navbar overlaps */
     padding-bottom: 80px;
 }
-
 
 /* HOME SECTION */
 /* HOME SECTION */
@@ -220,7 +281,7 @@ body {
 
 .login-img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
 }
 
