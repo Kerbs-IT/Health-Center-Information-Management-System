@@ -11,28 +11,34 @@
             <h3>OB HISTORY</h3>
             <div class="type-of-pregnancy d-flex flex-wrap w-100 gap-1">
                 <div class="item">
-                    <label for="G">G</label>
-                    <input type="number" name="G" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_G">G</label>
+                    <input type="number" name="G" id="prenatal_G" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="G_error"></small>
                 </div>
                 <div class="item">
-                    <label for="G">P</label>
-                    <input type="number" name="P" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_P">P</label>
+                    <input type="number" name="P" id="prenatal_P" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="P_error"></small>
                 </div>
                 <div class="item">
-                    <label for="G">T</label>
-                    <input type="number" name="T" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_T">T</label>
+                    <input type="number" name="T" id="prenatal_T" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="T_error"></small>
                 </div>
                 <div class="item">
-                    <label for="G">Premature</label>
-                    <input type="number" name="premature" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_premature">Premature</label>
+                    <input type="number" name="premature" id="prenatal_premature" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="premature_error"></small>
                 </div>
                 <div class="item">
-                    <label for="G">Abortion</label>
-                    <input type="number" name="abortion" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_abortion">Abortion</label>
+                    <input type="number" name="abortion" id="prenatal_abortion" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="abortion_error"></small>
                 </div>
                 <div class="item">
-                    <label for="G">Living Children</label>
-                    <input type="number" name="living_children" class="form-control w-100" placeholder="0">
+                    <label for="prenatal_living_children">Living Children</label>
+                    <input type="number" name="living_children" id="prenatal_living_children" class="form-control w-100" placeholder="0">
+                    <small class="text-danger error-text" id="living_children_error"></small>
                 </div>
             </div>
         </div>
@@ -127,14 +133,17 @@
                 <div class="mb-2 w-100 ">
                     <label for="LMP">LMP</label>
                     <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP">
+                    <small class="text-danger error-text" id="LMP_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="expected_delivery">Expected Delivery</label>
-                    <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece">
+                    <input type="date" name="expected_delivery" class="form-control w-100">
+                    <small class="text-danger error-text" id="expected_delivery_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="menarche">Menarche</label>
                     <input type="text" name="menarche" class="form-control w-100" placeholder="ex.13" id="menarche">
+                    <small class="text-danger error-text" id="menarche_error"></small>
                 </div>
             </div>
             <h3>Tetanus Toxoid Status (Year)</h3>
@@ -143,14 +152,17 @@
                 <div class="mb-2 w-100 ">
                     <label for="TT1">TT1</label>
                     <input type="text" name="TT1" class="form-control w-100" placeholder="YYYY" id="TT1">
+                    <small class="text-danger error-text" id="tetanus_toxoid_1_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="TT2">TT2</label>
                     <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT2">
+                    <small class="text-danger error-text" id="tetanus_toxoid_2_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="TT2">TT3</label>
                     <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT3">
+                    <small class="text-danger error-text" id="tetanus_toxoid_3_error"></small>
                 </div>
             </div>
             <!-- last row -->
@@ -158,10 +170,12 @@
                 <div class="mb-2 w-100 ">
                     <label for="TT4">TT4</label>
                     <input type="text" name="TT4" class="form-control w-100" placeholder="YYYY" id="TT4">
+                    <small class="text-danger error-text" id="tetanus_toxoid_4_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="TT2">TT5</label>
                     <input type="text" name="TT2" class="form-control w-100" placeholder="YYYY" id="TT5">
+                    <small class="text-danger error-text" id="tetanus_toxoid_5_error"></small>
                 </div>
             </div>
 
@@ -224,6 +238,7 @@
                             <option value="3">3</option>
                             <option value="4+">4+</option>
                         </select>
+                        <small class="text-danger error-text" id="number_of_children_error"></small>
                     </div>
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-50">Nanganak ng sasarin:</label>
@@ -233,6 +248,7 @@
                             <input type="radio" name="answer_1" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="answer_1_error"></small>
                     </div>
                     <!-- 2nd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
@@ -243,6 +259,7 @@
                             <input type="radio" name="answer_2" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="answer_2_error"></small>
                     </div>
                     <!-- 3rd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
@@ -253,6 +270,7 @@
                             <input type="radio" name="answer_3" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="answer_3_error"></small>
                     </div>
                     <!-- 4th -->
                     <div class="mb-2 d-flex justify-content-between w-100">
@@ -263,6 +281,7 @@
                             <input type="radio" name="answer_4" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="answer_4_error"></small>
                     </div>
                 </div>
                 <!-- 2nd questions-->
@@ -276,6 +295,7 @@
                             <input type="radio" name="q2_answer1" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="q2_answer1_error"></small>
                     </div>
                     <!-- 2nd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
@@ -286,6 +306,7 @@
                             <input type="radio" name="q2_answer2" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="q2_answer2_error"></small>
                     </div>
                     <!-- 3rd -->
                     <div class="mb-4 d-flex justify-content-between w-100">
@@ -296,6 +317,7 @@
                             <input type="radio" name="q2_answer3" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="q2_answer3_error"></small>
                     </div>
                     <!-- 4th -->
                     <div class="mb-2 d-flex justify-content-between w-100">
@@ -306,6 +328,7 @@
                             <input type="radio" name="q2_answer4" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="q2_answer4_error"></small>
                     </div>
                     <!-- 4th -->
                     <div class="mb-2 d-flex justify-content-between w-100">
@@ -316,6 +339,7 @@
                             <input type="radio" name="q2_answer5" value="no">
                             <label for="no">HIndi</label>
                         </div>
+                        <small class="text-danger error-text" id="q2_answer5_error"></small>
                     </div>
                 </div>
             </div>
@@ -335,6 +359,7 @@
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>
                 </div>
+                <small class="text-danger error-text" id="decision_error"></small>
             </div>
         </div>
     </div>

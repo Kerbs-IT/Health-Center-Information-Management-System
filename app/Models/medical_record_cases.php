@@ -9,7 +9,8 @@ class medical_record_cases extends Model
     //
     protected $fillable = [
         'patient_id',
-        'type_of_case'
+        'type_of_case',
+        'status'
     ];
 
     public function patient(){
@@ -64,6 +65,20 @@ class medical_record_cases extends Model
         return $this->hasOne(family_planning_medical_records::class, 'medical_record_case_id', 'id');
     }
     public function family_planning_case_record(){
-        return $this->hasOne(family_planning_case_records::class, 'medical_record_case_id', 'id');
+        return $this->hasMany(family_planning_case_records::class, 'medical_record_case_id', 'id');
+    }
+    // family planning side b case
+    public function family_planning_side_b_record(){
+        return $this->hasMany(family_planning_side_b_records::class, 'medical_record_case_id', 'id');
+    }
+
+    // vaccination masterlist
+    public function vaccination_masterlist()
+    {
+        return $this->hasOne(vaccination_masterlists::class, 'medical_record_case_id', 'id');
+    }
+    
+    public function wra_masterlist(){
+        return $this->hasOne(wra_masterlists::class, 'medical_record_case_id', 'id');
     }
 }
