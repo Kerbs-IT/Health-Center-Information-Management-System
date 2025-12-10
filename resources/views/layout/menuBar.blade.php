@@ -2,7 +2,7 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar  min-vh-100" > 
+<div class="menu-bar  min-vh-100" >
     <!-- Close button for mobile/tablet -->
     <button id="closeSidebar" class=" d-lg-none">&times;</button>
 
@@ -18,7 +18,7 @@
             $routeName = 'dashboard.' . $role; // e.g., 'dashboard.admin'
             @endphp
             <a href="{{ route($routeName)}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="dashboard">
-                <i class="fa-solid fs-5 fa-house"></i>                
+                <i class="fa-solid fs-5 fa-house"></i>
                 <h4 class="mb-0 fs-5">Dashboard</h4>
             </a>
         </div>
@@ -69,7 +69,7 @@
         <!-- patient -->
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="{{ route('add-patient')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none   w-100 px-3 py-2" id="add-patient">
-                <div class="d-flex align-items-center gap-3 ">
+                <div class="d-flex align-items-center gap-3 w-100">
                     <i class="fa-solid fs-5 fa-hospital-user"></i>
                     <h4 class="mb-0 fs-5">Add Patients</h4>
                 </div>
@@ -84,7 +84,7 @@
                 <div class="menu-text d-flex align-items-center my-auto gap-3 ">
                     <i class="fa-solid fs-5 fa-folder-open"></i>
                     <h4 class="mb-0 fs-6">Records</h4>
-                </div>      
+                </div>
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
@@ -123,7 +123,7 @@
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="#" class="menu-items d-flex align-items-center gap-3 text-decoration-none  menu-option w-100 px-3 py-2">
                 <div class="menu-text d-flex align-items-center my-auto gap-3 ">
-                    <i class="fa-solid fs-5 fa-folder-open"></i>
+                    <i class="fa-solid fa-list"></i>
                     <h4 class="mb-0 fs-5">Master list</h4>
                 </div>
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
@@ -159,6 +159,47 @@
                 </a>
             </div>
 
+        </div>
+        <!-- Inventory System -->
+        <div class="wrapper w-100 d-flex justify-content-center flex-column">
+            <a href="#" class="menu-items d-flex align-items-center gap-3 text-decoration-none  menu-option w-100 px-3 py-2">
+                <div class="menu-text d-flex align-items-center my-auto gap-3 ">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <h4 class="mb-0 fs-5">Inventory</h4>
+                </div>
+                <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
+
+
+            </a>
+            <div class="sub-menu  patient-menu w-75 align-self-end">
+                <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_vaccination">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h5 class="mb-0">Add Category</h5>
+                </a>
+                <!-- senior citizen -->
+                <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <h5 class="mb-0">Add Medicine</h5>
+                </a>
+                <a href="{{ route('vaccinesComponent') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <h5 class="mb-0">Add Vaccine</h5>
+                </a>
+                <a href="{{ route('vaccinesComponent') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <h5 class="mb-0">Add TB Dots</h5>
+                </a>
+                <!-- TB dots -->
+                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <h5 class="mb-0">Report</h5>
+                </a>
+                <!-- family planning
+                <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
+                    <i class="fa-solid fa-people-roof"></i>
+                    <h5 class="mb-0">WRA</h5>
+                </a> -->
+            </div>
         </div>
 
         @endif

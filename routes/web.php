@@ -14,6 +14,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\manageInterfaceController;
 use App\Http\Controllers\manageUserController;
 use App\Http\Controllers\masterListController;
+use App\Http\Controllers\MedicineSeniorCitizenController;
 use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
@@ -25,6 +26,12 @@ use App\Http\Controllers\vaccineController;
 use App\Models\color_pallete;
 use Illuminate\Support\Facades\Route;
 use LDAP\Result;
+use Illuminate\Support\Facades\Request;
+// Inventory
+use App\Livewire\CategoriesTable;
+use App\Livewire\InventoryReport;
+use App\Livewire\Medicines;
+use App\Livewire\VaccinesComponent;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -265,6 +272,57 @@ Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'
 // ADD VACCINATION PATIENT
 Route::post('/add-patient/vaccination', [addPatientController::class, 'addVaccinationPatient'])->name('add-vaccination-patient');
 
-// health worker list 
+// health worker list
 
 Route::get('/health-worker-list', [healthWorkerController::class, 'healthWorkerList']);
+
+
+
+// Homepage Routes:
+Route::get('/about-full', function () {
+    return view('about-full');
+})->name('about.full');
+
+Route::get('/Vaccine-Service', function(){
+    return view('service-pages.vaccine-service-page');
+})->name('vaccine-service');
+
+Route::get('/prenatal-service', function(){
+    return view('service-pages.prenatal-service-page');
+})->name('prenatal-service');
+Route::get('/familyPlanning-service', function(){
+    return view('service-pages.familyPlanning-service-page');
+})->name('familyPlanning-service');
+
+Route::get('/senior-citizen-service', function(){
+    return view('service-pages.SeniorCitizen-service-page');
+})->name('seniorCitizen-service');
+Route::get('/TB-Dots-service', function(){
+    return view('service-pages.tbDots-service-page');
+})->name('tbDots-service');
+
+Route::get('/General-Consultation-Service', function(){
+    return view('service-pages.general-consultation-service-page');
+})->name('generalConsultation-service');
+
+
+
+// Inventory System Routes
+
+Route::get( '/inventory', function(){
+    return view('inventory_system.inventory');
+}) -> name('inventory');
+
+Route::get('inventory/categories', CategoriesTable::class)->name('categories');
+
+Route::get('inventory/medicines', Medicines::class)->name('medicines');
+Route::get('inventory/report',InventoryReport::class)->name('inventory-report');
+
+Route::get('inventory/vaccines',VaccinesComponent::class)->name('vaccinesComponent');
+
+
+
+
+Route::get('/medicine/search', [MedicineSeniorCitizenController::class, 'search']);
+Route::post('/medicine/create-default', [MedicineSeniorCitizenController::class, 'createDefault']);
+
