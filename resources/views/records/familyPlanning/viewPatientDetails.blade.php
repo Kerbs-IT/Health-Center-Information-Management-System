@@ -59,12 +59,12 @@
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">Client ID:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record)->client_id??'N/A'}}</span>
+                                                <h6 class="mb-0">Client ID:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record->first())->client_id??'N/A'}}</span>
                                             </div>
                                         </td>
                                         <td class="w-25">
                                             <div class="info d-flex gap-2 align-items-center">
-                                                <h6 class="mb-0">PHILHEALTH NO:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record)->philhealth_no??'N/A'}}</span>
+                                                <h6 class="mb-0">PHILHEALTH NO:</h6> <span class="fw-light">{{optional($familyPlanningRecord->family_planning_case_record->first())->philhealth_no??'N/A'}}</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -126,7 +126,7 @@
                             <table class="table table-bordered table-light">
                                 <tbody>
                                     <tr>
-                                        <td colspan="7" class="p-4 text-start">{{optional($familyPlanningRecord->family_planning_case_record)->client_address??'N/A'}}</td>
+                                        <td colspan="7" class="p-4 text-start">{{optional($familyPlanningRecord->family_planning_case_record->first())->client_address?? 'N/A'}}</td>
                                     </tr>
                                 </tbody>
                             </table>

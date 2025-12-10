@@ -23,6 +23,7 @@
                 <option value="Xdr">Drug-Resistant TB - XDR-TB</option>
                 <option value="Rr">Drug-Resistant TB - RR-TB</option>
             </select>
+            <small class="text-danger error-text" id="edit_type_of_tuberculosis_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="tb-case-type">Type of TB Case:</label>
@@ -37,20 +38,24 @@
                 <option value="Previously Treated">Previously Treated</option>
                 <option value="Unknown">Unknown</option>
             </select>
+            <small class="text-danger error-text" id="edit_type_of_tb_case_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="edit_date_of_diagnosis" id="edit_date_of_diagnosis">
+            <small class="text-danger error-text" id="edit_date_of_diagnosis_error"></small>
         </div>
     </div>
     <div class="mb-2 d-flex gap-2">
         <div class="mb-2 w-50">
             <label for="name-of-physician">Name of Physician</label>
             <input type="text" class="form-control" name="edit_name_of_physician" id="edit_name_of_physician">
+            <small class="text-danger error-text" id="edit_name_of_physician_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="sputum">Sputum Test Results</label>
             <input type="text" class="form-control" name="edit_sputum_test_results" id="edit_sputum_test_results">
+            <small class="text-danger error-text" id="edit_sputum_test_results_error"></small>
         </div>
 
     </div>
@@ -152,6 +157,7 @@
                     <option value="amikacin">Amikacin (AMK)</option>
                     <option value="kanamycin">Kanamycin (KM)</option>
                 </select>
+                <small class="text-danger error-text" id="edit_treatment_category_error"></small>
             </div>
         </div>
 
@@ -162,18 +168,22 @@
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="edit_date_administered" id="edit_date_administered">
+            <small class="text-danger error-text" id="edit_date_administered_error"></small>
         </div>
         <div class="mb-2 w-50">
             <label for="date_of_diagnosis">Side effect(if any)</label>
             <input type="text" class="form-control" name="edit_side_effect" id="edit_side_effect">
+            <small class="text-danger error-text" id="edit_side_effect_error"></small>
         </div>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Remarks</label>
         <input type="text" class="form-control" name="edit_tb_remarks" id="edit_remarks">
+        <small class="text-danger error-text" id="edit_tb_remarks_error"></small>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Outcome</label>
         <input type="text" class="form-control" name="edit_tb_outcome" id="edit_outcome">
+        <small class="text-danger error-text" id="edit_tb_outcome_error"></small>
     </div>
 </div>
