@@ -15,7 +15,23 @@
                 <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#specialist">Specialist</a></li>
                 <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage') }}#faq">FAQ</a></li>
                 <li class="nav-item"><a class="nav-link fw-bold" href="{{ route('homepage')  }}#events">Events</a></li>
-                <li class="nav-item"><a class="btn btn-primary fw-normal btn-success" href="{{ route('login') }}">Login</a></li>
+                @guest
+                <!-- User is NOT logged in -->
+                <li class="nav-item">
+                    <a class="btn btn-primary fw-normal btn-success" href="{{ route('login') }}">Login</a>
+                </li>
+                @else
+                <!-- User is logged in -->
+                <li class="nav-item mx-1">
+                    <a class="btn btn-success fw-normal" href="{{ route('login') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-danger fw-normal">Logout</button>
+                    </form>
+                </li>
+                @endguest
             </ul>
         </div>
     </div>

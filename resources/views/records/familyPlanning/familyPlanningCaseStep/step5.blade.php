@@ -194,19 +194,19 @@
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_warts" value="warts">
-                                <label for="edit_cervical_abnormalities_type_warts" class="cervical_abnormalities_type">Warts</label>
+                                <label for="edit_cervical_abnormalities_type_warts" class="edit_cervical_abnormalities_type">Warts</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_Polyp" value="Polyp or cyst">
-                                <label for="edit_cervical_abnormalities_type_Polyp" class="cervical_abnormalities_type">Polyp or cyst</label>
+                                <label for="edit_cervical_abnormalities_type_Polyp" class="edit_cervical_abnormalities_type">Polyp or cyst</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_inflamation_or_erosion" value="inflammation or erosion">
-                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="cervical_abnormalities_type">inflammation or erosion</label>
+                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="edit_cervical_abnormalities_type">inflammation or erosion</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
-                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="cervical_abnormalities_type">Bloody discharge</label>
+                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="edit_cervical_abnormalities_type">Bloody discharge</label>
                             </div>
                             <small class="text-danger error-text" id="edit_cervical_abnormalities_type_error"></small>
                         </div>
@@ -218,11 +218,11 @@
                         <div class="inner-type-abnormalities d-flex gap-3" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_firm" value="firm">
-                                <label for="edit_cervical_consistency_type_firm" class="cervical_consistency_type_label">Firm</label>
+                                <label for="edit_cervical_consistency_type_firm" class="edit_cervical_consistency_type_label">Firm</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_consistency_type" id="edit_cervical_consistency_type_soft" value="soft">
-                                <label for="edit_cervical_consistency_type_soft" class="cervical_consistency_type_label">Soft</label>
+                                <label for="edit_cervical_consistency_type_soft" class="edit_cervical_consistency_type_label">Soft</label>
                             </div>
                             <small class="text-danger error-text" id="edit_cervical_consistency_type_error"></small>
                         </div>
@@ -238,21 +238,21 @@
                         </div>
                         <!-- uterine position -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="edit_extremites_UID_type" id="physical_examination_extremites_UID_type_uterine" value="uterine position">
-                            <label for="physical_examination_extremites_UID_type_uterine">Uterine position</label>
+                            <input type="radio" name="edit_extremites_UID_type" id="edit_physical_examination_extremites_UID_type_uterine" value="uterine position">
+                            <label for="edit_physical_examination_extremites_UID_type_uterine">Uterine position</label>
                         </div>
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_mid" value="Mid">
-                                <label for="edit_uterine_position_type_mid" class="uterine_position_type_label">Mid</label>
+                                <label for="edit_uterine_position_type_mid" class="edit_uterine_position_type_label">Mid</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_type_anteflexed" value="Anteflexed">
-                                <label for="edit_uterine_position_type_anteflexed" class="uterine_position_type_label">Anteflexed</label>
+                                <label for="edit_uterine_position_type_anteflexed" class="edit_uterine_position_type_label">Anteflexed</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_uterine_position_type" id="edit_uterine_position_typer_retroflexed" value="Retroflexed">
-                                <label for="edit_uterine_position_typer_retroflexed" class="uterine_position_type_label">Retroflexed</label>
+                                <label for="edit_uterine_position_typer_retroflexed" class="edit_uterine_position_type_label">Retroflexed</label>
                             </div>
                             <small class="text-danger error-text" id="edit_uterine_position_type_error"></small>
                         </div>
@@ -280,8 +280,8 @@
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2">
         <div class="mb-3 w-50 d-flex flex-column">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
+            <label for="edit_family_planning_signature_image">Upload Signature</label>
+            <input type="file" name="edit_family_planning_signature_image" id="edit_family_planning_signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
         </div>
         <div class="mb-3 w-50">
@@ -294,8 +294,8 @@
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2 border-bottom">
         <div class="mb-3 w-50 d-flex flex-column">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="signature_image" id="signature_image" class="form-control text-center" accept="image/*" required>
+            <label for="edit_family_planning_acknowlegement_consent_signature_image">Upload Signature</label>
+            <input type="file" name="edit_family_planning_acknowlegement_consent_signature_image" id="edit_family_planning_acknowlegement_consent_signature_image" class="form-control text-center" accept="image/*" required>
             <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
         </div>
         <div class="mb-3 w-50">

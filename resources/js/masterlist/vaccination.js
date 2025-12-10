@@ -6,12 +6,20 @@ const saveBtn = document.getElementById(
     "update_vaccination_masterlist_save_btn"
 );
 
-editBtn.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-        const id = e.target.dataset.masterlistId;
+document.addEventListener("click", async (e) => {
+    const editBtn = e.target.closest(".vaccination-masterlist-edit-btn");
+    if (!editBtn) return;
+    const id = editBtn.dataset.masterlistId;
+    // Validate case ID
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+    console.log(id);
 
-        console.log(id);
-
+    // == try catch block ==
+    try {
         const response = await fetch(`/masterist/vaccination/${id}`, {
             headers: {
                 accept: "application/json",
@@ -105,7 +113,15 @@ editBtn.forEach((btn) => {
             saveBtn.dataset.medicalRecordCaseId =
                 data.info.medical_record_case_id;
         }
-    });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
 });
 
 saveBtn.addEventListener("click", async (e) => {
@@ -115,9 +131,9 @@ saveBtn.addEventListener("click", async (e) => {
     const formData = new FormData(form);
 
     const id = e.target.dataset.medicalRecordCaseId;
-      for (let [key, value] of formData.entries()) {
-          console.log(`${key}: ${value}`);
-      }
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
 
     const response = await fetch(`/masterlist/update/vaccination/${id}`, {
         method: "POST",
@@ -174,6 +190,13 @@ saveBtn.addEventListener("click", async (e) => {
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("editvaccinationMasterListModal")
+                );
+                modal.hide();
+            }
         });
     }
 });

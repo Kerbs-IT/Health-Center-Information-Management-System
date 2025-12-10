@@ -181,23 +181,23 @@
                                     <div class="mb-2 d-flex gap-2">
                                         <div class="input-field w-50">
                                             <label for="client_id">Client ID:</label>
-                                            <input type="text" id="client_id" placeholder="Enter the client ID" class="form-control" name="client_id" value="{{optional($familyPlanningRecord->family_planning_case_record)->client_id??''}}">
+                                            <input type="text" id="client_id" placeholder="Enter the client ID" class="form-control" name="client_id" value="{{optional($familyPlanningRecord->family_planning_case_record->first())->client_id??''}}">
                                             <small class="text-danger error-text" id="client_id_error"></small>
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="philhealth_no">Philhealth No:</label>
-                                            <input type="text" class="form-control" name="philhealth_no" value="{{optional($familyPlanningRecord->family_planning_medical_record)->philhealth_no??''}}">
+                                            <input type="text" class="form-control" name="philhealth_no" value="{{optional($familyPlanningRecord->family_planning_medical_record->first())->philhealth_no??''}}">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>
                                         </div>
                                         <div class="input-field w-50 ">
                                             <label for="NHTS" class="">NHTS?:</label>
                                             <div class="inputs d-flex gap-5 w-100 justify-content-center">
                                                 <div class="radio-input">
-                                                    <input type="radio" name="NHTS" value="Yes" id="nhts_yes" {{optional($familyPlanningRecord->family_planning_case_record)->NHTS == 'Yes'?'checked':''}}>
+                                                    <input type="radio" name="NHTS" value="Yes" id="nhts_yes" {{optional($familyPlanningRecord->family_planning_case_record->first())->NHTS == 'Yes'?'checked':''}}>
                                                     <label for="nhts_yes">Yes</label>
                                                 </div>
                                                 <div class="radio-input">
-                                                    <input type="radio" name="NHTS" value="No" id="nhts_no" {{optional($familyPlanningRecord->family_planning_case_record)->NHTS == 'No'?'checked':''}}>
+                                                    <input type="radio" name="NHTS" value="No" id="nhts_no" {{optional($familyPlanningRecord->family_planning_case_record->first())->NHTS == 'No'?'checked':''}}>
                                                     <label for="nhts_no">No</label>
                                                 </div>
                                             </div>

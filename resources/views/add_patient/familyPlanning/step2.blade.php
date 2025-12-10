@@ -90,14 +90,14 @@
                  <!-- fp of new user -->
                  <div class="reason-con">
                      <div class="mb-3 d-flex gap-2">
-                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
+                         <label for="FP" class="text-decoration-underline text-nowrap new_acceptor_label">Reason for FP:</label>
                          <div class="answers d-flex gap-2">
-                             <input type="radio" name="new_acceptor_reason_for_FP" value="spacing">
-                             <label for="">spacing</label>
-                             <input type="radio" name="new_acceptor_reason_for_FP" value="limiting">
-                             <label for="">limiting</label>
-                             <input type="radio" name="new_acceptor_reason_for_FP">
-                             <label for="">others</label>
+                             <input type="radio" name="new_acceptor_reason_for_FP" value="spacing" id="new_acceptor_reason_for_FP_spacing">
+                             <label for="new_acceptor_reason_for_FP_spacing" class="new_acceptor_label">spacing</label>
+                             <input type="radio" name="new_acceptor_reason_for_FP" value="limiting" id="new_acceptor_reason_for_FP_lmiting">
+                             <label for="new_acceptor_reason_for_FP_limiting" class="new_acceptor_label">limiting</label>
+                             <input type="radio" name="new_acceptor_reason_for_FP" id="new_acceptor_reason_for_FP_others">
+                             <label for="new_acceptor_reason_for_FP_others" class="new_acceptor_label">others</label>
                              <input type="text" class="flex-grow-1" name="new_acceptor_reason_for_FP">
                          </div>
                      </div>

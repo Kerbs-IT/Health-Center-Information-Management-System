@@ -11,8 +11,12 @@ use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\prenatal_case_records;
 use App\Models\risk_for_sexually_transmitted_infections;
+use App\Models\wra_masterlists;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class FamilyPlanningController extends Controller
@@ -24,12 +28,15 @@ class FamilyPlanningController extends Controller
             // validations
             $patientData = $request->validate([
                 'type_of_patient' => 'required',
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
+                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
+                'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric|max:100',
+                'age' => 'required|numeric|min:10|max:49',
                 'sex' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
@@ -38,6 +45,8 @@ class FamilyPlanningController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
+            ], [
+                'first_name.unique' => 'This patient already exists.',
             ]);
 
             $medicalData = $request->validate([
@@ -154,6 +163,21 @@ class FamilyPlanningController extends Controller
                 'physical_examination_neck_type' => 'sometimes|nullable|string',
             ]);
 
+            // side b info
+            $sideBdata = $request->validate([
+                'side_b_date_of_visit' => 'sometimes|nullable|date',
+                'side_b_medical_findings' => 'sometimes|nullable|string',
+                'side_b_method_accepted' => 'sometimes|nullable|string',
+                'side_b_name_n_signature' => 'sometimes|nullable|string',
+                'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
+                'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
+                'baby_last_4_weeks_question' => 'sometimes|nullable|string',
+                'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
+                'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
+                'contraceptive_question' => 'sometimes|nullable|string'
+            ]);
+
             // -------------------------------------------------------------------------------------------------------
             // INSERT THE DATA 
 
@@ -163,7 +187,7 @@ class FamilyPlanningController extends Controller
                 'first_name' => $patientData['first_name'],
                 'middle_initial' => $patientData['middle_initial'],
                 'last_name' => $patientData['last_name'],
-                'full_name' => ($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']),
+                'full_name' => trim(($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']), " "),
                 'age' => $patientData['age'] ?? null,
                 'sex' => $patientData['sex'] ?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
@@ -344,6 +368,97 @@ class FamilyPlanningController extends Controller
                 'neck_type' => $physicalExaminationData['physical_examination_neck_type'] ?? null
             ]);
 
+            // add side b record
+            family_planning_side_b_records::create([
+                'medical_record_case_id' => $medicalCaseId,
+                'health_worker_id' => $patientData['handled_by'],
+                'date_of_visit' => $sideBdata['side_b_date_of_visit'] ?? null,
+                'medical_findings' => $sideBdata['side_b_medical_findings'] ?? null,
+                'method_accepted' => $sideBdata['side_b_method_accepted'] ?? null,
+                'signature_of_the_provider' => $sideBdata['side_b_name_n_signature'] ?? null,
+                'date_of_follow_up_visit' => $sideBdata['side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question' => $sideBdata['baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question' => $sideBdata['sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question' => $sideBdata['baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question' => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question' => $sideBdata['miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null
+            ]);
+
+            // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
+            $method_of_FP = [
+                'modern' => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
+            ];
+
+            $modern_methods = [];
+            $traditional_methods = [];
+
+            if ($caseData['previously_used_method'] != null) {
+                foreach ($caseData['previously_used_method'] as $method) {
+                    if (in_array($method, $method_of_FP['modern'])) {
+                        $modern_methods[] = $method;
+                    } elseif (in_array($method, $method_of_FP['traditional'])) {
+                        $traditional_methods[] = $method;
+                    }
+                }
+            }
+            // convert them to string
+            $converted_modern_methods = implode(",", $modern_methods);
+            $converted_traditional_methods = implode(",", $traditional_methods);
+
+            // check if the patient currently accept any modern methods
+            $method_accepted = [];
+            if ($caseData['choosen_method']) {
+                $method_accepted = explode(",", $caseData['choosen_method']);
+            }
+
+            $accept_modern_FP = [];
+            foreach ($method_accepted as $method) {
+
+                if (in_array($method, $method_of_FP['modern'])) {
+                    $accept_modern_FP[] = $method;
+                }
+            }
+            $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
+
+            if ($patientData['age'] >= 10) {
+                $wra_masterlist = wra_masterlists::create([
+                    'medical_record_case_id' => $medicalCaseId,
+                    'health_worker_id' => $patientData['handled_by'],
+                    'address_id' => $patientAddress->id,
+                    'patient_id' => $familyPlanningPatientRecordId,
+                    'brgy_name' => $patientAddress->purok,
+                    'house_hold_number' => null,
+                    'name_of_wra' => $familPlanningPatient->full_name,
+                    'address' => $fullAddress,
+                    'age' => $patientData['age'] ?? null,
+                    'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                    'SE_status' => ($caseData['NHTS'] ?? null) === 'yes'
+                        ? 'NHTS'
+                        : (($caseData['NHTS'] ?? null) !== null ? 'Yes' : 'No'),
+                    'plan_to_have_more_children_yes' => ($caseData['plan_to_have_more_children'] ?? null) === 'Yes' ? collect(
+                        $caseData['new_acceptor_reason_for_FP'] ?? null,
+                        $caseData['current_user_reason_for_FP'] ?? null,
+                        $caseData['current_method_reason'] ?? null
+                    )->first(fn($value) => !empty($value)) : null,
+                    'plan_to_have_more_children_no' => ($caseData['plan_to_have_more_children'] ?? null) === 'No' ? 'limiting' : null,
+                    'current_FP_methods' => ($caseData['family_planning_type_of_patient'] ?? null) === 'current user' ? $previoulyMethod : null,
+                    'modern_FP' => $converted_modern_methods ?? null,
+                    'traditional_FP' =>  $converted_traditional_methods ?? null,
+                    'currently_using_any_FP_method_no' => empty($caseData['previously_used_method']) ? 'yes' : null,
+                    'shift_to_modern_method' => null,
+                    'wra_with_MFP_unmet_need' => 'no',
+                    'wra_accept_any_modern_FP_method' => $converted_accepted_modern_FP != null ? 'yes' : 'no',
+                    'selected_modern_FP_method' => $converted_accepted_modern_FP ?? null,
+                    'date_when_FP_method_accepted' => !empty($converted_accepted_modern_FP)
+                        ? ($caseData['family_planning_date_of_acknowledgement'] ?? null)
+                        : null
+                ]);
+            }
+
+
+
 
             return response()->json(['message' => 'Family Planning Patient information is added Successfully'], 200);
         } catch (ValidationException $e) {
@@ -362,6 +477,8 @@ class FamilyPlanningController extends Controller
         try {
 
             $familyPlanningRecord = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
+            $familyPlanningMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningRecord->id)->first();
+            $familyPlanningCaseRecord = family_planning_case_records::where("medical_record_case_id", $familyPlanningRecord->id)->where("status", "!=",'Archived')->first();
             $address = patient_addresses::where('patient_id', $familyPlanningRecord->patient->id)->firstOrFail();
 
 
@@ -397,13 +514,18 @@ class FamilyPlanningController extends Controller
                 'NHTS' => 'sometimes|nullable|string',
 
             ]);
+            $fullName = collect([
+                $data['first_name'] ?? '',
+                $data['middle_initial'] ?? '',
+                $data['last_name'] ?? '',
+            ])->filter()->join(' ');
 
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => $data['first_name'] ?? $familyPlanningRecord->patient->first_name,
                 'middle_initial' => $data['middle_initial'] ?? $familyPlanningRecord->patient->middle_initial,
                 'last_name' => $data['last_name'] ?? $familyPlanningRecord->patient->last_name,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']) ?? $familyPlanningRecord->patient->full_name,
+                'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
                 'sex' => $data['sex'] ?? $familyPlanningRecord->patient->sex,
                 'civil_status' => $data['civil_status'] ?? $familyPlanningRecord->patient->civil_status,
@@ -435,33 +557,52 @@ class FamilyPlanningController extends Controller
             $familyPlanningRecord->patient->refresh();
 
             // update medical record
-            $familyPlanningRecord->family_planning_medical_record->update([
-                'health_worker_id' => $data['handled_by'] ?? $familyPlanningRecord->family_planning_medical_record->health_worker_id,
+            $familyPlanningMedicalRecord->update([
+                'health_worker_id' => $data['handled_by'] ?? $familyPlanningMedicalRecord->health_worker_id,
                 'patient_name' => $familyPlanningRecord->patient->full_name,
-                'occupation' => $data['occupation'] ?? $familyPlanningRecord->family_planning_medical_record->occupation,
-                'religion' => $data['religion'] ?? $familyPlanningRecord->family_planning_medical_record->religion,
-                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningRecord->family_planning_medical_record->philhealth_no,
-                'blood_pressure' => $data['blood_pressure'] ?? $familyPlanningRecord->family_planning_medical_record->blood_pressure,
-                'temperature' => $data['temperature'] ?? $familyPlanningRecord->family_planning_medical_record->temperature,
-                'pulse_rate' => $data['pulse_rate'] ?? $familyPlanningRecord->family_planning_medical_record->pulse_rate,
-                'respiratory_rate' => $data['respiratory_rate'] ?? $familyPlanningRecord->family_planning_medical_record->respiratory_rate,
-                'height' => $data['height'] ?? $familyPlanningRecord->family_planning_medical_record->height,
-                'weight' => $data['weight'] ?? $familyPlanningRecord->family_planning_medical_record->weight
+                'occupation' => $data['occupation'] ?? $familyPlanningMedicalRecord->occupation,
+                'religion' => $data['religion'] ?? $familyPlanningMedicalRecord->religion,
+                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningMedicalRecord->philhealth_no,
+                'blood_pressure' => $data['blood_pressure'] ?? $familyPlanningMedicalRecord->blood_pressure,
+                'temperature' => $data['temperature'] ?? $familyPlanningMedicalRecord->temperature,
+                'pulse_rate' => $data['pulse_rate'] ?? $familyPlanningMedicalRecord->pulse_rate,
+                'respiratory_rate' => $data['respiratory_rate'] ?? $familyPlanningMedicalRecord->respiratory_rate,
+                'height' => $data['height'] ?? $familyPlanningMedicalRecord->height,
+                'weight' => $data['weight'] ?? $familyPlanningMedicalRecord->weight
             ]);
             // update case record
-            $familyPlanningRecord->family_planning_case_record->update([
+            $familyPlanningCaseRecord->update([
                 'client_name' => $familyPlanningRecord->patient->full_name,
-                'client_id' => $data['client_id'] ?? $familyPlanningRecord->family_planning_case_record->client_id,
-                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningRecord->family_planning_case_record->philhealth_no,
-                'NHTS' => $data['NHTS'] ?? $familyPlanningRecord->family_planning_case_record->NHTS,
+                'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
+                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
+                'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
                 'client_address' =>  $fullAddress ?? '',
-                'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningRecord->family_planning_case_record->client_date_of_birth,
-                'client_age' => $data['age'] ?? $familyPlanningRecord->family_planning_case_record->client_age,
-                'occupation' => $data['occupation'] ?? $familyPlanningRecord->family_planning_case_record->occupation,
-                'client_contact_number' => $data['contact_number'] ?? $familyPlanningRecord->family_planning_case_record->client_contact_number,
-                'client_civil_status' => $data['civil_status'] ?? $familyPlanningRecord->family_planning_case_record->client_civil_status,
-                'client_religion' => $data['religion'] ?? $familyPlanningRecord->family_planning_case_record->client_religion
+                'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
+                'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
+                'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
+                'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
+                'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
+                'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
             ]);
+
+            // update the prenatal and wra if the patient have those records
+            $prenatalMedicalCaseRecord = medical_record_cases::where('patient_id', $familyPlanningRecord->patient->id)->where('type_of_case', 'prenatal')->first() ?? null;
+            if ($prenatalMedicalCaseRecord) {
+                $prenatalCase = prenatal_case_records::where('medical_record_case_id', $prenatalMedicalCaseRecord->id)->first() ?? null;
+                if ($prenatalCase) {
+                    $fullName = $fullName ?: $prenatalCase->patient_name;
+                    $prenatalCase->update([
+                        'patient_name' => $fullName
+                    ]);
+                }
+            }
+            // wra
+            $wraRecord = wra_masterlists::where('patient_id', $familyPlanningRecord->patient->id)->first() ?? null;
+            if ($wraRecord) {
+                $wraRecord->update([
+                    'name_of_wra' => $fullName ?? $wraRecord->name_of_wra
+                ]);
+            }
 
             return response()->json(['message' => 'Updating Patient information Successfully'], 200);
         } catch (ValidationException $e) {
@@ -480,8 +621,9 @@ class FamilyPlanningController extends Controller
     {
         try {
             $familyPlanCaseInfo = family_planning_case_records::with(['medical_history', 'obsterical_history', 'risk_for_sexually_transmitted_infection', 'physical_examinations'])->findOrFail($id);
-
-            return response()->json(['caseInfo' => $familyPlanCaseInfo], 200);
+            $medicalRecord = medical_record_cases::with('patient')->where('id', $familyPlanCaseInfo->medical_record_case_id)->first();
+            $address = patient_addresses::where('patient_id', $medicalRecord->patient_id)->first();
+            return response()->json(['caseInfo' => $familyPlanCaseInfo, 'address' => $address], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
@@ -494,7 +636,10 @@ class FamilyPlanningController extends Controller
     public function addSideAcaseInfo(Request $request, $id)
     {
         try {
-            $familyPlanCaseInfo = family_planning_case_records::where('type_of_record', 'Family Planning Client Assessment Record - Side A')->where('medical_record_case_id', $id)->get();
+            $familyPlanCaseInfo = family_planning_case_records::where('type_of_record', 'Family Planning Client Assessment Record - Side A')
+                ->where('medical_record_case_id', $id)
+                ->where('status', '!=', 'Archived')
+                ->get();
 
             if (count($familyPlanCaseInfo) > 0) {
                 return response()->json(['message' => "Unable to create the record. A record already exists!"], 422);
@@ -509,6 +654,8 @@ class FamilyPlanningController extends Controller
                 'side_A_add_occupation' => 'sometimes|nullable|string',
                 'side_A_add_client_civil_status' => 'sometimes|nullable|string',
                 'side_A_add_client_religion' => 'sometimes|nullable|string',
+                'add_street' => 'required',
+                'add_brgy' => 'required'
             ]);
 
             $caseData = $request->validate([
@@ -529,7 +676,7 @@ class FamilyPlanningController extends Controller
                 'side_A_add_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
                 'side_A_add_plan_to_have_more_children' => 'sometimes|nullable|string',
                 'side_A_add_average_montly_income' => 'sometimes|nullable|numeric',
-                'side_A_add_family_planning_type_of_patient' => 'sometimes|nullable|string',
+                'side_A_add_type_of_patient' => 'sometimes|nullable|string',
                 'side_A_add_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
                 'side_A_add_current_user_reason_for_FP' => 'sometimes|nullable|string',
                 'side_A_add_current_method_reason' => 'sometimes|nullable|string',
@@ -642,7 +789,7 @@ class FamilyPlanningController extends Controller
                 'plan_to_have_more_children' => $caseData['side_A_add_plan_to_have_more_children'] ?? null,
 
                 'average_montly_income' => $caseData['side_A_add_average_montly_income'] ?? null,
-                'type_of_patient' => $caseData['side_A_add_family_planning_type_of_patient'] ?? null,
+                'type_of_patient' => $caseData['side_A_add_type_of_patient'] ?? null,
                 'new_acceptor_reason_for_FP' => $caseData['side_A_add_new_acceptor_reason_for_FP'] ?? null,
                 'current_user_reason_for_FP' => $caseData['side_A_add_current_user_reason_for_FP'] ?? null,
                 'current_method_reason' => $caseData['side_A_add_current_method_reason'] ?? null,
@@ -653,7 +800,7 @@ class FamilyPlanningController extends Controller
                 'acknowledgement_consent_signature_image' => $caseData['side_A_add_family_planning_acknowlegement_consent_signature_image'] ?? null,
                 'date_of_acknowledgement_consent' => $caseData['side_A_add_family_planning_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['side_A_add_current_user_type'] ?? null,
-                'status' => 'Done'
+                'status' => 'Active'
             ]);
 
             family_planning_medical_histories::create([
@@ -729,8 +876,100 @@ class FamilyPlanningController extends Controller
                 'uterine_depth_text' => $physicalExaminationData['side_A_add_uterine_depth_text'] ?? null,
                 'neck_type' => $physicalExaminationData['side_A_add_neck_type'] ?? null
             ]);
+            // =====================================================================================================
+            // ================================== WRA UPDATE =======================================================
 
-            return response()->json(['message' => 'Family Planning Patient Case information is updated Successfully'], 200);
+            // update the wra masterlist
+            // get the masterlist first
+            $wra_masterlist_record = wra_masterlists::where('medical_record_case_id', $id)->first();
+
+
+            $method_of_FP = [
+                'modern' => ['Implant', 'UID', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
+            ];
+
+            $modern_methods = [];
+            $traditional_methods = [];
+            $previouslyMethods = $caseData['side_A_add_previously_used_method'] ?? null;
+
+            if ($previouslyMethods) {
+                foreach ($previouslyMethods as $method) {
+                    if (in_array($method, $method_of_FP['modern'])) {
+                        $modern_methods[] = $method;
+                    } elseif (in_array($method, $method_of_FP['traditional'])) {
+                        $traditional_methods[] = $method;
+                    }
+                }
+            }
+            // convert them to string
+            $converted_modern_methods = implode(",", $modern_methods);
+            $converted_traditional_methods = implode(",", $traditional_methods);
+
+            // check if the patient currently accept any modern methods
+            $method_accepted = [];
+            if ($caseData['side_A_add_choosen_method']) {
+                $method_accepted = explode(",", $caseData['side_A_add_choosen_method']);
+            }
+
+            $accept_modern_FP = [];
+            foreach ($method_accepted as $method) {
+
+                if (in_array($method, $method_of_FP['modern'])) {
+                    $accept_modern_FP[] = $method;
+                }
+            }
+            $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
+
+            // get the patient infor
+            $medical_case_record = medical_record_cases::with('patient')->where('id', $id)->first();
+
+            $address = patient_addresses::where('patient_id',  $medical_case_record->patient->id)->firstOrFail();
+            $blk_n_street = explode(',', $patientData['add_street']);
+            $address->update([
+                'house_number' => $blk_n_street[0] ?? $address->house_number,
+                'street' => $blk_n_street[1] ?? $address->street,
+                'purok' => $patientData['add_brgy'] ?? $address->purok
+            ]);
+
+            // update other part
+            $address->refresh();
+            $newAddress = $address->house_number . ", " . $address->street . "," . $address->purok . "," . $address->barangay . "," . $address->city . "," . $address->province;
+            if ($patientData['side_A_add_client_age'] >= 10) {
+                $wra_masterlist_record->update([
+                    'brgy_name' => $address->purok,
+                    'name_of_wra' => $medical_case_record->patient->full_name,
+                    'address' => $newAddress,
+                    'age' => $patientData['side_A_add_client_age'] ?? null,
+                    'date_of_birth' => $patientData['side_A_add_client_date_of_birth'] ?? $wra_masterlist_record->date_of_birth,
+                    'SE_status' => ($caseData['side_A_add_NHTS'] ?? null) === 'yes'
+                        ? 'NHTS'
+                        : (($caseData['edit_NHTS'] ?? null) !== null ? 'Yes' : 'No'),
+                    'plan_to_have_more_children_yes' => ($caseData['side_A_add_plan_to_have_more_children'] ?? null) === 'Yes'
+                        ? collect([
+                            $caseData['side_A_add_new_acceptor_reason_for_FP'] ?? null,
+                            $caseData['side_A_add_current_user_reason_for_FP'] ?? null,
+                            $caseData['side_A_add_current_method_reason'] ?? null,
+                        ])->first(fn($value) => !empty($value))
+                        : null,
+                    'plan_to_have_more_children_no' => ($caseData['side_A_add_plan_to_have_more_children'] ?? null) === 'No' ? 'limiting' :  null,
+                    'current_FP_methods' => ($caseData['side_A_add_type_of_patient'] ?? null) === 'current user' ? $previoulyMethod : $wra_masterlist_record->current_FP_methods,
+                    'modern_FP' => $converted_modern_methods ?? null,
+                    'traditional_FP' =>  $converted_traditional_methods ?? null,
+                    'currently_using_any_FP_method_no' => empty($caseData['side_A_add_previously_used_method']) ? 'yes' : null,
+                    'wra_accept_any_modern_FP_method' => $converted_accepted_modern_FP != null ? 'yes' : 'no',
+                    'selected_modern_FP_method' => $converted_accepted_modern_FP ?? null,
+                    'date_when_FP_method_accepted' =>
+                    !empty($converted_accepted_modern_FP)
+                        ? ($caseData['side_A_add_date_of_acknowledgement']
+                            ?? $wra_masterlist_record->date_when_FP_method_accepted)
+                        : $wra_masterlist_record->date_when_FP_method_accepted,
+
+
+                ]);
+            }
+
+            return response()->json(['message' => 'Family Planning Client Assessment Record - Side A information is added Successfully'], 200);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
@@ -752,16 +991,20 @@ class FamilyPlanningController extends Controller
             // get the medical
             $medical_case_record = medical_record_cases::with(['patient', 'family_planning_medical_record'])->findOrFail($familyPlanCaseInfo->medical_record_case_id);
 
+            // dd($request);
             $patientData = $request->validate(
                 [
                     'edit_client_fname' => 'required|string',
-                    'edit_client_MI' => 'required|string|max:2',
+                    'edit_client_MI' => 'sometimes|nullable|string|max:2',
                     'edit_client_lname' => 'required|string',
                     'edit_client_date_of_birth' => 'sometimes|nullable|date',
-                    'edit_client_age' => 'sometimes|nullable|numeric|max:100',
+                    'edit_client_age' => 'required|numeric|max:100',
                     'edit_occupation' => 'sometimes|nullable|string',
                     'edit_client_civil_status' => 'sometimes|nullable|string',
                     'edit_client_religion' => 'sometimes|nullable|string',
+                    'edit_street' => 'required',
+                    'edit_brgy' => 'required',
+                    'edit_client_contact_number' => 'sometimes|nullable|digits_between:7,12',
                 ],
                 [],
                 [ // Custom attribute names
@@ -795,18 +1038,19 @@ class FamilyPlanningController extends Controller
                     'edit_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
                     'edit_plan_to_have_more_children' => 'sometimes|nullable|string',
                     'edit_average_montly_income' => 'sometimes|nullable|numeric',
-                    'edit_family_planning_type_of_patient' => 'sometimes|nullable|string',
+                    'edit_type_of_patient' => 'sometimes|nullable|string',
                     'edit_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
                     'edit_current_user_reason_for_FP' => 'sometimes|nullable|string',
+                    'edit_current_user_reason_for_FP_other' => 'sometimes|nullable|string',
                     'edit_current_method_reason' => 'sometimes|nullable|string',
                     'edit_previously_used_method' => 'sometimes|nullable|array',
 
                     // acknowledgement
                     'edit_choosen_method' => 'sometimes|nullable|string',
                     'edit_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
-                    'edit_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
+                    'edit_date_of_acknowledgement' => 'sometimes|nullable|date',
                     'edit_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
-                    'edit_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
+                    'edit_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                     'edit_current_user_type' => 'sometimes|nullable|string'
                 ],
                 [],
@@ -824,7 +1068,7 @@ class FamilyPlanningController extends Controller
                     'edit_number_of_living_children' => 'number of living children',
                     'edit_plan_to_have_more_children' => 'plan to have more children',
                     'edit_average_montly_income' => 'average monthly income',
-                    'edit_family_planning_type_of_patient' => 'type of family planning patient',
+                    'edit_type_of_patient' => 'type of family planning patient',
                     'edit_new_acceptor_reason_for_FP' => 'reason for new acceptor of family planning',
                     'edit_current_user_reason_for_FP' => 'reason for current user of family planning',
                     'edit_current_method_reason' => 'reason for current method',
@@ -916,10 +1160,22 @@ class FamilyPlanningController extends Controller
                 'last_name' => $patientData['edit_client_lname'] ?? $medical_case_record->patient->last_name,
                 'full_name' => trim(($patientData['edit_client_fname'] . ' ' . $patientData['edit_client_MI'] . ' ' . $patientData['edit_client_lname'])) ?? $medical_case_record->patient->full_name,
                 'age' => $patientData['edit_client_age'] ?? $medical_case_record->patient->age,
-                'contact_number' => $patientData['edit_client_contact_number'] ?? $medical_case_record->patient->age,
-                'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $medical_case_record->patient->age,
+                'contact_number' => $patientData['edit_client_contact_number'] ?? $medical_case_record->patient->contact_number,
+                'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $medical_case_record->patient->date_of_birth,
                 'civil_status' => $patientData['edit_client_civil_status'] ?? $medical_case_record->patient->civil_status
             ]);
+            $address = patient_addresses::where('patient_id',  $medical_case_record->patient->id)->firstOrFail();
+            $blk_n_street = explode(',', $patientData['edit_street']);
+            $address->update([
+                'house_number' => $blk_n_street[0] ?? $address->house_number,
+                'street' => $blk_n_street[1] ?? $address->street,
+                'purok' => $patientData['edit_brgy'] ?? $address->purok
+            ]);
+
+            // update other part
+            $address->refresh();
+            $newAddress = $address->house_number . ", " . $address->street . "," . $address->purok . "," . $address->barangay . "," . $address->city . "," . $address->province;
+
 
             $medical_case_record->family_planning_medical_record->update([
                 'patient_name' => trim(($patientData['edit_client_fname'] . ' ' . $patientData['edit_client_MI'] . ' ' . $patientData['edit_client_lname'])) ?? $medical_case_record->patient->full_name,
@@ -933,8 +1189,18 @@ class FamilyPlanningController extends Controller
 
             // refresh
             $medical_case_record->patient->refresh();
+            $previoulyMethod = null;
 
-            $previoulyMethod = implode(",", $caseData['edit_previously_used_method']);
+            if (isset($caseData['edit_previously_used_method']) && !empty($caseData['edit_previously_used_method'])) {
+                $previoulyMethod = implode(",", $caseData['edit_previously_used_method']);
+            }
+
+            if (!empty(trim($caseData['edit_current_user_reason_for_FP_other'] ?? ''))) {
+                $currentReason = trim($caseData['edit_current_user_reason_for_FP_other']);
+            } else {
+                // Otherwise, use the radio selection
+                $currentReason = $caseData['edit_current_user_reason_for_FP'] ?? $familyPlanCaseInfo->current_user_reason_for_FP;
+            }
 
             // update the case
             $familyPlanCaseInfo->update([
@@ -942,6 +1208,7 @@ class FamilyPlanningController extends Controller
                 'philhealth_no' => $caseData['edit_philhealth_no'] ?? $familyPlanCaseInfo->philhealth_no,
                 'NHTS' => $caseData['edit_NHTS'] ?? $familyPlanCaseInfo->NHTS,
                 'client_name' => $medical_case_record->patient->full_name,
+                'client_address' =>  $newAddress,
                 'client_date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $familyPlanCaseInfo->client_date_of_birth,
                 'client_age' => $patientData['edit_client_age'] ?? $familyPlanCaseInfo->client_age,
                 'occupation' => $patientData['edit_occupation'] ?? $familyPlanCaseInfo->occupation,
@@ -958,16 +1225,16 @@ class FamilyPlanningController extends Controller
                 'plan_to_have_more_children' => $caseData['edit_plan_to_have_more_children'] ?? $familyPlanCaseInfo->plan_to_have_more_children,
 
                 'average_montly_income' => $caseData['edit_average_montly_income'] ?? $familyPlanCaseInfo->average_montly_income,
-                'type_of_patient' => $caseData['edit_family_planning_type_of_patient'] ?? $familyPlanCaseInfo->type_of_patient,
+                'type_of_patient' => $caseData['edit_type_of_patient'] ?? $familyPlanCaseInfo->type_of_patient,
                 'new_acceptor_reason_for_FP' => $caseData['edit_new_acceptor_reason_for_FP'] ?? $familyPlanCaseInfo->new_acceptor_reason_for_FP,
-                'current_user_reason_for_FP' => $caseData['edit_current_user_reason_for_FP'] ?? $familyPlanCaseInfo->current_user_reason_for_FP,
+                'current_user_reason_for_FP' => $currentReason ?? $familyPlanCaseInfo->current_user_reason_for_FP,
                 'current_method_reason' => $caseData['edit_current_method_reason'] ?? $familyPlanCaseInfo->current_method_reason,
-                'previously_used_method' => $previoulyMethod ?? $familyPlanCaseInfo->previously_used_method,
+                'previously_used_method' => $previoulyMethod ?? $familyPlanCaseInfo->previously_used_method ?? null,
                 'choosen_method' => $caseData['edit_choosen_method'] ?? $familyPlanCaseInfo->choosen_method,
                 'signature_image' => $caseData['edit_family_planning_signature_image'] ?? $familyPlanCaseInfo->signature_image,
-                'date_of_acknowledgement' => $caseData['edit_family_planning_date_of_acknowledgement'] ?? $familyPlanCaseInfo->date_of_acknowledgement,
+                'date_of_acknowledgement' => $caseData['edit_date_of_acknowledgement'] ?? $familyPlanCaseInfo->date_of_acknowledgement,
                 'acknowledgement_consent_signature_image' => $caseData['edit_family_planning_acknowlegement_consent_signature_image'] ?? $familyPlanCaseInfo->acknowledgement_consent_signature_image,
-                'date_of_acknowledgement_consent' => $caseData['edit_family_planning_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo->date_of_acknowledgement_consent,
+                'date_of_acknowledgement_consent' => $caseData['edit_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo->date_of_acknowledgement_consent,
                 'current_user_type' => $caseData['edit_current_user_type'] ?? $familyPlanCaseInfo->current_user_type,
                 'status' => 'Done'
             ]);
@@ -1041,6 +1308,92 @@ class FamilyPlanningController extends Controller
                 'uterine_depth_text' => $physicalExaminationData['edit_uterine_depth_text'] ?? $familyPlanCaseInfo->physical_examinations->uterine_depth_text,
                 'neck_type' => $physicalExaminationData['edit_neck_type'] ?? $familyPlanCaseInfo->physical_examinations->neck_type
             ]);
+
+            // update the wra masterlist
+            // get the masterlist first
+            $wra_masterlist_record = wra_masterlists::where('patient_id', $medical_case_record->patient_id)->first();
+
+
+            $method_of_FP = [
+                'modern' => ['Implant', 'UID', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
+            ];
+
+            $modern_methods = [];
+            $traditional_methods = [];
+            $previouslyMethods = $caseData['edit_previously_used_method'] ?? null;
+
+            if ($previouslyMethods) {
+                foreach ($caseData['edit_previously_used_method'] as $method) {
+                    if (in_array($method, $method_of_FP['modern'])) {
+                        $modern_methods[] = $method;
+                    } elseif (in_array($method, $method_of_FP['traditional'])) {
+                        $traditional_methods[] = $method;
+                    }
+                }
+            }
+            // convert them to string
+            $converted_modern_methods = implode(",", $modern_methods);
+            $converted_traditional_methods = implode(",", $traditional_methods);
+
+            // check if the patient currently accept any modern methods
+            $method_accepted = [];
+            if ($caseData['edit_choosen_method']) {
+                $method_accepted = explode(",", $caseData['edit_choosen_method']);
+            }
+
+            $accept_modern_FP = [];
+            foreach ($method_accepted as $method) {
+
+                if (in_array($method, $method_of_FP['modern'])) {
+                    $accept_modern_FP[] = $method;
+                }
+            }
+            $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
+
+            $medical_case_record->patient->refresh();
+            if ($patientData['edit_client_age'] >= 10) {
+                $wra_masterlist_record->update([
+                    'brgy_name' => $address->purok,
+                    'name_of_wra' => $medical_case_record->patient->full_name,
+                    'address' => $newAddress,
+                    'age' => $patientData['edit_client_age'] ?? null,
+                    'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $wra_masterlist_record->date_of_birth,
+                    'SE_status' => ($caseData['edit_NHTS'] ?? null) === 'yes'
+                        ? 'NHTS'
+                        : (($caseData['edit_NHTS'] ?? null) !== null ? 'Yes' : 'No'),
+                    'plan_to_have_more_children_yes' => ($caseData['edit_plan_to_have_more_children'] ?? null) === 'Yes'
+                        ? collect([
+                            $caseData['edit_new_acceptor_reason_for_FP'] ?? null,
+                            $caseData['edit_current_user_reason_for_FP'] ?? null,
+                            $caseData['edit_current_method_reason'] ?? null,
+                        ])->first(fn($value) => !empty($value))
+                        : null,
+                    'plan_to_have_more_children_no' => ($caseData['edit_plan_to_have_more_children'] ?? null) === 'No' ? 'limiting' :  null,
+                    'current_FP_methods' => ($caseData['edit_type_of_patient'] ?? null) === 'current user' ? $previoulyMethod : $wra_masterlist_record->current_FP_methods,
+                    'modern_FP' => $converted_modern_methods ?? null,
+                    'traditional_FP' =>  $converted_traditional_methods ?? null,
+                    'currently_using_any_FP_method_no' => empty($caseData['edit_previously_used_method']) ? 'yes' : null,
+                    'wra_accept_any_modern_FP_method' => $converted_accepted_modern_FP != null ? 'yes' : 'no',
+                    'selected_modern_FP_method' => $converted_accepted_modern_FP ?? null,
+                    'date_when_FP_method_accepted' =>
+                    !empty($converted_accepted_modern_FP)
+                        ? ($caseData['edit_date_of_acknowledgement']
+                            ?? $wra_masterlist_record->date_when_FP_method_accepted)
+                        : $wra_masterlist_record->date_when_FP_method_accepted,
+
+
+                ]);
+            }
+            // update the selected method of side b
+            $sideBrecord = family_planning_side_b_records::where('medical_record_case_id', $medical_case_record->id)->first();
+
+            if ($sideBrecord) {
+                $sideBrecord->update([
+                    'method_accepted' => $caseData['edit_choosen_method'] ?? $sideBrecord->method_accepted,
+                    'date_of_visit' =>  $caseData['edit_date_of_acknowledgement'] ?? $sideBrecord->date_of_visit
+                ]);
+            }
 
             return response()->json(['message' => 'Family Planning Patient Case information is updated Successfully'], 200);
         } catch (ValidationException $e) {
@@ -1161,6 +1514,67 @@ class FamilyPlanningController extends Controller
             return response()->json([
                 'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
             ], 500);
+        }
+    }
+    public function removeRecord($type_of_record, $id)
+    {
+        if ($type_of_record == 'side-A') {
+            try {
+                $sideArecord = family_planning_case_records::where('id', $id)->first() ?? null;
+                if (!$sideArecord) return;
+                $sideArecord->update([
+                    'status' => 'Archived'
+                ]);
+                // update the wra too
+                $wraRecord = wra_masterlists::where('medical_record_case_id', $sideArecord->medical_record_case_id)->first() ?? null;
+                if (!$wraRecord) return;
+
+
+
+
+
+
+                $wraRecord->update([
+
+                    'SE_status' => null,
+                    'plan_to_have_more_children_yes' => null,
+                    'plan_to_have_more_children_no' =>  null,
+                    'current_FP_methods' => null,
+                    'modern_FP' =>  null,
+                    'traditional_FP' =>  null,
+                    'currently_using_any_FP_method_no' => null,
+                    'wra_accept_any_modern_FP_method' => null,
+                    'selected_modern_FP_method' =>  null,
+                    'date_when_FP_method_accepted' => null,
+
+                ]);
+                return response()->json([
+                    'message' => 'Family Planning Client Assessment Record - Side A is deleted successfully'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ], 422);
+            }
+        }
+        if ($type_of_record == 'side-B') {
+            try {
+                $sideBrecord = family_planning_side_b_records::where('id', $id)->first() ?? null;
+
+                if (!$sideBrecord) return;
+
+                $sideBrecord->update([
+                    'status' => 'Archived'
+                ]);
+
+                return response()->json([
+                    'message' => 'Record is deleted successfully.'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ], 422);
+            }
         }
     }
 }
