@@ -3,12 +3,13 @@ import 'bootstrap';
 
 import Swal from 'sweetalert2';
 
-
+// import styles bundle
+import 'swiper/css/bundle';
 
 
 const root = document.querySelector(":root");
 const logoutBtn = document.getElementById('logout-btn');
-const logoutUrl = "{{ route('logout') }}"; 
+const logoutUrl = "{{ route('logout') }}";
 
 function logout(btn) {
     if (btn) {
@@ -63,8 +64,8 @@ async function currentColorPallete() {
         }
         hexToRgb(data.secondaryColor, rootTextBarProperty);
         hexToRgb(data.primaryColor, rootPrimaryTextProperty);
-    } catch (error) {   
-        
+    } catch (error) {
+
     }
 }
 
@@ -97,4 +98,4 @@ function hexToRgb(hex, rootElement) {
 }
 
 currentColorPallete();
-  
+
