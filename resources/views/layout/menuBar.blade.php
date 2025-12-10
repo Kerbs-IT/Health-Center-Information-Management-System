@@ -1,3 +1,4 @@
+
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -188,4 +189,4 @@
         </div>
     </div>
 </div>
-<div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
+ <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
