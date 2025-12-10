@@ -12,6 +12,7 @@ use App\Models\tb_dots_check_ups;
 use App\Models\tb_dots_maintenance_medicines;
 use App\Models\tb_dots_medical_records;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class TbDotsController extends Controller
@@ -23,7 +24,10 @@ class TbDotsController extends Controller
         try{
             $patientData = $request->validate([
                 'type_of_patient' => 'required',
-                'first_name' => 'sometimes|nullable|string',
+                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
                 'last_name' => 'sometimes|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'date_of_birth' => 'sometimes|nullable|date',
@@ -451,6 +455,129 @@ class TbDotsController extends Controller
             return response()->json([
                 'errors' => $e->getMessage()
             ], 422);
+        }
+    }
+
+    public function removeCheckup($caseId){
+        try {
+            $tb_dots_check_up = tb_dots_check_ups::findOrFail($caseId);
+
+            if($tb_dots_check_up){
+                $tb_dots_check_up->update([
+                    'status' => 'Archived'
+                ]);
+            }else{
+                return response()->json([
+                    'errors' => 'Record not found.'
+                ]);
+            }
+            
+
+            return response()->json(['message'=>'Tb dots check-up is deleted successfully.']);
+        } catch (\Exception $e) {
+           return response()->json([
+            'errors'=> $e->getMessage()
+           ]);
+        }
+    }
+
+    public function addCase(Request $request,$medicalRecordId){
+        try {
+            $caseRecord = tb_dots_case_records::where('medical_record_case_id', $medicalRecordId)->where('status', '!=','Archived')->first();
+
+            if(!empty($caseRecord)){
+                return response()->json([
+                    'errors' => 'Unable to add. A tb dots case record already exists for this patient.'
+                ], 422);
+            }
+
+            $data = $request->validate([
+                'add_tb_case_patient_name' => 'required',
+                'add_tb_health_worker_id' => 'required',
+                'add_tb_type_of_tuberculosis' => 'required|string',
+                'add_tb_type_of_tb_case' =>  'required|string',
+                'add_tb_date_of_diagnosis' => 'required|date',
+                'add_tb_name_of_physician' => 'sometimes|nullable|string',
+                'add_tb_sputum_test_results' => 'sometimes|nullable|string',
+                'add_tb_treatment_category' => 'sometimes|nullable|string',
+                'add_tb_date_administered' => 'required|date',
+                'add_tb_side_effect' =>  'sometimes|nullable|string',
+                'add_tb_remarks' => 'sometimes|nullable|string',
+                'add_tb_outcome' => 'sometimes|nullable|string',
+            ]);
+
+            $caseRecord = tb_dots_case_records::create([
+                'medical_record_case_id' => $medicalRecordId,
+                'health_worker_id' =>$data['add_tb_health_worker_id'],
+                'patient_name' => $data['add_tb_case_patient_name'],
+                'type_of_tuberculosis' => $data['add_tb_type_of_tuberculosis'] ?? null,
+                'type_of_tb_case' => $data['add_tb_type_of_tb_case'] ?? null,
+                'date_of_diagnosis' => $data['add_tb_date_of_diagnosis'] ?? null,
+                'name_of_physician' => $data['add_tb_name_of_physician'] ?? null,
+                'sputum_test_results' => $data['add_tb_sputum_test_results'] ?? null,
+                'treatment_category' => $data['add_tb_treatment_category'] ?? null,
+                'date_administered' => $data['add_tb_date_administered'] ?? null,
+                'side_effect' =>  $data['add_tb_side_effect'] ?? null,
+                'remarks' => $data['add_tb_remarks'] ?? null,
+                'outcome' => $data['add_tb_outcome'] ?? null,
+                'status' => 'Active'
+            ]);
+
+
+            // insert in the maintenance medication
+            $maintenanceMedicationData = $request->validate([
+                'add_medicines' => 'sometimes|nullable|array',
+                'add_dosage_n_frequencies' => 'sometimes|nullable|array',
+                'add_medicine_quantity' => 'sometimes|nullable|array',
+                'add_start_date' => 'sometimes|nullable|array',
+                'add_end_date' => 'sometimes|nullable|array'
+            ]);
+
+            if (!empty($maintenanceMedicationData['add_medicines'])) {
+                // insert each record
+                foreach ($maintenanceMedicationData['add_medicines'] as $index => $value) {
+                    tb_dots_maintenance_medicines::create([
+                        'tb_dots_case_id' => $caseRecord->id,
+                        'medicine_name' => $value,
+                        'dosage_n_frequency' => $maintenanceMedicationData['add_dosage_n_frequencies'][$index],
+                        'quantity' => $maintenanceMedicationData['add_medicine_quantity'][$index],
+                        'start_date' => $maintenanceMedicationData['add_start_date'][$index],
+                        'end_date' => $maintenanceMedicationData['add_end_date'][$index],
+                    ]);
+                };
+            }
+
+            return response()->json(['message' => 'Tb Dots Patient Case Record is Successfully Added'], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        }catch (\Exception $e){
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 422);
+        }
+    }
+    public function removeCase($caseId){
+        try{
+            $tb_dots_case_record= tb_dots_case_records::findOrFail($caseId);
+
+            if ($tb_dots_case_record) {
+                $tb_dots_case_record->update([
+                    'status' => 'Archived'
+                ]);
+            } else {
+                return response()->json([
+                    'errors' => 'Record not found.'
+                ]);
+            }
+
+
+            return response()->json(['message' => 'Tb dots case Record is deleted successfully.']);
+        }catch(\Exception $e){
+            return response()->json([
+                'errors' => $e->getMessage()
+            ]);
         }
     }
 }
