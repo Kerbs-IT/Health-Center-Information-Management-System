@@ -2,21 +2,21 @@
 
 @section('content')
 <section class="hero-section" id="home">
-        <!-- Swiper Background Carousel -->
-        <div class="swiper mySwiperBackground">
-            <div class="swiper-wrapper">
+    <!-- Swiper Background Carousel -->
+    <div class="swiper mySwiperBackground">
+        <div class="swiper-wrapper">
             <div class="swiper-slide bg1"></div>
             <div class="swiper-slide bg2"></div>
             <div class="swiper-slide bg3"></div>
-            </div>
         </div>
+    </div>
 
-        <!-- HERO CONTENT -->
-        <div class="hero-content w-100">
-            <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
-            <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
-            <a href="#" class="hero-btn">Join us Now</a>
-        </div>
+    <!-- HERO CONTENT -->
+    <div class="hero-content w-100">
+        <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
+        <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
+        <a href="#" class="hero-btn">Join us Now</a>
+    </div>
 
 </section>
 
@@ -80,7 +80,7 @@
 
         </div>
         <div class="flex-1 order-1 order-md-2 hover:scale-105 transition-transform duration-300 object-cover hover:shadow-lg">
-            <img src="{{ asset('images/consult.jpg') }}"  class="rounded-md drop-shadow-md w-100 h-auto block"  alt="">
+            <img src="{{ asset('images/consult.jpg') }}" class="rounded-md drop-shadow-md w-100 h-auto block" alt="">
         </div>
     </div>
 </section>
@@ -105,7 +105,7 @@
                         </div>
                         <h5 class="card-title fw-bold">Vaccination Services</h5>
                         <p class="card-text">Track, schedule, and manage vaccine records digitally.</p>
-                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('vaccine-service')}}'">Read More</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='{{ route('vaccine-service') }}'">Read More</button>
                     </div>
                 </div>
             </div>
@@ -291,54 +291,54 @@
     <div class="swiper specialist-slider">
         <div class="swiper-wrapper py-2 py-md-5">
 
-        <!-- Slide 1 -->
-        <div class="swiper-slide specialist-card">
-            <div class="img-slider">
-                <div class="img-overlay"></div>
-                <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
+            <!-- Slide 1 -->
+            <div class="swiper-slide specialist-card">
+                <div class="img-slider">
+                    <div class="img-overlay"></div>
+                    <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
+                </div>
+                <h3 class="slide-title">Joy Andala</h3>
+                <p class="slide-text">Kaia Homesp</p>
+                <p class="slide-text">Nurse</p>
             </div>
-            <h3 class="slide-title">Joy Andala</h3>
-            <p class="slide-text">Kaia Homesp</p>
-            <p class="slide-text">Nurse</p>
+
+            <!-- Slide 2 -->
+            <div class="swiper-slide specialist-card">
+                <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt="">
+                <h3 class="slide-title">Gina Lopez</h3>
+                <p class="slide-text">Purok 2</p>
+                <p class="slide-text">BHW</p>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="swiper-slide specialist-card">
+                <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt="">
+                <h3 class="slide-title">Katrina Mae Apostol</h3>
+                <p class="slide-text">Purok 3</p>
+                <p class="slide-text">BHW</p>
+            </div>
+
+            <div class="swiper-slide specialist-card">
+                <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt="">
+                <h3 class="slide-title">Trisha Cortez</h3>
+                <p class="slide-text">Golden Horizon</p>
+                <p class="slide-text">BHW</p>
+            </div>
+
+
+            <div class="swiper-slide specialist-card">
+                <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt="">
+                <h3 class="slide-title">Gerge Salimbago</h3>
+                <p class="slide-text">Pabahay</p>
+                <p class="slide-text">Staff</p>
+            </div>
         </div>
 
-        <!-- Slide 2 -->
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Gina Lopez</h3>
-            <p class="slide-text">Purok 2</p>
-            <p class="slide-text">BHW</p>
-        </div>
 
-        <!-- Slide 3 -->
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Katrina Mae Apostol</h3>
-            <p class="slide-text">Purok 3</p>
-            <p class="slide-text">BHW</p>
-        </div>
-
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Trisha Cortez</h3>
-            <p class="slide-text">Golden Horizon</p>
-            <p class="slide-text">BHW</p>
-        </div>
-
-
-        <div class="swiper-slide specialist-card">
-            <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt="">
-            <h3 class="slide-title">Gerge Salimbago</h3>
-            <p class="slide-text">Pabahay</p>
-            <p class="slide-text">Staff</p>
-        </div>
-    </div>
-
-
-    <!-- Navigation + Pagination -->
-    <div class="swiper-pagination"></div>
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
+        <!-- Navigation + Pagination -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
     </div>
 </section>
 <!-- FAQs -->
@@ -363,14 +363,14 @@
                             <button onclick="toggleAccordion(1)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>Anong oras nagbubukas ang health Center?</span>
                                 <span id="icon-1" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                Material Tailwind is a framework that enhances Tailwind CSS with additional styles and components.
+                                    Material Tailwind is a framework that enhances Tailwind CSS with additional styles and components.
                                 </div>
                             </div>
                         </div>
@@ -380,14 +380,14 @@
                             <button onclick="toggleAccordion(2)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>How to use Material Tailwind?</span>
                                 <span id="icon-2" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                You can use Material Tailwind by importing its components into your Tailwind CSS project.
+                                    You can use Material Tailwind by importing its components into your Tailwind CSS project.
                                 </div>
                             </div>
                         </div>
@@ -397,14 +397,14 @@
                             <button onclick="toggleAccordion(3)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-3" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -413,14 +413,14 @@
                             <button onclick="toggleAccordion(4)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-4" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-4" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -429,14 +429,14 @@
                             <button onclick="toggleAccordion(5)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-5" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -444,14 +444,14 @@
                             <button onclick="toggleAccordion(6)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-6" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -459,14 +459,14 @@
                             <button onclick="toggleAccordion(7)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-7" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-7" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -474,14 +474,14 @@
                             <button onclick="toggleAccordion(8)" class="w-full flex justify-between items-center py-3 text-slate-800">
                                 <span>What can I do with Material Tailwind?</span>
                                 <span id="icon-8" class="transition-transform duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                                        <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
+                                    </svg>
                                 </span>
                             </button>
                             <div id="content-8" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-3 text-sm">
-                                Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
                                 </div>
                             </div>
                         </div>
@@ -489,11 +489,11 @@
                 </div>
 
                 <!-- Image Column -->
-                 <div class="col-md-6 order-1 order-md-2  md:mb-0 mb-3 px-3">
+                <div class="col-md-6 order-1 order-md-2  md:mb-0 mb-3 px-3">
                     <img src="{{ asset('images/immunization.webp') }}"
                         alt="Doctor Consultation"
                         class="max-w-full h-auto lg:h-[600px] rounded shadow-lg hover:scale-105 transition-transform duration-300 object-cover">
-                 </div>
+                </div>
 
             </div>
         </div>
@@ -553,33 +553,33 @@
 
 @endsection
 <script>
-  function toggleAccordion(index) {
-    const content = document.getElementById(`content-${index}`);
-    const icon = document.getElementById(`icon-${index}`);
+    function toggleAccordion(index) {
+        const content = document.getElementById(`content-${index}`);
+        const icon = document.getElementById(`icon-${index}`);
 
-    // SVG for Down icon
-    const downSVG = `
+        // SVG for Down icon
+        const downSVG = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
         <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
       </svg>
     `;
 
-    // SVG for Up icon
-    const upSVG = `
+        // SVG for Up icon
+        const upSVG = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
       </svg>
     `;
 
-    // Toggle the content's max-height for smooth opening and closing
-    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-      content.style.maxHeight = '0';
-      icon.innerHTML = upSVG;
-    } else {
-      content.style.maxHeight = content.scrollHeight + 'px';
-      icon.innerHTML = downSVG;
+        // Toggle the content's max-height for smooth opening and closing
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0';
+            icon.innerHTML = upSVG;
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            icon.innerHTML = downSVG;
+        }
     }
-  }
 </script>
 
 <script>
