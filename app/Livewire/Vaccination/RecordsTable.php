@@ -60,4 +60,13 @@ class RecordsTable extends Component
             'vaccinationRecord' => $vaccinationRecord,
         ]);
     }
+
+    public function exportPdf(){
+        return redirect()->route('vaccination.pdf', [
+            'search' => $this->search,              // Sends "Maria"
+            'sortField' => $this->sortField,        // Sends "full_name"
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries, // Sends "desc"
+        ]);
+    }
 }

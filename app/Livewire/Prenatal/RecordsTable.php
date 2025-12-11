@@ -54,8 +54,18 @@ class RecordsTable extends Component
                     ->where('prenatal_medical_records.health_worker_id', Auth::id());
             })
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->entries);;
+            ->paginate($this->entries);
        
         return view('livewire.prenatal.records-table', ['isActive' => true, 'page' => 'RECORD', 'prenatalRecord' => $prenatalRecord]);
+    }
+
+    public function exportPdf()
+    {
+        return redirect()->route('prenatal.pdf', [
+            'search' => $this->search,              // Sends "Maria"
+            'sortField' => $this->sortField,        // Sends "full_name"
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries, // Sends "desc"
+        ]);
     }
 }

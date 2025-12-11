@@ -7,7 +7,8 @@
 
 
 * {
-    font-family: Poppins;
+    font-family: 'Poppins' !important;
+    
 }
 
 html {
@@ -377,7 +378,7 @@ body {
     background-image: url('/public/images/hiv_testing.jpg');
 }
 .bg3 {
-    background-image: url('/public/images/bhw9.jpg');
+    background-image: url('/public/images/immunization.webp');
 }
 
 /* Overlay for home page*/

@@ -57,4 +57,13 @@ class RecordsTable extends Component
         return view('livewire.family-planning.records-table',
             ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecords' => $familyPlanning]);
     }
+    public function exportPdf()
+    {
+        return redirect()->route('family-planning.pdf', [
+            'search' => $this->search,              // Sends "Maria"
+            'sortField' => $this->sortField,        // Sends "full_name"
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries, // Sends "desc"
+        ]);
+    }
 }

@@ -57,20 +57,21 @@
                 <h4 class="about-sub-heading fw-bold text-center">Empowering <span>Healthcare Workers</span></h4>
                 <h5 class="text-info text-center">Enhancing Community Wellness</h5>
                 <p class="about-content text-justify md:mb-5 mb-0">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi ullam beatae, officiis iste dolore, quis, odio deleniti pariatur assumenda eaque saepe inventore. Recusandae, repellat cumque quisquam voluptate in tenetur commodi.
-                    Animi vitae doloremque quod quam alias possimus ratione libero laboriosam fuga nostrum soluta doloribus obcaecati magnam, earum fugiat odio nulla nobis dolores, a vero necessitatibus ducimus quisquam sapiente! Recusandae, itaque?
-                    Dignissimos ratione explicabo eligendi quaerat eveniet quasi. Ea quasi facere natus magnam sequi! Animi dicta voluptates iste. Hic esse nemo incidunt repellendus numquam sunt, sint, nesciunt debitis cum suscipit voluptas.
-                </p>
+                    The Hugo Perez Health Center serves as an essential healthcare facility for residents of Barangay Hugo Perez. It provides accessible and reliable medical services designed to support the well-being of individuals and families within the community. Staffed by dedicated health workers, nurses, midwives, and other professionals, the center aims to deliver compassionate and efficient care to everyone who seeks assistance.
+
+                    The health center offers a wide range of services, including routine consultations, prenatal check-ups, child immunizations, family planning services, TB-DOTS, and management of common illnesses. It also plays a vital role in health education, disease prevention, and emergency response within the barangay. Through various programs supported by the local government and the Department of Health, the facility ensures that residents—especially children, senior citizens, and vulnerable groups—receive timely medical attention.
+
+                    More than just a clinic, the Hugo Perez Health Center serves as a dependable partner in promoting a healthier, safer, and more informed community. Its continuous efforts help improve quality of life and strengthen public health for all residents of Barangay Hugo Perez. </p>
             </div>
             <div class="bottom-content flex flex-col md:flex-row items-center justify-center md:justify-between md:mt-5 mt-1 w-full">
 
-                <div class="social-icons flex items-center gap-1 md:gap-3">
+                <!-- <div class="social-icons flex items-center gap-1 md:gap-3">
                     <a href=""><i class="fa-brands fa-facebook"></i></a>
                     <a href=""><i class="fa-brands fa-x-twitter"></i></a>
                     <a href=""><i class="fa-solid fa-envelope"></i></a>
                     <a href=""><i class="fa-brands fa-instagram"></i></a>
                     <a href=""><i class="fa-brands fa-youtube"></i></a>
-                </div>
+                </div> -->
 
                 <div class="mt-3 md:mt-0">
                     <a href="{{ route('about.full') }}" class="btn btn-success">See More</a>
@@ -101,7 +102,9 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="bg-success text-white rounded d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="fa-solid fa-syringe" style="font-size: 40px;"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <path style="font-size: 45;" d="M529.5 47C520.1 37.6 504.9 37.6 495.6 47C486.3 56.4 486.2 71.6 495.6 80.9L510.6 95.9L464.5 142L401.5 79C392.1 69.6 376.9 69.6 367.6 79C358.3 88.4 358.2 103.6 367.6 112.9L374.6 119.9L296.5 198L337.5 239C346.9 248.4 346.9 263.6 337.5 272.9C328.1 282.2 312.9 282.3 303.6 272.9L262.6 231.9L216.5 278L257.5 319C266.9 328.4 266.9 343.6 257.5 352.9C248.1 362.2 232.9 362.3 223.6 352.9L182.6 311.9L144.9 349.6C134.4 360.1 128.5 374.3 128.5 389.2L128.5 478L71.5 535C62.1 544.4 62.1 559.6 71.5 568.9C80.9 578.2 96.1 578.3 105.4 568.9L162.4 511.9L251.2 511.9C266.1 511.9 280.3 506 290.8 495.5L520.5 265.8L527.5 272.8C536.9 282.2 552.1 282.2 561.4 272.8C570.7 263.4 570.8 248.2 561.4 238.9L498.4 175.9L544.5 129.8L559.5 144.8C568.9 154.2 584.1 154.2 593.4 144.8C602.7 135.4 602.8 120.2 593.4 110.9L529.4 46.9z" fill='white' />
+                            </svg>
                         </div>
                         <h5 class="card-title fw-bold">Vaccination Services</h5>
                         <p class="card-text">Track, schedule, and manage vaccine records digitally.</p>
@@ -115,7 +118,9 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="bg-success text-white rounded d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="fa-solid fa-person-pregnant" style="font-size: 45px;"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <path d="M320 144C350.9 144 376 118.9 376 88C376 57.1 350.9 32 320 32C289.1 32 264 57.1 264 88C264 118.9 289.1 144 320 144zM400 465.2C408.6 460.7 416.8 455.2 424.3 448.7L428.3 445.3C450.9 425.9 464 397.6 464 367.7C464 331.8 445.2 298.6 414.4 280.1L384 261.9L384 260.1C384 213.6 346.3 176 299.9 176C271.8 176 245.5 190.1 229.9 213.5L149.4 334.2C139.6 348.9 143.6 368.8 158.3 378.6C173 388.4 192.9 384.4 202.7 369.7L231.7 326.2L201.2 439.7C198.6 449.3 200.6 459.6 206.7 467.5C212.8 475.4 222 480 232 480L240 480L240 576C240 593.7 254.3 608 272 608C289.7 608 304 593.7 304 576L304 480L336 480L336 576C336 593.7 350.3 608 368 608C385.7 608 400 593.7 400 576L400 465.2z" fill='white' />
+                            </svg>
                         </div>
                         <h5 class="card-title fw-bold">Prenatal Care</h5>
                         <p class="card-text">Monitor maternal health and schedule regular checkups.</p>
@@ -142,7 +147,9 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="bg-success text-white rounded d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="fa-solid fa-person-cane" style="font-size: 40px;"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <path d="M328 32C358.9 32 384 57.1 384 88C384 118.9 358.9 144 328 144C297.1 144 272 118.9 272 88C272 57.1 297.1 32 328 32zM240 300.7L193.7 363.1C183.2 377.3 163.1 380.3 148.9 369.7C134.7 359.1 131.7 339.1 142.3 324.9L212.8 229.9C238 196 277.7 176 320 176C362.3 176 402 196 427.2 229.9L497.7 324.9C508.2 339.1 505.3 359.1 491.1 369.7C476.9 380.3 456.9 377.3 446.3 363.1L400 300.7L400 576C400 593.7 385.7 608 368 608C350.3 608 336 593.7 336 576L336 416C336 407.2 328.8 400 320 400C311.2 400 304 407.2 304 416L304 576C304 593.7 289.7 608 272 608C254.3 608 240 593.7 240 576L240 300.7zM488 448C483.6 448 480 451.6 480 456C480 469.3 469.3 480 456 480C442.7 480 432 469.3 432 456C432 425.1 457.1 400 488 400C518.9 400 544 425.1 544 456L544 584C544 597.3 533.3 608 520 608C506.7 608 496 597.3 496 584L496 456C496 451.6 492.4 448 488 448z" fill='white' />
+                            </svg>
                         </div>
                         <h5 class="card-title fw-bold">Senior Citizen</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
@@ -155,7 +162,9 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="bg-success text-white rounded d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="fa-solid fa-lungs" style="font-size: 40px;"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 237.9L256 257.1L256 140.4C256 115.9 236.1 96 211.6 96C199.1 96 187.2 101.3 178.8 110.5L152.4 139.5C74.9 224.8 32 335.8 32 451L32 481.5C32 533.7 74.3 576 126.5 576C148.5 576 170.2 570.9 189.9 561L194.9 558.5C232.3 539.8 255.9 501.6 255.9 459.7L255.9 331.7L319.9 293.3L383.9 331.7L383.9 459.7C383.9 501.5 407.5 539.8 444.9 558.5L449.9 561C469.6 570.8 491.3 576 513.3 576C565.5 576 607.8 533.7 607.8 481.5L607.8 475.3C607.8 364.2 571.1 256.3 503.4 168.3L460.9 112.7C452.8 102.1 440.2 96 426.9 96C403.2 96 384 115.2 384 138.9L384 257.1L352 237.9L352 96z" fill='white' />
+                            </svg>
                         </div>
                         <h5 class="card-title fw-bold">TB Dots</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
@@ -168,7 +177,9 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="bg-success text-white rounded d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="fa-solid fa-stethoscope" style="font-size: 40px;"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <path d="M64 112C64 85.5 85.5 64 112 64L160 64C177.7 64 192 78.3 192 96C192 113.7 177.7 128 160 128L128 128L128 256C128 309 171 352 224 352C277 352 320 309 320 256L320 128L288 128C270.3 128 256 113.7 256 96C256 78.3 270.3 64 288 64L336 64C362.5 64 384 85.5 384 112L384 256C384 333.4 329 398 256 412.8L256 432C256 493.9 306.1 544 368 544C429.9 544 480 493.9 480 432L480 346.5C442.7 333.3 416 297.8 416 256C416 203 459 160 512 160C565 160 608 203 608 256C608 297.8 581.3 333.4 544 346.5L544 432C544 529.2 465.2 608 368 608C270.8 608 192 529.2 192 432L192 412.8C119 398 64 333.4 64 256L64 112zM512 288C529.7 288 544 273.7 544 256C544 238.3 529.7 224 512 224C494.3 224 480 238.3 480 256C480 273.7 494.3 288 512 288z" fill='white' />
+                            </svg>
                         </div>
                         <h5 class="card-title fw-bold">General Consultation</h5>
                         <p class="card-text">Confidential and well-managed reproductive health support.</p>
@@ -370,7 +381,7 @@
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Material Tailwind is a framework that enhances Tailwind CSS with additional styles and components.
+                                    8-9
                                 </div>
                             </div>
                         </div>
@@ -378,7 +389,7 @@
                         <!-- Accordion Item 2 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(2)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>How to use Material Tailwind?</span>
+                                <span>Saan ang location ng health center</span>
                                 <span id="icon-2" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -387,7 +398,7 @@
                             </button>
                             <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    You can use Material Tailwind by importing its components into your Tailwind CSS project.
+                                    Phase 2
                                 </div>
                             </div>
                         </div>
@@ -395,7 +406,7 @@
                         <!-- Accordion Item 3 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(3)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>Ano Ang mga kailangan Dalhin</span>
                                 <span id="icon-3" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -404,14 +415,14 @@
                             </button>
                             <div id="content-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    valid ID
                                 </div>
                             </div>
                         </div>
                         <!-- Accordion Item 4 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(4)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>Sino ang pwedeng tawagan?</span>
                                 <span id="icon-4" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -420,14 +431,14 @@
                             </button>
                             <div id="content-4" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Ang aming barangay health Workers
                                 </div>
                             </div>
                         </div>
                         <!-- Accordion Item 5 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(5)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>Ano ang inooffer na services</span>
                                 <span id="icon-5" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />

@@ -1,31 +1,46 @@
-
 <nav class="p-2 p-md-0 bg-neutral-primary fixed w-full z-20 top-0 border-b border-default">
   <div class="px-2 px-lg-3 lg:px-5 w-full flex flex-wrap items-center justify-between">
     <div class="flex flex-wrap align-center justify-between w-100">
       <div class=" flex items-center">
-          <a href="{{ route('homepage') }}#home" class="flex items-center space-x-3 rtl:space-x-reverse text-decoration-none order-1 order-md-0">
-              <img src="{{ asset('images/hugo_perez_logo.png') }}" class="h-13" alt="HugoPerez Logo" />
-              <span class="logo-title self-center text-xl text-heading font-semibold whitespace-nowrap lg:block hidden ">Health Center IMS</span>
-          </a>
-          <button data-collapse-toggle="navbar-default" type="button"
-              class="order-0 order-md-1 inline-flex items-center p-2 w-10 h-10 justify-center
+        <a href="{{ route('homepage') }}#home" class="flex items-center space-x-3 rtl:space-x-reverse text-decoration-none order-1 order-md-0">
+          <img src="{{ asset('images/hugo_perez_logo.png') }}" class="h-13" alt="HugoPerez Logo" />
+          <span class="logo-title self-center text-xl text-heading font-semibold whitespace-nowrap lg:block hidden ">Health Center IMS</span>
+        </a>
+        <button data-collapse-toggle="navbar-default" type="button"
+          class="order-0 order-md-1 inline-flex items-center p-2 w-10 h-10 justify-center
               text-sm text-body rounded-base md:hidden hover:bg-neutral-secondary-soft
               hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
-              aria-controls="navbar-default" aria-expanded="false">
+          aria-controls="navbar-default" aria-expanded="false">
 
-              <span class="sr-only">Toggle menu</span>
+          <span class="sr-only">Toggle menu</span>
 
-              <!-- Hamburger -->
-              <i class="fa-solid fa-bars text-3xl transition-all duration-300 rotate-0 opacity-100" id="icon-open"></i>
+          <!-- Hamburger -->
+          <i class="fa-solid fa-bars text-3xl transition-all duration-300 rotate-0 opacity-100" id="icon-open"></i>
 
-              <!-- X icon -->
-              <i class="fa-solid fa-xmark text-3xl absolute transition-all duration-300 rotate-90 opacity-0 text-red-500" id="icon-close"></i>
-          </button>
+          <!-- X icon -->
+          <i class="fa-solid fa-xmark text-3xl absolute transition-all duration-300 rotate-90 opacity-0 text-red-500" id="icon-close"></i>
+        </button>
 
       </div>
       <div class="flex align-center my-auto md:order-3">
-        <div class="">
-              <a href="{{ route('login') }}" class="login-text text-white font-[Poppins] duration-500 px-6 py-2 mx-4  rounded  text-decoration-none">Login</a>
+        <div class="d-flex">
+          @guest
+          <!-- User is NOT logged in -->
+          <div class="nav-item">
+            <a class="btn btn-primary fw-normal btn-success" href="{{ route('login') }}">Login</a>
+          </div>
+          @else
+          <!-- User is logged in -->
+          <div class="nav-item mx-1">
+            <a class="btn btn-success fw-normal" href="{{ route('login') }}">Dashboard</a>
+          </div>
+          <div class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="btn btn-danger fw-normal">Logout</button>
+            </form>
+          </div>
+          @endguest
         </div>
       </div>
       <div id="navbar-default" class="transition-all duration-500 ease-in-out overflow-hidden

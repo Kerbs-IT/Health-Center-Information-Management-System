@@ -2,10 +2,11 @@
 <html lang="en">
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Page Title -->
     <title>Barangay Health Center System</title>
 
@@ -14,36 +15,38 @@
 
     <!-- Laravel Vite Assets -->
     @vite([
-        'resources/css/app.css',
-        'resources/js/app.js',
-        'resources/css/homepage.css',
-        'resources/js/homepage.js'
+    'resources/css/app.css',
+    'resources/js/app.js',
+    'resources/css/homepage.css',
+    'resources/js/homepage.js',
+    'resources/css/navbar.css'
+
     ])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/login.js','resources/css/auth/login.css'])
-     @include('layout.navbar')
+    @include('layout.navbar')
 
-    <main class="d-flex align-items-center justify-content-center flex-grow-1" style="background-color:#e8f5e9;">
-         @yield('content')
+    <main class="d-flex  justify-content-center flex-grow-1" style="background-color:#e8f5e9; margin-top: 5rem;">
+        @yield('content')
 
-        <div class="container d-flex justify-content-center">
-            <div class="row login-container login-card border">
+        <div class="d-flex justify-content-center align-items-center w-100" style="display: flex !important;">
+            <div class="row login-container login-card border w-100 mt-5">
                 <!-- Left Image -->
-                <div class=" p-0">
+                <div class="col-6 p-0">
                     <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="login-img d-none d-sm-block">
                 </div>
                 <!-- Right Form -->
-                <div class=" col-md-6 login-form-con">
+                <div class="col-6 login-form-con">
                     <form action="{{route('auth.login')}}" method="POST" class="rounded d-flex flex-column m-0 p-4 bg-white h-100">
                         @csrf
                         <h1 class="text-center fs-1 fw-bold">Login</h1>
 
                         <div class="form-group  mb-3 w-100">
                             <label for="username" class="mb-1 fw-bold fs-3">Email:</label><br>
-                            <input  type="text" placeholder="Enter your email" name="email" class="form-control p-2    bg-light" value="{{ old('email', Cookie::get('last_email')) }}">
+                            <input type="text" placeholder="Enter your email" name="email" class="form-control p-2    bg-light" value="{{ old('email', Cookie::get('last_email')) }}">
                         </div>
                         <div class="form-group  mb-2 w-100">
                             <label for="password" class="mb-1 fw-bold fs-3">Password:</label>
@@ -79,16 +82,16 @@
         </div>
     </main>
 </body>
- <footer class="bg-light text-center  mt-auto">
-        @include('layout.footer')
-    </footer>
+<footer class="bg-light text-center  mt-auto">
+    @include('layout.footer')
+</footer>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
         const passwordInput = document.getElementById("password");
         const eyeIcon = document.getElementById("eye-icon");
 
-        eyeIcon.addEventListener("click", function () {
+        eyeIcon.addEventListener("click", function() {
             const isPassword = passwordInput.type === "password";
 
             // Toggle input type
@@ -99,8 +102,7 @@
             this.classList.toggle("fa-eye-slash");
         });
     });
-
-    </script>
+</script>
 </body>
 
 </script>
