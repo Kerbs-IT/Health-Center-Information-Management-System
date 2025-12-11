@@ -3,6 +3,7 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import 'tailwindcss';
 
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -19,13 +20,14 @@
 }
 
 
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 @font-face {
-    font-family: 'Poppins';
+    font-family: 'Poppins' !important;
     src: url('/Poppins/Poppins-ExtraBold.ttf')format('ttf');
     font-weight: 700;
     font-style: normal;
@@ -156,256 +158,264 @@ body{
     transform: scaleX(-1) !important;
 }
 /* HEADER */
-header{
+header {
     min-height: 90px !important;
     width: 100%;
-    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3) !important;
+    box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.3) !important;
 }
 
 
-header nav h1{
+header nav h1 {
     text-transform: uppercase;
     font-weight: 700;
 }
-header nav h1 span{
+
+header nav h1 span {
     color: #00BCD4;
 }
+
 /* profile image */
-.profile-img{
+.profile-img {
     width: 45px;
     height: 45px;
     object-fit: cover;
     object-position: center;
     cursor: pointer;
     border-radius: 50%;
-    border: 2px solid rgba(0,0,0,0.3);
+    border: 2px solid rgba(0, 0, 0, 0.3);
 
 }
+
 /* header hamburger */
 
-.links{
-    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.5);
+.links {
+    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.5);
     transition: .3s ease-in-out;
     display: none !important;
 }
-.links a{
+
+.links a {
     padding: 10px;
 }
-.links a:first-child{
-    border-bottom: 1px solid rgba(0,0,0,0.2);
+
+.links a:first-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.links a:hover{
+.links a:hover {
     background-color: rgb(240, 240, 240);
 }
+
 .links_active {
-    display:flex !important;
+    display: flex !important;
 }
 
 /* login form con */
-.login-form-con{
-    min-height: 55vh;
+.login-form-con {
+    min-height: 45vh;
 }
-.form-group{
-     width: 100%;
+
+.form-group {
+    width: 100%;
 }
-input.form-control, #fa-eye { 
+
+input.form-control,
+#fa-eye {
     border: 1px solid rgba(108, 108, 108, 0.1);
-    font-size: clamp(18px,3vw,22px);
-    
-
-input.form-control, #fa-eye {
-    border: 1px solid rgba(108, 108, 108, 0.1);
-    font-size: clamp(18px,3vw,22px);
+    font-size: clamp(18px, 3vw, 22px);
 
 
 }
+
 /* eye opener */
-.input-pass{
+.input-pass {
     position: relative;
 }
-#eye-icon{
+
+#eye-icon {
     position: absolute;
     right: 0;
     border-radius: 0 5px 5px 0;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color:  #6c757d;
-    font-size: clamp(18px,3vw,22px);
+    color: #6c757d;
+    font-size: clamp(18px, 3vw, 22px);
     /* padding: 1vw; */
 }
+
 #eye-icon:hover {
     color: #000;
 }
 
-.wrapper a{
+.wrapper a {
     color: var(--menu-text-color) !important;
     transition: color .5s ease;
 }
-.wrapper a svg{
+
+.wrapper a svg {
     fill: var(--menu-text-color) !important;
 }
+
 /* .wrapper a.active svg,
 .wrapper .sub-menu a.active svg{
     fill: var(--active-menu-text) !important;
 } */
-.wrapper a.active{
+.wrapper a.active {
     color: var(--active-menu-text) !important;
 }
+
 .wrapper a.active h4,
-.wrapper .sub-menu a.active h5{
+.wrapper .sub-menu a.active h5 {
     color: var(--active-menu-text) !important;
 }
-.wrapper a:hover{
-    color:var(--active-menu-text) !important;
+
+.wrapper a:hover {
+    color: var(--active-menu-text) !important;
 }
+
 /* .wrapper .sub-menu a svg:hover{
     fill:var(--active-menu-text) !important;
 } */
 
-form h1{
+form h1 {
     color: var(--menu-text-color) !important;
 }
 
 main h1,
-div small,
-div h2,
-div h3,
+main small,
+main h2,
+main h3,
 .sequence-links h5,
 .sequence-links svg,
-.sequence-links a{
+.sequence-links a {
     fill: var(--primary-bg-text) !important;
     color: var(--primary-bg-text) !important;
 }
 
+.menu-bar .menu-items i,
+.menu-bar .menu-items svg,
+.menu-bar .sub-menu i,
+.menu-bar .sub-menu svg {
+    color: var(--menu-text-color) !important;
+    fill: var(--menu-text-color) !important;
+}
 /* EYE ICON HOVER */
 #eye-icon:hover,
-#Retype-eye-icon{
+#Retype-eye-icon {
     background: black;
     cursor: pointer;
 }
-.delete-icon:hover(){
+
+.delete-icon:hover() {
     cursor: pointer;
 }
 
 /* Overlay of hamburger in ipad to mobile */
 
-.sidebar-overlay{
+.sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0 ,0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: none;
     z-index: 9998;
 }
-.sidebar-overlay.active{
+
+.sidebar-overlay.active {
     display: block;
 }
 
-                        /* RESPONSIVENESS */
+/* RESPONSIVENESS */
 
 
 /* Extra small devices (phones, 600px and down) */
-@media  (max-width: 600px) {
-  header h1 {
-    display: none; /* hides text for tighter space */
-  }
+@media (max-width: 600px) {
+    header h1 {
+        display: none;
+        /* hides text for tighter space */
+    }
 
-  .profile-img {
-    width: 35px;
-    height: 35px;
-  }
+    .profile-img {
+        width: 35px;
+        height: 35px;
+    }
 
-  .hamburger i {
-    font-size: 1.5rem;
-  }
+    .hamburger i {
+        font-size: 1.5rem;
+    }
 
-  .bi-bell {
-    width: 24px;
-    height: 24px;
-  }
+    .bi-bell {
+        width: 24px;
+        height: 24px;
+    }
 
-  .right-info {
-    gap: 10px;
-  }
+    .right-info {
+        gap: 10px;
+    }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media (min-width: 600px) {
-
-}
+@media (min-width: 600px) {}
 
 /* Medium devices (landscape tablets, 768px and up) */
-@media  (min-width: 768px) {
-    input.form-control{ 
-    border: 1px solid rgba(108, 108, 108, 0.1);
-    font-size: clamp(15px,3vw,18px);
+@media (min-width: 768px) {
+    input.form-control {
+        border: 1px solid rgba(108, 108, 108, 0.1);
+        font-size: clamp(15px, 3vw, 18px);
     }
 
 }
-/* small to medium devices */
 
-@media(max-width: 991px){
-    header{
-        top: 0;
-        position: sticky;
-    }
-    .menu-bar{
+/* Base collapsed styles (works at all screen sizes) */
+.menu-bar.collapsed {
+    width: 80px;
+    transition: all 0.4s ease;
+}
+
+.menu-bar.collapsed h4,
+.menu-bar.collapsed h5 {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Medium to small devices - override collapsed behavior */
+@media (max-width: 991px) {
+    .menu-bar {
         position: fixed;
         left: -280px;
         top: 0;
         transition: left 0.5s ease;
         z-index: 9999;
     }
-    .menu-bar.show{
+
+    /* Don't allow collapsed state on mobile */
+    .menu-bar.collapsed {
+        width: 280px;
+        /* Reset to full width on mobile */
+    }
+
+    .menu-bar.collapsed h4,
+    .menu-bar.collapsed h5 {
+        display: block;
+        /* Show text on mobile */
+        opacity: 1;
+    }
+
+    .menu-bar.show {
         left: 0;
     }
-    #closeSidebar{
-        display: block;
-        font-size: 3rem;
-        color: red;
-        background: none;
-        border: none;
-        cursor: pointer;
 
-    }
-    #closeSidebar:hover{
-            color: #c0392b;
-
-    }
-  .logo-con{
-    margin-top: 0 !important;
-  }
-
-  .menu-items h4,
-  .menu-items h5 {
-    font-size: clamp(14px, 3vw, 18px) !important;
-    opacity: 1 !important;
-    transition: opacity 0.4s ease, transform 0.4s ease !important;
-  }
-
-  .menu-items i,
-  .menu-items svg {
-    width: clamp(20px, 4vw, 28px) !important;
-  }
-
-  .logo {
-    width: clamp(70px, 15vw, 120px);
-    transition: transform 0.3s ease;
-    transform-origin: 30% 0;
-  }
+    /* ... rest of mobile styles ... */
 }
-
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media (min-width: 992px) {
-    .menu-bar.collapsed {
-        width: 80px; /* icon-only */
-        transition: all 0.4s ease;
-    }
+
+    /* Additional desktop-specific collapsed styles if needed */
     .menu-bar.collapsed #dashboard i,
     .menu-bar.collapsed #manage-interface i,
     .menu-bar.collapsed #heatmap i,
@@ -413,33 +423,18 @@ div h3,
     .menu-bar.collapsed #manage_user i,
     .menu-bar.collapsed #profile i,
     .menu-bar.collapsed #add-patient i,
-    .menu-bar.collapsed #logout-btn i{
+    .menu-bar.collapsed #logout-btn i {
         width: 100%;
         text-align: center;
     }
-    .menu-bar.collapsed h4,
-    .menu-bar.collapsed h5 {
-        display: none;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-
-    }
-    .logo {
-    width: clamp(70px, 15vw, 50px);
-
-  }
-
-
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-.logo{
-    max-width: 100%;
-     width: clamp(60px, 10vw, 130px);
-    height: auto;
-    margin: auto !important;
-}
-}
-
-
+    .logo {
+        max-width: 100%;
+        width: clamp(60px, 10vw, 130px);
+        height: auto;
+        margin: auto !important;
+    }
+    }

@@ -51,8 +51,6 @@
                 <p class="mb-1"><strong>Age Group:</strong> Children / Adults</p>
                 <p class="mb-1"><strong>Availability:</strong> Available in Health Center</p>
                 <p class="mb-1"><strong>Last Updated:</strong> Nov 2025</p>
-
-                <a href="#" class="btn vaccine-btn btn-success w-100 mt-3">Book Vaccination</a>
             </div>
         </div>
     </div>

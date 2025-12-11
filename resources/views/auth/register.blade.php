@@ -7,14 +7,14 @@
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png') }}">
     <title>Health Center Information Management System</title>
-       @vite([
+    @vite([
     'resources/css/app.css',
     'resources/js/app.js',
     'resources/css/homepage.css',
     'resources/js/register.js',
     'resources/css/auth/registration.css'
-])
-
+    ])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
 </head>
 
 <body class="">
@@ -22,14 +22,14 @@
 
     @include('layout.navbar')
 
-    <main class="d-flex align-items-center justify-content-center mt-5">
+    <main class="d-flex align-items-center justify-content-center mt-5 pt-5">
         <div class="container">
             <div class="row shadow rounded border overflow-hidden">
-            <!-- Left Card/Image -->
+                <!-- Left Card/Image -->
                 <div class="col-lg-6 col-md-12 d-none d-md-block p-0">
                     <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="img-fluid object-fit-cover w-100 h-100">
                 </div>
-            <!-- Right card/Form -->
+                <!-- Right card/Form -->
                 <div class="col-lg-6 col-md-12  p-3">
                     <form action="{{ route('user.store') }}" method="POST" class="rounded d-flex flex-column bg-white">
                         @csrf
@@ -48,7 +48,7 @@
                             <label for="" class="mb-1 h6 fw-medium">Personal Info:</label>
                             <div class="row g-2">
                                 <div class="col-lg-4 col-md-6">
-                                     <input type="text" placeholder="First Name" name="first_name" class=" form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
+                                    <input type="text" placeholder="First Name" name="first_name" class=" form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
                                 </div>
                                 <div class="col-lg-4 col-md-6">
                                     <input type="text" placeholder="Middle Initial" name="middle_initial" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('middle_initial')}}">
@@ -105,10 +105,10 @@
                             <div class="radio-inputs form-check d-flex justify-content-center gap-5 w-100">
                                 <!-- Patient -->
                                 <div class="form-check">
-                                      <input class="form-check-input" type="radio" name="role" value="patient" id="patient" {{ old('role') == 'patient' ? 'checked' : '' }}>
-                                      <label class="form-check-label" for="patient">Patient</label>
+                                    <input class="form-check-input" type="radio" name="role" value="patient" id="patient" {{ old('role') == 'patient' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="patient">Patient</label>
                                 </div>
-                                 <!-- health worker -->
+                                <!-- health worker -->
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="role" value="staff" id="healthWorker" {{ old('role') == 'staff' ? 'checked' : '' }}>
                                     <label for="healthWorker">Health Worker</label>
@@ -193,7 +193,7 @@
                         @endif
                     </form>
                 </div>
-            <!-- register form -->
+                <!-- register form -->
             </div>
         </div>
     </main>

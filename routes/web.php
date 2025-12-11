@@ -20,6 +20,7 @@ use App\Http\Controllers\masterListController;
 use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PrenatalController;
 use App\Http\Controllers\RecordsController;
 use App\Http\Controllers\ResetPasswordController;
@@ -459,3 +460,15 @@ Route::get('inventory/categories', CategoriesTable::class)->name('categories');
 Route::get('inventory/medicines', Medicines::class)->name('medicines');
 
 Route::get('inventory/report',InventoryReport::class)->name('inventory-report');
+
+// GENERATE THE RECORD
+Route::get('/vaccination/records/pdf', [PdfController::class, 'generateVaccinationPdf'])
+    ->name('vaccination.pdf');
+Route::get('/prenatal/records/pdf', [PdfController::class, 'generatePrenatalPdf'])
+    ->name('prenatal.pdf');
+Route::get('/seior-citizen/records/pdf', [PdfController::class, 'generateSeniorCitizenPdf'])
+    ->name('senior-citizen.pdf');
+Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
+    ->name('tb-dots.pdf');
+Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
+    ->name('family-planning.pdf');

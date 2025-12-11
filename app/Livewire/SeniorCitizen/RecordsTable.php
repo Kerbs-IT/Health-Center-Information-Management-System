@@ -57,4 +57,13 @@ class RecordsTable extends Component
     
         return view('livewire.senior-citizen.records-table', ['isActive' => true, 'page' => 'RECORD', 'seniorCitizenRecords' => $seniorCitizenRecords]);
     }
+    public function exportPdf()
+    {
+        return redirect()->route('senior-citizen.pdf', [
+            'search' => $this->search,              // Sends "Maria"
+            'sortField' => $this->sortField,        // Sends "full_name"
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries, // Sends "desc"
+        ]);
+    }
 }

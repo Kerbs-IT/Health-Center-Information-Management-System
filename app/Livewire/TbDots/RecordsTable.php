@@ -57,4 +57,13 @@ class RecordsTable extends Component
         return view('livewire.tb-dots.records-table',
             ['isActive' => true, 'page' => 'RECORD', 'tbRecords' => $tbRecords]);
     }
+    public function exportPdf()
+    {
+        return redirect()->route('tb-dots.pdf', [
+            'search' => $this->search,              // Sends "Maria"
+            'sortField' => $this->sortField,        // Sends "full_name"
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries, // Sends "desc"
+        ]);
+    }
 }

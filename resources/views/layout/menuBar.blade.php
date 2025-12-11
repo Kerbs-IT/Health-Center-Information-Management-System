@@ -88,10 +88,7 @@
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
-                <a href="{{ route('all.record')}}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_all_records">
-                    <i class="fa-solid fs-5 fa-folder-open"></i>
-                    <h5 class="mb-0">All Record</h5>
-                </a>
+              
                 <a href="{{ route('record.vaccination')}}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
                     <i class="fa-solid fs-5 fa-syringe"></i>
                     <h5 class="mb-0">Vaccination</h5>
