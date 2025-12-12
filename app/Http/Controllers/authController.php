@@ -41,36 +41,45 @@ class authController extends Controller
             'username'=> 'required',
             'email' => ['required','email'],
             'password' => ['required','confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'role' => 'required|in:staff,patient',
             'first_name' => 'required',
-            'middle_initial' => ['required','max:2'],
+            'middle_initial' => ['required','string'],
             'last_name' => ['required'],
-            'assigned_area' => 'required_if:role,staff',
             'recovery_question' => ['required'],
             'recovery_answer' => ['required'],
-            'blk_n_street'=> 'required_if:role,patient',
-            'patient_purok_dropdown' => 'required_if:role,patient'
+            'patient_type'=>'required',
+            'date_of_birth'=>'required|date',
+            'contact_number' => 'required|digits_between:7,12',
+            'blk_n_street'=> 'required',
+            'brgy' => 'required'
 
         ]);
 
         $data['recovery_answer'] = Hash::make($data['recovery_answer']);
        $data['password'] = Hash::make($data['password']);
 
-        switch ($data['role']) {
-            case 'nurse':
-            case 'staff':
-                $data['status'] = 'pending';  // Needs admin or nurse approval
-                break;
-
-            case 'patient':
-                $data['status'] = 'active';   // Patients get access immediately
-                break;
-
-            default:
-                $data['status'] = 'pending';  // fallback
-                break;
-        }
-       $newUser = User::create($data);
+        $fullAddress = implode(' ', array_filter([
+            $data['blk_n_street'] ?? null,
+            $data['brgy'] ?? null,
+            'Hugo Perez,',
+            'Trece Martires City,',
+            'Cavite'
+        ]));
+       $newUser = User::create([
+        'username' => ucwords(strtolower($data['username'])),
+        'email' => $data['email'],
+        'patient_type' => $data['patient_type'],
+        'first_name'=> ucwords(strtolower($data['first_name'])),
+        'middle_initial' => ucwords(strtolower($data['middle_initial']??'')),
+        'last_name' => ucwords(strtolower($data['last_name'])),
+        'date_of_birth' => $data['date_of_birth'],
+        'contact_number' => $data['contact_number'],
+        'address' => $fullAddress,
+        'role' => 'patient',
+        'status' => 'Active',
+        'password' =>  $data['password'],
+        'recovery_question' => $data['recovery_question'],
+        'recovery_answer' =>  $data['recovery_answer']
+        ]);
 
        $userId = $newUser -> id;
 
@@ -122,37 +131,10 @@ class authController extends Controller
                 'nationality' => null,
            ]);
            break;
-        case 'patient':{
-            $patient = patients::create([
-                'user_id' => $userId ?? null,
-                'first_name' => $data['first_name'],
-                'middle_initial' => $data['middle_initial'],
-                'last_name' => $data['last_name'],
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
-                'profile_image' => 'images/default_profile.png',
-                'age' => null,
-                'date_of_birth' => null,
-                'sex' => null,
-                'civil_status' => null,
-                'contact_number' => null,
-                'nationality' => null,
-           ]);
-        //    add the user address
-            // dd($patient->id);
-            $blk_n_street = explode(',' ,$data['blk_n_street']);
-            // dd($blk_n_street);
-            patient_addresses::create([
-                'patient_id' => $patient->id,
-                'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
-                'street'=> $blk_n_street[1] ?? null,
-                'purok' => $data['patient_purok_dropdown'],
-                'postal_code' => '4109',
-                'latitude' => null,
-                'longitude' => null,
-            ]);
+        
+        default:
            break;
-        }
-           break;
+
        }
 
        Alert::success('Congrats', 'Registration Succesfully');

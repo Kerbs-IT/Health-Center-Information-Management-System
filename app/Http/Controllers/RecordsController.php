@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Type\Integer;
 
@@ -237,7 +238,7 @@ class RecordsController extends Controller
     {
         try {
             $patient = patients::findorFail($id);
-            $medical_record_case = medical_record_cases::where('patient_id', $id)->firstOrFail();
+            $medical_record_case = medical_record_cases::with('patient')->where('patient_id', $id)->firstOrFail();
             $vaccination_medical_record = vaccination_medical_records::where('medical_record_case_id', $medical_record_case->id);
             $patient_address = patient_addresses::where('patient_id', $id)->firstOrFail();
             // update the full name of vaccination case record
@@ -249,13 +250,22 @@ class RecordsController extends Controller
             if(!$vaccinationMasterlist)return;
 
             $data = $request->validate([
-                'first_name' => 'sometimes|nullable|string',
+                'first_name' => [
+                    'required',
+                    'string',
+                    Rule::unique('patients')
+                        ->ignore($medical_record_case->patient->id) // <-- IMPORTANT
+                        ->where(function ($query) use ($request) {
+                            return $query->where('first_name', $request->first_name)
+                                ->where('last_name', $request->last_name);
+                        }),
+                ],
                 'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
-                'sex' => 'sometimes|nullable|string',
+                'sex' => 'required|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
@@ -267,19 +277,26 @@ class RecordsController extends Controller
                 'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/']
             ]);
+
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             $patient->update([
-                'first_name' => $data['first_name'] ?? $patient->first_name,
-                'last_name' =>  $data['last_name'] ?? $patient->last_name,
-                'middle_initial' => $data['middle_initial'] ?? $patient->middle_initial,
-                'full_name' => trim(
-                    ($data['first_name'] ?? $patient->first_name) . ' ' .
-                        ($data['middle_initial'] ?? $patient->middle_initial) . ' ' .
-                        ($data['last_name'] ?? $patient->last_name)
-                ),
+                'first_name' => ucfirst(strtolower($data['first_name'])) ?? ucfirst($patient->first_name),
+                'last_name' =>  ucfirst(strtolower($data['last_name'])) ?? ucfirst($patient->last_name),
+                'middle_initial' => ucfirst($data['middle_initial']) ?? ucfirst($patient->middle_initial),
+                'full_name' => ucwords(strtolower($fullName)),
                 'date_of_birth' => $data['date_of_birth'] ?? $patient->date_of_birth,
                 'place_of_birth' => $data['place_of_birth'] ?? $patient->place_of_birth,
                 'age' => $data['age'] ?? $patient->age,
-                'sex' => $data['sex'] ?? $patient->sex,
+                'sex' => ucfirst($data['sex'])?? ucfirst($patient->sex),
                 'contact_number' => $data['contact_number'] ?? $patient->contact_number,
                 'nationality' => $data['nationality'] ?? $patient->nationality,
 
@@ -288,17 +305,15 @@ class RecordsController extends Controller
             foreach ($vaccination_case_record as $record) {
                 $record->update([
                     'patient_name' => trim(
-                        ($data['first_name'] ?? $patient->first_name) . ' ' .
-                            ($data['middle_initial'] ?? $patient->middle_initial) . ' ' .
-                            ($data['last_name'] ?? $patient->last_name)
+                        ucwords(strtolower($fullName))
                     )
                 ]);
             }
 
             $vaccination_medical_record->update([
                 'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
-                'mother_name' => $data['mother_name'] ?? $medical_record_case->mother_name,
-                'father_name' => $data['father_name'] ?? $medical_record_case->father_name,
+                'mother_name' => ucwords($data['mother_name']) ?? ucwords($medical_record_case->mother_name) ,
+                'father_name' => ucwords($data['father_name']) ?? ucwords($medical_record_case->father_name),
                 'birth_height' => $data['vaccination_height'] ?? $medical_record_case->birth_height,
                 'birth_weight' => $data['vaccination_weight'] ?? $medical_record_case->birth_weight,
             ]);
@@ -322,12 +337,8 @@ class RecordsController extends Controller
             // update the masterlist 
             if($vaccinationMasterlist){
                 $vaccinationMasterlist->update([
-                    'name_of_child'=> trim(
-                        ($data['first_name'] ?? $patient->first_name) . ' ' .
-                            ($data['middle_initial'] ?? $patient->middle_initial) . ' ' .
-                            ($data['last_name'] ?? $patient->last_name)
-                    ) ?? $vaccinationMasterlist->name_of_child,
-                    'sex' => $data['sex'] ??  $vaccinationMasterlist->sex,
+                    'name_of_child'=>  ucwords(strtolower($fullName))?? ucwords($vaccinationMasterlist->name_of_child) ,
+                    'sex' => ucfirst($data['sex']) ??  ucfirst($vaccinationMasterlist->sex),
                     'age' => $data['age'] ?? $vaccinationMasterlist->age,
                     'date_of_birth' => $data['date_of_birth'] ?? $vaccinationMasterlist->date_of_birth,
                     'Address' => $newAddress

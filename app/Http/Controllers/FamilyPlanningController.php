@@ -33,7 +33,7 @@ class FamilyPlanningController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric|min:10|max:49',
@@ -180,16 +180,25 @@ class FamilyPlanningController extends Controller
 
             // -------------------------------------------------------------------------------------------------------
             // INSERT THE DATA 
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['first_name']),
+                $middle,
+                strtolower($patientData['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             // create the patient record
             $familPlanningPatient = patients::create([
                 'user_id' => null,
-                'first_name' => $patientData['first_name'],
-                'middle_initial' => $patientData['middle_initial'],
-                'last_name' => $patientData['last_name'],
-                'full_name' => trim(($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']), " "),
+                'first_name' => ucwords(strtolower($patientData['first_name'])),
+                'middle_initial' => ucwords(strtolower($patientData['middle_initial'])),
+                'last_name' => ucwords(strtolower($patientData['last_name'])),
+                'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $patientData['sex'] ?? null,
+                'sex' => ucwords($patientData['sex']) ?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -483,9 +492,18 @@ class FamilyPlanningController extends Controller
 
 
             $data = $request->validate([
-                'first_name' => 'required|string',
+                'first_name' => [
+                    'required',
+                    'string',
+                    Rule::unique('patients')
+                        ->ignore($familyPlanningRecord->patient->id) // <-- IMPORTANT
+                        ->where(function ($query) use ($request) {
+                            return $query->where('first_name', $request->first_name)
+                                ->where('last_name', $request->last_name);
+                        }),
+                ],
                 'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric|max:100',
@@ -514,22 +532,26 @@ class FamilyPlanningController extends Controller
                 'NHTS' => 'sometimes|nullable|string',
 
             ]);
-            $fullName = collect([
-                $data['first_name'] ?? '',
-                $data['middle_initial'] ?? '',
-                $data['last_name'] ?? '',
-            ])->filter()->join(' ');
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             // update the patient data first
             $familyPlanningRecord->patient->update([
-                'first_name' => $data['first_name'] ?? $familyPlanningRecord->patient->first_name,
-                'middle_initial' => $data['middle_initial'] ?? $familyPlanningRecord->patient->middle_initial,
-                'last_name' => $data['last_name'] ?? $familyPlanningRecord->patient->last_name,
+                'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
+                'middle_initial' => ucwords(strtolower($data['middle_initial'])) ?? ucwords(strtolower($familyPlanningRecord->patient->middle_initial)),
+                'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->last_name)),
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
-                'sex' => $data['sex'] ?? $familyPlanningRecord->patient->sex,
+                'sex' => ucfirst($data['sex']) ?? $familyPlanningRecord->patient->sex,
                 'civil_status' => $data['civil_status'] ?? $familyPlanningRecord->patient->civil_status,
-                'contact_number' => $data['contact_number'] ?? $familyPlanningRecord->patient->contact_number,
+                'contact_number' => $data['contact_number'] ??null,
                 'date_of_birth' => $data['date_of_birth'] ?? $familyPlanningRecord->patient->date_of_birth,
                 'nationality' => $data['nationality'] ?? $familyPlanningRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration,

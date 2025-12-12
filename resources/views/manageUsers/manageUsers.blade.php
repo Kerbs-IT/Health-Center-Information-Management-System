@@ -32,7 +32,12 @@
             <div class="flex-grow-1">
                 <header class=" d-flex align-items-center px-3 ">
                     <nav class="d-flex justify-content-between align-items-center w-100 ">
-                        <h1 class="mb-0"> {{$page ?? Welcome}}</span></h1>
+                        <div class="left-side d-flex gap-2">
+                            <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
+                                <i class="fa-solid fa-bars fs-2"></i>
+                            </button>
+                            <h1 class="mb-0"> {{$page ?? Welcome}}</span></h1>
+                        </div>
                         <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
                             <img src="{{ optional(Auth::user()->nurses)->profile_image 
                         ? asset(optional(Auth::user()->nurses)->profile_image) 
@@ -60,49 +65,7 @@
                     </div>
 
                     <div class="records">
-                        <table class="table px-3">
-                            <thead class="table-header">
-                                <th style="width: 10%;">No</th>
-                                <th style="width: 25%;">Name</th>
-                                <th style="width: 15%;" class="text-center">Purok</th>
-                                <th style="width: 10%;" class="text-center">Action</th>
-                            </thead>
-                            <tbody>
-                                <?php $count = 1; ?>
-                                @foreach($patients as $patient)
-                                <tr class="align-middle">
-                                    <td>{{$count}}</td>
-                                    <td>
-                                        <?php $image = $patient->patient->profile_image ?? 'none'; ?>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <img src="{{$image ? asset($image) : 'none'}}" alt="health worker img" class="health-worker-img">
-                                            <h5>{{optional($patient -> patient) -> full_name ?? 'none'}}</h5>
-                                        </div>
-                                    </td>
-                                    <td class="h-100">
-                                        <div class="d-flex align-items-center h-100 justify-content-center">
-                                            <p class=" d-block mb-0">{{ \App\Models\patient_addresses::where('patient_id',$patient-> patient -> id) -> first() -> purok ?? 'Unknown' }}</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <a href="#" class="remove-icon-con d-flex align-items-center justify-content-center" data-id='{{ $patient -> id}}'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="action-icon remove-icon" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" fill="red" />
-                                                </svg>
-                                            </a>
-                                            <a href="#" class="edit-icon-con d-flex align-items-center justify-content-center edit-icon" data-id='{{ $patient -> id}}'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                                                    <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z" fill="#53c082" />
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php $count++; ?>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <livewire:patient-account-binding />
                     </div>
                 </main>
 
