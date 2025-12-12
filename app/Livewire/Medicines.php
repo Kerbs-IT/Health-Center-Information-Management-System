@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 class Medicines extends Component
 {
     use WithPagination;
-    public $medicine_name,$category_id, $dosage, $stock, $expiry_date, $edit_id;
+    public $medicine_name,$category_id, $dosage, $stock, $expiry_date, $edit_id, $deleteMedicineId;
 
     public $sortField = null;
     public $sortDirection = null;
@@ -62,8 +62,8 @@ class Medicines extends Component
             'expiry_date'   => $this->expiry_date,
             'status'        => $status
         ]);
+        $this->dispatch('medicine-addedModal');
         $this->reset();
-        // $this->dispatch('close-add-medicine-modal');
     }
     public function editMedicineData($id){
         $medicine = Medicine::findOrFail($id);
@@ -115,7 +115,15 @@ class Medicines extends Component
         $this->edit_id = '';
     }
 
+    public function confirmMedicineDelete($id){
+        $this->deleteMedicineId = $id;
+        $this->dispatch('show-deleteMedicineModal');
+    }
+    public function deleteMedicine(){
+        Medicine::findOrFail($this->deleteMedicineId)->delete();
+        $this->dispatch('success-medicine-delete');
 
+    }
 
 
 
