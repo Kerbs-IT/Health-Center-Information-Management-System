@@ -94,7 +94,7 @@
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     <button class="btn bg-primary text-white" wire:click="editMedicineData({{ $medicine->medicine_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
-                                    <button class="btn p-0"><i class="fa-solid fa-trash text-danger fs-3"></i></button>
+                                    <button class="btn p-0" wire:click="confirmMedicineDelete({{ $medicine->medicine_id }})"><i class="fa-solid fa-trash text-danger fs-3"></i></button>
                                 </div>
                             </td>
                         </tr>
