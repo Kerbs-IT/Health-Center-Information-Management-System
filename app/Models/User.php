@@ -24,10 +24,18 @@ class User extends Authenticatable implements CanResetPassword
         'username',
         'email',
         'password',
+        'patient_type',
+        'first_name',
+        'last_name',
+        'middle_initial',
+        'date_of_birth',
+        'contact_number',
+        'address',
         'role',
         'recovery_question',
         'recovery_answer',
-        'status'
+        'status',
+        'patient_record_id'
     ];
 
     /**
@@ -49,6 +57,7 @@ class User extends Authenticatable implements CanResetPassword
     {
         return [
             'email_verified_at' => 'datetime',
+            'date_of_birth' => 'date',
             'password' => 'hashed',
         ];
     }
@@ -69,5 +78,15 @@ class User extends Authenticatable implements CanResetPassword
         return $this->hasOne(patients::class, 'user_id', 'id');
     }
 
-    
+    // Check if bound
+    public function isBound()
+    {
+        return !is_null($this->patient_record_id);
+    }
+
+    public function getFullNameAttribute()
+    {
+        $mi = $this->middle_initial ? "{$this->middle_initial}. " : '';
+        return "{$this->first_name} {$mi}{$this->last_name}";
+    }
 }

@@ -100,8 +100,8 @@
                                             <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2">
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="male" {{ optional($familyPlanningRecord->patient)->sex == 'male'?'checked':'' }} class="mb-0">Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0" {{optional($familyPlanningRecord->patient)->sex == 'female'?'checked':''}}>Female</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" {{ optional($familyPlanningRecord->patient)->sex == 'Male'?'checked':'' }} class="mb-0">Male</label>
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{optional($familyPlanningRecord->patient)->sex == 'Female'?'checked':''}}>Female</label>
                                                 </div>
 
                                                 <small class="text-danger error-text" id="sex_error"></small>

@@ -29,7 +29,7 @@ class TbDotsController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
@@ -54,16 +54,24 @@ class TbDotsController extends Controller
                 'weight'            => 'nullable|numeric|between:1,500',  // kg range
             ]);
 
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['first_name']),
+                $middle,
+                strtolower($patientData['last_name'])
+            ];
 
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             // create the patient information
             $tbDotsPatient = patients::create([
                 'user_id' => null,
-                'first_name' => $patientData['first_name'],
-                'middle_initial' => $patientData['middle_initial'],
-                'last_name' => $patientData['last_name'],
-                'full_name' => ($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']),
+                'first_name' => ucwords(strtolower($patientData['first_name'])),
+                'middle_initial' => ucwords(strtolower($patientData['middle_initial'])),
+                'last_name' => ucwords(strtolower($patientData['last_name'])),
+                'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $patientData['sex'] ?? null,
+                'sex' => ucfirst($patientData['sex']) ?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -186,9 +194,18 @@ class TbDotsController extends Controller
             // address
             $address = patient_addresses::where('patient_id', $tbDotsRecord->patient->id)->firstorFail();
             $data = $request->validate([
-                'first_name' => 'required|nullable|string',
+                'first_name' => [
+                    'required',
+                    'string',
+                    Rule::unique('patients')
+                        ->ignore($tbDotsRecord->patient->id) // <-- IMPORTANT
+                        ->where(function ($query) use ($request) {
+                            return $query->where('first_name', $request->first_name)
+                                ->where('last_name', $request->last_name);
+                        }),
+                ],
                 'last_name' => 'required|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
@@ -208,15 +225,24 @@ class TbDotsController extends Controller
                 'philheath_id' => 'sometimes|nullable|string'
 
             ]);
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             // update the patient data first
             $tbDotsRecord->patient->update([
-                'first_name' => $data['first_name'] ?? $tbDotsRecord->patient->first_name,
-                'middle_initial' => $data['middle_initial'] ?? $tbDotsRecord->patient->middle_initial,
-                'last_name' => $data['last_name'] ?? $tbDotsRecord->patient->last_name,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']) ?? $tbDotsRecord->patient->full_name,
+                'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),
+                'middle_initial' => ucwords(strtolower($data['middle_initial'])) ?? ucwords(strtolower($tbDotsRecord->patient->middle_initial)),
+                'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->last_name)),
+                'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
-                'sex' => $data['sex'] ?? $tbDotsRecord->patient->sex,
+                'sex' => ucfirst($data['sex'] )?? ucfirst($tbDotsRecord->patient->sex),
                 'civil_status' => $data['civil_status'] ?? $tbDotsRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,
