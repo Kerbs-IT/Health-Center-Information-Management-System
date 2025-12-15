@@ -35,7 +35,13 @@ class User extends Authenticatable implements CanResetPassword
         'recovery_question',
         'recovery_answer',
         'status',
-        'patient_record_id'
+        'patient_record_id',
+        'is_verified',
+        'verification_code',
+        'verification_code_expires_at',
+        'verification_attempts',
+        'verification_locked_until',
+        'email_verified_at',
     ];
 
     /**
@@ -46,6 +52,7 @@ class User extends Authenticatable implements CanResetPassword
     protected $hidden = [
         'password',
         'remember_token',
+        'verification_code'
     ];
 
     /**
@@ -59,6 +66,11 @@ class User extends Authenticatable implements CanResetPassword
             'email_verified_at' => 'datetime',
             'date_of_birth' => 'date',
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',
+            'verification_code_expires_at' => 'datetime',
+            'verification_locked_until' => 'datetime',
+            'date_of_birth' => 'date',
+            'is_verified' => 'boolean',
         ];
     }
 
@@ -88,5 +100,10 @@ class User extends Authenticatable implements CanResetPassword
     {
         $mi = $this->middle_initial ? substr($this->middle_initial, 0, 1) . '. ' : '';
         return "{$this->first_name} {$mi}{$this->last_name}";
+    }
+
+    // users address
+    public function user_address (){
+        return $this->hasOne(users_address::class,'user_id','id');
     }
 }
