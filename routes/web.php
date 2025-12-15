@@ -21,6 +21,7 @@ use App\Http\Controllers\masterListController;
 use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
+use App\Http\Controllers\PatientList;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PrenatalController;
 use App\Http\Controllers\RecordsController;
@@ -513,3 +514,6 @@ Route::get('/test-prenatal', function (){
 Route::get('/verify-email', [VerificationController::class, 'show'])->name('verification.show');
 Route::post('/verify-email', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::post('/verify-email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+// patient list
+
+Route::get('/patient-list',[PatientList::class,'index'])->name('patient-list');
