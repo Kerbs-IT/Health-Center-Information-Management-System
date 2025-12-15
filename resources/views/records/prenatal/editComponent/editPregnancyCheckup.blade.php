@@ -13,7 +13,7 @@
     </div>
     <div class="mb-2 w-100">
         <label for="time_of_vaccination">Time</label>
-        <input type="time" class="form-control" name="edit_check_up_time" id="edit_check_up_time">
+        <input type="time" class="form-control" name="edit_check_up_time" id="edit_check_up_time" step="1">
     </div>
 
     <div class="vital-sign w-100 border-bottom">

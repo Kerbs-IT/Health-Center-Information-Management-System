@@ -57,12 +57,8 @@
                         </div>
                     </nav>
                 </header>
-                <main class="m-3 overflow-y-auto max-h-[calc(100vh-100px)] p-3">
-                    <div class="button-con d-flex justify-content-end mb-2">
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
-                            Add an Account
-                        </button>
-                    </div>
+                <main class=" overflow-y-auto max-h-[calc(100vh-100px)] px-3">
+                  
 
                     <div class="records">
                         <livewire:patient-account-binding />

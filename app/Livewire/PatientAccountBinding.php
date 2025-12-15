@@ -67,8 +67,10 @@ class PatientAccountBinding extends Component
             ->where(function ($query) {
                 $query->where('first_name', 'like', '%' . $this->recordSearch . '%')
                     ->orWhere('last_name', 'like', '%' . $this->recordSearch . '%')
+                    ->orWhere('middle_initial','like','%'. $this->recordSearch . '%')
                     ->orWhere('id', 'like', '%' . trim($this->recordSearch," "). '%')
-                    ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $this->recordSearch . '%');
+                    ->orWhere(DB::raw("CONCAT(first_name, ' ',middle_initial,' ', last_name)"), 'like', '%' . $this->recordSearch . '%');
+                    
             })
             ->limit(20)
             ->get();

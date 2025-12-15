@@ -211,7 +211,7 @@
         @endif
         <!-- logout -->
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
-            <a href="" class="menu-items d-flex  align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="logout-btn">
+            <a href="" class="menu-items d-flex  align-items-center gap-3 text-decoration-none bg-danger  w-100 px-3 py-2" id="logout-btn">
                 <i class="fa-solid fs-5 fa-right-from-bracket"></i>
                 <h4 class="mb-0 fs-5">Log-out</h4>
             </a>

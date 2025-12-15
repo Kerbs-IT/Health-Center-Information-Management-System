@@ -57,4 +57,12 @@ class PatientCaseTable extends Component
         'address'=> $address]);
 
     }
+
+    public function exportPdf($caseId,$type)
+    {
+        return redirect()->route("family-planning-side-$type.pdf", [
+            'caseId' => $caseId, // Sends "desc"
+        ]);
+    }
+
 }

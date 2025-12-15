@@ -46,11 +46,15 @@ document.addEventListener("click", async (e) => {
         const doseNumber = document.getElementById("view-dose-number");
         const remarks = document.getElementById("view-case-remarks");
         // handled by name
-        const handledBy = document.getElementById("view-handled-by");
+        // const handledBy = document.getElementById("view-handled-by");
+        const height = document.getElementById("view-height");
+        const weight = document.getElementById("view-weight");
+        const temperature = document.getElementById("view-temperature");
+        const dateOfComeback = document.getElementById("view-date-of-comeback");
 
-        if (handledBy) {
-            handledBy.innerHTML = data.healthWorkerName??'n/a';
-        }
+        // if (handledBy) {
+        //     handledBy.innerHTML = data.healthWorkerName??'n/a';
+        // }
 
         // populate the data
 
@@ -64,10 +68,23 @@ document.addEventListener("click", async (e) => {
                   year: "numeric",
               })
             : "none";
-        timeOfVaccination.innerHTML = data.vaccinationCase.time ?? "none";
+        dateOfComeback.innerHTML = data.vaccinationCase.date_of_comeback
+            ? new Date(
+                  data.vaccinationCase.date_of_vaccination
+              ).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+              })
+            : "none";
+        // timeOfVaccination.innerHTML = data.vaccinationCase.time ?? "none";
         typeOfVaccine.innerHTML = data.vaccinationCase.vaccine_type ?? "none";
         (doseNumber.innerHTML = data.vaccinationCase.dose_number ?? "none"),
             (remarks.innerHTML = data.vaccinationCase.remarks ?? "none");
+        // height,weight
+        height.innerHTML = `${data.vaccinationCase.height} cm` ?? 'none';
+        weight.innerHTML = `${data.vaccinationCase.weight } kg` ?? "none";
+        temperature.innerHTML = `${data.vaccinationCase.temperature} °C` ?? "none";
     } catch (error) {
         console.error("Error viewing case:", error);
         Swal.fire({
@@ -392,11 +409,20 @@ document.addEventListener("click", async (e) => {
         );
         const remarks = document.getElementById("edit-remarks");
 
+        const height = document.getElementById("edit-height");
+        const weight = document.getElementById("edit-weight");
+        const temperature = document.getElementById("edit-temperature");
+        const date_of_comeback = document.getElementById("edit-date-of-comeback");
+
         // provide the values
         patientName.value = data.vaccinationCase.patient_name;
         date0fVaccination.value = data.vaccinationCase.date_of_vaccination;
         timeOfVaccination.value = data.vaccinationCase.time;
         remarks.value = data.vaccinationCase.remarks;
+        height.value = data.vaccinationCase.height;
+        weight.value = data.vaccinationCase.weight;
+        temperature.value = data.vaccinationCase.temperature;
+        date_of_comeback.value = data.vaccinationCase.date_of_comeback;
 
         for (let option of doseSelect.options) {
             console.log(data.vaccinationCase.dose_number);

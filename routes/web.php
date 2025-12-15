@@ -13,6 +13,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\HealthCenterDashboard;
 use App\Http\Controllers\healthWorkerController;
 use App\Http\Controllers\HeatMapController;
+use App\Http\Controllers\ImmunizationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\manageInterfaceController;
 use App\Http\Controllers\manageUserController;
@@ -37,8 +38,7 @@ use LDAP\Result;
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
 use App\Livewire\InventoryReport;
-
-
+use Knp\Snappy\Pdf;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -472,3 +472,34 @@ Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
     ->name('tb-dots.pdf');
 Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
     ->name('family-planning.pdf');
+
+// family planning side a
+Route::get("/family-planning/side-a/pdf",[PdfController::class, 'generateFamilyPlanningSideAPdf'])->name('family-planning-side-a.pdf');
+Route::get("/family-planning/side-b/pdf", [PdfController::class, 'generateFamilyPlanningSideBPdf'])->name('family-planning-side-b.pdf');
+
+Route::get('/immunization/patient/{patientId}', [ImmunizationController::class, 'showByPatient'])
+    ->name('immunization.patient');
+
+Route::get('/immunization/card-content/{patientId}', [ImmunizationController::class, 'getCardContent'])
+    ->name('immunization.card-content');
+
+Route::get('/immunization/pdf/{patientId}', [ImmunizationController::class, 'generatePDF'])
+    ->name('immunization.pdf');
+Route::get('/vaccination/case/pdf',[PdfController::class,'generateVaccinationCasePdf'])->name("vaccination-case.pdf");
+
+Route::get('/prenatal/case-record/pdf',[PdfController::class, 'generatePrenatalCasePdf'])->name('prenatal-case.pdf');
+Route::get('/prenatal/pregnancy-plan/pdf', [PdfController::class, 'generatePregnancyPdf'])->name('pregnancy-plan.pdf');
+Route::get('/prenatal/check-up/pdf',[PdfController::class, 'generatePrenatalCheckupPdf'])->name('prenatal-checkup.pdf');
+
+Route::get('/senior-citizen/case-record/pdf',[PdfController::class, 'generateSeniorCitizenCasePdf'])->name('senior-citizen-case.pdf');
+Route::get('/tb-dots/case-record/pdf',[PdfController::class, 'generateTbDotsCasePdf'])->name('tb-dots-case.pdf');
+Route::get('/tb-dots/check-up/pdf', [PdfController::class, 'generateTbDotsCheckupPdf'])->name('tb-dots-checkup.pdf');
+
+// masterlist pdf
+Route::get('/masterlist/vaccination/pdf',[PdfController::class, 'generateVaccinationMasterlist'])->name('vaccination-masterlist.pdf');
+Route::get('/masterlist/wra/pdf', [PdfController::class, 'generateWraMasterlist'])->name('wra-masterlist.pdf');
+
+// testing area
+Route::get('/test-prenatal', function (){
+    return view('pdf.prenatal.prenatal-case');
+});
