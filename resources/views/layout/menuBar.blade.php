@@ -1,13 +1,12 @@
-
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar  min-vh-100" >
+<div class="menu-bar  min-vh-100">
     <!-- Close button for mobile/tablet -->
     <button id="closeSidebar" class=" d-lg-none">&times;</button>
 
     <div class="logo-con d-flex justify-content-center p-3 mb-1 mt-3">
-        <img src="{{asset(path: 'images/hugoperez_logo.png')}}"  alt="logo" class="logo">
+        <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
         <!-- Dashboard -->
@@ -77,6 +76,16 @@
             </a>
 
         </div>
+        <div class="wrapper w-100 d-flex justify-content-center flex-column">
+            <a href="{{route('patient-list')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none   w-100 px-3 py-2" id="patient-list">
+                <div class="d-flex align-items-center gap-3 w-100">
+                    <i class="fa-solid fa-users"></i>
+                    <h4 class="mb-0 fs-5">Patients List</h4>
+                </div>
+
+            </a>
+
+        </div>
 
         <!-- Records -->
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
@@ -88,7 +97,7 @@
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
-              
+
                 <a href="{{ route('record.vaccination')}}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
                     <i class="fa-solid fs-5 fa-syringe"></i>
                     <h5 class="mb-0">Vaccination</h5>
@@ -218,6 +227,6 @@
         </div>
     </div>
 </div>
- <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
+<div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
 
- <!-- test for medicine -->
+<!-- test for medicine -->
