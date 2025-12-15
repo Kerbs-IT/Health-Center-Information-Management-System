@@ -48,5 +48,15 @@ class patients extends Model
     public function wra_masterlist(){
         return $this->hasOne(wra_masterlists::class, 'patient_id', 'id');
     }
-    
+
+    // louie's changes
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function medicineRequests(){
+        return $this->hasMany(MedicineRequest::class, 'patient_id');
+    }
+
+
 }

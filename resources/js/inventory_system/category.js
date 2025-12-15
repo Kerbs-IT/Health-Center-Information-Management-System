@@ -43,9 +43,18 @@ document.addEventListener('livewire:init', function () {
     });
 
     Livewire.on('close-editMedicine-modal', () => {
-        bootstrap.Modal.getInstance(
+        setTimeout(() => {
+            bootstrap.Modal.getInstance(
             document.getElementById('editMedicineModal')
         )?.hide();
+        }, 1500);
+            Swal.fire({
+            title: "Success!",
+            text: "Category has been added successfully.",
+            icon: "success",
+            showConfirmButton: false,
+            timer:1500
+        });
     });
 });
 
@@ -70,4 +79,51 @@ document.addEventListener('livewire:init', function(){
     });
     });
 
-})
+});
+
+
+// Medicine
+
+// sweetalert
+window.addEventListener('medicine-addedModal', event => {
+    Swal.fire({
+        title: "Success!",
+        text: "Category has been added successfully.",
+        icon: "success",
+        showConfirmButton: false,
+        timer:1500
+    });
+});
+
+
+// show medicine delete modal
+window.addEventListener('show-deleteMedicineModal', () => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This Medicine will be permanently deleted!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'))
+            .deleteMedicine();
+
+        }
+    });
+});
+
+// Listen to success event
+window.addEventListener('success-medicine-delete', () => {
+    Swal.fire({
+        title: "Deleted!",
+        text: "Medicine has been deleted.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
