@@ -28,6 +28,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SeniorCitizenController;
 use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
@@ -107,8 +108,12 @@ Route::get('/dashboard/staff', function () {
 })->name('dashboard.staff')->middleware(['role:staff']);
 
 // =============== patients
-// patient dashboard\
-Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
+
+// patient dashboard and check if verified
+Route::middleware(['auth','verified'])->group(function (){
+    Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
+});
+
 
 // update profile
 
@@ -503,3 +508,8 @@ Route::get('/masterlist/wra/pdf', [PdfController::class, 'generateWraMasterlist'
 Route::get('/test-prenatal', function (){
     return view('pdf.prenatal.prenatal-case');
 });
+
+// verification email
+Route::get('/verify-email', [VerificationController::class, 'show'])->name('verification.show');
+Route::post('/verify-email', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/verify-email/resend', [VerificationController::class, 'resend'])->name('verification.resend');

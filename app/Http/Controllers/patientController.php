@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\addresses;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\User;
+use App\Models\users_address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,10 +16,19 @@ use Illuminate\Validation\ValidationException;
 class patientController extends Controller
 {
     public function dashboard(){
-        $user = Auth::user() -> patient -> id;
-        $address = patient_addresses::where('patient_id', (int)$user) -> first();
-        // dd($address);
-        $fullAddress = $address -> house_number . ", " . trim($address->street) . ", " . $address -> purok . ", " . $address -> barangay . ", " . $address -> city . ", " . $address -> province;
+        $userId = Auth::user()-> id;
+        $address = users_address::where('user_id', (int) $userId)->first();
+
+        $fullAddress = collect([
+            $address?->house_number,
+            $address?->street,
+            $address?->purok,
+            $address?->barangay,
+            $address?->city,
+            $address?->province,
+        ])
+            ->filter()          // removes null / empty values
+            ->implode(', ');
         return view('dashboard.patient', ['isActive' => true,'page'=> 'DASHBOARD', 'fullAddress' => $fullAddress]);
     }
     public function medicalRecord(){
