@@ -173,4 +173,23 @@ class WRA extends Component
             'availableYears' => $availableYears,
         ]);
     }
+    public function exportPdf(){
+        $params = [
+            'search' => $this->search,
+            'selectedBrgy' => $this->selectedBrgy,
+            'selectedMonth' => $this->selectedMonth,
+            'monthName' => $this->monthName($this->selectedMonth),
+            'selectedYear' => $this->selectedYear,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+            'entries' => $this->entries,
+            'withUnmetNeed' => $this->withUnmetNeed
+        ];
+
+        // Generate URL with query parameters
+        $url = route('wra-masterlist.pdf', $params);
+
+        // Redirect to PDF generation route
+        return redirect($url);
+    }
 }

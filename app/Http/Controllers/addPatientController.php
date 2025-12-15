@@ -69,7 +69,12 @@ class addPatientController extends Controller
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
                 'dose_number' => 'required|numeric',
-                'remarks' => 'sometimes|nullable|string'
+                'remarks' => 'sometimes|nullable|string',
+                'current_height' => 'nullable|numeric',
+                'current_weight' => 'nullable|numeric',
+                'current_temperature'    => 'nullable|numeric',
+                'date_of_comeback' => 'required|date'
+
             ]);
 
             // create the patient information record
@@ -162,7 +167,12 @@ class addPatientController extends Controller
                 'dose_number' => $data['dose_number']??null,
                 'remarks' => $data['remarks']??null,
                 'type_of_record' => 'Vaccination Record',
-                'health_worker_id' => $data['handled_by']
+                'health_worker_id' => $data['handled_by'],
+                'height' => $data['current_height']??null,
+                'weight' => $data['current_weight'] ?? null,
+                'temperature' => $data['current_temperature']?? null,
+                'date_of_comeback' => $data['date_of_comeback'],
+                'vaccination_status' => 'completed'
             ]);
 
             // id of medical case record

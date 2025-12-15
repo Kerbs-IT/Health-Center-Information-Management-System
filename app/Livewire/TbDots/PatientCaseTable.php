@@ -59,4 +59,16 @@ class PatientCaseTable extends Component
         ]);
 
     }
+    public function exportPdf($caseId)
+    {
+        return redirect()->route('tb-dots-case.pdf', [
+            'caseId' => $caseId,              // Sends "Maria"
+        ]);
+    }
+    public function exportCheckUpPdf($caseId)
+    {
+        return redirect()->route('tb-dots-checkup.pdf', [
+            'checkupId' => $caseId,              // Sends "Maria"
+        ]);
+    }
 }

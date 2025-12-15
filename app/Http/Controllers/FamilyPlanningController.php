@@ -1258,7 +1258,7 @@ class FamilyPlanningController extends Controller
                 'acknowledgement_consent_signature_image' => $caseData['edit_family_planning_acknowlegement_consent_signature_image'] ?? $familyPlanCaseInfo->acknowledgement_consent_signature_image,
                 'date_of_acknowledgement_consent' => $caseData['edit_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo->date_of_acknowledgement_consent,
                 'current_user_type' => $caseData['edit_current_user_type'] ?? $familyPlanCaseInfo->current_user_type,
-                'status' => 'Done'
+                'status' => 'Active'
             ]);
 
             $familyPlanCaseInfo->medical_history->update([
@@ -1287,7 +1287,7 @@ class FamilyPlanningController extends Controller
                 'date_of_last_delivery' => $obstericalHistoryData['edit_date_of_last_delivery'] ?? $familyPlanCaseInfo->obsterical_history->date_of_last_delivery,
                 'type_of_last_delivery' => $obstericalHistoryData['edit_type_of_last_delivery'] ?? $familyPlanCaseInfo->obsterical_history->type_of_last_delivery,
                 'date_of_last_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_last_delivery_menstrual_period'] ?? $familyPlanCaseInfo->obsterical_history->date_of_last_delivery_menstrual_period,
-                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_previous_delivery_menstrual_period '] ?? $familyPlanCaseInfo->obsterical_history->date_of_previous_delivery_menstrual_period,
+                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_previous_delivery_menstrual_period'] ?? $familyPlanCaseInfo->obsterical_history->date_of_previous_delivery_menstrual_period,
                 'type_of_menstrual' => $obstericalHistoryData['edit_type_of_menstrual'] ?? $familyPlanCaseInfo->obsterical_history->type_of_menstrual,
                 'Dysmenorrhea' => $obstericalHistoryData['edit_Dysmenorrhea'] ?? $familyPlanCaseInfo->obsterical_history->Dysmenorrhea,
                 'hydatidiform_mole' => $obstericalHistoryData['edit_hydatidiform_mole'] ?? $familyPlanCaseInfo->obsterical_history->hydatidiform_mole,
@@ -1313,10 +1313,10 @@ class FamilyPlanningController extends Controller
 
 
             $familyPlanCaseInfo->physical_examinations->update([
-                'blood_pressure' => $medicalData['edit_blood_pressure'] ?? $familyPlanCaseInfo->physical_examinations->blood_pressure,
-                'pulse_rate' => $medicalData['edit_pulse_rate'] ?? $familyPlanCaseInfo->physical_examinations->pulse_rate,
-                'height' => $medicalData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->height,
-                'weight' => $medicalData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->weight,
+                'blood_pressure' => $physicalExaminationData['edit_blood_pressure'] ?? $familyPlanCaseInfo->physical_examinations->blood_pressure,
+                'pulse_rate' => $physicalExaminationData['edit_pulse_rate'] ?? $familyPlanCaseInfo->physical_examinations->pulse_rate,
+                'height' => $physicalExaminationData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->height,
+                'weight' => $physicalExaminationData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->weight,
 
                 'skin_type' => $physicalExaminationData['edit_skin_type'] ?? $familyPlanCaseInfo->physical_examinations->skin_type,
                 'conjuctiva_type' => $physicalExaminationData['edit_conjuctiva_type'] ?? $familyPlanCaseInfo->physical_examinations->conjuctiva_type,

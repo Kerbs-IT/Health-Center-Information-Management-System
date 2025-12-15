@@ -4,10 +4,20 @@
 
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>Patient Accounts</h3>
-        <span class="badge bg-warning text-dark fs-6">
-            {{ $unboundCount }} Unbound
-        </span>
+        <div class="left-con d-flex align-items-center gap-2">
+            <h3 class="mb-0">Patient Accounts</h3>
+            <span class="badge bg-warning text-dark fs-6">
+                {{ $unboundCount }} Unbound
+            </span>
+        </div>
+
+        <div class="right-side-con">
+
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+                Add an Account
+            </button>
+        </div>
+
     </div>
 
     {{-- Flash Messages --}}
@@ -86,13 +96,26 @@
                             @if($user->patient_record_id)
                             <button
                                 class="btn btn-sm btn-danger"
-                                wire:click="unbind({{ $user->id }})"
-                                onclick="return confirm('Unbind this account?')">
+                                @click="
+                                        Swal.fire({
+                                            title: 'Are you sure?',
+                                            text: 'You want to unbind this account?',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#d33',
+                                            cancelButtonColor: '#3085d6',
+                                            confirmButtonText: 'Yes, unbind it!'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $wire.unbind({{ $user->id }})
+                                            }
+                                        })
+                                    ">
                                 Unbind
                             </button>
                             @else
                             <button
-                                class="btn btn-sm btn-primary"
+                                class="btn btn-sm btn-success"
                                 wire:click="openBindModal({{ $user->id }})">
                                 Bind
                             </button>
@@ -217,4 +240,5 @@
     <div wire:loading class="position-fixed top-50 start-50">
         <div class="spinner-border text-primary"></div>
     </div>
+
 </div>

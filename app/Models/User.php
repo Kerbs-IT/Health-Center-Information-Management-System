@@ -86,7 +86,7 @@ class User extends Authenticatable implements CanResetPassword
 
     public function getFullNameAttribute()
     {
-        $mi = $this->middle_initial ? "{$this->middle_initial}. " : '';
+        $mi = $this->middle_initial ? substr($this->middle_initial, 0, 1) . '. ' : '';
         return "{$this->first_name} {$mi}{$this->last_name}";
     }
 }

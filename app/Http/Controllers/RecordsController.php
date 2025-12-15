@@ -62,7 +62,11 @@ class RecordsController extends Controller
                 'selected_vaccine' => 'required',
                 'case_record_id' => 'required',
                 'dose' => 'required',
-                'remarks' => 'sometimes'
+                'remarks' => 'sometimes',
+                'height' => 'nullable|numeric',
+                'weight' => 'nullable|numeric',
+                'temperature'    => 'nullable|numeric',
+                'date_of_comeback' => 'required|date'
             ]);
 
             // get the vaccine types
@@ -166,7 +170,12 @@ class RecordsController extends Controller
                 'time' => $data['time_of_vaccination'] ?? $vaccination_case_record->time,
                 'vaccine_type' => $selectedVaccines ?? $vaccination_case_record->vaccine_type,
                 'dose_number' => $data['dose'] ?? $vaccination_case_record->dose,
-                'remarks' => $data['remarks'] ?? $vaccination_case_record->remarks
+                'remarks' => $data['remarks'] ?? $vaccination_case_record->remarks,
+                'height' => $data['height'] ?? $vaccination_case_record->height,
+                'weight' => $data['weight'] ?? $vaccination_case_record->weight,
+                'temperature' => $data['temperature'] ?? $vaccination_case_record->temperature,
+                'date_of_comeback' => $data['date_of_comeback']?? $vaccination_case_record->date_of_comeback,
+                'vaccination_status' => 'completed'
             ]);
 
             // UPLOAD THE NEW SET OF VACCINES
@@ -472,7 +481,11 @@ class RecordsController extends Controller
                 'add_time_of_vaccination' => 'sometimes|nullable|string',
                 'selected_vaccine_type' => 'required',
                 'add_record_dose' => 'required',
-                'add_case_remarks' => 'sometimes|nullable|string'
+                'add_case_remarks' => 'sometimes|nullable|string',
+                'add_height' => 'nullable|numeric',
+                'add_weight' => 'nullable|numeric',
+                'add_temperature'    => 'nullable|numeric',
+                'add_date_of_comeback' => 'required|date'
             ]);
 
             // get the vaccine types
@@ -537,7 +550,12 @@ class RecordsController extends Controller
                 'dose_number' => (int) $data['add_record_dose'],
                 'remarks' => $data['add_case_remarks'] ?? null,
                 'type_of_record' => 'Case Record',
-                'health_worker_id' => (int) $data['add_handled_by']
+                'health_worker_id' => (int) $data['add_handled_by'],
+                'height' => $data['add_height'] ?? null,
+                'weight' => $data['add_weight'] ?? null,
+                'temperature' => $data['add_temperature'] ?? null,
+                'date_of_comeback' => $data['add_date_of_comeback'],
+                'vaccination_status' => 'completed'
             ]);
 
             // id of medical case record
