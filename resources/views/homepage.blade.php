@@ -59,9 +59,7 @@
                 <p class="about-content text-justify md:mb-5 mb-0">
                     The Hugo Perez Health Center serves as an essential healthcare facility for residents of Barangay Hugo Perez. It provides accessible and reliable medical services designed to support the well-being of individuals and families within the community. Staffed by dedicated health workers, nurses, midwives, and other professionals, the center aims to deliver compassionate and efficient care to everyone who seeks assistance.
 
-                    The health center offers a wide range of services, including routine consultations, prenatal check-ups, child immunizations, family planning services, TB-DOTS, and management of common illnesses. It also plays a vital role in health education, disease prevention, and emergency response within the barangay. Through various programs supported by the local government and the Department of Health, the facility ensures that residents—especially children, senior citizens, and vulnerable groups—receive timely medical attention.
-
-                    More than just a clinic, the Hugo Perez Health Center serves as a dependable partner in promoting a healthier, safer, and more informed community. Its continuous efforts help improve quality of life and strengthen public health for all residents of Barangay Hugo Perez. </p>
+                    The health center offers a wide range of services, including routine consultations, prenatal check-ups, child immunizations, family planning services, TB-DOTS, and management of common illnesses. It also plays a vital role in health education, disease prevention, and emergency response within the <barangay></barangay>.</p>
             </div>
             <div class="bottom-content flex flex-col md:flex-row items-center justify-center md:justify-between md:mt-5 mt-1 w-full">
 
@@ -372,7 +370,7 @@
                         <!-- Accordion Item 1 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(1)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>Anong oras nagbubukas ang health Center?</span>
+                                <span>Ano ang oras ng bukas Health Center ng Barangay Hugo Perez?</span>
                                 <span id="icon-1" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -381,7 +379,7 @@
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    8-9
+                                   Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
                                 </div>
                             </div>
                         </div>
@@ -453,7 +451,7 @@
                         </div>
                         <div class="mt-2">
                             <button onclick="toggleAccordion(6)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>Libre po ba ang mga serbisyo?</span>
                                 <span id="icon-6" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -462,13 +460,14 @@
                             </button>
                             <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                   Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
+
                                 </div>
                             </div>
                         </div>
                         <div class="mt-2">
                             <button onclick="toggleAccordion(7)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>Anong mga sakit ang pwedeng ipatingin?</span>
                                 <span id="icon-7" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -477,13 +476,13 @@
                             </button>
                             <div id="content-7" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Karaniwang sakit tulad ng lagnat, ubo, sipon, altapresyon, diabetes, at iba pang minor illnesses.
                                 </div>
                             </div>
                         </div>
                         <div class="mt-2">
                             <button onclick="toggleAccordion(8)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>What can I do with Material Tailwind?</span>
+                                <span>May libreng gamot po ba?</span>
                                 <span id="icon-8" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -492,7 +491,7 @@
                             </button>
                             <div id="content-8" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Opo, may limitadong libreng gamot depende sa availability.
                                 </div>
                             </div>
                         </div>
