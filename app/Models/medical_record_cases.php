@@ -10,7 +10,8 @@ class medical_record_cases extends Model
     protected $fillable = [
         'patient_id',
         'type_of_case',
-        'status'
+        'status',
+        'schedule_status'
     ];
 
     public function patient(){

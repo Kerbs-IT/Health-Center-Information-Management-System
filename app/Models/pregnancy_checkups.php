@@ -36,7 +36,12 @@ class pregnancy_checkups extends Model
         "other_symptoms_question",
         "other_symptoms_question_remarks",
         "overall_remarks",
-        'status'
+        'status',
+        'date_of_comeback'
+    ];
+
+    protected $casts = [
+        'date_of_comeback' => 'date'
     ];
     public function medical_record_case()
     {

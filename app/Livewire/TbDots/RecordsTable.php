@@ -3,7 +3,9 @@
 namespace App\Livewire\TbDots;
 
 use App\Models\medical_record_cases;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -53,6 +55,22 @@ class RecordsTable extends Component
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->entries);
+
+        // Add checkup status to each record
+        $tbRecords->getCollection()->transform(function ($record) {
+            $record->checkup_status_info = $this->calculateCheckupStatus($record);
+            return $record;
+        });
+
+        // Sort by priority (overdue first, then due today, then others)
+        $sortedCollection = $tbRecords->getCollection()->sortBy(function ($record) {
+            if ($record->checkup_status_info) {
+                return $record->checkup_status_info['sort_priority'];
+            }
+            return 3; // No status = lowest priority
+        });
+
+        $tbRecords->setCollection($sortedCollection);
        
         return view('livewire.tb-dots.records-table',
             ['isActive' => true, 'page' => 'RECORD', 'tbRecords' => $tbRecords]);
@@ -65,5 +83,70 @@ class RecordsTable extends Component
             'sortDirection' => $this->sortDirection,
             'entries' => $this->entries, // Sends "desc"
         ]);
+    }
+
+    private function calculateCheckupStatus($medicalRecordCase)
+    {
+        try {
+            // Get the most recent active checkup with comeback date
+            $lastCheckup = DB::table('tb_dots_check_ups')
+                ->where('medical_record_case_id', $medicalRecordCase->id)
+                ->where('status', '!=', 'Archived')
+                ->whereNotNull('date_of_comeback')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // No checkup history = no status
+            if (!$lastCheckup) {
+                return null;
+            }
+
+            $comebackDate = Carbon::parse($lastCheckup->date_of_comeback);
+
+            // Only process if comeback date is today or past
+            if ($comebackDate->isFuture()) {
+                return null;
+            }
+
+            // Check if checkup already done for this comeback date
+            $checkupExists = DB::table('tb_dots_check_ups')
+                ->where('medical_record_case_id', $medicalRecordCase->id)
+                ->where('status', '!=', 'Archived')
+                ->whereDate('created_at', '>=', $comebackDate)
+                ->where('id', '!=', $lastCheckup->id) // Exclude the checkup that set this comeback date
+                ->exists();
+
+            if ($checkupExists) {
+                return null;
+            }
+
+            // Determine status
+            if ($comebackDate->isToday()) {
+                return [
+                    'status' => 'due_today',
+                    'badge' => 'Checkup Due Today',
+                    'class' => 'table-success',
+                    'badge_class' => 'badge bg-success',
+                    'comeback_date' => $comebackDate->format('M j, Y'),
+                    'sort_priority' => 2
+                ];
+            } else {
+                $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
+
+                return [
+                    'status' => 'overdue',
+                    'badge' => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                    'class' => 'table-danger',
+                    'badge_class' => 'badge bg-danger',
+                    'comeback_date' => $comebackDate->format('M j, Y'),
+                    'days_overdue' => $daysOverdue,
+                    'sort_priority' => 1
+                ];
+            }
+        } catch (\Exception $e) {
+            // Log error but don't break the page
+            // \Log::error('TB DOTS checkup status calculation error: ' . $e->getMessage());
+            return null;
+        }
     }
 }

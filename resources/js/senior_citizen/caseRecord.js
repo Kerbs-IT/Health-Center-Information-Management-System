@@ -268,6 +268,12 @@ document.addEventListener("click", async function (e) {
                                 `Element edit_${key} is not an input field`
                             );
                         }
+                        if (key == 'date_of_comeback' && value != null) {
+                            const date = new Date(value);
+                            document.getElementById(`edit_${key}`).value = date
+                                .toISOString()
+                                .split("T")[0];
+                        }
                     } else {
                         // console.warn(`Element not found: edit_${key}`);
                     }

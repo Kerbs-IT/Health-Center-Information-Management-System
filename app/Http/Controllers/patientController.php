@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\addresses;
+use App\Models\family_planning_case_records;
+use App\Models\family_planning_side_b_records;
+use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
+use App\Models\pregnancy_checkups;
+use App\Models\pregnancy_plans;
+use App\Models\prenatal_case_records;
+use App\Models\senior_citizen_case_records;
+use App\Models\tb_dots_case_records;
+use App\Models\tb_dots_check_ups;
 use App\Models\User;
 use App\Models\users_address;
+use App\Models\vaccination_case_records;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,8 +41,41 @@ class patientController extends Controller
             ->implode(', ');
         return view('dashboard.patient', ['isActive' => true,'page'=> 'DASHBOARD', 'fullAddress' => $fullAddress]);
     }
-    public function medicalRecord(){
-        return view('patient-info.patient-records', ['isActive' => true, 'page' => 'RECORD'] );
+    public function medicalRecord($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        // Debug: Check what patient_type is
+      // What does this show?
+
+        $patient = patients::where('user_id', $userId)
+            ->where('status', '!=', 'Archived')
+            ->first();
+
+        if (!$patient) {
+            return view('patient-info.patient-records', ['isActive' => true, 'page' => 'RECORD']);
+        }
+
+        if ($user->patient_type == 'vaccination') {
+            $medicalCase = medical_record_cases::where('patient_id', $patient->id)
+                ->where('type_of_case', 'vaccination')
+                ->where('status', 'Active')
+                ->first();
+
+            // Debug: Check if case exists
+            if (!$medicalCase) {
+                return response()->json(['errors' => 'No record Found']);
+            }
+
+            $vaccination_case_records = vaccination_case_records::where('medical_record_case_id', $medicalCase->id)->get();
+
+            return view('patient-info.patient-records', [
+                'isActive' => true,
+                'page' => 'RECORD',
+                'typeOfPatient' => 'vaccination',
+                'vaccination_case_record' => $vaccination_case_records
+            ]);
+        }
     }
 
     public function info($id){
@@ -144,5 +187,52 @@ class patientController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
+    }
+
+    public function renderData($userId)
+    {
+        $user = User::findOrFail($userId);
+        $patient = patients::where('user_id', $userId)
+            ->where('status', '!=', 'Archived')
+            ->first();
+
+        if (!$patient) {
+            return response()->json(['errors' => 'User is not connected to any patient']);
+        }
+
+        // VACCINATION
+        if ($user->patient_type == 'vaccination') {
+            $medicalCase = medical_record_cases::where('patient_id', $patient->id)
+                ->where('type_of_case', 'vaccination')
+                ->where('status', 'Active')
+                ->first();
+
+            if (!$medicalCase) {
+                return response()->json(['errors' => 'No record Found']);
+            }
+
+            $vaccination_case_records = vaccination_case_records::where('medical_record_case_id', $medicalCase->id)->get();
+
+            return view('patient-info.patient-records', [
+                'isActive' => true,
+                'page' => 'RECORD',
+                'typeOfPatient' => 'vaccination',
+                'vaccination_case_record' => $vaccination_case_records
+            ]);
+        }
+        if($user->patient_type == 'prenatal'){
+            return view('patient-info.patient-records', [
+                'isActive' => true,
+                'page' => 'RECORD'
+            ]);
+        }
+
+        
+
+        // If no patient type matches
+        return view('patient-info.patient-records', [
+            'isActive' => true,
+            'page' => 'RECORD'
+        ]);
     }
 }
