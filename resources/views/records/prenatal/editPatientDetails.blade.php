@@ -103,8 +103,8 @@
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
                                                 @endphp
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="male" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'male'?'checked':''}}>Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'female'?'checked':''}}>Female</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'Male'?'checked':''}}>Male</label>
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'Female'?'checked':''}}>Female</label>
                                                 </div>
 
                                                 <small class="text-danger error-text" id="sex_error"></small>

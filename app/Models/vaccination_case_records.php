@@ -19,7 +19,12 @@ class vaccination_case_records extends Model
         'remarks',
         'type_of_record',
         'health_worker_id',
-        'status'
+        'status',
+        'height',
+        'weight',
+        'temperature',
+        'date_of_comeback',
+        'vaccination_status'
 
     ];
 

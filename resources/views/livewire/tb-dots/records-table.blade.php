@@ -36,8 +36,8 @@
                 </svg>
             </div>
         </div>
-        <div class="tables ">
-            <table class="w-100 table ">
+        <div class="tables">
+            <table class="w-100 table">
                 <thead class="table-header">
                     <tr>
                         <th>Patient No.</th>
@@ -68,6 +68,9 @@
 
                         <th>Contact No.</th>
 
+                        <!-- NEW: Checkup Status Column -->
+                        <th>Checkup Status</th>
+
                         <!-- Date Registered -->
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                             Date Registered
@@ -79,46 +82,67 @@
                         <th>Action</th>
                     </tr>
                 </thead>
+
                 <!-- data of patient -->
                 <tbody>
                     @forelse($tbRecords as $record)
-                    <tr>
-                        <td>{{$record->id}}</td>
-                        <td>{{$record->patient->full_name??'N/A'}}</td>
-                        <td>{{$record->patient->age??'N/A'}}</td>
-                        <td>{{$record->patient->sex??'N/A'}}</td>
-                        <td>{{$record->patient->contact_number??'N/A'}}</td>
-                        <td>{{$record->patient->created_at?->format('M d Y')}}</td>
+                    <tr class="{{ isset($record->checkup_status_info['class']) ? $record->checkup_status_info['class'] : '' }}">
+                        <td>{{ $record->id }}</td>
+                        <td>{{ $record->patient->full_name ?? 'N/A' }}</td>
+                        <td>{{ $record->patient->age ?? 'N/A' }}</td>
+                        <td>{{ $record->patient->sex ?? 'N/A' }}</td>
+                        <td>{{ $record->patient->contact_number ?? 'N/A' }}</td>
+
+                        <!-- NEW: Status Column -->
+                        <td>
+                            @if(isset($record->checkup_status_info) && is_array($record->checkup_status_info))
+                            <span class="{{ $record->checkup_status_info['badge_class'] ?? 'badge bg-secondary' }}">
+                                {{ $record->checkup_status_info['badge'] ?? 'No Status' }}
+                            </span>
+                            @if(isset($record->checkup_status_info['comeback_date']))
+                            <div class="text-muted small mt-1">
+                                Due: {{ $record->checkup_status_info['comeback_date'] }}
+                            </div>
+                            @endif
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
+                        </td>
+
+                        <td>{{ $record->patient->created_at?->format('M d Y') }}</td>
                         <td>
                             <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                                <a href=" /patient-record/tb-dots/view-detail/{{$record->id}} ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                <a href="/patient-record/tb-dots/view-detail/{{ $record->id }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 576 512">
                                         <path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z" />
                                     </svg>
                                 </a>
-                                <a href="" class="delete-record-icon-tbDots" data-bs-patient-id="{{$record->patient->id}}">
+                                <a href="" class="delete-record-icon-tbDots" data-bs-patient-id="{{ $record->patient->id }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 448 512">
                                         <path d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z" fill='red' />
                                     </svg>
                                 </a>
-                                <a href="/patient-record/tb-dots/edit-details/{{$record->id}}" class="btn btn-info text-white fw-bold px-3">Edit</a>
-                                <a href="/patient-record/tb-dots/view-case/{{$record->id}}" class="btn btn-dark text-white fw-bold px-3">Case</a>
+                                <a href="/patient-record/tb-dots/edit-details/{{ $record->id }}" class="btn btn-info text-white fw-bold px-3">Edit</a>
+
+                              
+
+                                <a href="/patient-record/tb-dots/view-case/{{ $record->id }}" class="btn btn-dark text-white fw-bold px-3">Case</a>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">
+                        <td colspan="8" class="text-center text-muted py-4">
                             No records available.
                         </td>
                     </tr>
                     @endforelse
-
                 </tbody>
             </table>
+
             <!-- pagination -->
             <div class="mb-3">
-                {{ $tbRecords ->links() }}
+                {{ $tbRecords->links() }}
             </div>
         </div>
     </div>

@@ -16,7 +16,9 @@ class Medicine extends Model
         'dosage',
         'stock',
         'expiry_date',
-        'status'
+        'status',
+        'min_age_months',
+        'max_age_months'
     ];
     public function category(){
         return $this->belongsTo(Category::class, 'category_id', 'category_id');

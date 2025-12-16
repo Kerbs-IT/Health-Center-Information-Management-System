@@ -26,6 +26,7 @@ class MedicineRequestComponent extends Component
     ];
 
     public function mount(){
+
         $this->medicines = Medicine::where('status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
             ->get();
@@ -84,7 +85,11 @@ class MedicineRequestComponent extends Component
         $this->selectedMedicineId = $request->medicine_id;
         $this->quantity = $request->quantity_requested;
         $this->reason = $request->reason;
+    
+
+
     }
+
 
     public function updateRequest()
     {
