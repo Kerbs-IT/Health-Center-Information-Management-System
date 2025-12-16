@@ -70,6 +70,23 @@ document.addEventListener('livewire:init', function(){
     });
     });
 
+})
+
+// Medicine
+
+// sweetalert
+window.addEventListener('medicine-addedModal', event => {
+    Swal.fire({
+        title: "Success!",
+        text: "Category has been added successfully.",
+        icon: "success",
+        showConfirmButton: false,
+        timer:1500
+    });
+});
+
+// show medicine delete modal
+window.addEventListener('show-deleteMedicineModal', () => {
 
 });
 
@@ -89,6 +106,7 @@ window.addEventListener('show-delete-confirmation', () => {
 
             // 🔥 Correct way to call Livewire method in v3
             Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'))
+            .deleteMedicine();
                 .deleteCategory();
 
         }
@@ -96,6 +114,10 @@ window.addEventListener('show-delete-confirmation', () => {
 });
 
 // Listen to success event
+window.addEventListener('success-medicine-delete', () => {
+    Swal.fire({
+        title: "Deleted!",
+        text: "Medicine has been deleted.",
 window.addEventListener('delete-success', () => {
     Swal.fire({
         title: "Deleted!",
