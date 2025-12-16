@@ -70,4 +70,40 @@ document.addEventListener('livewire:init', function(){
     });
     });
 
-})
+
+});
+
+
+// Listen to Livewire v3 browser events
+window.addEventListener('show-delete-confirmation', () => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This category will be permanently deleted!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            // 🔥 Correct way to call Livewire method in v3
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'))
+                .deleteCategory();
+
+        }
+    });
+});
+
+// Listen to success event
+window.addEventListener('delete-success', () => {
+    Swal.fire({
+        title: "Deleted!",
+        text: "Category has been deleted.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+
