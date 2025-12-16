@@ -59,12 +59,14 @@ class PatientCase extends Component
             $staffInfo = staff::where("user_id", Auth::user()->id)->first();
             $healthWorkerName = $staffInfo->full_name;
         }
+
         return view('livewire.vaccination.patient-case-table', [
             'vaccination_case_record' => vaccination_case_records::where('medical_record_case_id', $this->medicalRecordCase->id)->where('status', '!=', 'Archived')
                 ->orderBy($this->sortField, $this->sortDirection)
                 ->latest()
                 ->get(),
-            'healthWorkerName'=> $healthWorkerName
+            'healthWorkerName'=> $healthWorkerName,
+            'medicalRecordId' =>   $this->medicalRecordCase->id
         ]);
     }
     public function updateCaseRecord()
@@ -226,5 +228,12 @@ class PatientCase extends Component
     public function mount($medicalRecordCase)
     {
         $this->medicalRecordCase = $medicalRecordCase;
+    }
+
+    public function exportPdf($caseId)
+    {
+        return redirect()->route('vaccination-case.pdf', [
+            'caseId' => $caseId,              // Sends "Maria"
+        ]);
     }
 }

@@ -42,7 +42,7 @@ class PrenatalController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
@@ -146,15 +146,24 @@ class PrenatalController extends Controller
 
             // PATIENT INFO
             // create the patient information record
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['first_name']),
+                $middle,
+                strtolower($patientData['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             $prenatalPatient = patients::create([
                 'user_id' => null,
                 'first_name'     => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => strtoupper($patientData['middle_initial']),
+                'middle_initial' => ucfirst($patientData['middle_initial']),
                 'last_name'      => ucwords(strtolower($patientData['last_name'])),
-                'full_name' => ($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']),
+                'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $patientData['sex'] ?? null,
+                'sex' => ucfirst($patientData['sex']) ?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -602,11 +611,11 @@ class PrenatalController extends Controller
                     return $query->where('first_name', $request->first_name)
                         ->where('last_name', $request->last_name);
                 })->ignore($prenatalRecord->patient_id)],
-                'last_name' => 'required|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'last_name' => 'required|string',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric',
+                'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
@@ -641,14 +650,24 @@ class PrenatalController extends Controller
                 'nurse_decision' => 'sometimes|nullable|numeric'
             ]);
 
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             // update the patient data first
             $prenatalRecord->patient->update([
-                'first_name' => $data['first_name'] ?? $prenatalRecord->patient->first_name,
-                'middle_initial' => $data['middle_initial'] ?? $prenatalRecord->patient->middle_initial,
-                'last_name' => $data['last_name'] ?? $prenatalRecord->patient->last_name,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']) ?? $prenatalRecord->patient->full_name,
+                'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
+                'middle_initial' => ucwords($data['middle_initial']) ?? ucwords($prenatalRecord->patient->middle_initial),
+                'last_name' => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
+                'full_name' =>$fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,
-                'sex' => $data['sex'] ?? $prenatalRecord->patient->sex,
+                'sex' => ucfirst($data['sex']) ?? ucfirst($prenatalRecord->patient->sex),
                 'civil_status' => $data['civil_status'] ?? $prenatalRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'],
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
@@ -1373,6 +1392,7 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'overall_remarks'           => 'nullable|string|max:1000',
+                    'date_of_comeback' => 'required|date'
                 ],
                 [],// this is empty because we didn't customize the error message for each field we just change the name 
                 [
@@ -1437,7 +1457,8 @@ class PrenatalController extends Controller
                 'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
 
                 'overall_remarks' => $request->overall_remarks,
-                'status'=> 'Done'
+                'status'=> 'Done',
+                'date_of_comeback' => $request->date_of_comeback
             ]);
             return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
         }catch(ValidationException $e){
@@ -1505,6 +1526,7 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'edit_overall_remarks'           => 'nullable|string|max:1000',
+                    'edit_date_of_comeback' => 'required|date'
                 ],
                 [], // this is empty because we didn't customize the error message for each field we just change the name 
                 [
@@ -1578,7 +1600,8 @@ class PrenatalController extends Controller
                 'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? $checkUp->other_symptoms_question_remarks,
 
                 'overall_remarks'               => $request->edit_overall_remarks ?? $checkUp->overall_remarks,
-                'status' => 'Done'
+                'status' => 'Done',
+                'date_of_comeback' => $request->edit_date_of_comeback
             ]);
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {

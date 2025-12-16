@@ -49,7 +49,7 @@ class addPatientController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
@@ -69,19 +69,34 @@ class addPatientController extends Controller
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
                 'dose_number' => 'required|numeric',
-                'remarks' => 'sometimes|nullable|string'
+                'remarks' => 'sometimes|nullable|string',
+                'current_height' => 'nullable|numeric',
+                'current_weight' => 'nullable|numeric',
+                'current_temperature'    => 'nullable|numeric',
+                'date_of_comeback' => 'required|date'
+
             ]);
 
             // create the patient information record
 
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             $vaccinationPatient = patients::create([
                 'user_id' => null,
-                'first_name' => $data['first_name'],
-                'middle_initial' => $data['middle_initial'],
-                'last_name' => $data['last_name'],
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                'first_name' => ucwords(strtolower($data['first_name'])),
+                'middle_initial' => ucwords(strtolower($data['middle_initial'])),
+                'last_name' => ucwords(strtolower($data['last_name'])),
+                'full_name' => $fullName,
                 'age' => $data['age']?? 0,
-                'sex' => $data['sex']?? 'male',
+                'sex' => ucfirst($data['sex'])?? 'male',
                 'civil_status'=> $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
                 'date_of_birth'=> $data['date_of_birth']?? null,
@@ -122,8 +137,8 @@ class addPatientController extends Controller
             $vaccinationMedicalRecord = vaccination_medical_records::create([
                 'medical_record_case_id' => $medicalCaseId,
                 'date_of_registration' => $data['date_of_registration']??null,
-                'mother_name' => $data['mother_name']?? null,
-                'father_name' => $data['father_name']?? null,
+                'mother_name' => ucwords($data['mother_name'])?? null,
+                'father_name' => ucwords($data['father_name'])?? null,
                 'birth_height' => $data['vaccination_height']?? null,
                 'birth_weight' => $data['vaccination_weight']?? null,
                 'type_of_record' => 'Medical Record',
@@ -145,14 +160,19 @@ class addPatientController extends Controller
             // create a case record
             $medicalCaseRecord = vaccination_case_records::create([
                 'medical_record_case_id' => $medicalCaseId,
-                'patient_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                'patient_name' => $fullName,
                 'date_of_vaccination' => $data['date_of_vaccination']??null,
                 'time' => $data['time_of_vaccination']??null,
                 'vaccine_type' => $selectedVaccines,
                 'dose_number' => $data['dose_number']??null,
                 'remarks' => $data['remarks']??null,
                 'type_of_record' => 'Vaccination Record',
-                'health_worker_id' => $data['handled_by']
+                'health_worker_id' => $data['handled_by'],
+                'height' => $data['current_height']??null,
+                'weight' => $data['current_weight'] ?? null,
+                'temperature' => $data['current_temperature']?? null,
+                'date_of_comeback' => $data['date_of_comeback'],
+                'vaccination_status' => 'completed'
             ]);
 
             // id of medical case record
@@ -178,7 +198,7 @@ class addPatientController extends Controller
             // nurse
             $nurse = User::where("role",'nurse')->first();
             $nurseInfo = nurses::where("user_id",$nurse->id)->first();
-            $nurseFullname = $nurseInfo -> full_name;
+            $nurseFullname = ucwords($nurseInfo->full_name);
             $vaccinationMasterlist = vaccination_masterlists::create([
                 'brgy_name' => $patientAddress-> purok,
                 'midwife'=> "Nurse ". $nurseFullname??null,

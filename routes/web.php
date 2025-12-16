@@ -13,6 +13,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\HealthCenterDashboard;
 use App\Http\Controllers\healthWorkerController;
 use App\Http\Controllers\HeatMapController;
+use App\Http\Controllers\ImmunizationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\manageInterfaceController;
 use App\Http\Controllers\manageUserController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\masterListController;
 use App\Http\Controllers\nurseDashboardController;
 use App\Http\Controllers\nurseDeptController;
 use App\Http\Controllers\patientController;
+use App\Http\Controllers\PatientList;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PrenatalController;
 use App\Http\Controllers\RecordsController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SeniorCitizenController;
 use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
@@ -37,8 +40,7 @@ use LDAP\Result;
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
 use App\Livewire\InventoryReport;
-
-
+use Knp\Snappy\Pdf;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -107,8 +109,14 @@ Route::get('/dashboard/staff', function () {
 })->name('dashboard.staff')->middleware(['role:staff']);
 
 // =============== patients
-// patient dashboard\
-Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
+
+// patient dashboard and check if verified
+Route::middleware(['auth','verified','role:patient'])->group(function (){
+    Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
+    // ------------------------------------------- Patient Account Record --------------------------------------------------------------
+    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'medicalRecord'])->name('view.medical.record');
+});
+
 
 // update profile
 
@@ -137,6 +145,9 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
     Route::get('/forgot-pass/change-password', function () {
         return view('forgot_password.change_pass');
     })->name('/forgot.pass.change');
+
+    // vaccination view
+    Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
 });
 
 
@@ -188,7 +199,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/vaccination/case/{id}', [RecordsController::class, 'vaccinationCase'])->name('record.vaccination.case');
     Route::put('/patient-record/update/{id}', [RecordsController::class, 'vaccinationUpdateDetails'])->name('record.vaccination.update');
     Route::post('/patient-record/{typeOfPatient}/delete/{id}', [RecordsController::class, 'deletePatient'])->name('record.vaccination.delete');
-    Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
+    
     // ADD VACCINATION CASE RECORD
     Route::post('/add-vaccination-case/{id}', [RecordsController::class, 'addVaccinationCaseRecord']);
     // ---------------- DELETE VACCINATION CASE ----------------------
@@ -305,8 +316,6 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     // ------------------------------------------- Manage Interface -----------------------------------------------
     Route::get('/manage-interface', [manageInterfaceController::class, 'manageInterface'])->name('manage.interface');
 
-    // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-    Route::get('/user-account/medical-record', [patientController::class, 'medicalRecord'])->name('view.medical.record');
 
     // -------------------------------------------- ALL RECORDS ---------------------------------------------------
     Route::get('/record/all-records', [RecordsController::class, 'allRecords'])->name('all.record');
@@ -472,3 +481,42 @@ Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
     ->name('tb-dots.pdf');
 Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
     ->name('family-planning.pdf');
+
+// family planning side a
+Route::get("/family-planning/side-a/pdf",[PdfController::class, 'generateFamilyPlanningSideAPdf'])->name('family-planning-side-a.pdf');
+Route::get("/family-planning/side-b/pdf", [PdfController::class, 'generateFamilyPlanningSideBPdf'])->name('family-planning-side-b.pdf');
+
+Route::get('/immunization/patient/{patientId}', [ImmunizationController::class, 'showByPatient'])
+    ->name('immunization.patient');
+
+Route::get('/immunization/card-content/{patientId}', [ImmunizationController::class, 'getCardContent'])
+    ->name('immunization.card-content');
+
+Route::get('/immunization/pdf/{patientId}', [ImmunizationController::class, 'generatePDF'])
+    ->name('immunization.pdf');
+Route::get('/vaccination/case/pdf',[PdfController::class,'generateVaccinationCasePdf'])->name("vaccination-case.pdf");
+
+Route::get('/prenatal/case-record/pdf',[PdfController::class, 'generatePrenatalCasePdf'])->name('prenatal-case.pdf');
+Route::get('/prenatal/pregnancy-plan/pdf', [PdfController::class, 'generatePregnancyPdf'])->name('pregnancy-plan.pdf');
+Route::get('/prenatal/check-up/pdf',[PdfController::class, 'generatePrenatalCheckupPdf'])->name('prenatal-checkup.pdf');
+
+Route::get('/senior-citizen/case-record/pdf',[PdfController::class, 'generateSeniorCitizenCasePdf'])->name('senior-citizen-case.pdf');
+Route::get('/tb-dots/case-record/pdf',[PdfController::class, 'generateTbDotsCasePdf'])->name('tb-dots-case.pdf');
+Route::get('/tb-dots/check-up/pdf', [PdfController::class, 'generateTbDotsCheckupPdf'])->name('tb-dots-checkup.pdf');
+
+// masterlist pdf
+Route::get('/masterlist/vaccination/pdf',[PdfController::class, 'generateVaccinationMasterlist'])->name('vaccination-masterlist.pdf');
+Route::get('/masterlist/wra/pdf', [PdfController::class, 'generateWraMasterlist'])->name('wra-masterlist.pdf');
+
+// testing area
+Route::get('/test-prenatal', function (){
+    return view('pdf.prenatal.prenatal-case');
+});
+
+// verification email
+Route::get('/verify-email', [VerificationController::class, 'show'])->name('verification.show');
+Route::post('/verify-email', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/verify-email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+// patient list
+
+Route::get('/patient-list',[PatientList::class,'index'])->name('patient-list');

@@ -53,4 +53,10 @@ class PatientCaseTable extends Component
         );
        
     }
+    public function exportPdf($caseId)
+    {
+        return redirect()->route('senior-citizen-case.pdf', [
+            'caseId' => $caseId,              // Sends "Maria"
+        ]);
+    }
 }
