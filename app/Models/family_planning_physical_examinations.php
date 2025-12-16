@@ -11,8 +11,8 @@ class family_planning_physical_examinations extends Model
         'blood_pressure',   
         'pulse_rate',     
         'height',   
-        'weight',    
-
+        'weight',
+        'neck_type',
         'skin_type',
         'conjuctiva_type',
         'breast_type',

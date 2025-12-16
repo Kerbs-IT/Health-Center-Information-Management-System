@@ -27,7 +27,7 @@ class SeniorCitizenController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric|min:60',
@@ -59,18 +59,29 @@ class SeniorCitizenController extends Controller
                 'existing_medical_condition' => 'sometimes|nullable|string',
                 'alergies' => 'sometimes|nullable|string',
                 'prescribe_by_nurse' => 'sometimes|nullable|string',
-                'medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'date_of_comeback' => 'required|date'
             ]);
 
 
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['first_name']),
+                $middle,
+                strtolower($patientData['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             $seniorCitizenPatient = patients::create([
                 'user_id' => null,
-                'first_name' => $patientData['first_name'],
-                'middle_initial' => $patientData['middle_initial'],
-                'last_name' => $patientData['last_name'],
-                'full_name' => ($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']),
+                'first_name' =>ucwords($patientData['first_name']) ,
+                'middle_initial' => ucwords($patientData['middle_initial']),
+                'last_name' => ucwords($patientData['last_name']),
+                'full_name' =>  $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $patientData['sex'] ?? null,
+                'sex' => ucfirst($patientData['sex'])?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -133,7 +144,8 @@ class SeniorCitizenController extends Controller
                 'alergies' => $patientCase['alergies'],
                 'prescribe_by_nurse' => $patientCase['prescribe_by_nurse'],
                 'remarks' => $patientCase['medication_maintenance_remarks'],
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'date_of_comeback' => $patientCase['date_of_comeback']
             ]);
 
             $caseId = $seniorCitizenCase->id;
@@ -179,9 +191,18 @@ class SeniorCitizenController extends Controller
             // address
             $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
             $data = $request->validate([
-                'first_name' => 'required|nullable|string',
+                'first_name' => [
+                    'required',
+                    'string',
+                    Rule::unique('patients')
+                        ->ignore($seniorCitizenRecord->patient->id) // <-- IMPORTANT
+                        ->where(function ($query) use ($request) {
+                            return $query->where('first_name', $request->first_name)
+                                ->where('last_name', $request->last_name);
+                        }),
+                ],
                 'last_name' => 'required|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
@@ -205,14 +226,24 @@ class SeniorCitizenController extends Controller
              
             ]);
 
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             // update the patient data first
             $seniorCitizenRecord->patient->update([
-                'first_name' => $data['first_name'] ?? $seniorCitizenRecord->patient->first_name,
-                'middle_initial' => $data['middle_initial'] ?? $seniorCitizenRecord->patient->middle_initial,
-                'last_name' => $data['last_name'] ?? $seniorCitizenRecord->patient->last_name,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']) ?? $seniorCitizenRecord->patient->full_name,
+                'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
+                'middle_initial' => ucwords(strtolower($data['middle_initial']))?? ucwords($seniorCitizenRecord->patient->middle_initial),
+                'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
+                'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
                 'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,
-                'sex' => $data['sex'] ?? $seniorCitizenRecord->patient->sex,
+                'sex' => ucfirst($data['sex']) ?? ucfirst($seniorCitizenRecord->patient->sex),
                 'civil_status' => $data['civil_status'] ?? $seniorCitizenRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $seniorCitizenRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,
@@ -292,7 +323,8 @@ class SeniorCitizenController extends Controller
                 'edit_existing_medical_condition' => 'sometimes|nullable|string',
                 'edit_alergies' => 'sometimes|nullable|string',
                 'edit_prescribe_by_nurse' => 'sometimes|nullable|string',
-                'edit_medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'edit_medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'edit_date_of_comeback' => 'required|date'
             ]);
 
             $seniorCitizenCase->update([
@@ -300,7 +332,8 @@ class SeniorCitizenController extends Controller
                 'alergies' =>$data['edit_alergies'],
                 'prescribe_by_nurse' =>$data['edit_prescribe_by_nurse'],
                 'remarks' =>$data['edit_medication_maintenance_remarks'],
-                'status' => 'Done'
+                'status' => 'Done',
+                'date_of_comeback' => $data['edit_date_of_comeback']
             ]);
 
             // maintenance medicine
@@ -350,7 +383,8 @@ class SeniorCitizenController extends Controller
                 'add_existing_medical_condition' => 'sometimes|nullable|string',
                 'add_alergies' => 'sometimes|nullable|string',
                 'add_prescribe_by_nurse' => 'sometimes|nullable|string',
-                'add_medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'add_medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'add_date_of_comeback' => 'required|date'
             ]);
 
             // create the record
@@ -362,7 +396,8 @@ class SeniorCitizenController extends Controller
                 'alergies'=> $data['add_alergies']??'',
                 'prescribe_by_nurse' => $data['add_prescribe_by_nurse']??'',
                 'remarks' => $data['add_medication_maintenance_remarks']??'',
-                'type_of_record'=> 'Case Record'
+                'type_of_record'=> 'Case Record',
+                'date_of_comeback' => $data['add_date_of_comeback']
             ]);
 
             $maintenanceMedicationData = $request->validate([

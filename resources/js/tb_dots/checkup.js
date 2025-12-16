@@ -102,6 +102,12 @@ document.addEventListener("click", async (e) => {
                 document.getElementById(`view_checkup_${key}`).innerHTML =
                     value ?? "N/A";
             }
+              if (key == "date_of_comeback" && value != null) {
+                  const date = new Date(value);
+                  document.getElementById(`view_${key}`).value = date
+                      .toISOString()
+                      .split("T")[0];
+              }
         });
     }
 });
@@ -126,6 +132,12 @@ document.addEventListener("click", async (e) => {
             if (document.getElementById(`edit_checkup_${key}`)) {
                 document.getElementById(`edit_checkup_${key}`).value =
                     value ?? "";
+            }
+            if (key == 'date_of_comeback' && value !=null) {
+                const date = new Date(value);
+                document.getElementById(`edit_${key}`).value = date
+                    .toISOString()
+                    .split("T")[0];
             }
         });
     }

@@ -97,4 +97,25 @@ class PatientCaseTable extends Component
             'pregnancy_plan' => $pregnancy_plan
         ]);
     }
+    public function exportPdf($caseId){
+        return redirect()->route('prenatal-case.pdf', [
+            'caseId' => $caseId,              // Sends "Maria"
+        ]);
+    }
+    public function exportPregnancyPlan($planId){
+        return redirect()->route('pregnancy-plan.pdf', [
+            'planId' => $planId,              // Sends "Maria"
+        ]);
+    }
+    public function exportFamilyPlanPdf($caseId, $type)
+    {
+        return redirect()->route("family-planning-side-$type.pdf", [
+            'caseId' => $caseId, // Sends "desc"
+        ]);
+    }
+    public function exportCheckupPdf($caseId){
+        return redirect()->route("prenatal-checkup.pdf", [
+            'caseId' => $caseId, // Sends "desc"
+        ]);
+    }
 }

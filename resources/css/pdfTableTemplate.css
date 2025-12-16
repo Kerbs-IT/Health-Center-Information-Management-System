@@ -1,0 +1,150 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.card-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.patient-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.info-field {
+    display: flex;
+    gap: 10px;
+}
+
+.info-field label {
+    font-weight: bold;
+    min-width: 150px;
+}
+
+.info-field span {
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2px;
+}
+
+.vaccine-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.vaccine-table th {
+    background: #f57c00 !important;
+    color: black;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #ddd;
+}
+
+.vaccine-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+}
+
+.vaccine-table tr:hover td {
+    background: #f0f0f0;
+}
+
+.vaccine-name {
+    font-weight: 500;
+}
+
+.dose-cell {
+    text-align: center;
+    min-width: 80px;
+    position: relative;
+}
+
+.dose-cell.filled {
+    background: #e8f5e9;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.dose-cell.empty {
+    background: #fff;
+}
+
+.category-header {
+    background: #ff9800 !important;
+    color: black;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.remarks-cell {
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+.action-buttons {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+
+
+
+.btn-print {
+    background: #607D8B;
+    color: white;
+}
+
+@media print {
+    .action-buttons {
+        display: none;
+    }
+
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .card-container {
+        box-shadow: none;
+    }
+}
+
+/* logo */
+.pdf-logo{
+    display: block;
+    object-fit: cover;
+    height: 150px;
+    width: 150px;
+}
+

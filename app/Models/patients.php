@@ -48,5 +48,22 @@ class patients extends Model
     public function wra_masterlist(){
         return $this->hasOne(wra_masterlists::class, 'patient_id', 'id');
     }
+
+    // user
+    public function user(){
+        return $this->hasOne(User::class,'patient_record_id','id');
+    }
+
+    public function isBound()
+    {
+        return !is_null($this->user_id);
+    }
+
+    // Get full name
+    public function getFullNameAttribute()
+    {
+        $mi = $this->middle_initial ? substr($this->middle_initial, 0, 1) . '. ' : '';
+        return "{$this->first_name} {$mi}{$this->last_name}";
+    }
     
 }
