@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('dosage');
             $table->integer('stock');
             $table->date('expiry_date')->nullable();
-            $table->string('status')->default('Available');
+            $table->string('status')->default('In Stock');
+            $table->integer('min_age_months')->nullable();
+            $table->integer('max_age_months')->nullable();
 
 
             $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');

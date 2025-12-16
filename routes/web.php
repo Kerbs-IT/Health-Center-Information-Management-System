@@ -40,6 +40,10 @@ use LDAP\Result;
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
 use App\Livewire\InventoryReport;
+use App\Livewire\ManageMedicineRequests;
+use App\Livewire\MedicineRequestComponent;
+use App\Livewire\MedicineRequestLogComponent;
+
 use Knp\Snappy\Pdf;
 
 Route::get('/', function () {
@@ -94,7 +98,7 @@ Route::middleware(['role:nurse'])->group(function(){
     // manage health worker
     Route::post('/add-health-worker-account', [healthWorkerController::class, 'addHealthWorker'])->name('managerHealthWorker.add-account');
     // MAnage interface color pallete
-  
+
 });
 Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
 Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
@@ -327,12 +331,12 @@ Route::middleware(['role:nurse,staff'])->group(function(){
 
     Route::put('/update/status/{id}/{decision}', [authController::class, 'updateStatus'])->name('update.status');
 
-    
+
 
     // ADD VACCINATION PATIENT
     Route::post('/add-patient/vaccination', [addPatientController::class, 'addVaccinationPatient'])->name('add-vaccination-patient');
 
-    // health worker list 
+    // health worker list
 
     Route::get('/health-worker-list', [healthWorkerController::class, 'healthWorkerList']);
 
@@ -482,6 +486,16 @@ Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
 Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
     ->name('family-planning.pdf');
 
+
+    // LOUIE'S CHANGES
+
+Route::get('/medicineRequest', MedicineRequestComponent::class)->name('medicineRequest');
+
+
+Route::get('inventory/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
+
+
+Route::get('inventory/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
 // family planning side a
 Route::get("/family-planning/side-a/pdf",[PdfController::class, 'generateFamilyPlanningSideAPdf'])->name('family-planning-side-a.pdf');
 Route::get("/family-planning/side-b/pdf", [PdfController::class, 'generateFamilyPlanningSideBPdf'])->name('family-planning-side-b.pdf');
