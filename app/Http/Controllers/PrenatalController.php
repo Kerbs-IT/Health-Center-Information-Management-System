@@ -1392,6 +1392,7 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'overall_remarks'           => 'nullable|string|max:1000',
+                    'date_of_comeback' => 'required|date'
                 ],
                 [],// this is empty because we didn't customize the error message for each field we just change the name 
                 [
@@ -1456,7 +1457,8 @@ class PrenatalController extends Controller
                 'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
 
                 'overall_remarks' => $request->overall_remarks,
-                'status'=> 'Done'
+                'status'=> 'Done',
+                'date_of_comeback' => $request->date_of_comeback
             ]);
             return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
         }catch(ValidationException $e){
@@ -1524,6 +1526,7 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'edit_overall_remarks'           => 'nullable|string|max:1000',
+                    'edit_date_of_comeback' => 'required|date'
                 ],
                 [], // this is empty because we didn't customize the error message for each field we just change the name 
                 [
@@ -1597,7 +1600,8 @@ class PrenatalController extends Controller
                 'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? $checkUp->other_symptoms_question_remarks,
 
                 'overall_remarks'               => $request->edit_overall_remarks ?? $checkUp->overall_remarks,
-                'status' => 'Done'
+                'status' => 'Done',
+                'date_of_comeback' => $request->edit_date_of_comeback
             ]);
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {

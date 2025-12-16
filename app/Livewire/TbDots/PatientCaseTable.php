@@ -44,6 +44,7 @@ class PatientCaseTable extends Component
         // check up 
 
         $checkUpRecords = tb_dots_check_ups::where('medical_record_case_id', $this->medicalRecordCaseId)
+            ->where('status', '!=','Archived')
             ->orderBy($this->sortField, $this->sortDirection)
             ->latest()
             ->get();

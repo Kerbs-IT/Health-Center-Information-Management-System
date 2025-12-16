@@ -134,6 +134,7 @@ class TbDotsController extends Controller
                 'treatment_side_effect' => 'sometimes|nullable|string',
                 'tb_outcome'=> 'sometimes|nullable|string',
                 'tb_remarks' => 'sometimes|nullable|string',
+                'date_of_comeback' => 'required|date'
             ]);
 
             // create the case info
@@ -151,7 +152,8 @@ class TbDotsController extends Controller
                 'side_effect' => $caseData['treatment_side_effect']??null,
                 'remarks' => $caseData['tb_remarks']??null,
                 'outcome' => $caseData['tb_outcome']??null,
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'date_of_comeback' => $caseData['date_of_comeback']
             ]);
 
             // case id
@@ -336,7 +338,7 @@ class TbDotsController extends Controller
                 'side_effect' =>  $data['edit_side_effect'] ?? $caseRecord-> side_effect,
                 'remarks' => $data['edit_tb_remarks'] ?? $caseRecord->remarks,
                 'outcome' => $data['edit_tb_outcome'] ?? $caseRecord->outcome,
-                'status' => 'Done'
+                'status' => 'Done',
             ]);
 
             $medicineAdministered = tb_dots_maintenance_medicines::where('tb_dots_case_id',$caseRecord->id)->delete();
@@ -389,7 +391,8 @@ class TbDotsController extends Controller
                 'sputum_test_result' => 'sometimes|nullable|string',
                 'treatment_phase' => 'sometimes|nullable|string',
                 'outcome' => 'sometimes|nullable|string',
-                'handled_by' => 'required'
+                'handled_by' => 'required',
+                'add_date_of_comeback' => 'required|date'
             ]);
 
             // create the record
@@ -410,7 +413,8 @@ class TbDotsController extends Controller
                 'sputum_test_result' => $data['sputum_test_result']??null,
                 'treatment_phase' => $data['treatment_phase']??null,
                 'outcome' => $data['outcome']??null,
-                'status'=> 'Done'
+                'status'=> 'Done',
+                'date_of_comeback' => $data['add_date_of_comeback']
             ]);
 
             return response()->json(['message' => 'Tb Dots Patient information is added Successfully'], 200);
@@ -455,6 +459,7 @@ class TbDotsController extends Controller
                 'edit_checkup_sputum_test_result' => 'sometimes|nullable|string',
                 'edit_checkup_treatment_phase' => 'sometimes|nullable|string',
                 'edit_checkup_outcome' => 'sometimes|nullable|string',
+                'edit_date_of_comeback' => 'required|date'
             ]);
 
             $checkUpRecord-> update([
@@ -470,7 +475,9 @@ class TbDotsController extends Controller
                 'progress_note' => $data['edit_checkup_progress_note'] ?? $checkUpRecord->progress_note,
                 'sputum_test_result' => $data['edit_checkup_sputum_test_result'] ?? $checkUpRecord->sputum_test_result,
                 'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? $checkUpRecord->treatment_phase,
-                'outcome' => $data['edit_checkup_outcome'] ?? $checkUpRecord->outcome
+                'outcome' => $data['edit_checkup_outcome'] ?? $checkUpRecord->outcome,
+                'status' => 'Active',
+                'date_of_comeback' =>$data['edit_date_of_comeback']
             ]);
             return response()->json(['message' => 'Tb Dots Patient Check-up information is updated Successfully'], 200);
         }catch(ValidationException $e){

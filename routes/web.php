@@ -111,8 +111,10 @@ Route::get('/dashboard/staff', function () {
 // =============== patients
 
 // patient dashboard and check if verified
-Route::middleware(['auth','verified'])->group(function (){
+Route::middleware(['auth','verified','role:patient'])->group(function (){
     Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
+    // ------------------------------------------- Patient Account Record --------------------------------------------------------------
+    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'medicalRecord'])->name('view.medical.record');
 });
 
 
@@ -143,6 +145,9 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
     Route::get('/forgot-pass/change-password', function () {
         return view('forgot_password.change_pass');
     })->name('/forgot.pass.change');
+
+    // vaccination view
+    Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
 });
 
 
@@ -194,7 +199,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/vaccination/case/{id}', [RecordsController::class, 'vaccinationCase'])->name('record.vaccination.case');
     Route::put('/patient-record/update/{id}', [RecordsController::class, 'vaccinationUpdateDetails'])->name('record.vaccination.update');
     Route::post('/patient-record/{typeOfPatient}/delete/{id}', [RecordsController::class, 'deletePatient'])->name('record.vaccination.delete');
-    Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
+    
     // ADD VACCINATION CASE RECORD
     Route::post('/add-vaccination-case/{id}', [RecordsController::class, 'addVaccinationCaseRecord']);
     // ---------------- DELETE VACCINATION CASE ----------------------
@@ -311,8 +316,6 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     // ------------------------------------------- Manage Interface -----------------------------------------------
     Route::get('/manage-interface', [manageInterfaceController::class, 'manageInterface'])->name('manage.interface');
 
-    // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-    Route::get('/user-account/medical-record', [patientController::class, 'medicalRecord'])->name('view.medical.record');
 
     // -------------------------------------------- ALL RECORDS ---------------------------------------------------
     Route::get('/record/all-records', [RecordsController::class, 'allRecords'])->name('all.record');

@@ -25,7 +25,11 @@ class tb_dots_check_ups extends Model
         'treatment_phase',
         'outcome',
         'type_of_record',
-        'status'
+        'status',
+        'date_of_comeback'
+    ];
+    protected $casts = [
+        'date_of_comeback' => 'date'
     ];
 
     public function medical_record_case()

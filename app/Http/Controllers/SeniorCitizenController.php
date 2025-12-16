@@ -59,7 +59,8 @@ class SeniorCitizenController extends Controller
                 'existing_medical_condition' => 'sometimes|nullable|string',
                 'alergies' => 'sometimes|nullable|string',
                 'prescribe_by_nurse' => 'sometimes|nullable|string',
-                'medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'date_of_comeback' => 'required|date'
             ]);
 
 
@@ -143,7 +144,8 @@ class SeniorCitizenController extends Controller
                 'alergies' => $patientCase['alergies'],
                 'prescribe_by_nurse' => $patientCase['prescribe_by_nurse'],
                 'remarks' => $patientCase['medication_maintenance_remarks'],
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'date_of_comeback' => $patientCase['date_of_comeback']
             ]);
 
             $caseId = $seniorCitizenCase->id;
@@ -321,7 +323,8 @@ class SeniorCitizenController extends Controller
                 'edit_existing_medical_condition' => 'sometimes|nullable|string',
                 'edit_alergies' => 'sometimes|nullable|string',
                 'edit_prescribe_by_nurse' => 'sometimes|nullable|string',
-                'edit_medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'edit_medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'edit_date_of_comeback' => 'required|date'
             ]);
 
             $seniorCitizenCase->update([
@@ -329,7 +332,8 @@ class SeniorCitizenController extends Controller
                 'alergies' =>$data['edit_alergies'],
                 'prescribe_by_nurse' =>$data['edit_prescribe_by_nurse'],
                 'remarks' =>$data['edit_medication_maintenance_remarks'],
-                'status' => 'Done'
+                'status' => 'Done',
+                'date_of_comeback' => $data['edit_date_of_comeback']
             ]);
 
             // maintenance medicine
@@ -379,7 +383,8 @@ class SeniorCitizenController extends Controller
                 'add_existing_medical_condition' => 'sometimes|nullable|string',
                 'add_alergies' => 'sometimes|nullable|string',
                 'add_prescribe_by_nurse' => 'sometimes|nullable|string',
-                'add_medication_maintenance_remarks' => 'sometimes|nullable|string'
+                'add_medication_maintenance_remarks' => 'sometimes|nullable|string',
+                'add_date_of_comeback' => 'required|date'
             ]);
 
             // create the record
@@ -391,7 +396,8 @@ class SeniorCitizenController extends Controller
                 'alergies'=> $data['add_alergies']??'',
                 'prescribe_by_nurse' => $data['add_prescribe_by_nurse']??'',
                 'remarks' => $data['add_medication_maintenance_remarks']??'',
-                'type_of_record'=> 'Case Record'
+                'type_of_record'=> 'Case Record',
+                'date_of_comeback' => $data['add_date_of_comeback']
             ]);
 
             $maintenanceMedicationData = $request->validate([
