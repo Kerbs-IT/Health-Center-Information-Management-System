@@ -101,6 +101,17 @@ window.addEventListener('show-deleteMedicineModal', () => {
     Swal.fire({
         title: "Are you sure?",
         text: "This Medicine will be permanently deleted!",
+// show medicine delete modal
+window.addEventListener('show-deleteMedicineModal', () => {
+
+});
+
+
+// Listen to Livewire v3 browser events
+window.addEventListener('show-delete-confirmation', () => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This category will be permanently deleted!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
@@ -109,9 +120,10 @@ window.addEventListener('show-deleteMedicineModal', () => {
     }).then((result) => {
         if (result.isConfirmed) {
 
-
+            // 🔥 Correct way to call Livewire method in v3
             Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'))
             .deleteMedicine();
+                .deleteCategory();
 
         }
     });
@@ -122,6 +134,10 @@ window.addEventListener('success-medicine-delete', () => {
     Swal.fire({
         title: "Deleted!",
         text: "Medicine has been deleted.",
+window.addEventListener('delete-success', () => {
+    Swal.fire({
+        title: "Deleted!",
+        text: "Category has been deleted.",
         icon: "success",
         timer: 1500,
         showConfirmButton: false

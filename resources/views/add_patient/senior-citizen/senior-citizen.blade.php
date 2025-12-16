@@ -86,6 +86,10 @@
             <input type="text" class="form-control p-3" name="medication_maintenance_remarks" id="medication_maintenance_remarks">
             <small class="text-danger error-text" id="remarks_error"></small>
         </div>
+        <div class="mb-3 ">
+            <label for="date_of_comeback">Date of Comeback</label>
+            <input type="date" class="form-control border" name="date_of_comeback" id="date_of_comeback">
+        </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>

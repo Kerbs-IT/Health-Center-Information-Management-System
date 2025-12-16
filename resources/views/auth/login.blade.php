@@ -22,7 +22,7 @@
     'resources/css/navbar.css'
 
     ])
-    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css',  'resources/js/navbar.js'])
 </head>
 
 <body class="d-flex flex-column min-vh-100">

@@ -19,6 +19,7 @@ class Medicines extends Component
 
     // Internal storage in months
     public $min_age_months, $max_age_months;
+    public $medicine_name,$category_id, $dosage, $stock, $expiry_date, $edit_id, $deleteMedicineId;
 
     public $sortField = null;
     public $sortDirection = null;
@@ -226,6 +227,8 @@ class Medicines extends Component
         $this->dispatch('success-medicine-delete');
 
     }
+
+
 
     public function sortBy($field)
     {
