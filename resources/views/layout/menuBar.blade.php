@@ -149,15 +149,15 @@
                         <h5 class="mb-0">Prenatal</h5>
                     </a> -->
                 <!-- senior citizen -->
-                <a href="#" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                <!-- <a href="#" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
                     <i class="fa-solid fa-person-cane"></i>
                     <h5 class="mb-0">Senior Citizen</h5>
-                </a>
+                </a> -->
                 <!-- TB dots -->
-                <a href="#" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                <!-- <a href="#" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
                     <i class="fa-solid fa-lungs"></i>
                     <h5 class="mb-0">TB Dots</h5>
-                </a>
+                </a> -->
                 <!-- family planning -->
                 <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
                     <i class="fa-solid fa-people-roof"></i>

@@ -152,6 +152,9 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
 
     // vaccination view
     Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
+    Route::get('/profile', function () {
+        return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
+    })->name('page.profile');
 });
 
 
@@ -179,10 +182,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
         return view('layout.menuBar');
     })->name('menubar');
 
-    Route::get('/profile', function () {
-        return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
-    })->name('page.profile');
-
+  
 
     // address route
     Route::get('/get-regions', [addressController::class, 'getRegions']);

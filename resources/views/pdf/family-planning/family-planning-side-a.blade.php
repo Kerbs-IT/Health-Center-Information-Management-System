@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            font-size: 12px;
+            font-size: 11px;
             font-family: Arial, sans-serif;
             /* Reduce from default (usually 10-12px) */
             line-height: 1.2;

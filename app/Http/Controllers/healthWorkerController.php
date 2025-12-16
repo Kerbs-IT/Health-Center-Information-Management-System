@@ -67,7 +67,6 @@ class healthWorkerController extends Controller
                 'assigned_area' => 'required',
                 'recovery_question' => ['required'],
                 'recovery_answer' => ['required'],
-
             ]);
 
             $data['recovery_answer'] = Hash::make($data['recovery_answer']);
