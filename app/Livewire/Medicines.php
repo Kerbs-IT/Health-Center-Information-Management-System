@@ -11,7 +11,6 @@ use Livewire\WithPagination;
 class Medicines extends Component
 {
     use WithPagination;
-    public $medicine_name, $category_id, $dosage, $stock, $expiry_date, $edit_id;
 
     // Age fields - separate for months and years
     public $min_age_value, $min_age_unit = 'months';
@@ -19,14 +18,13 @@ class Medicines extends Component
 
     // Internal storage in months
     public $min_age_months, $max_age_months;
-    public $medicine_name,$category_id, $dosage, $stock, $expiry_date, $edit_id, $deleteMedicineId;
+    public $medicine_name, $category_id, $dosage, $stock, $expiry_date, $edit_id, $deleteMedicineId;
 
     public $sortField = null;
     public $sortDirection = null;
     public $search = '';
     public $perPage = 10;
     public $ageFilter = ''; // For filtering by age range
-    public $deleteMedicineId;
 
     protected $rules = [
         'medicine_name' => 'required|string|max:255',
@@ -218,14 +216,15 @@ class Medicines extends Component
         $this->edit_id = '';
     }
 
-    public function confirmMedicineDelete($id){
+    public function confirmMedicineDelete($id)
+    {
         $this->deleteMedicineId = $id;
         $this->dispatch('show-deleteMedicineModal');
     }
-    public function deleteMedicine(){
+    public function deleteMedicine()
+    {
         Medicine::findOrFail($this->deleteMedicineId)->delete();
         $this->dispatch('success-medicine-delete');
-
     }
 
 
@@ -276,7 +275,6 @@ class Medicines extends Component
                             $sub->whereNull('max_age_months')
                                 ->orWhere('max_age_months', '>=', $range['min']);
                         });
-
                     });
                 }
             })
