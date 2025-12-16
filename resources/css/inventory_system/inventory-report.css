@@ -1,0 +1,12 @@
+.report-card h1{
+    font-family: Poppins;
+    font-weight: bold;
+}
+.report-card h5{
+    font-family: Poppins;
+    font-weight: 600;
+}
+.chart-section h3{
+    font-family: Poppins !important;
+    font-weight: 700;
+}
