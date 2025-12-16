@@ -64,6 +64,10 @@
                             <th>Outcome Update</th>
                             <td id="view_checkup_outcome">Ongoing Treatment</td>
                         </tr>
+                        <tr>
+                            <th>Date of comeback</th>
+                            <td id="view_date_of_comeback"></td>
+                        </tr>
                     </tbody>
                 </table>
 

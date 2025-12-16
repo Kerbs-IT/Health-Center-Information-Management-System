@@ -462,6 +462,23 @@
                                         <small class="text-danger error-text" id="time_error"></small>
                                     </div>
                                 </div>
+                                <div class="mb-2 w-100">
+                                    <div class="mb-2 w-100">
+                                        <label for="current_weight">Weight</label>
+                                        <input type="number" class="form-control" name="current_weight" id="current_weight" required>
+                                        <small class="text-danger error-text" id="current_weight_error"></small>
+                                    </div>
+                                    <div class="mb-2 w-100">
+                                        <label for="time">Height</label>
+                                        <input type="number" class="form-control" name="current_height" id="current_height" required>
+                                        <small class="text-danger error-text" id="current_height_error"></small>
+                                    </div>
+                                    <div class="mb-2 w-100">
+                                        <label for="current_temperature">Temperature</label>
+                                        <input type="number" class="form-control" name="current_temperature" id="current_temperature" required>
+                                        <small class="text-danger error-text" id="current_temperature_error"></small>
+                                    </div>
+                                </div>
                                 <div class="mb-2">
                                     <label for="vaccine_type">Vaccine Type:</label>
                                     <div class="mb-2 d-flex gap-2">
@@ -495,6 +512,13 @@
                                         <!-- <option value="booster">Booster</option> -->
                                     </select>
                                     <small class="text-danger error-text" id="dose_number_error"></small>
+                                </div>
+                                <div class="mb-2 w-100 ">
+                                    <div class="mb-2 w-100">
+                                        <label for="date_of_vaccination">Date of Comeback</label>
+                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_comeback" required>
+                                        <small class="text-danger error-text" id="date_of_comeback_error"></small>
+                                    </div>
                                 </div>
                                 <div class="mb-2 w-100">
                                     <label for="remarks">Remarks*</label>

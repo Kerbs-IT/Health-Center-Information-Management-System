@@ -3,7 +3,9 @@
 namespace App\Livewire\FamilyPlanning;
 
 use App\Models\medical_record_cases;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -53,6 +55,22 @@ class RecordsTable extends Component
             })
             ->orderBy("patients.$this->sortField", $this->sortDirection)
             ->paginate($this->entries);
+
+        // Add follow-up visit status to each record
+        $familyPlanning->getCollection()->transform(function ($record) {
+            $record->followup_status_info = $this->calculateFollowUpStatus($record);
+            return $record;
+        });
+
+        // Sort by priority (overdue first, then due today, then others)
+        $sortedCollection = $familyPlanning->getCollection()->sortBy(function ($record) {
+            if ($record->followup_status_info) {
+                return $record->followup_status_info['sort_priority'];
+            }
+            return 3; // No status = lowest priority
+        });
+
+        $familyPlanning->setCollection($sortedCollection);
       
         return view('livewire.family-planning.records-table',
             ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecords' => $familyPlanning]);
@@ -65,5 +83,70 @@ class RecordsTable extends Component
             'sortDirection' => $this->sortDirection,
             'entries' => $this->entries, // Sends "desc"
         ]);
+    }
+
+    private function calculateFollowUpStatus($medicalRecordCase)
+    {
+        try {
+            // Get the most recent active record with follow-up visit date
+            $lastRecord = DB::table('family_planning_side_b_records')
+                ->where('medical_record_case_id', $medicalRecordCase->id)
+                ->where('status', '!=', 'Archived')
+                ->whereNotNull('date_of_follow_up_visit')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            // No record history = no status
+            if (!$lastRecord) {
+                return null;
+            }
+
+            $followUpDate = Carbon::parse($lastRecord->date_of_follow_up_visit);
+
+            // Only process if follow-up date is today or past
+            if ($followUpDate->isFuture()) {
+                return null;
+            }
+
+            // Check if follow-up visit already done for this date
+            $visitExists = DB::table('family_planning_side_b_records')
+                ->where('medical_record_case_id', $medicalRecordCase->id)
+                ->where('status', '!=', 'Archived')
+                ->whereDate('created_at', '>=', $followUpDate)
+                ->where('id', '!=', $lastRecord->id) // Exclude the record that set this follow-up date
+                ->exists();
+
+            if ($visitExists) {
+                return null;
+            }
+
+            // Determine status
+            if ($followUpDate->isToday()) {
+                return [
+                    'status' => 'due_today',
+                    'badge' => 'Follow-up Due Today',
+                    'class' => 'table-success',
+                    'badge_class' => 'badge bg-success',
+                    'followup_date' => $followUpDate->format('M j, Y'),
+                    'sort_priority' => 2
+                ];
+            } else {
+                $daysOverdue = (int) $followUpDate->diffInDays(now(), false);
+
+                return [
+                    'status' => 'overdue',
+                    'badge' => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                    'class' => 'table-danger',
+                    'badge_class' => 'badge bg-danger',
+                    'followup_date' => $followUpDate->format('M j, Y'),
+                    'days_overdue' => $daysOverdue,
+                    'sort_priority' => 1
+                ];
+            }
+        } catch (\Exception $e) {
+            // Log error but don't break the page
+            // \Log::error('Family planning follow-up status calculation error: ' . $e->getMessage());
+            return null;
+        }
     }
 }

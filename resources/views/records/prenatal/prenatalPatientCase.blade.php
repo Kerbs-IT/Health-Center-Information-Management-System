@@ -329,6 +329,11 @@
                                                             <input type="text" class="form-control" name="overall_remarks">
                                                             <small class="text-danger error-text" id="overall_remarks_error"></small>
                                                         </div>
+                                                        <div class="mb-2">
+                                                            <label for="date_of_comeback">Date of comeback</label>
+                                                            <input type="date" class="form-control" name="date_of_comeback" id="date_of_comeback">
+                                                            <small class="text-danger error-text" id="date_of_comeback_error"></small>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

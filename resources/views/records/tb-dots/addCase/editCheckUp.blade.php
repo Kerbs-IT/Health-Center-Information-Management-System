@@ -112,5 +112,9 @@
             </select>
             <small class="text-danger error-text" id="edit_checkup_outcome_error"></small>
         </div>
+        <div class="mb-3">
+            <label for="edit_date_of_comeback">Date of Comeback</label>
+            <input type="date" name="edit_date_of_comeback" class="form-control" id="edit_date_of_comeback">
+        </div>
     </div>
 </div>
