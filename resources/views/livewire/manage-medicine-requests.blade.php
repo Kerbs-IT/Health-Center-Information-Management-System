@@ -115,7 +115,7 @@
                                 </td>
                                 <td class="text-center">{{ $request->quantity_requested }}</td>
                                 <td class="text-center">
-                                    <small>{{ $request->reason }}</small>
+                                    <small>{{ Str::limit($request->reason, 50) }}</small>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-{{
@@ -142,7 +142,10 @@
                                             </button>
                                         @endif
 
-                                        <button class="btn btn-sm btn-primary">
+                                        <button wire:click="viewDetails({{ $request->id }})"
+                                                class="btn btn-sm btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewDetailsModal">
                                             <i class="fa-solid fa-eye me-1"></i>View
                                         </button>
                                     </div>
@@ -158,8 +161,166 @@
                             @endforelse
                     </tbody>
                 </table>
+                {{ $requests->links() }}
             </div>
         </div>
     </main>
 
+    {{-- View Details Modal --}}
+    <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow">
+                {{-- Modal Header --}}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="viewDetailsLabel">
+                        <i class="fa-solid fa-info-circle me-2"></i>Request Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
 
+                {{-- Modal Body --}}
+                <div class="modal-body">
+                    @if($viewRequest)
+                        <div class="row g-3">
+                            {{-- Request Information --}}
+                            <div class="col-12">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-file-medical me-2"></i>Request Information
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Request ID</label>
+                                <p class="fw-bold">#{{ $viewRequest->id }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Patient Name</label>
+                                <p class="fw-bold">{{ $viewRequest->patients->full_name }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Status</label>
+                                <p>
+                                    @if($viewRequest->status === 'pending')
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @elseif($viewRequest->status === 'completed')
+                                        <span class="badge bg-success">Completed</span>
+                                    @elseif($viewRequest->status === 'rejected')
+                                        <span class="badge bg-danger">Rejected</span>
+                                    @endif
+                                </p>
+                            </div>
+
+                            {{-- Medicine Details --}}
+                            <div class="col-12 mt-4">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-pills me-2"></i>Medicine Details
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Medicine Name</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->medicine_name ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Dosage</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->dosage ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Type</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->type ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Current Stock</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->stock ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Quantity Requested</label>
+                                <p class="fw-bold text-primary">{{ $viewRequest->quantity_requested }}</p>
+                            </div>
+
+                            {{-- Request Reason --}}
+                            <div class="col-12 mt-3">
+                                <label class="form-label text-muted small">Reason for Request</label>
+                                <div class="p-3 bg-light rounded">
+                                    <p class="mb-0">{{ $viewRequest->reason }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Timestamps --}}
+                            <div class="col-12 mt-4">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-clock me-2"></i>Timeline
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Date Requested</label>
+                                <p>{{ $viewRequest->created_at->format('M d, Y h:i A') }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Last Updated</label>
+                                <p>{{ $viewRequest->updated_at->format('M d, Y h:i A') }}</p>
+                            </div>
+
+                            @if($viewRequest->status === 'pending')
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-warning mb-0">
+                                    <i class="fa-solid fa-clock me-2"></i>
+                                    <small>This request is awaiting approval.</small>
+                                </div>
+                            </div>
+                            @elseif($viewRequest->status === 'completed')
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-success mb-0">
+                                    <i class="fa-solid fa-check-circle me-2"></i>
+                                    <small>This request has been completed successfully.</small>
+                                </div>
+                            </div>
+                            @elseif($viewRequest->status === 'rejected')
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-danger mb-0">
+                                    <i class="fa-solid fa-times-circle me-2"></i>
+                                    <small>This request has been rejected.</small>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="fa-solid fa-exclamation-triangle fs-1 text-warning mb-3"></i>
+                            <p class="text-muted">No details available</p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="modal-footer">
+                    @if($viewRequest && $viewRequest->status === 'pending')
+                        <button type="button"
+                                wire:click="approve({{ $viewRequest->id }})"
+                                class="btn btn-success"
+                                data-bs-dismiss="modal">
+                            <i class="fa-solid fa-check me-1"></i>Approve
+                        </button>
+                        <button type="button"
+                                wire:click="reject({{ $viewRequest->id }})"
+                                class="btn btn-danger"
+                                data-bs-dismiss="modal">
+                            <i class="fa-solid fa-times me-1"></i>Reject
+                        </button>
+                    @endif
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
