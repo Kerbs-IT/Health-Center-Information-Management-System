@@ -43,9 +43,18 @@ document.addEventListener('livewire:init', function () {
     });
 
     Livewire.on('close-editMedicine-modal', () => {
-        bootstrap.Modal.getInstance(
+        setTimeout(() => {
+            bootstrap.Modal.getInstance(
             document.getElementById('editMedicineModal')
         )?.hide();
+        }, 1500);
+            Swal.fire({
+            title: "Success!",
+            text: "Category has been added successfully.",
+            icon: "success",
+            showConfirmButton: false,
+            timer:1500
+        });
     });
 });
 
@@ -70,7 +79,8 @@ document.addEventListener('livewire:init', function(){
     });
     });
 
-})
+});
+
 
 // Medicine
 
@@ -85,6 +95,12 @@ window.addEventListener('medicine-addedModal', event => {
     });
 });
 
+
+// show medicine delete modal
+window.addEventListener('show-deleteMedicineModal', () => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This Medicine will be permanently deleted!",
 // show medicine delete modal
 window.addEventListener('show-deleteMedicineModal', () => {
 
@@ -127,5 +143,3 @@ window.addEventListener('delete-success', () => {
         showConfirmButton: false
     });
 });
-
-

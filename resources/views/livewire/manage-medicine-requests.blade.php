@@ -1,0 +1,165 @@
+<div>
+    <main class="d-flex flex-column container-fluid bg-light">
+        <h2 class="mb-5 fs-1 text-center">Manage Medicine Requests</h2>
+
+        {{-- Success/Error Messages --}}
+        @if (session()->has('message'))
+            <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
+                {{ session('message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if ($errors->has('stock'))
+            <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
+                {{ $errors->first('stock') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="m-3 p-5 shadow min-h-[70vh]">
+            {{-- Filters and Actions --}}
+            <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
+                <div class="flex-fill">
+                    <label for="" class="form-label">Show</label>
+                    <select wire:model.live="perPage" class="form-select w-50" name="show">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="75">75</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="search" class="form-label">Search</label>
+                    <input wire:model.live.debounce.300ms="search" type="search" class="form-control" placeholder="Search patient or medicine...">
+                </div>
+                <div class="flex-fill">
+                    <label for="" class="form-label">Filter Status</label>
+                    <select wire:model.live="filterStatus" class="form-select">
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="completed">Completed</option>
+                        <option value="">All Status</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Statistics Cards --}}
+            <div class="row mt-4 mb-3">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <h3 class="text-warning">{{ $this->getPendingCount() }}</h3>
+                            <p class="mb-0">Pending Requests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <h3 class="text-success">{{ $this->getCompletedCount() }}</h3>
+                            <p class="mb-0">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-danger">
+                        <div class="card-body text-center">
+                            <h3 class="text-danger">{{ $this->getRejectedCount() }}</h3>
+                            <p class="mb-0">Rejected</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary">{{ $this->getTotalCount() }}</h3>
+                            <p class="mb-0">Total Requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Requests Table --}}
+            <div class="table-responsive mt-4">
+                <table class="table table-hover" id="requestsTable">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="text-center" scope="col">No.</th>
+                            <th class="text-center" scope="col">Patient Name</th>
+                            <th class="text-center" scope="col">Medicine</th>
+                            <th class="text-center" scope="col">Quantity</th>
+                            <th class="text-center" scope="col">Reason</th>
+                            <th class="text-center" scope="col">Status</th>
+                            <th class="text-center" scope="col">Date Requested</th>
+                            <th class="text-center" scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($requests as $index => $request)
+                            <tr>
+                                <td class="text-center">{{ $request->id }}</td>
+                                <td class="text-center">{{ $request->patients->full_name}}</td>
+                                <td class="text-center">
+                                    <strong>{{$request->medicine->medicine_name}}</strong><br>
+                                    <small class="text-muted">{{ $request->medicine->dosage }}</small>
+                                </td>
+                                <td class="text-center">{{ $request->quantity_requested }}</td>
+                                <td class="text-center">
+                                    <small>{{ $request->reason }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{
+                                        $request->status === 'pending' ? 'warning' :
+                                        ($request->status === 'completed' ? 'success' : 'danger') }}">
+                                        {{ ucfirst($request->status) }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {{ $request->created_at->format('F d Y') }}<br>
+                                    <small class="text-muted">{{ $request->created_at->format('h:i A') }}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        @if ($request->status === 'pending')
+                                            <button wire:click="approve({{ $request->id }})"
+                                                    class="btn btn-sm btn-success">
+                                                <i class="fa-solid fa-check me-1"></i>Approve
+                                            </button>
+
+                                            <button wire:click="reject({{ $request->id }})"
+                                                    class="btn btn-sm btn-danger">
+                                                <i class="fa-solid fa-times me-1"></i>Reject
+                                            </button>
+                                        @endif
+
+                                        <button class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-eye me-1"></i>View
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <i class="fa-solid fa-inbox fs-1 text-muted mb-3 d-block"></i>
+                                    <p class="text-muted">No medicine requests found</p>
+                                </td>
+                            </tr>
+                            @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+
