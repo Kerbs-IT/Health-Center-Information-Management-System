@@ -29,7 +29,7 @@ class TbDotsController extends Controller
                         ->where('last_name', $request->last_name);
                 })],
                 'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
@@ -54,16 +54,24 @@ class TbDotsController extends Controller
                 'weight'            => 'nullable|numeric|between:1,500',  // kg range
             ]);
 
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['first_name']),
+                $middle,
+                strtolower($patientData['last_name'])
+            ];
 
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             // create the patient information
             $tbDotsPatient = patients::create([
                 'user_id' => null,
-                'first_name' => $patientData['first_name'],
-                'middle_initial' => $patientData['middle_initial'],
-                'last_name' => $patientData['last_name'],
-                'full_name' => ($patientData['first_name'] . ' ' . $patientData['middle_initial'] . ' ' . $patientData['last_name']),
+                'first_name' => ucwords(strtolower($patientData['first_name'])),
+                'middle_initial' => ucwords(strtolower($patientData['middle_initial'])),
+                'last_name' => ucwords(strtolower($patientData['last_name'])),
+                'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $patientData['sex'] ?? null,
+                'sex' => ucfirst($patientData['sex']) ?? null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -126,6 +134,7 @@ class TbDotsController extends Controller
                 'treatment_side_effect' => 'sometimes|nullable|string',
                 'tb_outcome'=> 'sometimes|nullable|string',
                 'tb_remarks' => 'sometimes|nullable|string',
+                'date_of_comeback' => 'required|date'
             ]);
 
             // create the case info
@@ -143,7 +152,8 @@ class TbDotsController extends Controller
                 'side_effect' => $caseData['treatment_side_effect']??null,
                 'remarks' => $caseData['tb_remarks']??null,
                 'outcome' => $caseData['tb_outcome']??null,
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'date_of_comeback' => $caseData['date_of_comeback']
             ]);
 
             // case id
@@ -186,9 +196,18 @@ class TbDotsController extends Controller
             // address
             $address = patient_addresses::where('patient_id', $tbDotsRecord->patient->id)->firstorFail();
             $data = $request->validate([
-                'first_name' => 'required|nullable|string',
+                'first_name' => [
+                    'required',
+                    'string',
+                    Rule::unique('patients')
+                        ->ignore($tbDotsRecord->patient->id) // <-- IMPORTANT
+                        ->where(function ($query) use ($request) {
+                            return $query->where('first_name', $request->first_name)
+                                ->where('last_name', $request->last_name);
+                        }),
+                ],
                 'last_name' => 'required|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'middle_initial' => 'sometimes|nullable|string',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
@@ -208,15 +227,24 @@ class TbDotsController extends Controller
                 'philheath_id' => 'sometimes|nullable|string'
 
             ]);
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             // update the patient data first
             $tbDotsRecord->patient->update([
-                'first_name' => $data['first_name'] ?? $tbDotsRecord->patient->first_name,
-                'middle_initial' => $data['middle_initial'] ?? $tbDotsRecord->patient->middle_initial,
-                'last_name' => $data['last_name'] ?? $tbDotsRecord->patient->last_name,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']) ?? $tbDotsRecord->patient->full_name,
+                'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),
+                'middle_initial' => ucwords(strtolower($data['middle_initial'])) ?? ucwords(strtolower($tbDotsRecord->patient->middle_initial)),
+                'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->last_name)),
+                'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
-                'sex' => $data['sex'] ?? $tbDotsRecord->patient->sex,
+                'sex' => ucfirst($data['sex'] )?? ucfirst($tbDotsRecord->patient->sex),
                 'civil_status' => $data['civil_status'] ?? $tbDotsRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,
@@ -310,7 +338,7 @@ class TbDotsController extends Controller
                 'side_effect' =>  $data['edit_side_effect'] ?? $caseRecord-> side_effect,
                 'remarks' => $data['edit_tb_remarks'] ?? $caseRecord->remarks,
                 'outcome' => $data['edit_tb_outcome'] ?? $caseRecord->outcome,
-                'status' => 'Done'
+                'status' => 'Done',
             ]);
 
             $medicineAdministered = tb_dots_maintenance_medicines::where('tb_dots_case_id',$caseRecord->id)->delete();
@@ -363,7 +391,8 @@ class TbDotsController extends Controller
                 'sputum_test_result' => 'sometimes|nullable|string',
                 'treatment_phase' => 'sometimes|nullable|string',
                 'outcome' => 'sometimes|nullable|string',
-                'handled_by' => 'required'
+                'handled_by' => 'required',
+                'add_date_of_comeback' => 'required|date'
             ]);
 
             // create the record
@@ -384,7 +413,8 @@ class TbDotsController extends Controller
                 'sputum_test_result' => $data['sputum_test_result']??null,
                 'treatment_phase' => $data['treatment_phase']??null,
                 'outcome' => $data['outcome']??null,
-                'status'=> 'Done'
+                'status'=> 'Done',
+                'date_of_comeback' => $data['add_date_of_comeback']
             ]);
 
             return response()->json(['message' => 'Tb Dots Patient information is added Successfully'], 200);
@@ -429,6 +459,7 @@ class TbDotsController extends Controller
                 'edit_checkup_sputum_test_result' => 'sometimes|nullable|string',
                 'edit_checkup_treatment_phase' => 'sometimes|nullable|string',
                 'edit_checkup_outcome' => 'sometimes|nullable|string',
+                'edit_date_of_comeback' => 'required|date'
             ]);
 
             $checkUpRecord-> update([
@@ -444,7 +475,9 @@ class TbDotsController extends Controller
                 'progress_note' => $data['edit_checkup_progress_note'] ?? $checkUpRecord->progress_note,
                 'sputum_test_result' => $data['edit_checkup_sputum_test_result'] ?? $checkUpRecord->sputum_test_result,
                 'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? $checkUpRecord->treatment_phase,
-                'outcome' => $data['edit_checkup_outcome'] ?? $checkUpRecord->outcome
+                'outcome' => $data['edit_checkup_outcome'] ?? $checkUpRecord->outcome,
+                'status' => 'Active',
+                'date_of_comeback' =>$data['edit_date_of_comeback']
             ]);
             return response()->json(['message' => 'Tb Dots Patient Check-up information is updated Successfully'], 200);
         }catch(ValidationException $e){

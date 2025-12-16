@@ -15,6 +15,8 @@ class CategoriesTable extends Component
 
     public $search;
     public $perPage = 10;
+
+    public $deleteCategoryId;
     // Input Fields Validation
 
     // public function updated($fields){
@@ -72,6 +74,16 @@ class CategoriesTable extends Component
         }
         $this->resetPage();
     }
+
+    public function confirmDelete($id){
+        $this->deleteCategoryId = $id;
+        $this->dispatch('show-delete-confirmation');
+    }
+    public function deleteCategory(){
+        Category::findOrFail($this->deleteCategoryId)->delete();
+        $this->dispatch('delete-success');
+    }
+
     public function render()
     {
         $categories = Category::search($this->search)->when($this->sortField, function($query){

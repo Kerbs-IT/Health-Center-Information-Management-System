@@ -147,4 +147,23 @@ class Vaccination extends Component
             'selectedRange' => $this->selectedRange
         ]);
     }
+    public function exportPdf(){
+        $params = [
+            'search' => $this->search,
+            'selectedBrgy' => $this->selectedBrgy,
+            'ageRange' => $this->ageRange,
+            'filterMonth' => $this->filterMonth,
+            'filterYear' => $this->filterYear,
+            'selectedRange' => $this->selectedRange,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+            'entries'=> $this->entries
+        ];
+
+        // Generate URL with query parameters
+        $url = route('vaccination-masterlist.pdf', $params);
+
+        // Redirect to PDF generation route
+        return redirect($url);
+    }
 }

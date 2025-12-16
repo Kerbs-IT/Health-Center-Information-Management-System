@@ -7,14 +7,15 @@
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png') }}">
     <title>Health Center Information Management System</title>
-    @vite([
-    'resources/css/app.css',
+
+    @vite(['resources/css/app.css',
     'resources/js/app.js',
     'resources/css/homepage.css',
+    'resources/js/homepage.js',
+    'resources/css/navbar.css',
+    'resources/js/navbar.js',
     'resources/js/register.js',
-    'resources/css/auth/registration.css'
-    ])
-    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/css/service-page.css', 'resources/js/navbar.js'])
+    'resources/css/auth/registration.css'])
 </head>
 
 <body class="">
@@ -37,7 +38,7 @@
 
                         <!-- username -->
                         <div class="mb-3">
-                            <label for="username" class="mb-1 h6 fw-medium">Username:</label>
+                            <label for="username" class="mb-1 h6 ">Username:</label>
                             <input type="text" placeholder="Enter your username" name="username" class="form-control bg-light" autocomplete="off" value="{{old('username')}}">
                             @error('username')
                             <small class="text-danger">{{$message}}</small>
@@ -45,7 +46,7 @@
                         </div>
                         <!-- full name -->
                         <div class="mb-3">
-                            <label for="" class="mb-1 h6 fw-medium">Personal Info:</label>
+                            <label for="" class="mb-1 h6 ">Personal Info:</label>
                             <div class="row g-2">
                                 <div class="col-lg-4 col-md-6">
                                     <input type="text" placeholder="First Name" name="first_name" class=" form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
@@ -76,6 +77,21 @@
                             <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+                        <!-- date of birth -->
+                        <div class="mb-2">
+                            <label for="date_of_birth" class="mb-1 h6 ">Date of Birth:</label>
+                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}">
+                            @error('date_of_birth')
+                            <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="mb-2">
+                            <label for="contact_number" class="mb-1 h6 ">Contact Number:</label>
+                            <input type="text" placeholder="Enter your email" name="contact_number" class=" form-control py-1 px-2 bg-light" value="{{old('contact_number')}}">
+                            @error('contact_number')
+                            <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password" class="mb-1 h6">Password:</label>
@@ -89,7 +105,7 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3">
-                            <label for="re-type-pass" class="mb-1 fw-light h6">Retype password:</label>
+                            <label for="re-type-pass" class="mb-1  h6">Retype password:</label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="form-control py-1 px-2 bg-light" id="re-type-pass">
                                 <i class="fa-solid fa-eye p-2 bg-primary text-white" id="Retype-eye-icon"></i>
@@ -101,62 +117,39 @@
                         </div>
                         <!-- Roles -->
                         <div class="mb-3 roles">
-                            <label for="form-label" class="">Type of User</label>
-                            <div class="radio-inputs form-check d-flex justify-content-center gap-5 w-100">
-                                <!-- Patient -->
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" value="patient" id="patient" {{ old('role') == 'patient' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="patient">Patient</label>
-                                </div>
-                                <!-- health worker -->
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" value="staff" id="healthWorker" {{ old('role') == 'staff' ? 'checked' : '' }}>
-                                    <label for="healthWorker">Health Worker</label>
-                                </div>
-                            </div>
-                            @error('role')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
+                            <label for="patient_type" class="">Type of User</label>
+                            <select name="patient_type" id="patient_type" class="form-select text-center">
+                                <option value="" selected disabled>Select the type of patient</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="prenatal">PRE-NATAL</option>
+                                <option value="tb-dots">Tb-dots</option>
+                                <option value="senior-citizen">Senior Citizen</option>
+                                <option value="family-planning">Family Planning</option>
+                            </select>
                         </div>
                         <!-- patient type -->
-                        <div class="mb-3  d-none" id="patient_type_con">
+                        <div class="mb-3" id="patient_type_con">
                             <label for="patient_type" class="form-label text-nowrap ">Patient Address </label>
-                            <div class="row">
-                                <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-6">
                                     <div class="items">
                                         <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
-                                        <input type="text" id="blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="form-control">
+                                        <input type="text" id="blk_n_street" name="blk_n_street" placeholder="Enter the blk & lot" class="form-control">
                                         @error('blk_n_street')
                                         <small class="text-danger">{{$message}}</small>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-12">
+                                <div class="col-lg-6">
                                     <div class="items">
-                                        <label for="patient_purok_dropdown">Puroks*</label>
-                                        <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                        <label for="brgy" class="text-muted">Puroks*</label>
+                                        <select id="brgy" class="form-select" name="brgy" required>
                                             <option value="" selected disabled>Select a purok</option>
                                         </select>
-                                        @error('patient_purok_dropdown')
+                                        @error('brgy')
                                         <small class="text-danger">{{$message}}</small>
                                         @enderror
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- STAFF -->
-                        <div class="mb-3 staff-fields d-none" id="staff-fields">
-                            <div class="mb-3  d-block gap-2">
-                                <div class="input-group  d-block gap-2 align-items-center">
-                                    <label for="role" class="h4 fs-5 m-0">Assigned Area:</label>
-                                    <select name="assigned_area" id="assigned_area" class="border py-1 px-3 form-select" data-occupied-areas='@json($occupied_assigned_areas)'>
-                                        <option value="">Select an Area</option>
-                                    </select>
-                                    @error('assigned_area')
-                                    <small class="text-danger">{{$message}}</small>
-                                    @enderror
                                 </div>
                             </div>
                         </div>

@@ -15,7 +15,11 @@ class senior_citizen_case_records extends Model
         'prescribe_by_nurse',
         'remarks',
         'type_of_record',
-        'status'
+        'status',
+        'date_of_comeback'
+    ];
+    protected $casts = [
+        'date_of_comeback' => 'date'
     ];
     public function medical_record_case()
     {

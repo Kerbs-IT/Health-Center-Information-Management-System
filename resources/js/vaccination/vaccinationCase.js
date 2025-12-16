@@ -46,11 +46,15 @@ document.addEventListener("click", async (e) => {
         const doseNumber = document.getElementById("view-dose-number");
         const remarks = document.getElementById("view-case-remarks");
         // handled by name
-        const handledBy = document.getElementById("view-handled-by");
+        // const handledBy = document.getElementById("view-handled-by");
+        const height = document.getElementById("view-height");
+        const weight = document.getElementById("view-weight");
+        const temperature = document.getElementById("view-temperature");
+        const dateOfComeback = document.getElementById("view-date-of-comeback");
 
-        if (handledBy) {
-            handledBy.innerHTML = data.healthWorkerName??'n/a';
-        }
+        // if (handledBy) {
+        //     handledBy.innerHTML = data.healthWorkerName??'n/a';
+        // }
 
         // populate the data
 
@@ -64,10 +68,23 @@ document.addEventListener("click", async (e) => {
                   year: "numeric",
               })
             : "none";
-        timeOfVaccination.innerHTML = data.vaccinationCase.time ?? "none";
+        dateOfComeback.innerHTML = data.vaccinationCase.date_of_comeback
+            ? new Date(
+                  data.vaccinationCase.date_of_comeback
+              ).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+              })
+            : "none";
+        // timeOfVaccination.innerHTML = data.vaccinationCase.time ?? "none";
         typeOfVaccine.innerHTML = data.vaccinationCase.vaccine_type ?? "none";
         (doseNumber.innerHTML = data.vaccinationCase.dose_number ?? "none"),
             (remarks.innerHTML = data.vaccinationCase.remarks ?? "none");
+        // height,weight
+        height.innerHTML = `${data.vaccinationCase.height} cm` ?? 'none';
+        weight.innerHTML = `${data.vaccinationCase.weight } kg` ?? "none";
+        temperature.innerHTML = `${data.vaccinationCase.temperature} °C` ?? "none";
     } catch (error) {
         console.error("Error viewing case:", error);
         Swal.fire({
@@ -95,209 +112,226 @@ let addSelectedVaccine = [];
 
 const addCaseBtn = document.getElementById("add-vaccination-case-record-btn");
 const addCaseForm = document.getElementById("add-vaccination-case-form");
-addCaseBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    // reset the container and value
-    vaccineContainer.innerHTML = "";
-    addselectedVaccineCon.value = "";
-    addCaseForm.reset();
-    addSelectedVaccine.length = 0;
-    // populating the health workder input
-    const addHealthWorkerDropDown = document.getElementById(
-        "dissabled_add_handled_by"
-    );
-    const selectedHealthWorkerId = addCaseBtn.dataset.healthWorkerId;
+if (addCaseBtn) {
+    addCaseBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // reset the container and value
+        vaccineContainer.innerHTML = "";
+        addselectedVaccineCon.value = "";
+        addCaseForm.reset();
+        addSelectedVaccine.length = 0;
+        // populating the health workder input
+        const addHealthWorkerDropDown = document.getElementById(
+            "dissabled_add_handled_by"
+        );
+        const selectedHealthWorkerId = addCaseBtn.dataset.healthWorkerId;
 
-    // console.log('selected health worker id: ', selectedHealthWorkerId);
+        // console.log('selected health worker id: ', selectedHealthWorkerId);
 
-    // hidden input for handled by
+        // hidden input for handled by
 
-    const hidden_handled_by_input = document.getElementById(
-        "hidden_add_handled_by"
-    );
+        const hidden_handled_by_input = document.getElementById(
+            "hidden_add_handled_by"
+        );
 
-    hidden_handled_by_input.value = selectedHealthWorkerId;
-    // console.log('hidden add_handled_by: ', hidden_handled_by_input.value);
+        hidden_handled_by_input.value = selectedHealthWorkerId;
+        // console.log('hidden add_handled_by: ', hidden_handled_by_input.value);
 
-    // disable the selection of healthworker id
-    if (addHealthWorkerDropDown) {
-        addHealthWorkerDropDown.disabled = true;
+        // disable the selection of healthworker id
+        if (addHealthWorkerDropDown) {
+            addHealthWorkerDropDown.disabled = true;
 
-        // use the function to load the health workers from the database
-        fetchHealthworkers().then((result) => {
-            // console.log(result);
-            result.healthWorkers.forEach((worker) => {
-                addHealthWorkerDropDown.innerHTML += `<option value="${
-                    worker.id
-                }" ${selectedHealthWorkerId == worker.id ? "selected" : ""}>${
-                    worker.staff.full_name
-                }</option>`;
+            // use the function to load the health workers from the database
+            fetchHealthworkers().then((result) => {
+                // console.log(result);
+                result.healthWorkers.forEach((worker) => {
+                    addHealthWorkerDropDown.innerHTML += `<option value="${
+                        worker.id
+                    }" ${
+                        selectedHealthWorkerId == worker.id ? "selected" : ""
+                    }>${worker.staff.full_name}</option>`;
+                });
             });
-        });
-    }
-    
-    // -------------------------- END OF POPULATING HEALTH WORKER DROPDOWN--------------------------------------------
+        }
 
-    // ----------- ADD VALUE TO THE DATE ---------------------
-    // MAKE IT THE TODAY'S DATE
-    const dateCon = document.getElementById("add-date-of-vaccination");
-    const today = new Date();
-    let currentDate = today.toISOString().split("T")[0];
+        // -------------------------- END OF POPULATING HEALTH WORKER DROPDOWN--------------------------------------------
 
-    // provide the value
-    dateCon.value = currentDate;
-    // ----------- END OF ADDING NEW DATE -------------------
+        // ----------- ADD VALUE TO THE DATE ---------------------
+        // MAKE IT THE TODAY'S DATE
+        const dateCon = document.getElementById("add-date-of-vaccination");
+        const today = new Date();
+        let currentDate = today.toISOString().split("T")[0];
 
-    // ------- PROVIDE VALUE TO THE CURRENT TIME -----------------
-    // LET USE THE VARIABLE WE USE IN THE DATE
-    const timeCon = document.getElementById("add-time-of-vaccination");
-    // Get hours and minutes
-    let hours = today.getHours().toString().padStart(2, "0");
-    let minutes = today.getMinutes().toString().padStart(2, "0");
+        // provide the value
+        dateCon.value = currentDate;
+        // ----------- END OF ADDING NEW DATE -------------------
 
-    // Format HH:MM
-    let currentTime = `${hours}:${minutes}`;
+        // ------- PROVIDE VALUE TO THE CURRENT TIME -----------------
+        // LET USE THE VARIABLE WE USE IN THE DATE
+        const timeCon = document.getElementById("add-time-of-vaccination");
+        // Get hours and minutes
+        let hours = today.getHours().toString().padStart(2, "0");
+        let minutes = today.getMinutes().toString().padStart(2, "0");
 
-    console.log(currentTime);
+        // Format HH:MM
+        let currentTime = `${hours}:${minutes}`;
 
-    // provide the value
-    timeCon.value = currentTime;
+        console.log(currentTime);
 
-    // ----------- END OF ADDING THE TIME ------------------
-});
+        // provide the value
+        timeCon.value = currentTime;
+
+        // ----------- END OF ADDING THE TIME ------------------
+    });
+}
+
 
 // -----------------------------------------------------------------------------------------------------------------
 // ----------- SELECTING VACCINE ----------------------
 const vaccineDropdown = document.getElementById("add_vaccine_type");
 
 const newRecordAddVaccineBtn = document.getElementById("add-vaccination-btn");
-getVaccines().then((item) => {
-    item.vaccines.forEach((vaccine) => {
-        vaccineDropdown.innerHTML += `<option value='${vaccine.id}'>${vaccine.type_of_vaccine}</option>`;
+if (vaccineDropdown) {
+    getVaccines().then((item) => {
+        item.vaccines.forEach((vaccine) => {
+            vaccineDropdown.innerHTML += `<option value='${vaccine.id}'>${vaccine.type_of_vaccine}</option>`;
+        });
     });
-});
 
-// add vaccine interaction
-addVaccineInteraction(
-    newRecordAddVaccineBtn,
-    vaccineDropdown,
-    vaccineContainer,
-    addselectedVaccineCon,
-    addSelectedVaccine
-);
+    // add vaccine interaction
+    addVaccineInteraction(
+        newRecordAddVaccineBtn,
+        vaccineDropdown,
+        vaccineContainer,
+        addselectedVaccineCon,
+        addSelectedVaccine
+    );
+}
 
+if (vaccineContainer) {
+  vaccineContainer.addEventListener("click", (e) => {
+      console.log(
+          "before deletion selected input:",
+          addselectedVaccineCon.value
+      );
+      console.log("before deletion:", addSelectedVaccine);
+      if (e.target.closest(".vaccine")) {
+          const vaccineId = e.target.closest(".vaccine").dataset.bsId;
+          console.log("id of element:", vaccineId);
+          const deleteBtn = e.target.closest(".delete-icon");
+          if (deleteBtn) {
+              if (addSelectedVaccine.includes(Number(vaccineId))) {
+                  const selectedElement = addSelectedVaccine.indexOf(
+                      Number(vaccineId)
+                  );
+                  console.log("index", selectedElement);
+                  addSelectedVaccine.splice(selectedElement, 1);
+                  addselectedVaccineCon.value = addSelectedVaccine.join(",");
+              }
+              e.target.closest(".vaccine").remove();
+          }
+
+          console.log("update with deleted id:", addSelectedVaccine);
+          console.log("updated value:", addselectedVaccineCon.value);
+      }
+  });  
+}
 // removing selected vaccines
-vaccineContainer.addEventListener("click", (e) => {
-    console.log("before deletion selected input:", addselectedVaccineCon.value);
-    console.log("before deletion:", addSelectedVaccine);
-    if (e.target.closest(".vaccine")) {
-        const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-        console.log("id of element:", vaccineId);
-        const deleteBtn = e.target.closest(".delete-icon");
-        if (deleteBtn) {
-            if (addSelectedVaccine.includes(Number(vaccineId))) {
-                const selectedElement = addSelectedVaccine.indexOf(
-                    Number(vaccineId)
-                );
-                console.log("index", selectedElement);
-                addSelectedVaccine.splice(selectedElement, 1);
-                addselectedVaccineCon.value = addSelectedVaccine.join(",");
-            }
-            e.target.closest(".vaccine").remove();
-        }
 
-        console.log("update with deleted id:", addSelectedVaccine);
-        console.log("updated value:", addselectedVaccineCon.value);
-    }
-});
 
 // --------------- END OF REMOVING VACCINE ------------------------
 
 const vaccinationSubmitCaseBtn = document.getElementById("add_case_save_btn");
 
-vaccinationSubmitCaseBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    // form data
-    const addCaseForm = document.getElementById("add-vaccination-case-form");
-    const caseFormData = new FormData(addCaseForm);
-    const caseId = e.target.dataset.bsCaseId;
-    console.log(caseId);
+if (vaccinationSubmitCaseBtn) {
+    vaccinationSubmitCaseBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        // form data
+        const addCaseForm = document.getElementById(
+            "add-vaccination-case-form"
+        );
+        const caseFormData = new FormData(addCaseForm);
+        const caseId = e.target.dataset.bsCaseId;
+        console.log(caseId);
 
-    for (let [key, value] of caseFormData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+        for (let [key, value] of caseFormData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
 
-    const response = await fetch(`/add-vaccination-case/${caseId}`, {
-        method: "POST", // Yes, use POST
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: caseFormData,
-    });
+        const response = await fetch(`/add-vaccination-case/${caseId}`, {
+            method: "POST", // Yes, use POST
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: caseFormData,
+        });
 
-    const data = await response.json();
-    if (!response.ok) {
+        const data = await response.json();
+        if (!response.ok) {
+            Swal.fire({
+                title: "Adding New Vaccination Case",
+                text: data.errors, // this will make the text capitalize each word
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+
+            // errors variables
+            const healthWorkerError = document.getElementById(
+                "add-health-worker-error"
+            );
+            const dateError = document.getElementById("add-date-error");
+            const timeError = document.getElementById("add-time-error");
+            const selectedVaccineError = document.getElementById(
+                "selected-vaccine-error"
+            );
+            const doseError = document.getElementById("add-dose-error");
+
+            healthWorkerError.innerHTML = data.errors?.add_handled_by ?? "";
+            dateError.innerHTML = data.errors?.add_date_of_vaccination ?? "";
+            timeError.innerHTML = data.errors?.add_time_of_vaccination ?? "";
+            selectedVaccineError.innerHTML =
+                data.errors?.selected_vaccine_type ?? "";
+            doseError.innerHTML = data.errors?.add_record_dose ?? "";
+
+            // if the cancele btn is click
+            const cancelBtn = document.getElementById("add-cancel-btn");
+            cancelBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                healthWorkerError.innerHTML = "";
+                dateError.innerHTML = "";
+                timeError.innerHTML = "";
+                selectedVaccineError.innerHTML = "";
+                doseError.innerHTML = "";
+            });
+
+            return;
+        }
+        // add the livewire dispatch
+        Livewire.dispatch("refreshTable");
+
+        // if there's no error
         Swal.fire({
             title: "Adding New Vaccination Case",
-            text: data.errors, // this will make the text capitalize each word
-            icon: "error",
+            text: data.message, // this will make the text capitalize each word,
+            icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("vaccinationModal")
+                );
+                modal.hide();
+            }
         });
-
-        // errors variables
-        const healthWorkerError = document.getElementById(
-            "add-health-worker-error"
-        );
-        const dateError = document.getElementById("add-date-error");
-        const timeError = document.getElementById("add-time-error");
-        const selectedVaccineError = document.getElementById(
-            "selected-vaccine-error"
-        );
-        const doseError = document.getElementById("add-dose-error");
-
-        healthWorkerError.innerHTML = data.errors?.add_handled_by ?? "";
-        dateError.innerHTML = data.errors?.add_date_of_vaccination ?? "";
-        timeError.innerHTML = data.errors?.add_time_of_vaccination ?? "";
-        selectedVaccineError.innerHTML =
-            data.errors?.selected_vaccine_type ?? "";
-        doseError.innerHTML = data.errors?.add_record_dose ?? "";
-
-        // if the cancele btn is click
-        const cancelBtn = document.getElementById("add-cancel-btn");
-        cancelBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            healthWorkerError.innerHTML = "";
-            dateError.innerHTML = "";
-            timeError.innerHTML = "";
-            selectedVaccineError.innerHTML = "";
-            doseError.innerHTML = "";
-        });
-
-        return;
-    }
-    // add the livewire dispatch
-    Livewire.dispatch("refreshTable");
-
-    // if there's no error
-    Swal.fire({
-        title: "Adding New Vaccination Case",
-        text: data.message, // this will make the text capitalize each word,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const modal = bootstrap.Modal.getInstance(
-                document.getElementById("vaccinationModal")
-            );
-            modal.hide();
-        }
+        addCaseForm.reset();
     });
-    addCaseForm.reset();
-});
+}
+
 
 // END OF ADDING VACCINATION CASE SECTION
 
@@ -392,11 +426,20 @@ document.addEventListener("click", async (e) => {
         );
         const remarks = document.getElementById("edit-remarks");
 
+        const height = document.getElementById("edit-height");
+        const weight = document.getElementById("edit-weight");
+        const temperature = document.getElementById("edit-temperature");
+        const date_of_comeback = document.getElementById("edit-date-of-comeback");
+
         // provide the values
         patientName.value = data.vaccinationCase.patient_name;
         date0fVaccination.value = data.vaccinationCase.date_of_vaccination;
         timeOfVaccination.value = data.vaccinationCase.time;
         remarks.value = data.vaccinationCase.remarks;
+        height.value = data.vaccinationCase.height;
+        weight.value = data.vaccinationCase.weight;
+        temperature.value = data.vaccinationCase.temperature;
+        date_of_comeback.value = data.vaccinationCase.date_of_comeback;
 
         for (let option of doseSelect.options) {
             console.log(data.vaccinationCase.dose_number);

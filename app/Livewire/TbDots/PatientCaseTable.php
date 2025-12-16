@@ -44,6 +44,7 @@ class PatientCaseTable extends Component
         // check up 
 
         $checkUpRecords = tb_dots_check_ups::where('medical_record_case_id', $this->medicalRecordCaseId)
+            ->where('status', '!=','Archived')
             ->orderBy($this->sortField, $this->sortDirection)
             ->latest()
             ->get();
@@ -58,5 +59,17 @@ class PatientCaseTable extends Component
             'patientInfo' => $patientRecord
         ]);
 
+    }
+    public function exportPdf($caseId)
+    {
+        return redirect()->route('tb-dots-case.pdf', [
+            'caseId' => $caseId,              // Sends "Maria"
+        ]);
+    }
+    public function exportCheckUpPdf($caseId)
+    {
+        return redirect()->route('tb-dots-checkup.pdf', [
+            'checkupId' => $caseId,              // Sends "Maria"
+        ]);
     }
 }
