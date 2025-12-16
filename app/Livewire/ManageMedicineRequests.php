@@ -19,6 +19,9 @@ class ManageMedicineRequests extends Component
     public $filterStatus = 'pending';
     public $perPage = 10;
 
+    // Property for view details
+    public $viewRequest;
+
     public function approve($requestId)
     {
         DB::transaction(function () use ($requestId) {
@@ -94,6 +97,12 @@ class ManageMedicineRequests extends Component
         });
 
         session()->flash('message', 'Medicine request rejected.');
+    }
+
+    public function viewDetails($requestId)
+    {
+        $this->viewRequest = MedicineRequest::with(['medicine', 'patients'])
+            ->findOrFail($requestId);
     }
 
     public function getPendingCount(){

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\MedicineRequest;
+
 class MedicineRequestComponent extends Component
 {
     public $medicines;
@@ -14,6 +15,10 @@ class MedicineRequestComponent extends Component
 
     public $edit_id;
     public $deleteRequestMedicineId;
+
+    // Properties for view details
+    public $viewRequest;
+
     protected $rules = [
         'selectedMedicineId' => 'required|exists:medicines,medicine_id',
         'quantity' => 'required|integer|min:1',
@@ -80,6 +85,8 @@ class MedicineRequestComponent extends Component
         $this->selectedMedicineId = $request->medicine_id;
         $this->quantity = $request->quantity_requested;
         $this->reason = $request->reason;
+    
+
 
     }
 
@@ -127,15 +134,28 @@ class MedicineRequestComponent extends Component
             'text' => 'Medicine request updated successfully.',
         ]);
 
-                $this->dispatch('close-medicineRequest-modal');
+        $this->dispatch('close-medicineRequest-modal');
         $this->resetForm();
     }
 
+    public function viewDetails($requestId)
+    {
+        $request = MedicineRequest::with(['medicine', 'patients.user'])->findOrFail($requestId);
+        // Verify this request belongs to the current user
+        $patient = Auth()->user()->patient;
+        if ($request->patients_id !== $patient->id) {
+            session()->flash('error', 'Unauthorized action.');
+            return;
+        }
+
+        $this->viewRequest = $request;
+    }
 
     public function confirmRequestMedicineDelete($id){
         $this->deleteRequestMedicineId = $id;
         $this->dispatch('show-deleleteRequestModal');
     }
+
     public function deleteRequest()
     {
         MedicineRequest::findOrFail($this->deleteRequestMedicineId)->delete();
@@ -143,29 +163,24 @@ class MedicineRequestComponent extends Component
         $this->dispatch('success-deleteMedicineRequestModal');
     }
 
-        public function resetForm()
-        {
-            $this->reset([
-                'selectedMedicineId',
-                'quantity',
-                'reason',
-                'edit_id',
-            ]);
+    public function resetForm()
+    {
+        $this->reset([
+            'selectedMedicineId',
+            'quantity',
+            'reason',
+            'edit_id',
+        ]);
 
-            $this->resetErrorBag();
-        }
-
+        $this->resetErrorBag();
+    }
 
     public function render()
     {
-
         $patient = auth()->user()->patient;
-
 
         $myRequests = MedicineRequest::with('medicine')->where('patients_id', $patient->id)->latest()->paginate(10);
 
-
         return view('livewire.medicine-request', compact('myRequests'))->layout('livewire.layouts.requestMedicineLayout');
     }
-
 }

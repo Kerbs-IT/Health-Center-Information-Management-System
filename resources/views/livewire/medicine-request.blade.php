@@ -93,8 +93,8 @@
                                                 <i class="fa-solid fa-trash text-danger fs-3"></i>
                                             </button>
                                         @else
-                                            <button wire:click="viewDetails({{ $request->request_id }})"
-                                                    class="btn btn-sm btn-info text-white"
+                                            <button wire:click="viewDetails({{ $request->id }})"
+                                                    class="btn btn-sm btn-success text-white"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#viewDetailsModal">
                                                 <i class="fa-solid fa-eye me-1"></i>View Details
@@ -265,6 +265,148 @@
             </div>
         </div>
     </div>
+    {{-- View Details Modal - Add this before @push('scripts') --}}
+    <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow">
+                {{-- Modal Header --}}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="viewDetailsLabel">
+                        <i class="fa-solid fa-info-circle me-2"></i>Request Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="modal-body">
+                    @if($viewRequest)
+                        <div class="row g-3">
+                            {{-- Request Information --}}
+                            <div class="col-12">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-file-medical me-2"></i>Request Information
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Request ID</label>
+                                <p class="fw-bold">#{{ $viewRequest->id }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Status</label>
+                                <p>
+                                    @if($viewRequest->status === 'pending')
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @elseif($viewRequest->status === 'approved')
+                                        <span class="badge bg-info">Approved</span>
+                                    @elseif($viewRequest->status === 'completed')
+                                        <span class="badge bg-success">Completed</span>
+                                    @elseif($viewRequest->status === 'rejected')
+                                        <span class="badge bg-danger">Rejected</span>
+                                    @endif
+                                </p>
+                            </div>
+
+                            {{-- Medicine Details --}}
+                            <div class="col-12 mt-4">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-pills me-2"></i>Medicine Details
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Medicine Name</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->medicine_name ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Dosage</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->dosage ?? 'N/A' }}</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Quantity Requested</label>
+                                <p class="fw-bold">{{ $viewRequest->quantity_requested }}</p>
+                            </div>
+
+                            @if($viewRequest->quantity_approved)
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Quantity Approved</label>
+                                <p class="fw-bold text-success">{{ $viewRequest->quantity_approved }}</p>
+                            </div>
+                            @endif
+
+                            {{-- Request Reason --}}
+                            <div class="col-12 mt-3">
+                                <label class="form-label text-muted small">Reason for Request</label>
+                                <div class="p-3 bg-light rounded">
+                                    <p class="mb-0">{{ $viewRequest->reason }}</p>
+                                </div>
+                            </div>
+
+                            {{-- Admin Response --}}
+                            @if($viewRequest->admin_notes)
+                            <div class="col-12 mt-3">
+                                <label class="form-label text-muted small">Admin Notes</label>
+                                <div class="p-3 bg-light rounded border-start border-4 border-info">
+                                    <p class="mb-0">{{ $viewRequest->admin_notes }}</p>
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- Timestamps --}}
+                            <div class="col-12 mt-4">
+                                <h6 class="border-bottom pb-2 mb-3 text-success">
+                                    <i class="fa-solid fa-clock me-2"></i>Timeline
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Date Requested</label>
+                                <p>{{ $viewRequest->requested_at->format('M d, Y h:i A') }}</p>
+                            </div>
+
+                            @if($viewRequest->processed_at)
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Date Processed</label>
+                                <p>{{ $viewRequest->processed_at->format('M d, Y h:i A') }}</p>
+                            </div>
+                            @endif
+
+                            @if($viewRequest->completed_at)
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Date Completed</label>
+                                <p>{{ $viewRequest->completed_at->format('M d, Y h:i A') }}</p>
+                            </div>
+                            @endif
+
+                            @if($viewRequest->status === 'approved' && !$viewRequest->completed_at)
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    <small>Please visit the health center to collect your medicine.</small>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="fa-solid fa-exclamation-triangle fs-1 text-warning mb-3"></i>
+                            <p class="text-muted">No details available</p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Scripts --}}
     @push('scripts')
     <script>
@@ -279,5 +421,5 @@
         });
     </script>
     @endpush
-
 </div>
+
