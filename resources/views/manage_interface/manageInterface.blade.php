@@ -28,9 +28,9 @@
             <!-- we use flex-grow-1 to take the remaining space of the right side -->
             <div class="flex-grow-1 ">
                 @include('layout.header')
-                <main class=" mt-4 d-flex align-items-center justify-content-center flex-grow-1">
-                    <div class="color-pallette  h-[700px] bg-light w-[900px] p-3 d-flex align-items-center flex-column  rounded">
-                        <div class="pallet-con w-50">
+                <main class=" mt-4 d-flex align-items-center justify-content-center flex-grow-1 w-100 px-3 px-md-2">
+                    <div class="color-pallette h-[700px] bg-light  max-w-[900px]   w-[100%] lg:w-[75%] p-md-3 p-1 d-flex align-items-center flex-column  rounded">
+                        <div class="pallet-con  px-3 px-md-0 w-[100%] lg:w-[50%]">
                             <h2 class="text-center fw-bold text-dark"> Change Color Pallete </h2>
                             <div class="colors mt-5">
                                 <form action="" method="post" id="color-pallete-form">
