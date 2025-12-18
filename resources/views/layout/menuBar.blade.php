@@ -180,17 +180,12 @@
             <div class="sub-menu  patient-menu w-75 align-self-end">
                 <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_vaccination">
                     <i class="fa-solid fa-layer-group"></i>
-                    <h5 class="mb-0">Add Category</h5>
+                    <h5 class="mb-0">Category</h5>
                 </a>
                 <!-- senior citizen -->
                 <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
                     <i class="fa-solid fa-plus"></i>
-                    <h5 class="mb-0">Add Medicine</h5>
-                </a>
-                <!-- TB dots -->
-                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
-                    <i class="bi bi-bar-chart-fill"></i>
-                    <h5 class="mb-0">Report</h5>
+                    <h5 class="mb-0">Medicine</h5>
                 </a>
                 <!-- family planning
                 <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
@@ -200,6 +195,11 @@
                 <a href="{{ route('manageMedicineRequests') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
                     <i class="bi bi-capsule"></i>
                     <h5 class="mb-0">Manage Requests</h5>
+                </a>
+                <!-- TB dots -->
+                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <h5 class="mb-0">Report</h5>
                 </a>
                 <a href="{{ route('medicineRequestLog') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
                     <i class="fa-solid fa-clipboard-list"></i>
@@ -228,9 +228,9 @@
         <a href="{{ route('medicineRequest')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="patient_medical_record">
             <div class="menu-text d-flex align-items-center my-auto gap-3 ">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                    <path fill="currentColor" d="M88.7 223.8L0 375.8 0 96C0 60.7 28.7 32 64 32l117.5 0c17 0 33.3 6.7 45.3 18.7l26.5 26.5c12 12 28.3 18.7 45.3 18.7L416 96c35.3 0 64 28.7 64 64l0 32-336 0c-22.8 0-43.8 12.1-55.3 31.8zm27.6 16.1C122.1 230 132.6 224 144 224l400 0c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-112 192C453.9 474 443.4 480 432 480L32 480c-11.5 0-22-6.1-27.7-16.1s-5.7-22.2 .1-32.1l112-192z" />
+                    <path fill="white" d="M88.7 223.8L0 375.8 0 96C0 60.7 28.7 32 64 32l117.5 0c17 0 33.3 6.7 45.3 18.7l26.5 26.5c12 12 28.3 18.7 45.3 18.7L416 96c35.3 0 64 28.7 64 64l0 32-336 0c-22.8 0-43.8 12.1-55.3 31.8zm27.6 16.1C122.1 230 132.6 224 144 224l400 0c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-112 192C453.9 474 443.4 480 432 480L32 480c-11.5 0-22-6.1-27.7-16.1s-5.7-22.2 .1-32.1l112-192z" />
                 </svg>
-                <h4 class="mb-0 fs-5">Request Medicine</h4>
+                <h4 class="mb-0 fs-5 text-white">Request Medicine</h4>
             </div>
         </a>
         @endif
