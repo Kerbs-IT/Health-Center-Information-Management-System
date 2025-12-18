@@ -29,7 +29,7 @@
         </aside>
         <div class="flex-grow-1 d-flex flex-column" style="min-height: 0;">
             @include('layout.header')
-            <main class=" flex-grow-1 py-2 px-4 basic-info" style="overflow-y: auto; min-height: 0;">
+            <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info" style="overflow-y: auto; min-height: 0;">
 
                 <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="add-patient-form">
                     @csrf
@@ -41,14 +41,14 @@
                                 <div class="user-info w-100">
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient</label>
-                                        <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-25" onchange="showAdditional()">
+                                        <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
                                             <option value="" disabled selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
                                             <option value="prenatal">Prenatal</option>
                                             <option value="tb-dots">TB DOTS</option>
                                             <option value="senior-citizen">Senior Citizen</option>
                                             <option value="family-planning">Family Planning</option>
-                                        </select>
+                                        </select>-
                                     </div>
                                     <h4>Personal Info</h4>
                                     <div class="mb-2 d-flex gap-1">
@@ -66,7 +66,7 @@
                                         </div>
                                     </div>
                                     <!-- age -->
-                                    <div class="mb-2 d-flex gap-1">
+                                    <div class="mb-2 d-flex gap-md-1 gap-0">
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
@@ -126,7 +126,7 @@
                                         </div>
                                         <!-- administered by -->
                                         @if(Auth::user()->role == 'nurse')
-                                        <div class="mb-2 w-50">
+                                        <div class="mb-2 w-100 w-md-50">
                                             <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
                                             <select name="handled_by" id="handled_by" class="form-select ">
                                                 <option value="" disabled selected>Select a person</option>
@@ -343,15 +343,15 @@
                                     </div>
 
                                     <!-- address -->
-                                    <div class="mb-2 d-flex gap-1 flex-column">
+                                    <div class="mb-md-2 mb-1 d-flex gap-1 flex-column">
                                         <h4>Address</h4>
-                                        <div class="input-field d-flex gap-2 align-items-center">
-                                            <div class=" mb-2 w-50">
+                                        <div class="input-field d-flex gap-2 align-items-center flex-md-row flex-column">
+                                            <div class=" mb-2 w-100 w-md-50">
                                                 <label for="street">Street*</label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="">
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Barangay*</label>
                                                 @php
                                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
@@ -368,18 +368,18 @@
                                     </div>
                                     <div class="vital-sign w-100">
                                         <h5>Vital Sign</h5>
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Blood Pressure:</label>
                                                 <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Temperature:</label>
                                                 <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
@@ -387,25 +387,25 @@
 
                                         </div>
                                         <!-- 2nd row -->
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 second-row flex-wrap">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
                                                 <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="height">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Weight(kg):</label>
                                                 <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>
                                         <!-- 3rd row -->
-                                        <div class="mb-2 input-field d-none gap-3 w-100 third-row">
+                                        <div class="mb-2 input-field d-none gap-md-3 gap-0 w-100 third-row">
                                             <div class="mb-2 w-50">
                                                 <label for="BP">Birth Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
@@ -428,60 +428,60 @@
                     <!-- step 2 -->
                     <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
                         <!-- vaccination -->
-                        <div class="vaccination d-none  inner w-50 align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
+                        <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
                             <div class="vaccination-content">
-                                <div class="mb-2 w-100 ">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100 ">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">Patient Name</label>
                                         <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">Administered By:</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="Nurse">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">handled By:</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100 ">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100 ">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
                                         <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
                                         <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="time">Time</label>
                                         <input type="time" class="form-control" name="time_of_vaccination" required>
                                         <small class="text-danger error-text" id="time_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_weight">Weight</label>
                                         <input type="number" class="form-control" name="current_weight" id="current_weight" required>
                                         <small class="text-danger error-text" id="current_weight_error"></small>
                                     </div>
-                                    <div class="mb-2 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="time">Height</label>
                                         <input type="number" class="form-control" name="current_height" id="current_height" required>
                                         <small class="text-danger error-text" id="current_height_error"></small>
                                     </div>
-                                    <div class="mb-2 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_temperature">Temperature</label>
                                         <input type="number" class="form-control" name="current_temperature" id="current_temperature" required>
                                         <small class="text-danger error-text" id="current_temperature_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2">
+                                <div class="mb-md-2 mb-1">
                                     <label for="vaccine_type">Vaccine Type:</label>
-                                    <div class="mb-2 d-flex gap-2">
+                                    <div class="mb-md-2 mb-1 d-flex gap-2">
                                         <select name="vaccine_type" id="vaccine_input" class="form-select w-100" required>
                                             <option value="" selected disabled>Select Vaccine</option>
                                             @foreach($vaccines as $vaccine)
