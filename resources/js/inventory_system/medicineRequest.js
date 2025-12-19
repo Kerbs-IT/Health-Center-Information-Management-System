@@ -1,18 +1,15 @@
-// Sweet Alert For Medicine Request
 window.addEventListener('medicineRequest-added', event => {
     Swal.fire({
         title: "Success!",
-        text: "Medicine Request Successfully Added. Make sure to get your Medicine at the Health Center",
+        text: "Medicine has been added successfully.",
         icon: "success",
-        showConfirmButton: true,
+        showConfirmButton: false,
+        timer:1500
     })
+    window.location.reload();
 
-    // .then(() => {
-    //     var myModalEl = document.querySelector('#requestMedicineModal');
-    //     var modal = bootstrap.Modal.getInstance(myModalEl);
-    //     modal.hide();
-    // });
 });
+
 
 document.addEventListener('DOMContentLoaded', function () {
 

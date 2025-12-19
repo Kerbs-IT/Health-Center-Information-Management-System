@@ -31,6 +31,7 @@ use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
+use App\Http\Controllers\InventoryController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -199,7 +200,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
         return view('layout.menuBar');
     })->name('menubar');
 
-  
+
 
     // address route
     Route::get('/get-regions', [addressController::class, 'getRegions']);
@@ -220,7 +221,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/vaccination/case/{id}', [RecordsController::class, 'vaccinationCase'])->name('record.vaccination.case');
     Route::put('/patient-record/update/{id}', [RecordsController::class, 'vaccinationUpdateDetails'])->name('record.vaccination.update');
     Route::post('/patient-record/{typeOfPatient}/delete/{id}', [RecordsController::class, 'deletePatient'])->name('record.vaccination.delete');
-    
+
     // ADD VACCINATION CASE RECORD
     Route::post('/add-vaccination-case/{id}', [RecordsController::class, 'addVaccinationCaseRecord']);
     // ---------------- DELETE VACCINATION CASE ----------------------
@@ -542,3 +543,12 @@ Route::post('/verify-email/resend', [VerificationController::class, 'resend'])->
 // patient list
 
 Route::get('/patient-list',[PatientList::class,'index'])->name('patient-list');
+
+
+// pdf route:
+
+Route::get('/download-medicine-report', [InventoryController::class, 'downloadMedicineReport'])->name('download.medicine.report');
+Route::get('/download-request-report', [InventoryController::class, 'downloadRequestReport'])->name('download.request.report');
+Route::get('/download-distributed-report', [InventoryController::class, 'downloadDistributedReport'])->name('download.distributed.report');
+Route::get('/download-low-stock-report', [InventoryController::class, 'downloadLowStockReport'])->name('download.lowstock.report');
+Route::get('/download-expiring-soon-report', [InventoryController::class, 'downloadExpiringSoonReport'])->name('download.expSoon.report');
