@@ -60,7 +60,7 @@ class SeniorCitizenController extends Controller
                 'alergies' => 'sometimes|nullable|string',
                 'prescribe_by_nurse' => 'sometimes|nullable|string',
                 'medication_maintenance_remarks' => 'sometimes|nullable|string',
-                'date_of_comeback' => 'required|date'
+                'senior_citizen_date_of_comeback' => 'required|date'
             ]);
 
 
@@ -145,7 +145,7 @@ class SeniorCitizenController extends Controller
                 'prescribe_by_nurse' => $patientCase['prescribe_by_nurse'],
                 'remarks' => $patientCase['medication_maintenance_remarks'],
                 'type_of_record' => 'Case Record',
-                'date_of_comeback' => $patientCase['date_of_comeback']
+                'date_of_comeback' => $patientCase['senior_citizen_date_of_comeback']
             ]);
 
             $caseId = $seniorCitizenCase->id;
