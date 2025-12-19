@@ -70,9 +70,9 @@ class addPatientController extends Controller
                 'selected_vaccines' => 'required|string',
                 'dose_number' => 'required|numeric',
                 'remarks' => 'sometimes|nullable|string',
-                'current_height' => 'nullable|numeric',
-                'current_weight' => 'nullable|numeric',
-                'current_temperature'    => 'nullable|numeric',
+                'current_height' => 'sometimes|nullable|numeric',
+                'current_weight' => 'sometimes|nullable|numeric',
+                'current_temperature' => 'nullable|numeric',
                 'date_of_comeback' => 'required|date'
 
             ]);

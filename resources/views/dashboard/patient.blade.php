@@ -38,88 +38,185 @@
                             <img src="{{ optional(Auth::user()->patient)->profile_image 
     ? asset(Auth::user()->patient->profile_image) 
     : asset('images/default_profile.png') }}"
-                                alt="profile_img" class="mb-3 profile-section-image"  style="width: 100px; height: 100px; object-fit: cover;">
-                            <h4 class="mb-3">{{ optional(Auth::user()->patient)->full_name ?? 'none' }}</h4>
+                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
+                            <h4 class="mb-3">{{ optional(Auth::user())->username ?? 'none' }}</h4>
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
 
                         <!-- Right panel -->
                         <div class="personal-info p-4 flex-grow-1">
-                            <div class="info">
-                                <h4>Personal Information</h4>
-                                <div class="mb-3 d-flex px-4">
-                                    <div class="box w-50">
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Sex: </h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> sex ?? 'none'}}</p>
+                            <!-- Personal Information Section -->
+                            <div class="info mb-4">
+                                <h4 class="mb-3 pb-2 border-bottom fw-bold">Personal Information</h4>
+                                <div class="row px-3">
+                                    <!-- Left Column -->
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Name:</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->full_name ?? trim((Auth::user()->first_name ?? '') . ' ' . (Auth::user()->middle_initial ?? '') . ' ' . (Auth::user()->last_name ?? '')) ?: 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Age:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> age ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Sex</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->sex ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Contact No:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> contact_number ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Age</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->age ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Register Date:</h5>
-                                            <p>{{ optional(Auth::user()) -> created_at -> format('m/d/Y') ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Contact Number</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->contact_number ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Register Date</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user())->created_at->format('m/d/Y') ?? 'Not specified' }}</p>
                                         </div>
                                     </div>
-                                    <!-- 2nd box -->
-                                    <div class="box w-50 px-4">
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Nationality:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> nationality ?? 'none'}}</p>
+
+                                    <!-- Right Column -->
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Nationality</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->nationality ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Date of Birth:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> date_of_birth ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Date of Birth</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->date_of_birth ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Civil Status:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> civil_status ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Place of Birth</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->place_of_birth ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Civil Status</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->civil_status ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Section -->
+                            <div class="address mb-3">
+                                <h4 class="mb-3 pb-2 border-bottom fw-bold">Address</h4>
+                                <div class="px-3">
+                                    <p class="mb-0 fw-normal">{{ $fullAddress }}</p>
+                                </div>
+                            </div>
+                            <div class="other-info">
+                                <h4 class="mb-3 pb-2 border-bottom fw-bold">{{ucwords($typeOfPatient)}} Medical Record Information</h4>
+                                @if(($typeOfPatient ?? null) === 'vaccination')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Mother Name</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->mother_name ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Birth Weight</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->birth_weight?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Father Name</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->father_name?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Birth Height</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->birth_height ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'prenatal')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Head of the Family</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->family_head_name ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Blood Type</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->blood_type?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Family Serial No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->family_serial_no?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philHealth_number ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Plan to have a family planning</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->family_planning_decision?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'tb-dots')
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth ID No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philhealth_id_no ?? 'Not specified' }}</p>
+                                        </div>
+                                     
+                                    </div>
+                                   
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'senior-citizen')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Occupation</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->occupation ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Member of Social Security System (SSS)</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->SSS?? 'Not specified' }}</p>
                                         </div>
 
                                     </div>
                                 </div>
-                            </div>
-                            <div class="address">
-                                <h4>Address</h4>
-                                <p class="fs-5 fw-light px-3">{{ $fullAddress }}</p>
+                                @elseif(($typeOfPatient ?? null) === 'family-planning')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Occupation</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->occupation ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philhealth_no?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @else
+                                @endif
                             </div>
                         </div>
                     </div>
-                    <div class="record w-100">
-                        <h4 class="text-start">Recent History</h4>
-                        <table class="w-100">
-                            <thead class="table-header">
-                                <tr>
-                                    <th>Case No.</th>
-                                    <th>Type of Record</th>
-                                    <th>Administed By</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>C-01</td>
-                                    <td>Medical Record</td>
-                                    <td>Nurse Joy</td>
-                                    <td>05-21-2025</td>
-                                    <td>Done</td>
-                                    <td>
-                                        <button class="btn-success btn">View Details</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
                 </main>
             </div>
         </div>
@@ -132,7 +229,7 @@
                     @method('PUT')
                     @csrf
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title" id="simpleModalLabel">Modal Title</h5>
+                        <h5 class="modal-title" id="simpleModalLabel">Edit User Profile</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
                     </div>
                     <div class="moda-body h-100">

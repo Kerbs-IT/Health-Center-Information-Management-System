@@ -462,6 +462,10 @@ class PdfController extends Controller
                     $staffInfo = staff::where("user_id", $vaccinationCase->health_worker_id)->first();
                     $healthWorkerName = $staffInfo->full_name;
                 }
+                if(Auth::user()->role == 'patient'){
+                    $staffInfo = staff::where("user_id", $vaccinationCase->health_worker_id)->first();
+                    $healthWorkerName = $staffInfo->full_name;
+                }
             }
             $vaccineAdministered = vaccineAdministered::where(
                 'vaccination_case_record_id',

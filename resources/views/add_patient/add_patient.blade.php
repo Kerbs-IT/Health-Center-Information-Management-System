@@ -515,8 +515,8 @@
                                 </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
-                                        <label for="date_of_vaccination">Date of Comeback</label>
-                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_comeback" required>
+                                        <label for="date_of_comeback">Date of Comeback</label>
+                                        <input type="date" class="form-control w-100 " name="date_of_comeback" id="date_of_comeback" required>
                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                     </div>
                                 </div>
