@@ -27,9 +27,9 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex flex-column" style="min-height: 0;">
+        <div class="flex-grow-1 d-flex flex-column overflow-x-auto">
             @include('layout.header')
-            <main class=" flex-grow-1 py-2 px-4 basic-info" style="overflow-y: auto; min-height: 0;">
+            <main class=" flex-grow-1 flex-grow-1 py-2 px-1 px-md-4 basic-info">
 
                 <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="add-patient-form">
                     @csrf
