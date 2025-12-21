@@ -1,13 +1,13 @@
 <header class=" d-flex align-items-center pe-3 w-100 position-sticky top-0">
   <nav class="d-flex justify-content-between align-items-center w-100 ">
     <div class="box d-flex gap-3 align-items-center justify-content-center">
-    <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
+      <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
         <i class="fa-solid fa-bars fs-2"></i>
-    </button>
+      </button>
       @if ($page === 'DASHBOARD')
       <h1 class="mb-0">Welcome, <span>{{ Auth::user()->username ?? 'Guest' }}</span></h1>
       @else
-    <h1 class="mb-0">{{ $page }}</h1>
+      <h1 class="mb-0">{{ $page }}</h1>
       @endif
     </div>
     <div class="right-info d-flex align-items-center justify-content-center gap-3 z-1">
@@ -38,18 +38,31 @@
       $profileImage = asset(Auth::user()->nurses->profile_image);
       } elseif (optional(Auth::user()->staff)->profile_image) {
       $profileImage = asset(Auth::user()->staff->profile_image);
-      } elseif (optional(Auth::user()->patient)->profile_image) {
-      $profileImage = asset(Auth::user()->patient->profile_image);
-      } else {
+      }else if(optional(Auth::user())->profile_image){
+      $profileImage = asset(Auth::user()->profile_image);
+      }elseif (optional(Auth::user()->patient)->profile_image){
+      $profileImage = asset(Auth::user()->patient->profile_image); 
+      }else {
       $profileImage = asset('images/profile_images/default_profile.png');
       }
       @endphp
+
       <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
         <img src="{{ $profileImage }}" alt=" profile picture" class="profile-img z-1" id="profile_img">
         <div class="username-n-role">
-          <h5 class="mb-0">{{ optional(Auth::user()->nurses)->full_name
-                                        ?? optional(Auth::user()->staff)->full_name
-                                        ?? optional(Auth::user()->patient)->full_name ?? 'none' }}</h5>
+          <h5 class="mb-0">
+            {{
+                optional(Auth::user()->nurses)->full_name
+                ?? optional(Auth::user()->staff)->full_name
+                ?? optional(Auth::user()->patient)->full_name 
+                ?? (function() {
+                    $user = Auth::user();
+                    $middle = $user->middle_initial ? strtoupper(substr($user->middle_initial, 0, 1)) . '.' : '';
+                    return ucwords(trim(implode(' ', array_filter([$user->first_name, $middle, $user->last_name]))));
+                })()
+                ?? 'none'
+            }}
+          </h5>
           <h6 class="mb-0 text-muted fw-light">{{Auth::user() -> role ?? 'none';}}</h6>
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">

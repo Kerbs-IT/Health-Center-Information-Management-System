@@ -1,4 +1,4 @@
-import { error } from "jquery";
+import { error, trim } from "jquery";
 import Swal from "sweetalert2";
 
 const editIcon = document.getElementById("patient_profile_edit");
@@ -27,18 +27,19 @@ editIcon.addEventListener("click", (e) => {
 
             // reset first
             submitBtn.dataset.user = data.response.user_id;
-            const profileImg = document.getElementById("profile-image");
+            const profileImg = document.getElementById("profile-image") ?? null;
             const fullname = document.getElementById("full_name");
-            const fname = document.getElementById("first_name");
-            const lname = document.getElementById("last_name");
-            const mInitial = document.getElementById("middle_initial");
-            const age = document.getElementById("age");
-            const bday = document.getElementById("birthdate");
-            const contact = document.getElementById("contact_num");
-            const nationality = document.getElementById("nationality");
-            const username = document.getElementById("username");
-            const email = document.getElementById("email");
-            const blkNstreet = document.getElementById("update_blk_n_street");
+            const fname = document.getElementById("first_name") ?? null;
+            const lname = document.getElementById("last_name") ?? null;
+            const mInitial = document.getElementById("middle_initial") ?? null;
+            const age = document.getElementById("age")??null;
+            const bday = document.getElementById("birthdate") ?? null;
+            const contact = document.getElementById("contact_num")??null;
+            const nationality = document.getElementById("nationality") ?? null;
+            const username = document.getElementById("username") ?? null;
+            const email = document.getElementById("email") ?? null;
+            const blkNstreet =
+                document.getElementById("update_blk_n_street") ?? null;
             const patient_purok_address = document.getElementById(
                 "update_patient_purok_dropdown"
             );
@@ -49,19 +50,78 @@ editIcon.addEventListener("click", (e) => {
             const city = document.getElementById("city");
             const brgy = document.getElementById("brgy");
 
+            // initialize the additional input field for patient dashboard edit
+            // vaccination
+            const motherName = document.getElementById("mother_name");
+            const fatherName = document.getElementById("father_name");
+            const birthHeight = document.getElementById("vaccination_height");
+            const birthWeight = document.getElementById("vaccination_weight");
+            // prenatal
+            const headOfFamily = document.getElementById("head_of_the_family");
+            const bloodType = document.getElementById("blood_type");
+            const religion = document.getElementById("religion");
+            const philHealthYes = document.getElementById("philhealth_yes");
+            const philHealthNo = document.getElementById("philhealth_no");
+            const philhealthNumberPrenatal =
+                document.getElementById("philhealth_number");
+            // tb-dots
+            const philhealthId = document.getElementById("philheath_id");
+            // senior citizen
+            const occupation = document.getElementById("occupation");
+            const memberOfsss = document.querySelectorAll('input[name="SSS"]');
+            // familyPlanning
+            const philHealthNumber = document.getElementById("philhealth_no");
+            const civil_status = document.getElementById("civil_status")??null;
+
+            // Safe handling of patient data with fallback to user data
+            const patient = data.response.patient;
+            const user = data.response.user;
+
+
+
+
+            // Safely construct full name with fallback
+            if (patient?.full_name) {
+                fullname.innerHTML = patient.full_name;
+            } else {
+                // Fallback to user data, handling null/undefined values
+                const firstName = user?.first_name || "";
+                const middleInitial = user?.middle_initial || "";
+                const lastName = user?.last_name || "";
+                fullname.innerHTML =
+                    `${firstName} ${middleInitial} ${lastName}`.trim();
+            }
+
             // input values
             const baseUrl = profileImg.dataset.baseUrl; // gets data-base-url
-            profileImg.src = baseUrl + data.response.patient.profile_image;
+            profileImg.src =
+                baseUrl + data.response.user.profile_image ??
+                baseUrl + data.response.patient.profile_image;
             // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
             console.log(profileImg);
-            fullname.innerHTML = data.response.patient.full_name;
-            fname.value = data.response.patient.first_name;
-            lname.value = data.response.patient.last_name;
-            mInitial.value = data.response.patient.middle_initial;
-            age.value = data.response.patient.age;
-            bday.value = data.response.patient.date_of_birth;
-            contact.value = data.response.patient.contact_number;
-            nationality.value = data.response.patient.nationality;
+           
+            fname.value = patient?.first_name || user?.first_name || "";
+            lname.value = patient?.last_name || user?.last_name || "";
+            mInitial.value =
+                patient?.middle_initial || user?.middle_initial || "";
+            if (age) age.value = data.response.patient?.age ?? "";
+            
+            // slice date
+            function dateFormat(date) {
+                if (!date) return "";
+                const newDate = new Date(date);
+                // Check if date is valid
+                if (isNaN(newDate.getTime())) return "";
+                return newDate.toISOString().split("T")[0];
+            }
+
+            bday.value = dateFormat(
+                data.response.patient?.date_of_birth ??
+                    data.response.user.date_of_birth
+            );
+            contact.value = data.response.patient?.contact_number ?? data.response.user.contact_number ?? "";
+            if (nationality) nationality.value = data.response.patient?.nationality ?? "";
+            if (civil_status) civil_status.value = data.response.patient?.civil_status ?? '';
 
             username.value = data.response.user.username;
             email.value = data.response.user.email;
@@ -72,6 +132,52 @@ editIcon.addEventListener("click", (e) => {
                 (data.response.patient_address.street
                     ? ", " + data.response.patient_address.street
                     : "");
+
+            if (data.response.typeOfPatient != null) {
+                if (data.response.typeOfPatient == "vaccination") {
+                    motherName.value =
+                        data.response.medicalRecord.mother_name ?? "";
+                    fatherName.value =
+                        data.response.medicalRecord.father_name ?? "";
+                    birthHeight.value =
+                        data.response.medicalRecord.birth_height ?? "";
+                    birthWeight.value =
+                        data.response.medicalRecord.birth_weight ?? "";
+                } else if (data.response.typeOfPatient == "prenatal") {
+                    headOfFamily.value =
+                        data.response.medicalRecord.family_head_name ?? "";
+                    bloodType.value =
+                        data.response.medicalRecord.blood_type ?? "";
+                    religion.value = data.response.medicalRecord.religion ?? "";
+
+                    philHealthNo.checked =
+                        data.response.medicalRecord.philHealth_number == "no";
+                    philHealthYes.checked =
+                        data.response.medicalRecord.philHealth_number != null &&
+                        data.response.medicalRecord.philHealth_number != "no";
+                    philhealthNumberPrenatal.value =
+                        data.response.medicalRecord.philHealth_number == "no"
+                            ? ""
+                            : data.response.medicalRecord.philHealth_number;
+                } else if (data.response.typeOfPatient == "tb-dots") {
+                    philhealthId.value =
+                        data.response.medicalRecord.philhealth_id_no ?? "";
+                } else if (data.response.typeOfPatient == "senior-citizen") {
+                    occupation.value =
+                        data.response.medicalRecord.occupation ?? "";
+                    religion.value = data.response.medicalRecord.religion ?? "";
+                    memberOfsss.forEach((radio) => {
+                        radio.checked =
+                            radio.value == data.response.medicalRecord.SSS;
+                    });
+                } else if (data.response.typeOfPatient == "family-planning") {
+                    occupation.value =
+                        data.response.medicalRecord.occupation ?? "";
+                    religion.value = data.response.medicalRecord.religion ?? "";
+                    philHealthNo.value =
+                        data.response.medicalRecord.philhealth_no ?? "";
+                }
+            }
 
             // submit btn data-user value
             submitBtn.dataset.user = data.response.user.id;
@@ -114,106 +220,124 @@ editIcon.addEventListener("click", (e) => {
         });
 });
 
-submitBtn.addEventListener("click", (e) => {
+submitBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const userId = submitBtn.dataset.user;
 
-    let form = document.getElementById("profile-form");
-    let formData = new FormData(form);
+    const form = document.getElementById("profile-form");
+    const formData = new FormData(form);
+    formData.append("_method", "PUT");
 
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
+    try {
+        const response = await fetch(`/patient-profile/update/${userId}`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            clearAllErrors();
+
+            Swal.fire({
+                title: "Update Successful",
+                text: "Profile information has been successfully updated",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+        } else {
+            displayErrors(data.errors);
+
+            // Format errors for SweetAlert
+            const errorMessages = formatErrorMessages(data.errors);
+
+            Swal.fire({
+                title: "Validation Error",
+                html: errorMessages,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+
+            // Clear file input
+            const imageFile = document.getElementById("fileInput");
+            imageFile.value = "";
+            document.getElementById("fileName").innerHTML = "No chosen File";
+        }
+    } catch (err) {
+        Swal.fire({
+            title: "Error",
+            text: "An unexpected error occurred. Please try again.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK",
+        });
+        console.error("Fetch error:", err);
+    }
+});
+
+// Error field mapping
+const errorFieldMap = {
+    profile_image: "image-error",
+    first_name: "fname-error",
+    middle_initial: "middle-initial-error",
+    last_name: "lname-error",
+    age: "age-error",
+    date_of_birth: "birthdate-error",
+    sex: "sex-error",
+    civil_status: "civil-status-error",
+    contact_number: "contact-error",
+    nationality: "nationality-error",
+    username: "username-error",
+    email: "email-error",
+    street: "street-error",
+    postal_code: "postal-error",
+    regionKey: "region-error",
+    provinceKey: "province-error",
+    cityKey: "city-error",
+    barangayKey: "brgy-error",
+};
+
+function displayErrors(errors) {
+    if (!errors) return;
+
+    Object.entries(errorFieldMap).forEach(([fieldName, errorId]) => {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.innerHTML = errors[fieldName]?.[0] ?? "";
+        }
+    });
+}
+
+function clearAllErrors() {
+    Object.values(errorFieldMap).forEach((errorId) => {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.innerHTML = "";
+        }
+    });
+}
+
+function formatErrorMessages(errors) {
+    if (!errors || Object.keys(errors).length === 0) {
+        return "Please check your input and try again.";
     }
 
-    formData.append("_method", "PUT"); // Laravel will detect this
-
-    fetch(`/patient-profile/update/${userId}`, {
-        method: "POST", // Yes, use POST
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    })
-        .then(async (response) => {
-            const data = await response.json(); // 👈 parse the body
-            return { ok: response.ok, data }; // 👈 pass both ok status and data
+    const errorList = Object.entries(errors)
+        .map(([field, messages]) => {
+            const fieldLabel = field
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+            return `<strong>${fieldLabel}:</strong> ${messages[0]}`;
         })
-        .then(({ ok, data }) => {
-            const imgError = document.getElementById("image-error");
-            const fnameError = document.getElementById("fname-error");
-            const middleError = document.getElementById("middle-initial-error");
-            const lnameError = document.getElementById("lname-error");
-            const ageError = document.getElementById("age-error");
-            const birthdateError = document.getElementById("birthdate-error");
-            const sexError = document.getElementById("sex-error");
-            const civilStatusError =
-                document.getElementById("civil-status-error");
-            const contactError = document.getElementById("contact-error");
-            const nationalityError =
-                document.getElementById("nationality-error");
-            const usernameError = document.getElementById("username-error");
-            const emailError = document.getElementById("email-error");
-            const streetError = document.getElementById("street-error");
-            const postalError = document.getElementById("postal-error");
-            const regionError = document.getElementById("region-error");
-            const provinceError = document.getElementById("province-error");
-            const cityError = document.getElementById("city-error");
-            const brgyError = document.getElementById("brgy-error");
-            const imageFile = document.getElementById("fileInput");
+        .join("<br>");
 
-            if (ok) {
-                Swal.fire({
-                    title: "Update",
-                    text: "Profile Information is successfully updated",
-                    icon: "success",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK",
-                });
-
-                // Optional: clear error messages on success
-                imgError.innerHTML = "";
-                middleError.innerHTML = "";
-                // clear others as needed...
-            } else {
-                Swal.fire({
-                    title: "Update",
-                    text: "Invalid input value",
-                    icon: "error",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK",
-                });
-
-                // Fill error fields
-                imgError.innerHTML = data.errors?.profile_image?.[0] ?? "";
-                middleError.innerHTML = data.errors?.middle_initial?.[0] ?? "";
-                fnameError.innerHTML = data.errors?.first_name?.[0] ?? "";
-                lnameError.innerHTML = data.errors?.last_name?.[0] ?? "";
-                ageError.innerHTML = data.errors?.age?.[0] ?? "";
-                birthdateError.innerHTML =
-                    data.errors?.date_of_birth?.[0] ?? "";
-                sexError.innerHTML = data.errors?.sex?.[0] ?? "";
-                civilStatusError.innerHTML =
-                    data.errors?.civil_status?.[0] ?? "";
-                contactError.innerHTML = data.errors?.contact_number?.[0] ?? "";
-                nationalityError.innerHTML =
-                    data.errors?.nationality?.[0] ?? "";
-                usernameError.innerHTML = data.errors?.username?.[0] ?? "";
-                emailError.innerHTML = data.errors?.email?.[0] ?? "";
-                streetError.innerHTML = data.errors?.street?.[0] ?? "";
-                postalError.innerHTML = data.errors?.postal_code?.[0] ?? "";
-                regionError.innerHTML = data.errors?.regionKey?.[0] ?? "";
-                provinceError.innerHTML = data.errors?.provinceKey?.[0] ?? "";
-                cityError.innerHTML = data.errors?.cityKey?.[0] ?? "";
-                brgyError.innerHTML = data.errors?.barangayKey?.[0] ?? "";
-
-                imageFile.value = "";
-                document.getElementById("fileName").innerHTML =
-                    "No choosen File";
-            }
-        })
-        .catch((err) => {
-            // console.error('Fetch error:', err);
-        });
-});
+    return `<div style="text-align: left; max-height: 300px; overflow-y: auto;">${errorList}</div>`;
+}

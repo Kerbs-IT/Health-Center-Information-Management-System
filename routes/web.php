@@ -552,3 +552,7 @@ Route::get('/download-request-report', [InventoryController::class, 'downloadReq
 Route::get('/download-distributed-report', [InventoryController::class, 'downloadDistributedReport'])->name('download.distributed.report');
 Route::get('/download-low-stock-report', [InventoryController::class, 'downloadLowStockReport'])->name('download.lowstock.report');
 Route::get('/download-expiring-soon-report', [InventoryController::class, 'downloadExpiringSoonReport'])->name('download.expSoon.report');
+
+// testing area
+Route::get('/pdf/generate/dashbord',[PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
+Route::get('/pdf/generate/graph',[PdfController::class, 'generateDashboardGraph'])->name("generate-dashboard-graph.pdf");
