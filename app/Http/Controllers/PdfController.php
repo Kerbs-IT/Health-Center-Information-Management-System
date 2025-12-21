@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Spatie\Browsershot\Browsershot;
 
 class PdfController extends Controller
 {
@@ -462,7 +464,7 @@ class PdfController extends Controller
                     $staffInfo = staff::where("user_id", $vaccinationCase->health_worker_id)->first();
                     $healthWorkerName = $staffInfo->full_name;
                 }
-                if(Auth::user()->role == 'patient'){
+                if (Auth::user()->role == 'patient') {
                     $staffInfo = staff::where("user_id", $vaccinationCase->health_worker_id)->first();
                     $healthWorkerName = $staffInfo->full_name;
                 }
@@ -502,7 +504,7 @@ class PdfController extends Controller
         try {
 
             $case = prenatal_case_records::with('pregnancy_timeline_records', 'prenatal_assessment')->findOrFail($id);
-            $medicalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])-> where('id',$case->medical_record_case_id)->first();
+            $medicalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $case->medical_record_case_id)->first();
             $address = patient_addresses::where('patient_id', $medicalRecord->patient_id)->first();
             $fullAddress = collect([
                 $address->house_number,
@@ -525,8 +527,8 @@ class PdfController extends Controller
             $pdf = SnappyPdf::loadView('pdf.prenatal.prenatal-case', [
                 'caseInfo' => $case,
                 'patient' => $medicalRecord->patient,
-                'medicalRecord'=> $medicalRecord,
-                'address'=> $fullAddress,
+                'medicalRecord' => $medicalRecord,
+                'address' => $fullAddress,
                 'treceLogo' => $treceLogoSrc,
                 'DOHlogo' => $DOHLogoSrc
             ])
@@ -539,7 +541,7 @@ class PdfController extends Controller
                 ->setOption('margin-left', 10)
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
-           
+
             // return view('pdf.prenatal.prenatal-case', [
             //     'caseInfo' => $case,
             //     'patient' => $medicalRecord->patient,
@@ -549,7 +551,7 @@ class PdfController extends Controller
             //     'DOHlogo' => $DOHLogoSrc
             // ]);
 
-            return $pdf->download('prenatal-case-' .Carbon::today()->format('Y-m-d') . '.pdf');
+            return $pdf->download('prenatal-case-' . Carbon::today()->format('Y-m-d') . '.pdf');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
@@ -557,8 +559,9 @@ class PdfController extends Controller
         }
     }
 
-    public function generatePregnancyPdf(Request $request){
-        $id = $request->input('planId','');
+    public function generatePregnancyPdf(Request $request)
+    {
+        $id = $request->input('planId', '');
 
         try {
             $pregnancyRecord = pregnancy_plans::with('donor_name')->findOrFail($id);
@@ -585,15 +588,15 @@ class PdfController extends Controller
                 ->setOption('zoom', 0.85);
 
             return $pdf->download('pregnancy-plan-' . Carbon::today()->format('Y-m-d') . '.pdf');
-           
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], 404);
         }
     }
-    public function generatePrenatalCheckupPdf(Request $request){
-        $id = $request->input('caseId','');
+    public function generatePrenatalCheckupPdf(Request $request)
+    {
+        $id = $request->input('caseId', '');
         try {
             $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
             $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
@@ -613,7 +616,6 @@ class PdfController extends Controller
                 ->setOption('zoom', 0.85);
 
             return $pdf->download('pregnancy-check-up-' . Carbon::today()->format('Y-m-d') . '.pdf');
-           
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
@@ -621,11 +623,12 @@ class PdfController extends Controller
         }
     }
     // SENIOR CITIZEN
-    public function generateSeniorCitizenCasePdf(Request $request){
-        $id = $request-> input('caseId','');
+    public function generateSeniorCitizenCasePdf(Request $request)
+    {
+        $id = $request->input('caseId', '');
         try {
             $caseRecord = senior_citizen_case_records::with('senior_citizen_maintenance_med')->findOrFail($id);
-            $medicalRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->Where('id',$caseRecord->medical_record_case_id)->first();
+            $medicalRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->Where('id', $caseRecord->medical_record_case_id)->first();
             $address = patient_addresses::where('patient_id', $medicalRecord->patient_id)->first();
             $fullAddress = collect([
                 $address->house_number,
@@ -639,8 +642,8 @@ class PdfController extends Controller
 
             $pdf = SnappyPdf::loadView('pdf.senior-citizen.senior-citizen-case', [
                 'seniorCaseRecord' => $caseRecord,
-                'address'=> $fullAddress,
-                'medicalRecord'=> $medicalRecord
+                'address' => $fullAddress,
+                'medicalRecord' => $medicalRecord
             ])
                 ->setPaper('A4')  // 8.5" x 13"
                 ->setOrientation('portrait')
@@ -651,8 +654,8 @@ class PdfController extends Controller
                 ->setOption('margin-left', 10)
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
-          
-           return $pdf->download('senior-citizen-case-'. Carbon::today()->format('Y-m-d') . '.pdf');
+
+            return $pdf->download('senior-citizen-case-' . Carbon::today()->format('Y-m-d') . '.pdf');
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Record not found'
@@ -664,8 +667,9 @@ class PdfController extends Controller
         }
     }
 
-    public function generateTbDotsCasePdf(Request $request){
-        $id = $request->input('caseId','');
+    public function generateTbDotsCasePdf(Request $request)
+    {
+        $id = $request->input('caseId', '');
 
         try {
             $caseRecord = tb_dots_case_records::with('tb_dots_maintenance_med')->findOrFail($id);
@@ -704,8 +708,9 @@ class PdfController extends Controller
             ]);
         }
     }
-    public function generateTbDotsCheckupPdf(Request $request){
-        $id = $request->input("checkupId",'');
+    public function generateTbDotsCheckupPdf(Request $request)
+    {
+        $id = $request->input("checkupId", '');
 
         try {
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
@@ -744,8 +749,9 @@ class PdfController extends Controller
         }
     }
 
-    public function generateVaccinationMasterlist(Request $request){
-        try{
+    public function generateVaccinationMasterlist(Request $request)
+    {
+        try {
             $query = vaccination_masterlists::where('status', '!=', 'Archived');
 
             // Search filter
@@ -809,8 +815,8 @@ class PdfController extends Controller
                 'filterYear' => $request->filterYear ?? '',
                 'brgys' => $brgys,
                 'years' => $years,
-                'entries' => $request->entries??'',
-                'search' => $request->search??''
+                'entries' => $request->entries ?? '',
+                'search' => $request->search ?? ''
             ];
 
             $pdf = SnappyPdf::loadView('pdf.masterlist.vaccination', $data)
@@ -825,14 +831,15 @@ class PdfController extends Controller
                 ->setOption('zoom', 0.85);
 
             return $pdf->download('vaccination-masterlist-' . date('Y-m-d') . '.pdf');
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);
         }
     }
-    public function generateWraMasterlist(Request $request){
-        try{
+    public function generateWraMasterlist(Request $request)
+    {
+        try {
             // Build query
             $query = wra_masterlists::where('status', '!=', 'Archived');
             // Search filter
@@ -893,7 +900,7 @@ class PdfController extends Controller
                 'selectedYear' => $request->seletedYear ?? '',
                 'entries' => $request->entries ?? '',
                 'search' => $request->search ?? '',
-                'monthName' => $request->monthName ??'',
+                'monthName' => $request->monthName ?? '',
             ];
 
             $pdf = SnappyPdf::loadView('pdf.masterlist.wra', $data)
@@ -907,12 +914,435 @@ class PdfController extends Controller
                 ->setOption('margin-right', 5)
                 ->setOption('zoom', 0.85);
 
-            
-            return $pdf->download('wra-masterlist-'. date('m-d-Y'). '.pdf');
-        }catch(\Exception $e){
+
+            return $pdf->download('wra-masterlist-' . date('m-d-Y') . '.pdf');
+        } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);
         }
+    }
+
+    // generate the nurse report
+    public function generateDashboardTable()
+    {
+        $patientCount = $this->patientCount();
+        $patientCountPerArea = $this->patientCountPerArea();
+        $patientPerDay = $this->patientAddedToday();
+        $generatedDate = now()->format('F d, Y h:i A');
+        $pdf = SnappyPdf::loadView('pdf.dashboard.nurse-tables', compact('patientCount', 'patientCountPerArea', 'patientPerDay', 'generatedDate'))
+            ->setPaper('letter')  // 8.5" x 13"
+            ->setOrientation('portrait')
+            ->setOption('enable-local-file-access', true)
+            ->setOption('javascript-delay', 500)
+            ->setOption('margin-top', 10)      // Reduce margins
+            ->setOption('margin-bottom', 5)
+            ->setOption('margin-left', 5)
+            ->setOption('margin-right', 5)
+            ->setOption('zoom', 0.85);
+
+        return $pdf->download('patient-list-&-total-report' . date('m-d-Y') . '.pdf');
+    }
+    public function generateDashboardGraph()
+    {
+        $patientData = $this->monthlyPatientStats();
+        $pieData = $this->patientCount();
+        // return view('pdf.dashboard.graph-table', compact('patientData','pieData'));
+        $html = view('pdf.dashboard.graph-table', compact('patientData','pieData'))->render();
+        $path = storage_path('app/public/patient-report-' . date('m-d-Y') . '.pdf');
+
+        Browsershot::html($html)
+            ->waitUntilNetworkIdle()
+            ->format('Letter')
+            ->save($path);
+
+        return response()->download($path)->deleteFileAfterSend();
+
+    }
+
+    private function patientCount()
+    {
+
+        if (Auth::user()->role == 'nurse') {
+            try {
+
+                $baseQuery = medical_record_cases::query()
+                    ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
+                    ->where('patients.status', '!=', 'Archived')
+                    ->where('medical_record_cases.status', '!=', 'Archived');
+
+                $totalPatient = (clone $baseQuery)
+                    ->count();
+
+                $types = (clone $baseQuery)
+                    ->select('medical_record_cases.type_of_case', DB::raw('COUNT(*) as total'))
+                    ->groupBy('medical_record_cases.type_of_case')
+                    ->get();
+                $vaccination = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'vaccination')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $prenatal = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'prenatal')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $tbDots = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'tb-dots')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $familyPlanning = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'family-planning')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $seniorCitizen = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'senior-citizen')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+
+                return  [
+                    'overallPatients' => $totalPatient,
+                    'vaccinationCount' => $vaccination,
+                    'prenatalCount' => $prenatal,
+                    'tbDotsCount' => $tbDots,
+                    'seniorCitizenCount' => $seniorCitizen,
+                    'familyPlanningCount' => $familyPlanning,
+                    'types' => $types
+                ];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ], 422);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        if (Auth::user()->role == 'staff') {
+
+            try {
+
+                $staffId = Auth::user()->id;
+                $baseQuery = medical_record_cases::query()
+                    ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
+                    ->where('patients.status', '!=', 'Archived')
+                    ->where('medical_record_cases.status', '!=', 'Archived');
+
+
+                $types = (clone $baseQuery)
+                    ->select('medical_record_cases.type_of_case', DB::raw('COUNT(*) as total'))
+                    ->groupBy('medical_record_cases.type_of_case')
+                    ->get();
+                $vaccination = (clone $baseQuery)
+                    ->join('vaccination_medical_records as v', 'v.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('v.health_worker_id', $staffId) // filter by staff
+                    ->where('medical_record_cases.type_of_case', 'vaccination')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $prenatal = (clone $baseQuery)
+                    ->join('prenatal_medical_records as p', 'p.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('p.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'prenatal')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $tbDots = (clone $baseQuery)
+                    ->join('tb_dots_medical_records as t', 't.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('t.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'tb-dots')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $familyPlanning = (clone $baseQuery)
+                    ->join('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('f.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'family-planning')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $seniorCitizen = (clone $baseQuery)
+                    ->join('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('s.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'senior-citizen')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $totalPatient = $vaccination + $prenatal +  $tbDots + $familyPlanning + $seniorCitizen;
+
+                return [
+                    'overallPatients' => $totalPatient,
+                    'vaccinationCount' => $vaccination,
+                    'prenatalCount' => $prenatal,
+                    'tbDotsCount' => $tbDots,
+                    'seniorCitizenCount' => $seniorCitizen,
+                    'familyPlanningCount' => $familyPlanning,
+                    'types' => $types
+                ];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ], 422);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        return [];
+    }
+    private function patientCountPerArea()
+    {
+        try {
+
+            $data = [];
+            $query = patient_addresses::query()
+                ->select('patient_addresses.purok', DB::raw('count(*) as count'))
+                ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
+                ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
+                ->where('medical_record_cases.status', '!=', 'Archived')
+                ->where('patient_addresses.barangay', 'Hugo Perez')
+                ->where('patients.status', '!=', 'Archived')
+                ->whereNotNull('patient_addresses.purok');
+
+            $brgyUnits = brgy_unit::get();
+
+            if (Auth::user()->role == 'nurse') {
+                foreach ($brgyUnits as $unit) {
+                    $areaData = (clone $query)
+                        ->where('patient_addresses.purok', $unit->brgy_unit)
+                        ->count();
+
+                    $data[$unit->brgy_unit] = $areaData;
+                }
+            }
+
+            if (Auth::user()->role == 'staff') {
+                $user = Auth::user();
+                $staffId = $user->id;
+                foreach ($brgyUnits as $unit) {
+
+                    $staffQuery = (clone $query)
+                        ->leftJoin('vaccination_medical_records as v', 'v.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->leftJoin('prenatal_medical_records as p', 'p.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->leftJoin('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->leftJoin('tb_dots_medical_records as t', 't.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->leftJoin('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where(function ($q) use ($staffId) {
+                            $q->where('v.health_worker_id', $staffId)
+                                ->orWhere('p.health_worker_id', $staffId)
+                                ->orWhere('s.health_worker_id', $staffId)
+                                ->orWhere('t.health_worker_id', $staffId)
+                                ->orWhere('f.health_worker_id', $staffId);
+                        });
+
+                    $areaData = $staffQuery
+                        ->where('patient_addresses.purok', $unit->brgy_unit)
+                        ->distinct('patient_addresses.patient_id')
+                        ->count('patient_addresses.patient_id');
+
+                    $data[$unit->brgy_unit] = $areaData;
+                }
+            }
+
+
+            return $data;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    private function patientAddedToday()
+    {
+        try {
+            $user = Auth::user();
+            $today = Carbon::today();
+
+            // Base query (shared)
+            $baseQuery = medical_record_cases::query()
+                ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
+                ->where('patients.status', '!=', 'Archived')
+                ->where('medical_record_cases.status', '!=', 'Archived')
+                ->whereDate('medical_record_cases.created_at', $today);
+
+            /**
+             * ✅ If STAFF: filter by health_worker_id across tables
+             */
+            if ($user->role === 'staff') {
+                $staffId = $user->id;
+
+                $baseQuery
+                    ->leftJoin('vaccination_medical_records as v', function ($join) use ($staffId) {
+                        $join->on('v.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('v.health_worker_id', $staffId);
+                    })
+                    ->leftJoin('prenatal_medical_records as p', function ($join) use ($staffId) {
+                        $join->on('p.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('p.health_worker_id', $staffId);
+                    })
+                    ->leftJoin('senior_citizen_medical_records as s', function ($join) use ($staffId) {
+                        $join->on('s.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('s.health_worker_id', $staffId);
+                    })
+                    ->leftJoin('tb_dots_medical_records as t', function ($join) use ($staffId) {
+                        $join->on('t.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('t.health_worker_id', $staffId);
+                    })
+                    ->leftJoin('family_planning_medical_records as f', function ($join) use ($staffId) {
+                        $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('f.health_worker_id', $staffId);
+                    })
+                    ->where(function ($q) {
+                        $q->whereNotNull('v.id')
+                            ->orWhereNotNull('p.id')
+                            ->orWhereNotNull('s.id')
+                            ->orWhereNotNull('t.id')
+                            ->orWhereNotNull('f.id');
+                    });
+            }
+
+            // ✅ Overall
+            $totalPatient = (clone $baseQuery)->count();
+
+            // ✅ Grouped types
+            $types = (clone $baseQuery)
+                ->select('medical_record_cases.type_of_case', DB::raw('COUNT(DISTINCT medical_record_cases.id) as total'))
+                ->groupBy('medical_record_cases.type_of_case')
+                ->get();
+
+            // ✅ Individual counts
+            $vaccination = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'vaccination')
+                ->count('medical_record_cases.id');
+
+            $prenatal = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'prenatal')
+                ->count('medical_record_cases.id');
+
+            $tbDots = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'tb-dots')
+                ->count('medical_record_cases.id');
+
+            $familyPlanning = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'family-planning')
+                ->count('medical_record_cases.id');
+
+            $seniorCitizen = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'senior-citizen')
+                ->count('medical_record_cases.id');
+
+            return [
+                'overallPatients'     => $totalPatient,
+                'vaccinationCount'    => $vaccination,
+                'prenatalCount'       => $prenatal,
+                'tbDotsCount'         => $tbDots,
+                'seniorCitizenCount'  => $seniorCitizen,
+                'familyPlanningCount' => $familyPlanning,
+                'types'               => $types,
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    private function monthlyPatientStats()
+    {
+        $user = Auth::user();
+        $staffId = $user->id; // change if your staff table uses different FK
+
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        $caseMap = [
+            'vaccination'     => 'vaccination',
+            'prenatal'        => 'prenatal',
+            'senior'          => 'senior-citizen',
+            'tb'              => 'tb-dots',
+            'family_planning' => 'family-planning',
+        ];
+
+        // Base query
+        $baseQuery = medical_record_cases::query()
+            ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
+            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', '!=', 'Archived')
+            ->whereYear('medical_record_cases.created_at', now()->year);
+
+        /**
+         * ✅ Only apply joins + filters if user is STAFF
+         */
+        if ($user->role === 'staff') {
+
+            $baseQuery->leftJoin('vaccination_medical_records as v', function ($join) use ($staffId) {
+                $join->on('v.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('v.health_worker_id', '=', $staffId);
+            });
+
+            $baseQuery->leftJoin('prenatal_medical_records as p', function ($join) use ($staffId) {
+                $join->on('p.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('p.health_worker_id', '=', $staffId);
+            });
+
+            $baseQuery->leftJoin('senior_citizen_medical_records as s', function ($join) use ($staffId) {
+                $join->on('s.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('s.health_worker_id', '=', $staffId);
+            });
+
+            $baseQuery->leftJoin('tb_dots_medical_records as t', function ($join) use ($staffId) {
+                $join->on('t.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('t.health_worker_id', '=', $staffId);
+            });
+
+            $baseQuery->leftJoin('family_planning_medical_records as f', function ($join) use ($staffId) {
+                $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('f.health_worker_id', '=', $staffId);
+            });
+
+            // ✅ Important: filter to only records where staff handled at least one case
+            $baseQuery->where(function ($q) {
+                $q->whereNotNull('v.id')
+                    ->orWhereNotNull('p.id')
+                    ->orWhereNotNull('s.id')
+                    ->orWhereNotNull('t.id')
+                    ->orWhereNotNull('f.id');
+            });
+        }
+
+        // Final query
+        $raw = $baseQuery
+            ->selectRaw("
+            MONTH(medical_record_cases.created_at) as month,
+            medical_record_cases.type_of_case,
+            COUNT(DISTINCT medical_record_cases.id) as total
+        ")
+            ->groupByRaw("MONTH(medical_record_cases.created_at), medical_record_cases.type_of_case")
+            ->get();
+
+        // Result skeleton
+        $result = [
+            'all' => ['label' => 'All Patients', 'data' => array_fill(0, 12, 0)],
+            'vaccination' => ['label' => 'Vaccination', 'data' => array_fill(0, 12, 0)],
+            'prenatal' => ['label' => 'Prenatal Care', 'data' => array_fill(0, 12, 0)],
+            'senior' => ['label' => 'Senior Citizen', 'data' => array_fill(0, 12, 0)],
+            'tb' => ['label' => 'TB Treatment', 'data' => array_fill(0, 12, 0)],
+            'family_planning' => ['label' => 'Family Planning', 'data' => array_fill(0, 12, 0)],
+        ];
+
+        // Fill values
+        foreach ($raw as $row) {
+            $monthIndex = $row->month - 1;
+            $type = $row->type_of_case;
+
+            $result['all']['data'][$monthIndex] += $row->total;
+
+            $key = array_search($type, $caseMap);
+            if ($key !== false) {
+                $result[$key]['data'][$monthIndex] = $row->total;
+            }
+        }
+
+        return $result;
     }
 }

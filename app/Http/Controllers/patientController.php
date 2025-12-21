@@ -127,26 +127,141 @@ class patientController extends Controller
         ]);
     }
 
-    public function info($id){
+    public function info($id)
+    {
         $user = User::findOrFail((int)$id);
+        $patient = patients::where('user_id', (int)$id)->first();
 
-        $patient = patients::where('user_id', (int)$id)->firstOrFail();
-        $address = patient_addresses::where('patient_id', $patient->id)->first();
+        if ($patient) {
+            // Get all medical record case types for this patient
+            $medicalRecordCases = medical_record_cases::where('patient_id', $patient->id)
+                ->where('status', '!=', 'Archived')
+                ->get();
 
-        // combined all of the data of the patient user
-        $combined = array_merge(['user' => $user->toArray(), 'patient' => $patient->toArray(), 'patient_address' => $address->toArray()]);
+            $caseTypes = $medicalRecordCases->pluck('type_of_case')
+                ->unique()
+                ->values()
+                ->toArray();
+
+            // Get the address for the patient
+            $address = patient_addresses::where('patient_id', $patient->id)->first();
+
+            // Determine patient type based on priority
+            if (in_array('vaccination', $caseTypes)) {
+                $patientType = 'vaccination';
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'vaccination')->first();
+
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = vaccination_medical_records::where('medical_record_case_id', $medicalRecordCase->id)
+                        ->first();
+                }
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => $medicalRecordInfo,
+                    'typeOfPatient' => 'vaccination'
+                ]);
+            } elseif (in_array('prenatal', $caseTypes)) {
+                $patientType = 'prenatal';
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'prenatal')->first();
+
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = prenatal_medical_records::where('medical_record_case_id', $medicalRecordCase->id)
+                        ->first();
+                }
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => $medicalRecordInfo,
+                    'typeOfPatient' => 'prenatal'
+                ]);
+            } elseif (in_array('senior-citizen', $caseTypes)) {
+                $patientType = 'senior-citizen';
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'senior-citizen')->first();
+
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = senior_citizen_medical_records::where('medical_record_case_id', $medicalRecordCase->id)
+                        ->first();
+                }
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => $medicalRecordInfo,
+                    'typeOfPatient' => 'senior-citizen'
+                ]);
+            } elseif (in_array('tb-dots', $caseTypes)) {
+                $patientType = 'tb-dots';
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'tb-dots')->first();
+
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = tb_dots_medical_records::where('medical_record_case_id', $medicalRecordCase->id)
+                        ->first();
+                }
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => $medicalRecordInfo,
+                    'typeOfPatient' => 'tb-dots'
+                ]);
+            } elseif (count($caseTypes) === 1 && in_array('family-planning', $caseTypes)) {
+                // Only family planning, no other types
+                $patientType = 'family-planning';
+
+                // Get the medical record case for family planning
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'family-planning')->first();
+
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = family_planning_medical_records::where('medical_record_case_id', $medicalRecordCase->id)
+                        ->first();
+                }
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => $medicalRecordInfo,
+                    'typeOfPatient' => 'family-planning'
+                ]);
+            } else {
+                // No recognized patient type or multiple types without clear priority
+                $combined = array_merge([
+                    'user' => $user->toArray(),
+                    'patient' => $patient->toArray(),
+                    'patient_address' => $address ? $address->toArray() : null,
+                    'medicalRecord' => null,
+                    'typeOfPatient' => null
+                ]);
+            }
+        } else {
+            // User has no patient record
+            $address = users_address::where('user_id', $user->id)->first();
+            $combined = array_merge([
+                'user' => $user->toArray(),
+                'patient' => null,  // Changed from $patient->toArray() to null
+                'patient_address' => $address ? $address->toArray() : null,
+                'medicalRecord' => null,
+                'typeOfPatient' => null
+            ]);
+        }
 
         return response()->json(['response' => $combined]);
     }
 
-    public function updateInfo(Request $request,$id){
+
+    public function updateInfo(Request $request, $id)
+    {
         try {
             $user = User::findOrFail($id);
+            $hasPatient = $user->patient()->exists();
+
             $data = $request->validate([
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
-                'age' => 'sometimes|nullable|numeric',
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'middle_initial' => 'sometimes|nullable|string',
+                'age' => $hasPatient ? 'required|numeric' : 'sometimes|nullable|numeric',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
@@ -160,81 +275,283 @@ class patientController extends Controller
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             ]);
 
-            // check if there is new password
-            if (!empty($data['password'])) {
-                $user->update([
-                    'username' => $data['username'],
-                    'email' => $data['email'],
-                    'password' => Hash::make($data['password']) // hash the password
-                ]);
-            } else {
-                $user->update([
-                    'username' => $data['username'],
-                    'email' => $data['email'],
-                ]);
-            }
-
-            if ($request->hasFile('profile_image')) {
-                $file = $request->file('profile_image');
-
-                // Generate unique filename
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $destinationPath = public_path('images/profile_images');
-
-                // Make sure the folder exists
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
-                }
-
-                // Delete the old image if it exists and is different
-                $profileImagePath = $user->role == 'staff' ? $user->staff : $user->nurses;
-                if (!empty($profileImagePath->profile_image) && $profileImagePath->profile_image !== 'images/default_profile.png') {
-                    $oldImagePath = public_path(ltrim($profileImagePath->profile_image, '/'));
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath); // Delete old file
-                    }
-                }
-
-                // Move the new file
-                $file->move($destinationPath, $filename);
-
-                // Update staff profile image path in DB
-
-                $user->patient->profile_image = 'images/profile_images/' . $filename;
-                $user->patient->save();
-            }
-
-            // update the patient
-            $patient = $user->patient;
-            $patient->update([
-                'first_name' => $data['first_name'] ?? null,
-                'middle_initial' => $data['middle_initial'] ?? null,
-                'last_name' => $data['last_name'] ?? null,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
-                'age' => $data['age'],
-                'date_of_birth' => $data['date_of_birth'] ?? null,
-                'sex' => $data['sex'] ?? null,
-                'civil_status' => $data['civil_status'] ?? null,
-                'contact_number' => $data['contact_number'] ?? null,
-                'nationality' => $data['nationality'] ?? null,
+            $additionalData = $request->validate([
+                'mother_name' => 'sometimes|nullable|string',
+                'father_name' => 'sometimes|nullable|string',
+                'vaccination_height' => ['nullable', 'numeric', 'min:30', 'max:250'],
+                'vaccination_weight' => ['nullable', 'numeric', 'min:1', 'max:300'],
+                'family_head_name' => 'sometimes|nullable|string',
+                'blood_type' => 'sometimes|nullable|string',
+                'religion' => 'sometimes|nullable|string',
+                'philhealth_number_radio' => 'sometimes|nullable|string',
+                'philHealth_number' => 'sometimes|nullable|string',
+                'occupation' => 'sometimes|nullable|string',
+                'SSS' => 'sometimes|nullable|string',
+                'philhealth_no' => 'sometimes|nullable|string',
+                'philhealth_id' => 'sometimes|nullable|numeric'
             ]);
 
-            $blk_n_street = explode(',', $data['blk_n_street'], 2); // limit to 2 parts
-
+            // Update address
+            $address = users_address::where('user_id', $user->id)->first();
+            $blk_n_street = explode(',', $data['blk_n_street'], 2);
             $house_number = trim($blk_n_street[0] ?? '');
-            $street = trim($blk_n_street[1] ?? null); // allow null if street not provided
+            $street = trim($blk_n_street[1] ?? null);
 
-            $patient->address->update([
+            $address->update([
                 'house_number' => $house_number,
                 'street' => $street,
                 'purok' => $data['patient_purok_dropdown']
             ]);
 
-            return response()->json(['success' => 'Patient information has been updated']);
+            $address->refresh();
+            $fullAddress = collect([
+                $address->house_number,
+                $address->street,
+                $address->purok,
+                $address->barangay ?? null,
+                $address->city ?? null,
+                $address->province ?? null,
+            ])->filter()->join(', ');
+
+            // Handle profile image upload
+            $profileImagePath = null;
+            if ($request->hasFile('profile_image')) {
+                // Delete old profile image from all possible locations
+                $this->deleteOldProfileImage($user);
+
+                $file = $request->file('profile_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $destinationPath = public_path('images/profile_images');
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                $file->move($destinationPath, $filename);
+                $profileImagePath = 'images/profile_images/' . $filename;
+
+                // Update profile image across all related tables
+                $this->updateProfileImageAcrossAllTables($user, $profileImagePath);
+            }
+
+            // Prepare name components
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
+            $patient = $user->patient ?? null;
+
+            if ($patient) {
+                // Patient exists - only update patient and related records
+
+                // Update patient information
+                $patient->update([
+                    'first_name' => ucwords($data['first_name']) ?? null,
+                    'middle_initial' => ucwords($data['middle_initial']) ?? null,
+                    'last_name' => ucwords($data['last_name']) ?? null,
+                    'full_name' => $fullName,
+                    'age' => $data['age'],
+                    'date_of_birth' => $data['date_of_birth'] ?? null,
+                    'sex' => $data['sex'] ?? null,
+                    'civil_status' => $data['civil_status'] ?? null,
+                    'contact_number' => $data['contact_number'] ?? null,
+                    'nationality' => $data['nationality'] ?? null,
+                ]);
+
+                $patient->address->update([
+                    'house_number' => $house_number,
+                    'street' => $street,
+                    'purok' => $data['patient_purok_dropdown']
+                ]);
+
+                // Update medical record cases
+                $medicalRecordCases = medical_record_cases::where('patient_id', $patient->id)
+                    ->where('status', '!=', 'Archived')
+                    ->get();
+
+                if ($medicalRecordCases->isEmpty()) {
+                    return response()->json(['error' => "Record doesn't have existing type of patient"]);
+                }
+
+                $this->updateMedicalRecordByType($request, $medicalRecordCases, $additionalData);
+            } else {
+                // No patient - update user table
+
+                $userUpdateData = [
+                    'username' => $data['username'] ?? $user->username,
+                    'email' => $data['email'] ?? $user->email,
+                    'first_name' => $data['first_name'] ?? $user->first_name,
+                    'last_name' => $data['last_name'] ?? $user->last_name,
+                    'middle_initial' => $data['middle_initial'] ?? $user->middle_initial,
+                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'],
+                    'address' => $fullAddress,
+                ];
+
+                // Add password to update if provided
+                if (!empty($data['password'])) {
+                    $userUpdateData['password'] = Hash::make($data['password']);
+                }
+
+                $user->update($userUpdateData);
+            }
+
+            return response()->json(['success' => 'Information has been updated successfully']);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
             ], 422);
+        }
+    }
+
+    /**
+     * Delete old profile image from all possible locations
+     */
+    private function deleteOldProfileImage($user)
+    {
+        $imagesToDelete = [];
+
+        // Check user table
+        if (!empty($user->profile_image) && $user->profile_image !== 'images/default_profile.png') {
+            $imagesToDelete[] = $user->profile_image;
+        }
+
+        // Check patient table
+        if ($user->patient && !empty($user->patient->profile_image) && $user->patient->profile_image !== 'images/default_profile.png') {
+            $imagesToDelete[] = $user->patient->profile_image;
+        }
+
+        // Check staff table
+        if ($user->staff && !empty($user->staff->profile_image) && $user->staff->profile_image !== 'images/default_profile.png') {
+            $imagesToDelete[] = $user->staff->profile_image;
+        }
+
+        // Check nurse table
+        if ($user->nurses && !empty($user->nurses->profile_image) && $user->nurses->profile_image !== 'images/default_profile.png') {
+            $imagesToDelete[] = $user->nurses->profile_image;
+        }
+
+        // Delete unique images only
+        $imagesToDelete = array_unique($imagesToDelete);
+        foreach ($imagesToDelete as $imagePath) {
+            $oldImagePath = public_path(ltrim($imagePath, '/'));
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+    }
+
+    /**
+     * Update profile image across all related tables
+     */
+    private function updateProfileImageAcrossAllTables($user, $profileImagePath)
+    {
+        // Update user table
+        $user->profile_image = $profileImagePath;
+        $user->save();
+
+        // Update patient table if exists
+        if ($user->patient) {
+            $user->patient->profile_image = $profileImagePath;
+            $user->patient->save();
+        }
+
+        // Update staff table if exists
+        if ($user->staff) {
+            $user->staff->profile_image = $profileImagePath;
+            $user->staff->save();
+        }
+
+        // Update nurse table if exists
+        if ($user->nurses) {
+            $user->nurses->profile_image = $profileImagePath;
+            $user->nurses->save();
+        }
+    }
+
+    private function updateMedicalRecordByType($request, $medicalRecordCases, $additionalData)
+    {
+        $typeOfPatient = $request->typeOfPatient;
+
+        switch ($typeOfPatient) {
+            case 'vaccination':
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'vaccination')->first();
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = vaccination_medical_records::where('medical_record_case_id', $medicalRecordCase->id)->first();
+                    if ($medicalRecordInfo) {
+                        $medicalRecordInfo->update([
+                            'mother_name' => $additionalData['mother_name'] ?? $medicalRecordInfo->mother_name,
+                            'father_name' => $additionalData['father_name'] ?? $medicalRecordInfo->father_name,
+                            'birth_height' => $additionalData['vaccination_height'] ?? $medicalRecordInfo->birth_height,
+                            'birth_weight' => $additionalData['vaccination_weight'] ?? $medicalRecordInfo->birth_weight,
+                        ]);
+                    }
+                }
+                break;
+
+            case 'prenatal':
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'prenatal')->first();
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = prenatal_medical_records::where('medical_record_case_id', $medicalRecordCase->id)->first();
+                    if ($medicalRecordInfo) {
+                        $medicalRecordInfo->update([
+                            'family_head_name' => $additionalData['family_head_name'] ?? $medicalRecordInfo->family_head_name,
+                            'blood_type' => $additionalData['blood_type'] ?? $medicalRecordInfo->blood_type,
+                            'religion' => $additionalData['religion'] ?? $medicalRecordInfo->religion,
+                            'philHealth_number' => ($additionalData['philhealth_number_radio'] ?? null) === 'yes'
+                                ? ($additionalData['philHealth_number'] ?? null)
+                                : (($additionalData['philhealth_number_radio'] ?? null) === 'no'
+                                    ? 'no'
+                                    : $medicalRecordInfo->philHealth_number),
+                        ]);
+                    }
+                }
+                break;
+
+            case 'tb-dots':
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'tb-dots')->first();
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = tb_dots_medical_records::where('medical_record_case_id', $medicalRecordCase->id)->first();
+                    if ($medicalRecordInfo) {
+                        $medicalRecordInfo->update([
+                            'philhealth_id_no' => $additionalData['philhealth_id'] ?? $medicalRecordInfo->philhealth_id_no
+                        ]);
+                    }
+                }
+                break;
+
+            case 'senior-citizen':
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'senior-citizen')->first();
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = senior_citizen_medical_records::where('medical_record_case_id', $medicalRecordCase->id)->first();
+                    if ($medicalRecordInfo) {
+                        $medicalRecordInfo->update([
+                            'occupation' => $additionalData['occupation'] ?? $medicalRecordInfo->occupation,
+                            'religion' => $additionalData['religion'] ?? $medicalRecordInfo->religion,
+                            'SSS' => $additionalData['SSS'] ?? $medicalRecordInfo->SSS,
+                        ]);
+                    }
+                }
+                break;
+
+            case 'family-planning':
+                $medicalRecordCase = $medicalRecordCases->where('type_of_case', 'family-planning')->first();
+                if ($medicalRecordCase) {
+                    $medicalRecordInfo = family_planning_medical_records::where('medical_record_case_id', $medicalRecordCase->id)->first();
+                    if ($medicalRecordInfo) {
+                        $medicalRecordInfo->update([
+                            'occupation' => $additionalData['occupation'] ?? $medicalRecordInfo->occupation,
+                            'religion' => $additionalData['religion'] ?? $medicalRecordInfo->religion,
+                            'philhealth_no' => $additionalData['philhealth_no'] ?? $medicalRecordInfo->philhealth_no
+                        ]);
+                    }
+                }
+                break;
         }
     }
 
