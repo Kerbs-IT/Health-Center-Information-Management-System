@@ -1,0 +1,3 @@
+.records input{
+    font-size: clamp(1rem, 1.1vw, 1.1rem);
+}

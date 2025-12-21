@@ -5,7 +5,7 @@
         </div>
         <div class="card-body">
             <!-- Filters -->
-            <div class="row mb-3">
+            <div class="row mb-3 gap-md-0 gap-2">
                 <div class="col-md-6">
                     <input type="text"
                         wire:model.live.debounce.500ms="search"
@@ -52,7 +52,7 @@
                                 @if($patient->status === 'active')
                                 <button
                                     onclick="confirmArchive({{ $patient->id }})"
-                                    class="btn btn-sm btn-danger">
+                                    class="btn btn-sm btn-danger text-nowrap">
                                     <i class="fas fa-archive"></i> Archive
                                 </button>
                                 @else
@@ -82,7 +82,7 @@
 </div>
 
 <script>
-    
+
     function confirmArchive(patientId) {
         Swal.fire({
             title: 'Archive Patient?',
