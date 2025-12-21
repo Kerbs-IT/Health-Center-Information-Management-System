@@ -3,7 +3,7 @@
 
 
     {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <div class="left-con d-flex align-items-center gap-2">
             <h3 class="mb-0">Patient Accounts</h3>
             <span class="badge bg-warning text-dark fs-6">
@@ -11,9 +11,9 @@
             </span>
         </div>
 
-        <div class="right-side-con">
+        <div class="right-side-con ms-auto mt-ms-0 mt-2">
 
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+            <button type="button" class="btn btn-success text-nowrap" data-bs-toggle="modal" data-bs-target="#addModal">
                 Add an Account
             </button>
         </div>
