@@ -88,7 +88,7 @@
         </div>
         <div class="mb-3 ">
             <label for="date_of_comeback">Date of Comeback</label>
-            <input type="date" class="form-control border" name="date_of_comeback" id="date_of_comeback">
+            <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback">
         </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
