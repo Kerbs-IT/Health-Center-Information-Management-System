@@ -19,9 +19,11 @@
     'resources/js/header.js',
     'resources/css/healthWorker.css',
     'resources/css/profile.css',
-    'resources/js/manageUser/manageUser'])
+    'resources/js/manageUser/manageUser',
+    'resources/css/manageUsers/manageUsers.css'
+    ])
     @include('sweetalert::alert')
-    <div class="ms-0 ps-0 d-flex w-100" style="height: 100vh;">
+    <div class="ms-0 ps-0 d-flex w-100 min-vh-100">
         <!-- aside contains the sidebar menu -->
         <div class="d-flex w-100">
             <aside>
@@ -29,7 +31,7 @@
             </aside>
             <!-- the main content -->
             <!-- we use flex-grow-1 to take the remaining space of the right side -->
-            <div class="flex-grow-1">
+            <div class="flex-grow-1 overflow-x-auto">
                 <header class=" d-flex align-items-center px-3 ">
                     <nav class="d-flex justify-content-between align-items-center w-100 ">
                         <div class="left-side d-flex gap-2">
@@ -39,10 +41,10 @@
                             <h1 class="mb-0"> {{$page ?? Welcome}}</span></h1>
                         </div>
                         <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-                            <img src="{{ optional(Auth::user()->nurses)->profile_image 
-                        ? asset(optional(Auth::user()->nurses)->profile_image) 
-                        : (optional(Auth::user()->staff)->profile_image 
-                            ? asset(optional(Auth::user()->staff)->profile_image) 
+                            <img src="{{ optional(Auth::user()->nurses)->profile_image
+                        ? asset(optional(Auth::user()->nurses)->profile_image)
+                        : (optional(Auth::user()->staff)->profile_image
+                            ? asset(optional(Auth::user()->staff)->profile_image)
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-img" id="profile_img">
                             <div class="username-n-role">
                                 <h5 class="mb-0">{{ optional(Auth::user()->nurses)->full_name
@@ -57,8 +59,8 @@
                         </div>
                     </nav>
                 </header>
-                <main class=" overflow-y-auto max-h-[calc(100vh-100px)] px-3">
-                  
+                <main class=" overflow-y-auto max-h-[calc(100vh-100px)] px-md-3 px-0 shadow-lg mx-2">
+
 
                     <div class="records">
                         <livewire:patient-account-binding />
@@ -208,7 +210,7 @@
         </form>
     </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
             <div class="modal-content">
 
                 <!-- Modal Header -->
@@ -219,7 +221,7 @@
 
                 <!-- Modal Body -->
                 <div class="modal-body">
-                    <form action="" method="POST" class="rounded shadow d-flex flex-column align-items-center p-4  w-sm-25 w-md-50 w-lg-25 bg-white" id="add-patient-form">
+                    <form action="" method="POST" class="rounded shadow d-flex flex-column align-items-center p-md-4 p-2  w-sm-25 w-md-50 w-lg-25 bg-white" id="add-patient-form">
                         @csrf
                         <!-- username -->
                         <div class="mb-2 w-100">
@@ -230,10 +232,10 @@
                         <!-- full name -->
                         <div class="mb-2 w-100">
                             <label for="" class="mb-1 h4 fs-4">Personal Info:</label>
-                            <div class="gap-2 d-flex justify-content-center">
-                                <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 fs-5 bg-light w-50" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
-                                <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 fs-5 bg-light w-50" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
-                                <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 fs-5 bg-light w-50" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
+                            <div class="gap-2 d-flex justify-content-center flex-wrap flex-xl-nowrap">
+                                <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
+                                <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
+                                <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
                             </div>
                             <small class="text-danger fname-error"></small>
                             <small class="text-danger middle-initial-error"></small>
@@ -269,13 +271,13 @@
                         <div class="mb-3 w-100 " id="patient_type_con">
                             <label for="patient_type" class="form-label text-nowrap fs-4 fw-bold">Patient Address </label>
 
-                            <div class=" w-100 d-flex gap-2">
-                                <div class="items w-50">
+                            <div class=" w-100 d-flex gap-2 flex-wrap flex-lg-nowrap">
+                                <div class="items w-full lg:w-[50%]">
                                     <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
                                     <input type="text" id="blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
                                     <small class="text-danger blk-n-street-error"></small>
                                 </div>
-                                <div class="items w-50">
+                                <div class="items w-full lg:w-[50%]">
                                     <label for="patient_purok_dropdown">Puroks*</label>
                                     <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
                                         <option value="" selected disabled>Select a purok</option>
