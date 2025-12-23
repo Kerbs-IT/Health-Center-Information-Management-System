@@ -129,7 +129,7 @@ body{
 }
 .menu-items h4,
 .menu-items h5{
-  font-size: clamp(12px, 2.2vw, 19px) !important;
+  font-size: clamp(1rem, 2.2vw, 1.2rem) !important;
 
   line-height: 1.2; /* prevent wrapping in tight space */
   font-family: 'Poppins', sans-serif;
@@ -376,7 +376,10 @@ main h3,
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media (min-width: 600px) {}
+@media (min-width: 600px) {
+
+
+}
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media (min-width: 768px) {
@@ -413,7 +416,6 @@ main h3,
     /* Don't allow collapsed state on mobile */
     .menu-bar.collapsed {
         width: 280px;
-        /* Reset to full width on mobile */
     }
 
     .menu-bar.collapsed h4,
@@ -426,6 +428,11 @@ main h3,
     .menu-bar.show {
         left: 0;
     }
+  .logo {
+    width: clamp(100px, 13vw, 140px);
+    transition: transform 0.3s ease;
+    transform-origin: 30% 0;
+  }
 
     /* ... rest of mobile styles ... */
 }
@@ -445,14 +452,14 @@ main h3,
         width: 100%;
         text-align: center;
     }
-}
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-    .logo {
+    .menu-bar.collapsed.logo{
+        width: 60px;
+    }
+    .logo{
         max-width: 100%;
-        width: clamp(60px, 10vw, 130px);
+        width: clamp(120px, 10vw, 130px);
         height: auto;
         margin: auto !important;
     }
-    }
+}
+
