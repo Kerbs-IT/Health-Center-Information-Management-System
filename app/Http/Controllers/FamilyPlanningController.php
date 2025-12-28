@@ -299,6 +299,7 @@ class FamilyPlanningController extends Controller
                 'acknowledgement_consent_signature_image' => $caseData['family_planning_acknowlegement_consent_signature_image'] ?? null,
                 'date_of_acknowledgement_consent' => $caseData['family_planning_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['current_user_type'] ?? null,
+                'status'=> 'Active'
             ]);
 
             $caseId = $caseRecord->id;
@@ -391,7 +392,8 @@ class FamilyPlanningController extends Controller
                 'baby_last_4_weeks_question' => $sideBdata['baby_last_4_weeks_question'] ?? null,
                 'menstrual_period_in_seven_days_question' => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
                 'miscarriage_or_abortion_question' => $sideBdata['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null
+                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null,
+                'status'=>'Active'
             ]);
 
             // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
@@ -1463,7 +1465,8 @@ class FamilyPlanningController extends Controller
                 'baby_last_4_weeks_question' => $data['baby_last_4_weeks_question'] ?? null,
                 'menstrual_period_in_seven_days_question' => $data['menstrual_period_in_seven_days_question'] ?? null,
                 'miscarriage_or_abortion_question' => $data['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['contraceptive_question'] ?? null
+                'contraceptive_question' => $data['contraceptive_question'] ?? null,
+                'status' => 'Active'
 
             ]);
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Added'], 200);
@@ -1524,7 +1527,7 @@ class FamilyPlanningController extends Controller
                 'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? $sideBrecord->menstrual_period_in_seven_days_question,
                 'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? $sideBrecord->miscarriage_or_abortion_question,
                 'contraceptive_question' => $data['edit_contraceptive_question'] ?? $sideBrecord->contraceptive_question,
-                'status' => 'Done'
+                'status' => 'Active'
             ]);
 
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Updated'], 200);
@@ -1550,11 +1553,6 @@ class FamilyPlanningController extends Controller
                 // update the wra too
                 $wraRecord = wra_masterlists::where('medical_record_case_id', $sideArecord->medical_record_case_id)->first() ?? null;
                 if (!$wraRecord) return;
-
-
-
-
-
 
                 $wraRecord->update([
 

@@ -93,6 +93,9 @@ export function addVaccineInteraction(
             }
                 
         }
+         setTimeout(() => {
+             updateDoseDropdown(selectedVaccines);
+         }, 100);
 
         
         console.log("updated vaccine:", selectedVaccinesCon.value);
@@ -116,4 +119,88 @@ export function removeVaccine(allContainers, selectedVaccines) {
             }
         });
     });
+}
+
+const vaccineDoseConfig = {
+    1: { maxDoses: 1, description: "at birth", name: "BCG Vaccine" },
+    2: { maxDoses: 1, description: "at birth", name: "Hepatitis B Vaccine" },
+    3: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Pentavalent Vaccine (DPT-HEP B-HIB)",
+    },
+    4: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Oral Polio Vaccine (OPV)",
+    },
+    5: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Inactived Polio Vaccine (IPV)",
+    },
+    6: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Pnueumococcal Conjugate Vaccine (PCV)",
+    },
+    7: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Measles, Mumps, Rubella Vaccine (MMR)",
+    },
+    8: {
+        maxDoses: 1,
+        description: "dose 1",
+        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 1)",
+    },
+    9: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 7)",
+    },
+    10: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Tetanus Diphtheria (TD)",
+    },
+    11: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Human Papiliomavirus Vaccine",
+    },
+    12: { maxDoses: 3, description: "doses 1-3", name: "Influenza Vaccine" },
+    13: { maxDoses: 3, description: "doses 1-3", name: "Pnuemococcal Vaccine" },
+};
+
+function updateDoseDropdown(selectedVaccines) {
+    const doseDropdown = document.getElementById("dose");
+
+    if (!doseDropdown) return;
+
+    // Find maximum dose from selected vaccines
+    let maxDose = 1;
+    selectedVaccines.forEach((id) => {
+        if (vaccineDoseConfig[id]) {
+            maxDose = Math.max(maxDose, vaccineDoseConfig[id].maxDoses);
+        }
+    });
+
+    // Store current selection
+    const currentValue = doseDropdown.value;
+
+    // Clear and rebuild options
+    doseDropdown.innerHTML = '<option value="">Select Dose</option>';
+
+    for (let i = 1; i <= maxDose; i++) {
+        const option = document.createElement("option");
+        option.value = `${i}`;
+        option.textContent = `Dose ${i}`;
+        doseDropdown.appendChild(option);
+    }
+
+    // Restore selection if still valid
+    if (currentValue && currentValue <= maxDose) {
+        doseDropdown.value = currentValue;
+    }
 }
