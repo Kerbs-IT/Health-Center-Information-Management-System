@@ -32,6 +32,7 @@ use App\Http\Controllers\vaccineController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\NotificationController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,14 @@ Route::get('/', function () {
     return view('layout.app');
 });
 
+Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
+Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
+// MAnage interface color pallete
+Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
+Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
+
+
+
 Route::middleware(['redirect.loggedin'])->group(function () {
     // Show login form
     Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -64,9 +73,9 @@ Route::get('/auth/register', [authController::class, 'register'])->name('registe
 
 
 Route::get('/change-pass', function () {
-    return view('auth.changePass', ['isActive' => true,]);
+    return view('auth.changePass', ['isActive' => true,'page'=>'profile']);
 })->name('change-pass');
-
+Route::post('/change-pass/submit',[authController::class,'changePassword'])->name('submit-new-password');
 // logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -101,11 +110,6 @@ Route::middleware(['role:nurse'])->group(function(){
     // MAnage interface color pallete
 
 });
-Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
-Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
-// MAnage interface color pallete
-Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
-Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
 
 // =============== health worker only
 
@@ -133,6 +137,8 @@ Route::get('/forgot-pass', function () {
 })->name('forgot.pass');
 
 Route::middleware(['role:nurse,staff,patient'])->group(function (){
+    // get user info
+    Route::get('/user/profile/{id}',[authController::class,'info']);
     // edit patient profile
     Route::post('/patient-profile-edit/{id}', [patientController::class, 'info'])->name('patient-profile');
     Route::put('/patient-profile/update/{id}', [patientController::class, 'updateInfo'])->name('patient-profile.update');
@@ -556,3 +562,16 @@ Route::get('/download-expiring-soon-report', [InventoryController::class, 'downl
 // testing area
 Route::get('/pdf/generate/dashbord',[PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
 Route::get('/pdf/generate/graph',[PdfController::class, 'generateDashboardGraph'])->name("generate-dashboard-graph.pdf");
+
+// NOTIFICATION SECTION
+Route::middleware(['auth'])->group(function () {
+    // Notifications routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    Route::get('/notifications/recent', [NotificationController::class, 'getRecent']);
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/delete-all-read', [NotificationController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+   
+});

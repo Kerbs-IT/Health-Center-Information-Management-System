@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\User;
+use App\Models\users_address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Type\Integer;
@@ -23,23 +25,30 @@ class manageUserController extends Controller
     {
         try {
             $data = $request->validate([
-                'username' => 'required',
+                'username' => 'required|unique:users,username',
                 'email' => ['required', 'email'],
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-                'role' => 'required|in:staff,patient',
-                'first_name' => 'required',
-                'middle_initial' => ['required', 'max:2'],
+                'first_name' => [
+                    'required',
+                    Rule::unique('users')->where(function ($query) use ($request) {
+                        return $query->where('first_name', $request->first_name)
+                            ->where('last_name', $request->last_name);
+                    })
+                ],
+                'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required'],
-                'recovery_question' => ['required'],
-                'recovery_answer' => ['required'],
+                'contact_number' => 'required|digits_between:7,12',
+                'date_of_birth' => 'required|date',
+                'patient_type' => 'required',
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required'
 
             ]);
-            $data['recovery_answer'] = Hash::make($data['recovery_answer']);
+           
             $data['password'] = Hash::make($data['password']);
 
-            switch ($data['role']) {
+           
+            switch ('patient') {
                 case 'nurse':
                 case 'staff':
                     $data['status'] = 'pending';  // Needs admin or nurse approval
@@ -54,30 +63,38 @@ class manageUserController extends Controller
                     break;
             }
 
-            $newUser = User::create($data);
+            $fullAddress = implode(' ', array_filter([
+                $data['blk_n_street'] ?? null,
+                $data['patient_purok_dropdown'] ?? null,
+                'Hugo Perez,',
+                'Trece Martires City,',
+                'Cavite'
+            ]));
 
-            $userId = $newUser->id;
+            $data['full_address'] = $fullAddress;
 
-            $patient = patients::create([
-                'user_id' => $userId ?? null,
+            $newUser = User::create([
+                'username'=> $data['username'],
+                'email' => $data['email'],
+                'patient_type' => $data['patient_type'],
                 'first_name' => $data['first_name'],
                 'middle_initial' => $data['middle_initial'],
                 'last_name' => $data['last_name'],
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
-                'profile_image' => 'images/default_profile.png',
-                'age' => null,
-                'date_of_birth' => null,
-                'sex' => null,
-                'civil_status' => null,
-                'contact_number' => null,
-                'nationality' => null,
+                'date_of_birth' => $data['date_of_birth'],
+                'contact_number' => $data['contact_number'],
+                'address' => $fullAddress,
+                'status' => 'active',
+                'password' => $data['password'],
+                'role' => 'patient'
             ]);
+
+           
             //    add the user address
             // dd($patient->id);
             $blk_n_street = explode(',', $data['blk_n_street']);
             // dd($blk_n_street);
-            patient_addresses::create([
-                'patient_id' => $patient->id,
+            users_address::create([
+                'user_id' => $newUser->id,
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
                 'street' => $blk_n_street[1] ?? null,
                 'purok' => $data['patient_purok_dropdown'],

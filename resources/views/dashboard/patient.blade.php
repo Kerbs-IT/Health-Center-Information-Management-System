@@ -52,7 +52,13 @@
                         <div class="personal-info p-4 flex-grow-1">
                             <!-- Personal Information Section -->
                             <div class="info mb-4">
-                                <h4 class="mb-3 pb-2 border-bottom fw-bold">Personal Information</h4>
+                                <div class="d-flex w-100 justify-content-between mb-3">
+                                    <h4 class="mb-0 pb-2 border-bottom fw-bold no-wrap flex-1">Personal Information</h4>
+                                    <div class="change-pass-button w-100 d-flex justify-content-end px-4 flex-1">
+                                        <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
+                                    </div>
+                                </div>
+
                                 <div class="row px-3">
                                     <!-- Left Column -->
                                     <div class="col-md-6">

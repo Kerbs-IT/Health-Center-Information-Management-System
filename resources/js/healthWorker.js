@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () =>{
         icon.addEventListener('click', (e) =>{
             e.preventDefault();
             const id = icon.dataset.id;
-            console.log(id);
+            // console.log(id);
 
             fetch(`/health-worker/get-info/${id}`,{
                 method:'POST',
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () =>{
                     return response.json();
                 }
             }).then(data => {
-                console.log(data);
+                // console.log(data);
 
                 // reset first
                 submitBtn.dataset.user = data.response.user_id;
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () =>{
                 const baseUrl = profileImg.dataset.baseUrl; // gets data-base-url
                 profileImg.src = baseUrl + data.response.profile_image;
                 // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
-                console.log(profileImg);
+                // console.log(profileImg);
                 fullname.innerHTML = data.response.full_name;
                 fname.value = data.response.first_name;
                 lname.value = data.response.last_name;
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () =>{
                 nationality.value = data.response.nationality;
                 username.value = data.response.username;
                 email.value = data.response.email;
-                console.log(username.value);
+                // console.log(username.value);
                 blkNstreet.value = data.response.street ?? 'none';
                 postalCode.value = data.response.postal_code; 
 
@@ -173,8 +173,12 @@ document.addEventListener('DOMContentLoaded', () =>{
                 console.error('Fetch error: ', error);
             })
 
-            popUp.classList.remove('d-none');
-            popUp.classList.add('d-flex');
+            if (popUp) {
+                popUp.classList.remove("d-none");
+                popUp.classList.add("d-flex");
+            }
+
+            
         })
     });
 
@@ -417,3 +421,39 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
         console.log('Error status:', error);
     }
 })
+// add health worker modal reset
+const addHealthWorkerBtn = document.getElementById("add-health-worker-modal");
+
+addHealthWorkerBtn.addEventListener('click', () => {
+    // get the modal form
+    const modalForm = document.getElementById("add-health-worker-form");
+    // reset first
+    modalForm.reset();
+    const username_error = document.getElementById("add-username-error");
+    const fname_error = document.querySelector(".fname-error");
+    const middle_initial_error = document.querySelector(
+        ".middle-initial-error"
+    );
+    const lname_error = document.querySelector(".lname-error");
+    const email_error = document.querySelector(".email-error");
+    const password_error = document.querySelector(".password-error");
+    const assigned_area_error = document.querySelector(".assigned-area-error");
+    const recovery_question_error = document.querySelector(
+        ".recovery-question-error"
+    );
+    const recovery_answer_error = document.querySelector(
+        ".recovery-answer-error"
+    );
+
+    // set the errors to empty for reset
+    username_error.innerHTML =  "";
+    fname_error.innerHTML =  "";
+    middle_initial_error.innerHTML =  "";
+    lname_error.innerHTML =  "";
+    email_error.innerHTML =  "";
+    password_error.innerHTML =  "";
+    assigned_area_error.innerHTML =  "";
+    recovery_question_error.innerHTML =
+         "";
+    recovery_answer_error.innerHTML =  "";
+});
