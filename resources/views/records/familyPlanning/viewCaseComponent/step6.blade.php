@@ -1,68 +1,70 @@
-<table class="table table-bordered table-striped mb-0">
-    <thead class="seperator">
-        <tr>
-            <th colspan="12" class="text-start">
-                V. PHYSICAL EXAMINATION
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th>Weight (cm)</th>
-            <td id="view_weight"></td>
-            <th>Blood Pressure</th>
-            <td id="view_blood_pressure"></td>
-        </tr>
-        <tr>
-            <th>Height (cm)</th>
-            <td id="view_height"></td>
-            <th>Pulse Rate (Bpm)</th>
-            <td id="view_pulse_rate"></td>
-        </tr>
-    
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped mb-0">
+        <thead class="seperator">
+            <tr>
+                <th colspan="12" class="text-start">
+                    V. PHYSICAL EXAMINATION
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Weight (cm)</th>
+                <td id="view_weight"></td>
+                <th>Blood Pressure</th>
+                <td id="view_blood_pressure"></td>
+            </tr>
+            <tr>
+                <th>Height (cm)</th>
+                <td id="view_height"></td>
+                <th>Pulse Rate (Bpm)</th>
+                <td id="view_pulse_rate"></td>
+            </tr>
 
+        </tbody>
+    </table>
+</div>
 <!-- General Physical Examination -->
-<table class="table table-bordered mb-0">
-    <thead class="">
-        <tr>
-            <th>Body Part</th>
-            <th>Findings</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Skin</td>
-            <td id="view_skin_type"></td>
-        </tr>
-        <tr>
-            <td>Conjunctiva</td>
-            <td id="view_conjuctiva_type"></td>
-        </tr>
-        <tr>
-            <td>Neck</td>
-            <td id="view_neck_type"></td>
-        </tr>
-        <tr>
-            <td>Breast</td>
-            <td id="view_breast_type"></td>
-        </tr>
-        <tr>
-            <td>Abdomen</td>
-            <td id="view_abdomen_type"></td>
-        </tr>
-        <tr>
-            <td>Extremities</td>
-            <td id="view_extremites_type"></td>
-        </tr>
-        <tr>
-            <td>EXTREMITIES (For IUD Acceptors)</td>
-            <td id="view_extremites_UID_type"></td>
-        </tr>
-    </tbody>
-</table>
-
+ <div class="table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead class="">
+            <tr>
+                <th>Body Part</th>
+                <th>Findings</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Skin</td>
+                <td id="view_skin_type"></td>
+            </tr>
+            <tr>
+                <td>Conjunctiva</td>
+                <td id="view_conjuctiva_type"></td>
+            </tr>
+            <tr>
+                <td>Neck</td>
+                <td id="view_neck_type"></td>
+            </tr>
+            <tr>
+                <td>Breast</td>
+                <td id="view_breast_type"></td>
+            </tr>
+            <tr>
+                <td>Abdomen</td>
+                <td id="view_abdomen_type"></td>
+            </tr>
+            <tr>
+                <td>Extremities</td>
+                <td id="view_extremites_type"></td>
+            </tr>
+            <tr>
+                <td>EXTREMITIES (For IUD Acceptors)</td>
+                <td id="view_extremites_UID_type"></td>
+            </tr>
+        </tbody>
+    </table>
+ </div>
 
 <!-- <table class="table table-bordered mb-0">
     <thead class="table-header">
@@ -103,8 +105,8 @@
 </table> -->
 
 <!-- Acknowledgement Section -->
-<div class="ackknowledgement ">
-    <h4 class="border-bottom mt-5 seperator px-2">ACKNOWLEDGEMENT</h4>
+<div class="ackknowledgement flex-wrap text-wrap overflow-auto">
+    <h4 class="border-bottom mt-5 seperator px-md-2 px-0">ACKNOWLEDGEMENT</h4>
     <p class="px-2">
         This is to certify that the Physician/Nurse/Midwife of the clinic has fully
         explained to me the different methods available in family planning, and I freely
