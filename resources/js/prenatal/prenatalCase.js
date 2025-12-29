@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import changeLmp from "../LMP/lmp";
 // load the existing info
 
 const viewBtn = document.getElementById("viewCaseBtn");
@@ -473,6 +474,17 @@ document.addEventListener("click", async (e) => {
     drug_intake.checked =
         data.caseInfo.prenatal_assessment.drug_intake == "yes";
 });
+
+// add a expected delivery change in the LMP
+const LMP = document.getElementById("LMP_input") ?? null;
+
+if (LMP) {
+    const expectedDelivery = document.getElementById("expected_delivery_input");
+
+    LMP.addEventListener("change", () => {
+        changeLmp(LMP, expectedDelivery);
+    });
+}
 
 // update the case
 const saveRecordBtn = document.getElementById("update-save-btn") ?? null;

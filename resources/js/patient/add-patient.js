@@ -55,6 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 document
                     .getElementById("prenatal-step3")
                     .classList.remove("d-none");
+                
+                 document.getElementById("family-planning-step3").classList.remove("d-flex");
+                document.getElementById("family-planning-step3").classList.add("d-none");
             } else if (selected == "family-planning") {
                 // console.log("taena gumana kaya boy");
                 document
@@ -71,6 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log(
                     document.querySelectorAll("#family-planning-step3")
                 );
+
+                document.getElementById("prenatal-step3").classList.remove("d-flex");
+                document.getElementById("prenatal-step3").classList.add("d-none");
             }
         } else {
             document.getElementById("step" + step).classList.remove("d-none");

@@ -130,12 +130,12 @@
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
                     <label for="LMP">LMP</label>
-                    <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP">
+                    <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="add_LMP">
                     <small class="text-danger error-text" id="LMP_error"></small>
                 </div>
                 <div class="mb-2 w-100">
                     <label for="expected_delivery">Expected Delivery</label>
-                    <input type="date" name="expected_delivery" class="form-control w-100">
+                    <input type="date" name="expected_delivery" class="form-control w-100" id="add-expected-delivery">
                     <small class="text-danger error-text" id="expected_delivery_error"></small>
                 </div>
                 <div class="mb-2 w-100">

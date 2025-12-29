@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import changeLmp from "../LMP/lmp.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // -------------------- ADD PRENANCY TIMELINE HISTORY ----------------------------------------------------------------------
@@ -227,6 +228,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// add a expected delivery change in the LMP
+const LMP = document.getElementById("add_LMP") ?? null;
+
+if (LMP) {
+    const expectedDelivery = document.getElementById("add-expected-delivery");
+
+    LMP.addEventListener("change", () => {
+        changeLmp(LMP, expectedDelivery);
+    });
+}
+
 // upload the data on the database
 
 const prenatalAddBtn = document.getElementById("prenatal-save-btn");
@@ -251,9 +263,9 @@ prenatalAddBtn.addEventListener("click", async (e) => {
     // get all the error elements
     const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
-         errorElements.forEach((element) => {
-             element.textContent = "";
-         });
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Prenatal Patient",
             text: "Patient is Successfully added.", // this will make the text capitalize each word
@@ -264,7 +276,7 @@ prenatalAddBtn.addEventListener("click", async (e) => {
             if (result.isConfirmed) {
                 // reset the steps
                 form.reset();
-                
+
                 window.currentStep = 1;
                 window.showStep(window.currentStep);
             }
@@ -272,10 +284,10 @@ prenatalAddBtn.addEventListener("click", async (e) => {
     } else {
         // reset first
 
-         errorElements.forEach((element) => {
-             element.textContent = "";
-         });
-        
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+
         Object.entries(data.errors).forEach(([key, value]) => {
             if (document.getElementById(`${key}_error`)) {
                 document.getElementById(`${key}_error`).textContent = value;
@@ -306,4 +318,3 @@ prenatalAddBtn.addEventListener("click", async (e) => {
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
-
