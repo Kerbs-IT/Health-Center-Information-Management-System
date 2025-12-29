@@ -51,7 +51,7 @@
 
                             <!-- VIEW FORM -->
                             <div class="modal fade" id="viewdetailsModal" tabindex="-1" aria-labelledby="familyPlanModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-xl modal-dialog-centered">
+                                <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-centered">
                                     @include('records.familyPlanning.viewCase')
                                 </div>
                             </div>
