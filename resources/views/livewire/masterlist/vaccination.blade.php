@@ -1,12 +1,13 @@
-<div class="main-content card shadow d-flex flex-column p-3 w-100  ">
+<div class="main-content card shadow d-flex flex-column p-md-3 p-2 w-100  ">
     <div class="banner">
         <h5>Vaccination Patient</h5>
     </div>
-    <div class="d-flex gap-3  mb-4">
+    <!-- Filters Section -->
+    <div class="row g-3 mb-md-4 mb-2">
         <!-- Show Entries -->
-        <div class="input-group flex-column w-50">
-            <label for="">Show</label>
-            <select wire:model.live="entries" class="form-select rounded bg-light w-100">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-1">
+            <label class="form-label">Show</label>
+            <select wire:model.live="entries" class="form-select rounded bg-light">
                 <option value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
@@ -15,19 +16,19 @@
         </div>
 
         <!-- Search -->
-        <div class="input-group flex-column w-75">
-            <label for="">Search</label>
+        <div class="col-12 col-sm-6 col-md-8 col-lg-6 col-xl-2">
+            <label class="form-label">Search</label>
             <input
                 type="text"
                 wire:model.live.debounce.500ms="search"
-                class="form-control rounded bg-light w-100"
+                class="form-control rounded bg-light"
                 placeholder="Search child or mother name...">
         </div>
 
         <!-- Age Range Filter -->
-        <div class="input-group flex-column w-50">
-            <label for="">Filter (Age)</label>
-            <select wire:model.live="ageRange" class="form-select bg-light rounded w-100">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <label class="form-label">Filter (Age)</label>
+            <select wire:model.live="ageRange" class="form-select bg-light rounded">
                 <option value="">All Ages</option>
                 <option value="0-4" selected>0-59 months (0-4 yrs)</option>
                 <option value="5-9">5-9 years old</option>
@@ -37,9 +38,9 @@
         </div>
 
         <!-- Month Filter -->
-        <div class="input-group flex-column w-50">
-            <label for="">Month</label>
-            <select wire:model.live="filterMonth" class="form-select bg-light rounded w-100">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <label class="form-label">Month</label>
+            <select wire:model.live="filterMonth" class="form-select bg-light rounded">
                 <option value="">All Months</option>
                 <option value="1">January</option>
                 <option value="2">February</option>
@@ -57,9 +58,9 @@
         </div>
 
         <!-- Year Filter -->
-        <div class="input-group flex-column w-50">
-            <label for="">Year</label>
-            <select wire:model.live="filterYear" class="form-select bg-light rounded w-100">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 col-xl-1">
+            <label class="form-label">Year</label>
+            <select wire:model.live="filterYear" class="form-select bg-light rounded">
                 <option value="">All Years</option>
                 @foreach($years as $year)
                 <option value="{{ $year }}">{{ $year }}</option>
@@ -69,9 +70,9 @@
 
         <!-- Barangay Filter (only for nurses) -->
         @if((Auth::user()->role) == 'nurse')
-        <div class="input-group flex-column w-50">
-            <label for="">Barangay</label>
-            <select wire:model.live="selectedBrgy" class="form-select bg-light rounded w-100">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <label class="form-label">Barangay</label>
+            <select wire:model.live="selectedBrgy" class="form-select bg-light rounded">
                 <option value="">All Barangay</option>
                 @foreach($brgys as $brgy)
                 <option value="{{ $brgy->brgy_unit }}">{{ $brgy->brgy_unit }}</option>
@@ -81,24 +82,27 @@
         @endif
 
         <!-- Reset Filters Button -->
-        <div class="d-flex align-items-end w-50">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 col-xl-1">
+            <label class="form-label">&nbsp;</label>
             <button
                 wire:click="resetFilters"
                 type="button"
-                class="btn btn-secondary px-3 py-2 w-100">
+                class="btn btn-secondary w-100 text-nowrap"  style="font-size: 0.875rem;">
                 Reset Filters
             </button>
         </div>
 
         <!-- Download Button -->
-        <div class="d-flex align-items-end">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 col-xl-1">
+            <label class="form-label">&nbsp;</label>
             <button
                 type="button"
-                class="btn btn-success d-flex justify-content-center align-items-center gap-2 px-3 py-2" wire:click="exportPdf()">
+                class="btn btn-success d-flex justify-content-center align-items-center gap-2 w-100"
+                wire:click="exportPdf()">
                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height:20px" viewBox="0 0 512 512">
                     <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" fill="white" />
                 </svg>
-                <p class="mb-0" style="font-size: 0.875rem;">Download</p>
+                <span class="d-none d-sm-inline">Download</span>
             </button>
         </div>
     </div>
@@ -114,9 +118,9 @@
     <div class="mb-3 text-center">
         <h2>MASTER LIST OF {{ $this->selectedRange }}</h2>
     </div>
-    <div class="mb-3 d-flex justify-content-between">
-        <h4 class="w-50 text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
-        <h4 class="w-50 text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
+    <div class="mb-3 d-flex justify-content-between flex-wrap">
+        <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
+        <h4 class="flex-fill text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
     </div>
     <div class="table-con">
         <table>
