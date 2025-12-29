@@ -575,3 +575,4 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
    
 });
+
