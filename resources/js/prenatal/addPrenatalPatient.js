@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import changeLmp from "../LMP/lmp.js";
+import initSignatureCapture from "../signature/signature.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // -------------------- ADD PRENANCY TIMELINE HISTORY ----------------------------------------------------------------------
@@ -226,6 +227,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(fullNameCon);
     });
+
+    // for the signature
+     const addPatientSignature = initSignatureCapture({
+         drawBtnId: "drawSignatureBtn",
+         uploadBtnId: "uploadSignatureBtn",
+         canvasId: "signaturePad",
+         canvasSectionId: "signatureCanvas",
+         uploadSectionId: "signatureUpload",
+         previewSectionId: "signaturePreview",
+         fileInputId: "signature_image",
+         previewImageId: "previewImage",
+         errorElementId: "signature_error",
+         clearBtnId: "clearSignature",
+         saveBtnId: "saveSignature",
+         removeBtnId: "removeSignature",
+         hiddenInputId: "signature_data",
+         maxFileSizeMB: 2,
+     });
 });
 
 // add a expected delivery change in the LMP

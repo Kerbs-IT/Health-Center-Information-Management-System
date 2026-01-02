@@ -235,7 +235,7 @@ class SeniorCitizenController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $sex = $data['sex'] ?? $seniorCitizenRecord->patient->sex;
             // update the patient data first
             $seniorCitizenRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
@@ -243,7 +243,7 @@ class SeniorCitizenController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
                 'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
                 'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,
-                'sex' => ucfirst($data['sex']) ?? ucfirst($seniorCitizenRecord->patient->sex),
+                'sex' => $sex ? ucfirst($sex) : null,
                 'civil_status' => $data['civil_status'] ?? $seniorCitizenRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $seniorCitizenRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,

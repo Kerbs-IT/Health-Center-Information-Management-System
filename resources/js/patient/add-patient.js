@@ -350,6 +350,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+
+    typeSelect.addEventListener('change', function () {
+        disableSubmitBtn(typeSelect.value);
+    })
    
 
     // handle adding the vaccine
@@ -589,4 +593,46 @@ function validateVaccinesWithDose(selectedVaccines,selectedDose) {
     });
     
     return invalidVaccines;
+}
+
+// handle the submit
+
+function disableSubmitBtn(typeOfPatient) {
+    // IDS
+    const vaccination = document.getElementById("vaccination-submit-btn");
+    const prenatal = document.getElementById("prenatal-save-btn");
+    const tbDots = document.getElementById("tb_dots_save_record_btn");
+    const seniorCitizen = document.getElementById(
+        "senior_citizen_save_record_btn"
+    );
+    const familyPlanning = document.getElementById(
+        "family_planning_submit_btn"
+    );
+    // FIRST: Disable ALL buttons
+    vaccination.disabled = true;
+    prenatal.disabled = true;
+    tbDots.disabled = true;
+    seniorCitizen.disabled = true;
+    familyPlanning.disabled = true;
+
+    // THEN: Enable only the selected one
+    switch (typeOfPatient) {
+        case "vaccination":
+            vaccination.disabled = false;
+            break;
+        case "prenatal":
+            prenatal.disabled = false;
+            break;
+        case "tb-dots":
+            tbDots.disabled = false;
+            break;
+        case "senior-citizen":
+            seniorCitizen.disabled = false;
+            break;
+        case "family-planning":
+            familyPlanning.disabled = false;
+            break;
+        default:
+            break;
+    }
 }

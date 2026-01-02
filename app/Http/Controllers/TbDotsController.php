@@ -236,7 +236,7 @@ class TbDotsController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $sex = $data['sex'] ??  $tbDotsRecord->patient->sex;
             // update the patient data first
             $tbDotsRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),
@@ -244,7 +244,7 @@ class TbDotsController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->last_name)),
                 'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
-                'sex' => ucfirst($data['sex'] )?? ucfirst($tbDotsRecord->patient->sex),
+                'sex' =>$sex?ucfirst($sex):null,
                 'civil_status' => $data['civil_status'] ?? $tbDotsRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,

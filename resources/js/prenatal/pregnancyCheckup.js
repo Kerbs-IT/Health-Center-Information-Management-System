@@ -19,7 +19,7 @@ document.addEventListener("click", async function(e) {
         return;
     }
     
-    console.log('Loading checkup ID:', checkupId);
+    // console.log('Loading checkup ID:', checkupId);
     
     // Show loading state
     showLoadingModal();
@@ -459,9 +459,9 @@ updateBTN.addEventListener("click", async (e) => {
     const form = document.getElementById("edit-check-up-form");
     const formData = new FormData(form);
 
-    for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    // }
 
     const response = await fetch(`/update/prenatal-check-up/${medicalId}`, {
         method: "POST",
@@ -558,7 +558,7 @@ document.addEventListener("click", async function(e) {
         
         if (!result.isConfirmed) return;
         
-        console.log('Archiving case ID:', caseId);
+        // console.log('Archiving case ID:', caseId);
         
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {

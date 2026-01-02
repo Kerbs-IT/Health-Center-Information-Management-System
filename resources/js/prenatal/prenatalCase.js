@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import changeLmp from "../LMP/lmp";
+import initSignatureCapture from "../signature/signature";
 // load the existing info
 
 const viewBtn = document.getElementById("viewCaseBtn");
@@ -27,13 +28,11 @@ document.addEventListener("click", async (e) => {
 
     // load the value
     gravida.innerHTML = data.caseInfo.G ?? "0";
-    para.innerHTML = data.caseInfo.P ??"0";
-    term.innerHTML = data.caseInfo.T ??"0";
-    premature.innerHTML = data.caseInfo.premature
-        ??"0";
-    abortion.innerHTML = data.caseInfo.abortion ??"0";
-    livingChildren.innerHTML = data.caseInfo.living_children
-        ??"0";
+    para.innerHTML = data.caseInfo.P ?? "0";
+    term.innerHTML = data.caseInfo.T ?? "0";
+    premature.innerHTML = data.caseInfo.premature ?? "0";
+    abortion.innerHTML = data.caseInfo.abortion ?? "0";
+    livingChildren.innerHTML = data.caseInfo.living_children ?? "0";
 
     // load the pregnancy timeline
     const tableBody = document.getElementById("pregnancy_history_body");
@@ -117,6 +116,8 @@ document.addEventListener("click", async (e) => {
     // const caseDecision = (decision.innerHTML = data.caseInfo.decision);
 
     // console.log("datas:", data);
+
+    // signature path
 });
 
 // pregnancy plan view
@@ -169,6 +170,8 @@ document.addEventListener("click", async (e) => {
         "emergency_person_contact_number_value"
     );
     const patientName = document.getElementById("patient_name_value");
+    const signatureImg = document.getElementById("signature_value");
+    const noSignatureText = document.getElementById("no_signature");
 
     // load the value
 
@@ -194,6 +197,15 @@ document.addEventListener("click", async (e) => {
     emergencyPersonContactNo.innerHTML =
         data.pregnancyPlan.emergency_person_contact_number ?? "N/A";
     patientName.innerHTML = data.pregnancyPlan.patient_name ?? "N/A";
+
+    const signaturePath = data.pregnancyPlan.signature
+        ? `/storage/${data.pregnancyPlan.signature}`
+        : null;
+    if (signaturePath) {
+        signatureImg.src = signaturePath;
+        signatureImg.style.display = "block";
+        noSignatureText.style.display = "none";
+    }
 });
 // add event listener and load the data to the modal
 
@@ -668,7 +680,40 @@ document.addEventListener("click", async (e) => {
         }
         console.log("donor deleted");
     });
+
+    // signature part
 });
+
+// WAIT FOR MODAL TO FULLY OPEN - THIS RUNS **AFTER** MODAL IS VISIBLE
+const editPregnancyModal = document.getElementById("case2PrenatalModal");
+let editPatientSignature = null;
+if (editPregnancyModal) {
+    editPregnancyModal.addEventListener("shown.bs.modal", function () {
+        console.log("Modal is NOW visible!");
+
+        if (!editPatientSignature) {
+            editPatientSignature = initSignatureCapture({
+                drawBtnId: "edit_drawSignatureBtn",
+                uploadBtnId: "edit_uploadSignatureBtn",
+                canvasId: "edit_signaturePad",
+                canvasSectionId: "edit_signatureCanvas",
+                uploadSectionId: "edit_signatureUpload",
+                previewSectionId: "edit_signaturePreview",
+                fileInputId: "edit_signature_image",
+                previewImageId: "edit_previewImage",
+                errorElementId: "edit_signature_error",
+                clearBtnId: "edit_clearSignature",
+                saveBtnId: "edit_saveSignature",
+                removeBtnId: "edit_removeSignature",
+                hiddenInputId: "edit_signature_data",
+                maxFileSizeMB: 2,
+            });
+            console.log("✅ SIGNATURE INITIALIZED!");
+        } else {
+            editPatientSignature.clear();
+        }
+    });
+}
 
 const donor_names_con = document.getElementById("donor_names_con");
 const donor_name_input = document.getElementById("name_of_donor");
@@ -712,9 +757,16 @@ if (updateBTN) {
         const form = document.getElementById("pregnancy_plan_update_form");
         const formData = new FormData(form);
 
-        for (const [key, value] of formData.entries()) {
-            console.log(key, value);
+        // Manually add the hidden signature data
+        const hiddenSignature = document.getElementById("edit_signature_data");
+        if (hiddenSignature && hiddenSignature.value) {
+            formData.set("edit_signature_data", hiddenSignature.value);
+            console.log("✅ Manually added signature data");
         }
+
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        // }
 
         const response = await fetch(
             `/update/pregnancy-plan-record/${pregnancyPlanId}`,
@@ -1060,4 +1112,4 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// event delegation for 
+// event delegation for
