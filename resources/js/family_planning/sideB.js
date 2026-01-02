@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import initSignatureCapture from "../signature/signature";
 
 // EVENT DELEGATION IN SIDE B VIEW
 
@@ -20,13 +21,36 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
-            console.log(data);
+            // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
+                if (key == "signature_of_the_provider") {
+                    const signatureElement = document.getElementById(
+                        "view_signature_of_the_provider"
+                    );
+
+                    if (signatureElement) {
+                        const signaturePath = data.sideBrecord
+                            .signature_of_the_provider
+                            ? `/storage/${data.sideBrecord.signature_of_the_provider}`
+                            : null;
+                        const signatureImg = document.getElementById(
+                            "view_signature_of_the_provider"
+                        );
+                        const noSignatureText = document.getElementById(
+                            "view_signature_of_the_provide_no"
+                        );
+                        if (signaturePath) {
+                            signatureImg.src = signaturePath;
+                            signatureImg.style.display = "block";
+                            noSignatureText.style.display = "none";
+                        }
+                    }
+                }
                 if (document.getElementById(`view_${key}`)) {
                     const element = document.getElementById(`view_${key}`);
 
                     if (key == "medical_findings") {
-                        console.log(value);
+                        // console.log(value);
                     }
                     document.getElementById(`view_${key}`).innerHTML = value;
                 }
@@ -69,7 +93,7 @@ document.addEventListener("click", async (e) => {
 
             //  dispath the livewire
 
-            console.log(data);
+            // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (key == "medical_record_case_id") {
                     document.getElementById(`edit_side_b_${key}`).value = value;
@@ -93,6 +117,37 @@ document.addEventListener("click", async (e) => {
                 }
             });
         }
+        // signature
+        const editModal = document.getElementById("editSideBcaseModal");
+        let editSideBsignature = null;
+        if (editModal) {
+            editModal.addEventListener("shown.bs.modal", function () {
+                // console.log("Modal is NOW visible!");
+
+                if (!editSideBsignature) {
+                    editSideBsignature = initSignatureCapture({
+                        drawBtnId: "edit_side_b_drawSignatureBtn",
+                        uploadBtnId: "edit_side_b_uploadSignatureBtn",
+                        canvasId: "edit_side_b_signaturePad",
+                        canvasSectionId: "edit_side_b_signatureCanvas",
+                        uploadSectionId: "edit_side_b_signatureUpload",
+                        previewSectionId: "edit_side_b_signaturePreview",
+                        fileInputId: "edit_side_b_signature_image",
+                        previewImageId: "edit_side_b_previewImage",
+                        errorElementId: "edit_side_b_signature_error",
+                        clearBtnId: "edit_side_b_clearSignature",
+                        saveBtnId: "edit_side_b_saveSignature",
+                        removeBtnId: "edit_side_b_removeSignature",
+                        hiddenInputId: "edit_side_b_signature_data",
+                        maxFileSizeMB: 2,
+                    });
+
+                    // console.log("✅ SIGNATURE INITIALIZED!");
+                } else {
+                    editSideBsignature.clear();
+                }
+            });
+        }
     } catch (error) {
         console.log("Error:", error);
     }
@@ -106,6 +161,16 @@ sideBupdateBTN.addEventListener("click", async (e) => {
     // form
     const form = document.getElementById("edit-side-b-family-plan-form");
     const formData = new FormData(form);
+
+    // hidden signature data
+    const hiddenSignature = document.getElementById(
+        "edit_side_b_signature_data"
+    );
+    if (hiddenSignature && hiddenSignature.value) {
+        formData.set("edit_side_b_signature_data", hiddenSignature.value);
+        // console.log("✅ Manually added signature data");
+    }
+
     const response = await fetch(
         `/patient-record/family-planning/update/side-b-record/${id}`,
         {

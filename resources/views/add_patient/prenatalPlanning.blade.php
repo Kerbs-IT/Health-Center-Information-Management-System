@@ -157,9 +157,39 @@
         </div>
         <!-- signature -->
         <div class="mb-3 w-100 d-flex flex-column border-bottom">
-            <label for="signature_image">Upload Signature</label>
-            <input type="file" name="signature_image" id="signature_image" class="form-control" accept="image/*" required>
-            <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+            <label>Signature</label>
+
+            <!-- Two Action Buttons -->
+            <div class="d-flex gap-2 mb-2">
+                <button type="button" class="btn btn-outline-primary flex-fill" id="drawSignatureBtn">
+                    <i class="bi bi-pencil"></i> Draw Signature
+                </button>
+                <button type="button" class="btn btn-outline-primary flex-fill" id="uploadSignatureBtn">
+                    <i class="bi bi-upload"></i> Upload Signature Photo
+                </button>
+            </div>
+
+            <!-- Drawing Canvas (hidden by default) -->
+            <div id="signatureCanvas" class="d-none mb-2">
+                <canvas id="signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-secondary" id="clearSignature">Clear</button>
+                    <button type="button" class="btn btn-sm btn-success" id="saveSignature">Save Signature</button>
+                </div>
+            </div>
+
+            <!-- File Upload (hidden by default) -->
+            <div id="signatureUpload" class="d-none mb-2">
+                <input type="file" name="signature_image" id="signature_image" class="form-control" accept="image/*">
+                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="signaturePreview" class="d-none">
+                <img id="previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                <button type="button" class="btn btn-sm btn-danger mt-2" id="removeSignature">Remove</button>
+            </div>
+
             <small class="text-danger error-text" id="signature_error"></small>
         </div>
         <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2">

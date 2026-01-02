@@ -96,7 +96,7 @@ class addPatientController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])),
                 'full_name' => $fullName,
                 'age' => $data['age']?? 0,
-                'sex' => ucfirst($data['sex'])?? 'male',
+                'sex' => isset($data['sex']) ? ucfirst($data['sex']) : null,
                 'civil_status'=> $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
                 'date_of_birth'=> $data['date_of_birth']?? null,

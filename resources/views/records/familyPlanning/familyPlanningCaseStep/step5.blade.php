@@ -279,29 +279,93 @@
         and i freely choose the <input type="text" id="edit_choosen_method" name="edit_choosen_method" class="rounded text-center"> method.
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2">
-        <div class="mb-3 w-50 d-flex flex-column">
-            <label for="edit_family_planning_signature_image">Upload Signature</label>
-            <input type="file" name="edit_family_planning_signature_image" id="edit_family_planning_signature_image" class="form-control text-center" accept="image/*" required>
-            <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+        <div class="mb-1 w-100 d-flex flex-column border-bottom">
+            <label>Client Signature</label>
+
+            <!-- Two Action Buttons -->
+            <div class="d-flex gap-2 mb-2">
+                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_family_planning_acknowledgement_drawSignatureBtn">
+                    <i class="bi bi-pencil"></i> Draw Signature
+                </button>
+                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_family_planning_acknowledgement_uploadSignatureBtn">
+                    <i class="bi bi-upload"></i> Upload Signature Photo
+                </button>
+            </div>
+
+            <!-- Drawing Canvas (hidden by default) -->
+            <div id="edit_family_planning_acknowledgement_signatureCanvas" class="d-none mb-2">
+                <canvas id="edit_family_planning_acknowledgement_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-secondary" id="edit_family_planning_acknowledgement_clearSignature">Clear</button>
+                    <button type="button" class="btn btn-sm btn-success" id="edit_family_planning_acknowledgement_saveSignature">Save Signature</button>
+                </div>
+            </div>
+
+            <!-- File Upload (hidden by default) -->
+            <div id="edit_family_planning_acknowledgement_signatureUpload" class="d-none mb-2">
+                <input type="file" name="edit_family_planning_acknowledgement_signature_image" id="edit_family_planning_acknowledgement_signature_image" class="form-control" accept="image/*">
+                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="edit_family_planning_acknowledgement_signaturePreview" class="d-none">
+                <img id="edit_family_planning_acknowledgement_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_family_planning_acknowledgement_removeSignature">Remove</button>
+            </div>
+
+            <small class="text-danger error-text" id="edit_family_planning_acknowledgement_signature_error"></small>
         </div>
-        <div class="mb-3 w-50">
-            <label for="signature_image" class="text-white">Upload Signature</label>
-            <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement">
-        </div>
+    </div>
+    <div class="mb-3 w-100">
+        <label for="signature_image" class="text-black">Date:</label>
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement">
     </div>
     <div class="mb-3 w-100">
         <p class="text-center">I hereby consent to the inclusion of my FP 1 in the Family Health Registry</p>
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2 border-bottom">
-        <div class="mb-3 w-50 d-flex flex-column">
-            <label for="edit_family_planning_acknowlegement_consent_signature_image">Upload Signature</label>
-            <input type="file" name="edit_family_planning_acknowlegement_consent_signature_image" id="edit_family_planning_acknowlegement_consent_signature_image" class="form-control text-center" accept="image/*" required>
-            <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+        <!-- signature -->
+        <div class="mb-1 w-100 d-flex flex-column border-bottom">
+            <label>Client Signature</label>
+
+            <!-- Two Action Buttons -->
+            <div class="d-flex gap-2 mb-2">
+                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_family_planning_consent_drawSignatureBtn">
+                    <i class="bi bi-pencil"></i> Draw Signature
+                </button>
+                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_family_planning_consent_uploadSignatureBtn">
+                    <i class="bi bi-upload"></i> Upload Signature Photo
+                </button>
+            </div>
+
+            <!-- Drawing Canvas (hidden by default) -->
+            <div id="edit_family_planning_consent_signatureCanvas" class="d-none mb-2">
+                <canvas id="edit_family_planning_consent_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-secondary" id="edit_family_planning_consent_clearSignature">Clear</button>
+                    <button type="button" class="btn btn-sm btn-success" id="edit_family_planning_consent_saveSignature">Save Signature</button>
+                </div>
+            </div>
+
+            <!-- File Upload (hidden by default) -->
+            <div id="edit_family_planning_consent_signatureUpload" class="d-none mb-2">
+                <input type="file" name="edit_family_planning_consent_signature_image" id="edit_family_planning_consent_signature_image" class="form-control" accept="image/*">
+                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="edit_family_planning_consent_signaturePreview" class="d-none">
+                <img id="edit_family_planning_consent_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_family_planning_consent_removeSignature">Remove</button>
+            </div>
+
+            <small class="text-danger error-text" id="edit_family_planning_consent_signature_error"></small>
         </div>
-        <div class="mb-3 w-50">
-            <label for="signature_image" class="text-white">Upload Signature</label>
-            <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent">
-        </div>
+
+    </div>
+    <div class="mb-3 w-100">
+        <label for="signature_image" class="text-black">Date</label>
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent">
     </div>
 
 </div>
