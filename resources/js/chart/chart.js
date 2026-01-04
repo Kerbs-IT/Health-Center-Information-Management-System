@@ -26,47 +26,7 @@ async function loadPatientData() {
 const year = new Date().getFullYear();
 
 document.addEventListener("DOMContentLoaded", function (e) {
-    
 
-    // Sample data for different patient types - all using success green color
-    // const patientData = {
-    //     all: {
-    //         label: "All Patients",
-    //         data: [245, 289, 312, 298, 267, 334, 356, 298, 312, 289, 267, 298],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    //     vaccination: {
-    //         label: "Vaccination",
-    //         data: [89, 92, 105, 98, 87, 112, 125, 98, 105, 92, 87, 98],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    //     prenatal: {
-    //         label: "Prenatal Care",
-    //         data: [45, 52, 48, 56, 51, 58, 62, 54, 48, 52, 45, 56],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    //     senior: {
-    //         label: "Senior Citizen",
-    //         data: [67, 71, 78, 74, 69, 82, 85, 76, 78, 71, 69, 74],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    //     tb: {
-    //         label: "TB Treatment",
-    //         data: [23, 28, 31, 26, 24, 29, 32, 27, 31, 28, 24, 26],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    //     family_planning: {
-    //         label: "Family Planning",
-    //         data: [21, 26, 29, 24, 22, 28, 31, 25, 29, 26, 22, 24],
-    //         backgroundColor: "rgba(40, 167, 69, 0.8)",
-    //         borderColor: "rgba(40, 167, 69, 1)",
-    //     },
-    // };
 
     const months = [
         "Jan",

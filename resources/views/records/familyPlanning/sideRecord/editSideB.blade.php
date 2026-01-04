@@ -17,7 +17,41 @@
         </div>
         <div class="input-field">
             <label for="edit_side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
-            <input type="file" id="edit_side_b_name_n_signature" name="edit_side_b_name_n_signature" accept="image/*" class="w-100 form-control">
+            <!-- signature -->
+            <div class="mb-1 w-100 d-flex flex-column border-bottom">
+                <!-- Two Action Buttons -->
+                <div class="d-flex gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="edit_side_b_drawSignatureBtn">
+                        <i class="bi bi-pencil"></i> Draw Signature
+                    </button>
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="edit_side_b_uploadSignatureBtn">
+                        <i class="bi bi-upload"></i> Upload Signature Photo
+                    </button>
+                </div>
+
+                <!-- Drawing Canvas (hidden by default) -->
+                <div id="edit_side_b_signatureCanvas" class="d-none mb-2">
+                    <canvas id="edit_side_b_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-secondary" id="edit_side_b_clearSignature">Clear</button>
+                        <button type="button" class="btn btn-sm btn-success" id="edit_side_b_saveSignature">Save Signature</button>
+                    </div>
+                </div>
+
+                <!-- File Upload (hidden by default) -->
+                <div id="edit_side_b_signatureUpload" class="d-none mb-2">
+                    <input type="file" name="edit_side_b_signature_image" id="edit_side_b_signature_image" class="form-control" accept="image/*">
+                    <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="edit_side_b_signaturePreview" class="d-none">
+                    <img id="edit_side_b_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                    <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_side_b_removeSignature">Remove</button>
+                </div>
+
+                <small class="text-danger error-text" id="edit_side_b_signature_error"></small>
+            </div>
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">

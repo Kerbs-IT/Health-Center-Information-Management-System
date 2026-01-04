@@ -22,6 +22,17 @@ class ManageMedicineRequests extends Component
     // Property for view details
     public $viewRequest;
 
+    private function determineStockStatus($stock)
+    {
+        if ($stock <= 0) {
+            return 'Out of Stock';
+        }
+        if ($stock <= 10) {
+            return 'Low Stock';
+        }
+        return 'In Stock';
+    }
+
     public function approve($requestId)
     {
         DB::transaction(function () use ($requestId) {
@@ -43,6 +54,14 @@ class ManageMedicineRequests extends Component
             // deduct stock
             $request->medicine->decrement('stock', $request->quantity_requested);
 
+            // recalculate and update stock status
+            $newStock = $request->medicine->fresh()->stock;
+            $newStockStatus = $this->determineStockStatus($newStock);
+
+            $request->medicine->update([
+                'stock_status' => $newStockStatus
+            ]);
+
             // update status
             $request->update([
                 'status' => 'completed',
@@ -61,7 +80,7 @@ class ManageMedicineRequests extends Component
                 'performed_at'        => now(),
             ]);
         });
-
+        $this->dispatch('approve-modal');
         session()->flash('message', 'Medicine request approved successfully.');
     }
 

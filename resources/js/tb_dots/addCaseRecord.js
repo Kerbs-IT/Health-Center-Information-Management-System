@@ -3,7 +3,7 @@ const addTable = document.getElementById("add_tb_tbody");
 if (addTable) {
     // remove maintenance
     addTable.addEventListener("click", (e) => {
-        console.log("working delete");
+        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }
@@ -110,7 +110,7 @@ if (addCaseBtn) {
         // reset the form
         form.reset();
 
-        console.log(patientInfo);
+        // console.log(patientInfo);
 
         // get the id of important input fields
         const patientNameElement = document.getElementById("add_tb_case_patient_name")??null;
