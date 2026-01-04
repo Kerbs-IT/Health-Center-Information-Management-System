@@ -16,7 +16,8 @@ class Medicine extends Model
         'dosage',
         'stock',
         'expiry_date',
-        'status',
+        'stock_status',
+        'expiry_status',
         'min_age_months',
         'max_age_months'
     ];
@@ -26,7 +27,7 @@ class Medicine extends Model
 
     public function scopeSearch($query, $value){
         $query->where('medicine_id', 'like', "%{$value}%")->orWhere('medicine_name', 'like', "%{$value}%")->orWhere('dosage', 'like', "%{$value}%")
-        ->orWhere('stock', 'like',"%{$value}%")->orWhere('expiry_date', 'like', "%{$value}%")->orWhere('status', 'like', "%{$value}%")
+        ->orWhere('stock', 'like',"%{$value}%")->orWhere('expiry_date', 'like', "%{$value}%")
         ->orWhereHas('category', function($cat) use ($value){
             $cat->where('category_name', 'like', "%{$value}%");
         });

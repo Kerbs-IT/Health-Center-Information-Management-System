@@ -123,10 +123,11 @@
                             <th class="text-center" scope="col"><button wire:click="sortBy('category_name')">Category {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('dosage')">Dosage {!! sortIcon($sortField, 'dosage', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col">Age Range</th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('stock')">Stock {!! sortIcon($sortField, 'stock', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('status')">Status {!! sortIcon($sortField, 'status', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('stock')"> Stock  {!! sortIcon($sortField, 'stock', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('stock_status')"> Stock Status {!! sortIcon($sortField, 'stock_status', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('expiry_status')">Expiry Status {!! sortIcon($sortField, 'expiry_status', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('expiry_date')">Expiry Date {!! sortIcon($sortField, 'expiry_date', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('created_at')">Date {!! sortIcon($sortField, 'created_at', $sortDirection) !!}</button></th>
+                            <!-- <th class="text-center" scope="col"><button wire:click="sortBy('created_at')">Date {!! sortIcon($sortField, 'created_at', $sortDirection) !!}</button></th> -->
                             <th class="text-center" scope="col">Actions</th>
                         </tr>
                     </thead>
@@ -138,26 +139,31 @@
                             <td>{{ $medicine->category->category_name }}</td>
                             <td>{{ $medicine->dosage }}</td>
                             <td class="text-center">
-                                <span class="badge bg-info text-light">
+                                <span class=" px-3 py-1 rounded-full text-xs font-semibold bg-primary bg-opacity-25 text-blue-800">
                                     {{ formatAgeRange($medicine->min_age_months, $medicine->max_age_months) }}
                                 </span>
                             </td>
                             <td>{{ $medicine->stock }}</td>
                             <td>
-                                <span
-                                    class="
-                                        px-3 py-1 rounded-full text-xs font-semibold
-                                        @if ($medicine->status === 'In Stock') bg-green-100 text-green-700
-                                        @elseif ($medicine->status === 'Low Stock') bg-yellow-100 text-yellow-700
-                                        @elseif ($medicine->status === 'Out of Stock') bg-red-100 text-red-700
-                                        @elseif ($medicine->status === 'Expiring Soon') bg-orange-100 text-orange-700
-                                        @endif
-                                    ">
-                                    {{ $medicine->status }}
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    @if ($medicine->stock_status === 'In Stock') bg-success bg-opacity-25 text-success
+                                    @elseif ($medicine->stock_status === 'Low Stock') bg-warning bg-opacity-25 text-yellow-800
+                                    @elseif ($medicine->stock_status === 'Out of Stock') bg-danger bg-opacity-25 text-danger
+                                    @endif">
+                                    {{ $medicine->stock_status }}
                                 </span>
                             </td>
-                            <td>{{ $medicine->expiry_date }}</td>
-                            <td>{{ $medicine->created_at->format('M d, Y') }}</td>
+                            <td>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    @if ($medicine->expiry_status === 'Valid') bg-success bg-opacity-25 text-success
+                                    @elseif ($medicine->expiry_status === 'Expiring Soon') bg-warning bg-opacity-25 text-yellow-800
+                                    @elseif ($medicine->expiry_status === 'Expired') bg-danger bg-opacity-25 text-danger
+                                    @endif">
+                                    {{ $medicine->expiry_status }}
+                                </span>
+                            </td>
+                            <td>{{ $medicine->expiry_date}}</td>
+                            <!-- <td>{{ $medicine->created_at->format('M d, Y') }}</td> -->
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     <button class="btn bg-primary text-white" wire:click="editMedicineData({{ $medicine->medicine_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
