@@ -19,17 +19,17 @@
     'resources/js/prenatal/editPrenatalDetails.js'])
 
     @include('sweetalert::alert')
-    <div class="patient-details vh-100 d-flex">
+    <div class="patient-details vh-100 d-flex ">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <div class="d-flex flex-grow-1 flex-column overflow-auto">
                 <main class="flex-column p-2">
                     <div class="top-part d-flex justify-content-between px-2 align-items-center border-bottom">
                         <h2>Update Patient Details</h2>
-                        <div class="sequence-links d-flex justify-content-center align-items-center">
+                        <div class="sequence-links d-md-flex d-none justify-content-center align-items-center">
                             <h5 class="mb-0 text-muted cursor-pointer fw-normal">Records</h5>
                             <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-5">
+                    <div class="flex-grow-1 py-3 px-lg-5 mx-md-3 mx-2 px-2 shadow-lg">
                         <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
                         <form action="" method="post" id="update-prenatal-patient-details-form" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden bg-white py-2" enctype="multipart/form-data">
                             @method('PUT')
@@ -50,27 +50,27 @@
                             <div class="step d-flex flex-column w-100 rounded  px-2">
                                 <div class="info">
                                     <h4>Personal Info</h4>
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50">
+                                    <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light border-dark" name="first_name" value="{{optional($prenatalRecord)->patient?->first_name??''}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
 
 
                                         </div>
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
 
                                         </div>
                                     </div>
-                                    <div class="mb-2 d-flex gap-1">
+                                    <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{ optional($prenatalRecord?->patient?->date_of_birth)->format('Y-m-d') ?? '' }}">
 
@@ -78,7 +78,7 @@
 
                                         </div>
                                         <!-- place of birth -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
                                             <input type="text" id="place_of_birth" placeholder="20" class="form-control bg-light border-dark" name="place_of_birth" value="{{optional($prenatalRecord)->patient?->place_of_birth??''}}">
 
@@ -87,7 +87,7 @@
                                         </div>
 
                                         <!-- age -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
 
@@ -95,8 +95,8 @@
 
                                         </div>
                                     </div>
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50 ">
+                                    <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2 bg-light border-dark">
                                                 @php
@@ -112,14 +112,14 @@
                                             </div>
                                         </div>
                                         <!-- contact -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
                                         </div>
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
                                             <input type="text" placeholder="ex. Filipino" class="form-control bg-light border-dark" name="nationality" value="{{optional($prenatalRecord)->patient?->nationality??''}}">
 
@@ -127,8 +127,8 @@
 
                                         </div>
                                     </div>
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50">
+                                    <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
+                                        <div class="input-field w-full md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{optional($prenatalRecord)->patient?->date_of_registration->format('Y-m-d')??''}}">
 
@@ -136,7 +136,7 @@
 
                                         </div>
                                         <!-- administered by -->
-                                        <div class="mb-2 w-50">
+                                        <div class="mb-2 w-full md:w-[50%]">
                                             <label for="edit_handled_by">Administered by*</label>
                                             <select name="handled_by" id="edit_handled_by" class="form-select bg-light border-dark " data-bs-health-worker-id="{{optional($prenatalRecord)->prenatal_case_record[0]->health_worker_id??''}}">
                                                 <option value="" disabled>Select a person</option>
@@ -149,8 +149,8 @@
 
                                     <!-- mother name and father -->
                                     <div class="prenatal-inputs mb-2 d-flex flex-column gap-1">
-                                        <div class="mb-2 w-100 d-flex gap-2">
-                                            <div class="input-field w-50">
+                                        <div class="mb-2 w-100 d-flex gap-2 flex-xl-nowrap flex-wrap">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label for="motherName">Head of the Family</label>
                                                 <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control bg-light border-dark" name="family_head" value="{{optional($prenatalRecord)->prenatal_medical_record->family_head_name??''}}">
 
@@ -158,7 +158,7 @@
 
 
                                             </div>
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label for="civil_status" class="">Civil Status</label>
                                                 <select name="civil_status" id="civil_status" class="form-select bg-light border-dark">
                                                     <option value="" disabled>Select a Civil Status</option>
@@ -170,7 +170,7 @@
                                                 <small class="text-danger error-text" id="civil_status_error"></small>
 
                                             </div>
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label for="blood_type">Blood Type</label>
                                                 <select name="blood_type" id="blood_type" class="form-select bg-light border-dark" required data-bs-blood-type="{{optional($prenatalRecord)->prenatal_medical_record -> blood_type??''}}">
                                                     <option value="" disabled selected>Select Blood Type</option>
@@ -187,10 +187,10 @@
                                             </div>
 
                                         </div>
-                                        <div class="mb-3 w-100 d-flex gap-3">
+                                        <div class="mb-3 w-100 d-flex gap-3 flex-wrap flex-md-nowrap">
 
                                             <!-- Religion -->
-                                            <div class="input-field w-25">
+                                            <div class="input-field flex-fill md:w-[50%] xl:w-[25%]">
                                                 <label for="religion" class="form-label">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control bg-light border-dark" name="religion" value="{{optional($prenatalRecord)->prenatal_medical_record -> religion??''}}">
 
@@ -199,7 +199,7 @@
                                             </div>
 
                                             <!-- PhilHealth -->
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label class="form-label">PhilHealth</label>
                                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                                     <div class="form-check">
@@ -219,7 +219,7 @@
                                             </div>
 
                                             <!-- Family Planning -->
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label class="form-label fw-normal">Would you like to use a family planning method?</label>
                                                 <div class="d-flex gap-3">
                                                     <div class="form-check">
@@ -249,15 +249,15 @@
                                     <!-- address -->
                                     <div class="mb-2 d-flex gap-1 flex-column border-top border-bottom">
                                         <h4>Address</h4>
-                                        <div class="input-field d-flex gap-2 align-items-center">
-                                            <div class=" mb-2 w-50">
+                                        <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap">
+                                            <div class=" mb-2 w-full md:w-[50%]">
                                                 <label for="street">Street*</label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim($address->house_number . ' ' . optional($address->street)->name) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 w-full md:w-[50%]">
                                                 <label for="brgy">Barangay*</label>
                                                 <select name="brgy" id="brgy" class="form-select py-2 bg-light border-dark" data-bs-selected-brgy="{{$address-> purok}}">
                                                     <option value="">Select a brgy</option>
@@ -271,18 +271,18 @@
                                     <!-- vital sign -->
                                     <div class="vital-sign w-100 border-bottom">
                                         <h5>Vital Sign</h5>
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-3 w-100 first-row flex-xl-nowrap flex-wrap">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="ex. 120/80" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? '' }}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="00 C" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? '' }}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder=" 60-100" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? '' }}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
@@ -290,18 +290,18 @@
 
                                         </div>
                                         <!-- 2nd row -->
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-xl-nowrap flex-wrap">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
                                                 <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="ex. 25" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? '' }}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" placeholder="00.00" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? '' }}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
                                                 <input type="number" class="form-control w-100 bg-light border-dark" placeholder=" 00.00" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? '' }}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
@@ -309,7 +309,7 @@
                                         </div>
                                     </div>
                                     <div class="survey-questionare w-100 ">
-                                        <div class="current-prenancy w-100 d-flex gap-3 mb-3 border-bottom">
+                                        <div class="current-prenancy w-100 d-flex gap-3 mb-3 border-bottom  flex-lg-row flex-column">
 
                                             <div class="questions w-100 " style="border:1px solid black;">
                                                 <h3 class="w-100 bg-success text-white text-center">Kasaysayan ng Pagbubuntis</h3>
