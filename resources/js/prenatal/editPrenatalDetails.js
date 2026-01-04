@@ -5,12 +5,12 @@ import Swal from "sweetalert2";
 const healthWorkerDropDown = document.getElementById("edit_handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
-console.log("health-worker-id", healthWorkerId);
+// console.log("health-worker-id", healthWorkerId);
 
 if (healthWorkerDropDown) {
      fetchHealthworkers().then((result) => {
          result.healthWorkers.forEach((element) => {
-             console.log(element);
+            //  console.log(element);
              healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
                  healthWorkerId == element.id ? "selected" : ""
              }>${element.staff.full_name}</option>`;
