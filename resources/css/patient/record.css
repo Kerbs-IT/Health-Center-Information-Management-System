@@ -93,7 +93,7 @@ tbody{
 
 .filters input,
 .filters select {
-  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
 }
 
 /* view patient details */

@@ -1,25 +1,27 @@
-<div class="table-responsive">
-    <table class="table table-bordered table-striped mb-0">
-        <thead class="seperator">
-            <tr>
-                <th colspan="12" class="text-start">
-                    V. PHYSICAL EXAMINATION
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>Weight (cm)</th>
-                <td id="view_weight"></td>
-                <th>Blood Pressure</th>
-                <td id="view_blood_pressure"></td>
-            </tr>
-            <tr>
-                <th>Height (cm)</th>
-                <td id="view_height"></td>
-                <th>Pulse Rate (Bpm)</th>
-                <td id="view_pulse_rate"></td>
-            </tr>
+<table class="table table-bordered table-striped mb-0">
+    <thead class="seperator">
+        <tr>
+            <th colspan="12" class="text-start">
+                V. PHYSICAL EXAMINATION
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Weight (cm)</th>
+            <td id="view_weight"></td>
+            <th>Blood Pressure</th>
+            <td id="view_blood_pressure"></td>
+        </tr>
+        <tr>
+            <th>Height (cm)</th>
+            <td id="view_height"></td>
+            <th>Pulse Rate (Bpm)</th>
+            <td id="view_pulse_rate"></td>
+        </tr>
+
+    </tbody>
+</table>
 
         </tbody>
     </table>
@@ -116,7 +118,8 @@
     <div class="row mb-3 px-2">
         <div class="col-md-6 d-flex flex-column">
             <label class="fw-bold">Client's Signature:</label>
-            <div class="border p-3 text-center" id="view_signature_image">[Signature Image Here]</div>
+            <img src="" id="view_signature_image" alt="Patient Signature" class="img-fluid border" style="max-width: 400px; max-height: 100px; display: none;">
+            <span id="view_no_signature" class="text-muted">No signature available</span>
             <small class="text-muted text-center">Signature on record</small>
         </div>
         <div class="col-md-6 d-flex flex-column">
@@ -131,9 +134,10 @@
 
     <div class="row mb-3 border-bottom px-2">
         <div class="col-md-6 d-flex flex-column">
-            <label class="fw-bold">Nurse Signature:</label>
-            <div class="border p-3 text-center" id="view_acknowledgement_consent_signature_image">[Nurse Signature Image Here]</div>
-            <small class="text-muted text-center">Authorized personnel</small>
+            <label class="fw-bold">Client's Signature:</label>
+            <img src="" id="view_acknowledgement_consent_signature_image" alt="Patient Signature" class="img-fluid border" style="max-width: 400px; max-height: 100px; display: none;">
+            <span id="view_acknowledgement_consent_signature_image_no" class="text-muted">No signature available</span>
+            <small class="text-muted text-center">Signature on record</small>
         </div>
         <div class="col-md-6 d-flex flex-column">
             <label class="fw-bold">Date:</label>

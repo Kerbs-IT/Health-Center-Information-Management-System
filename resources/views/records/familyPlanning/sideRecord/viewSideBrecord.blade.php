@@ -1,39 +1,41 @@
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th colspan="12" class="text-center"> FAMILY PLANNING CLIENT ASSESSMENT RECORD</th>
-            </tr>
-            <tr>
-                <th class="align-middle">
-                    <h5>DATE OF VISIT</h5>
-                    <h6>(MM/DD/YYYY)</h6>
-                </th>
-                <th class="align-middle">
-                    <h5 class="">MEDICAL FINDINGS</h5>
-                    <h6>(Medical observation, complaints/complication, service rendered/procedures,laboratory examination, treatment and referrals)</h6>
-                </th>
-                <th class="align-middle">
-                    METHOD ACCEPTED
-                </th>
-                <th class="align-middle">
-                    NAME AND SIGNATURE OF SERVICE PROVIDER
-                </th>
-                <th class="align-middle">
-                    <h5>DATE OF FOLLOW-UP VISIT</h5>
-                    <h6>(MM/DD/YYYY)</h6>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="h-[250px]">
-                <td id="view_date_of_visit">11/1/0</td>
-                <td class="text-start">
-                    <pre id="view_medical_findings" style="white-space: pre; font-family: monospace;">N/A</pre>
-                </td>
-                <td id="view_method_accepted">N/A</td>
-                <td id="view_signature_of_the_provider">N/A</td>
-                <td id="view_date_of_follow_up_visit">N/A</td>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th colspan="12" class="text-center"> FAMILY PLANNING CLIENT ASSESSMENT RECORD</th>
+        </tr>
+        <tr>
+            <th class="align-middle">
+                <h5>DATE OF VISIT</h5>
+                <h6>(MM/DD/YYYY)</h6>
+            </th>
+            <th class="align-middle">
+                <h5 class="">MEDICAL FINDINGS</h5>
+                <h6>(Medical observation, complaints/complication, service rendered/procedures,laboratory examination, treatment and referrals)</h6>
+            </th>
+            <th class="align-middle">
+                METHOD ACCEPTED
+            </th>
+            <th class="align-middle">
+                NAME AND SIGNATURE OF SERVICE PROVIDER
+            </th>
+            <th class="align-middle">
+                <h5>DATE OF FOLLOW-UP VISIT</h5>
+                <h6>(MM/DD/YYYY)</h6>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="h-[250px]">
+            <td id="view_date_of_visit">11/1/0</td>
+            <td class="text-start">
+                <pre id="view_medical_findings" style="white-space: pre; font-family: monospace;">N/A</pre>
+            </td>
+            <td id="view_method_accepted">N/A</td>
+            <td>
+                <img src="" id="view_signature_of_the_provider" alt="Patient Signature" class="img-fluid" style="object-fit:cover;max-width: 200px; max-height: 200px; display: none;">
+                <span id="view_signature_of_the_provide_no" class="text-muted">No signature available</span>
+            </td>
+            <td id="view_date_of_follow_up_visit">N/A</td>
 
             </tr>
             <tr class="bg-light">

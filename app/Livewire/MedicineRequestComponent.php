@@ -26,9 +26,14 @@ class MedicineRequestComponent extends Component
     ];
 
     public function mount(){
-
-        $this->medicines = Medicine::where('status', '!=', 'Out of Stock')
+        // Filter out expired medicines and out of stock medicines
+        $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
+            ->where('expiry_status', '!=', 'Expired') // Add this line
+            ->where(function($query) {
+                $query->where('expiry_date', '>', now())
+                      ->orWhereNull('expiry_date');
+            })
             ->get();
     }
 
@@ -38,15 +43,19 @@ class MedicineRequestComponent extends Component
 
         $medicine = Medicine::findOrFail($this->selectedMedicineId);
 
-        // Check if requested quantity is available
+        // Check if medicine is expired
+        if ($medicine->expiry_status === 'Expired' || $medicine->expiry_date <= now()) {
+            $this->addError('selectedMedicineId', 'This medicine has expired and cannot be requested.');
+            return;
+        }
+
         if ($this->quantity > $medicine->stock) {
             $this->addError('quantity', 'Requested quantity exceeds available stock.');
             return;
         }
 
-        // Get patient user ID
         $patientId = auth()->user()->patient;
-         if (!$patientId) {
+        if (!$patientId) {
             $this->addError('error', 'Patient record not found. Please contact the administrator.');
             return;
         }
@@ -59,9 +68,10 @@ class MedicineRequestComponent extends Component
             'status' => 'pending',
         ]);
 
-        $this->dispatch('medicineRequest-added');
-
         $this->reset(['selectedMedicineId', 'quantity', 'reason']);
+        $this->resetErrorBag();
+
+        $this->dispatch('medicineRequest-added');
     }
 
     public function editRequest($requestId)
@@ -85,11 +95,7 @@ class MedicineRequestComponent extends Component
         $this->selectedMedicineId = $request->medicine_id;
         $this->quantity = $request->quantity_requested;
         $this->reason = $request->reason;
-    
-
-
     }
-
 
     public function updateRequest()
     {
@@ -117,6 +123,16 @@ class MedicineRequestComponent extends Component
 
         // Check if new quantity is available
         $medicine = Medicine::findOrFail($this->selectedMedicineId);
+
+        // Check if medicine is expired
+        if ($medicine->expiry_status === 'Expired' || $medicine->expiry_date <= now()) {
+            $this->dispatch('swal:error', [
+                'title' => 'Medicine Expired',
+                'text' => 'This medicine has expired and cannot be requested.',
+            ]);
+            return;
+        }
+
         if ($this->quantity > $medicine->stock) {
             $this->addError('quantity', 'Requested quantity exceeds available stock.');
             return;
@@ -173,6 +189,16 @@ class MedicineRequestComponent extends Component
         ]);
 
         $this->resetErrorBag();
+
+        // Refresh the medicines list to exclude newly expired medicines
+        $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
+            ->where('stock', '>', 0)
+            ->where('expiry_status', '!=', 'Expired')
+            ->where(function($query) {
+                $query->where('expiry_date', '>', now())
+                      ->orWhereNull('expiry_date');
+            })
+            ->get();
     }
 
     public function render()
