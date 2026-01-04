@@ -19,50 +19,54 @@
             <th>Pulse Rate (Bpm)</th>
             <td id="view_pulse_rate"></td>
         </tr>
-    
+
     </tbody>
 </table>
 
+        </tbody>
+    </table>
+</div>
 <!-- General Physical Examination -->
-<table class="table table-bordered mb-0">
-    <thead class="">
-        <tr>
-            <th>Body Part</th>
-            <th>Findings</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Skin</td>
-            <td id="view_skin_type"></td>
-        </tr>
-        <tr>
-            <td>Conjunctiva</td>
-            <td id="view_conjuctiva_type"></td>
-        </tr>
-        <tr>
-            <td>Neck</td>
-            <td id="view_neck_type"></td>
-        </tr>
-        <tr>
-            <td>Breast</td>
-            <td id="view_breast_type"></td>
-        </tr>
-        <tr>
-            <td>Abdomen</td>
-            <td id="view_abdomen_type"></td>
-        </tr>
-        <tr>
-            <td>Extremities</td>
-            <td id="view_extremites_type"></td>
-        </tr>
-        <tr>
-            <td>EXTREMITIES (For IUD Acceptors)</td>
-            <td id="view_extremites_UID_type"></td>
-        </tr>
-    </tbody>
-</table>
-
+ <div class="table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead class="">
+            <tr>
+                <th>Body Part</th>
+                <th>Findings</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Skin</td>
+                <td id="view_skin_type"></td>
+            </tr>
+            <tr>
+                <td>Conjunctiva</td>
+                <td id="view_conjuctiva_type"></td>
+            </tr>
+            <tr>
+                <td>Neck</td>
+                <td id="view_neck_type"></td>
+            </tr>
+            <tr>
+                <td>Breast</td>
+                <td id="view_breast_type"></td>
+            </tr>
+            <tr>
+                <td>Abdomen</td>
+                <td id="view_abdomen_type"></td>
+            </tr>
+            <tr>
+                <td>Extremities</td>
+                <td id="view_extremites_type"></td>
+            </tr>
+            <tr>
+                <td>EXTREMITIES (For IUD Acceptors)</td>
+                <td id="view_extremites_UID_type"></td>
+            </tr>
+        </tbody>
+    </table>
+ </div>
 
 <!-- <table class="table table-bordered mb-0">
     <thead class="table-header">
@@ -103,8 +107,8 @@
 </table> -->
 
 <!-- Acknowledgement Section -->
-<div class="ackknowledgement ">
-    <h4 class="border-bottom mt-5 seperator px-2">ACKNOWLEDGEMENT</h4>
+<div class="ackknowledgement flex-wrap text-wrap overflow-auto">
+    <h4 class="border-bottom mt-5 seperator px-md-2 px-0">ACKNOWLEDGEMENT</h4>
     <p class="px-2">
         This is to certify that the Physician/Nurse/Midwife of the clinic has fully
         explained to me the different methods available in family planning, and I freely
@@ -114,7 +118,8 @@
     <div class="row mb-3 px-2">
         <div class="col-md-6 d-flex flex-column">
             <label class="fw-bold">Client's Signature:</label>
-            <div class="border p-3 text-center" id="view_signature_image">[Signature Image Here]</div>
+            <img src="" id="view_signature_image" alt="Patient Signature" class="img-fluid border" style="max-width: 400px; max-height: 100px; display: none;">
+            <span id="view_no_signature" class="text-muted">No signature available</span>
             <small class="text-muted text-center">Signature on record</small>
         </div>
         <div class="col-md-6 d-flex flex-column">
@@ -129,9 +134,10 @@
 
     <div class="row mb-3 border-bottom px-2">
         <div class="col-md-6 d-flex flex-column">
-            <label class="fw-bold">Nurse Signature:</label>
-            <div class="border p-3 text-center" id="view_acknowledgement_consent_signature_image">[Nurse Signature Image Here]</div>
-            <small class="text-muted text-center">Authorized personnel</small>
+            <label class="fw-bold">Client's Signature:</label>
+            <img src="" id="view_acknowledgement_consent_signature_image" alt="Patient Signature" class="img-fluid border" style="max-width: 400px; max-height: 100px; display: none;">
+            <span id="view_acknowledgement_consent_signature_image_no" class="text-muted">No signature available</span>
+            <small class="text-muted text-center">Signature on record</small>
         </div>
         <div class="col-md-6 d-flex flex-column">
             <label class="fw-bold">Date:</label>

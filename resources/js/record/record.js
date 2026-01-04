@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.addEventListener("click", async (e) => {
             e.preventDefault();
             const patientId = icon.dataset.bsPatientId;
-            console.log(patientId);
+            // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
                 text: "This will permanently remove the user.",
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.addEventListener("click", async (e) => {
             e.preventDefault();
             const patientId = icon.dataset.bsPatientId;
-            console.log(patientId);
+            // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
                 text: "This will permanently remove the user.",
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.addEventListener("click", async (e) => {
             e.preventDefault();
             const patientId = icon.dataset.bsPatientId;
-            console.log(patientId);
+            // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
                 text: "This will permanently remove the user.",
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.addEventListener("click", async (e) => {
             e.preventDefault();
             const patientId = icon.dataset.bsPatientId;
-            console.log(patientId);
+            // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
                 text: "This will permanently remove the user.",
@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.addEventListener("click", async (e) => {
             e.preventDefault();
             const patientId = icon.dataset.bsPatientId;
-            console.log(patientId);
+            // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
                 text: "This will permanently remove the user.",
