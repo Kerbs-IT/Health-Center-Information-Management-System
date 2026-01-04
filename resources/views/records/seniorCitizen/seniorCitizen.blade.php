@@ -18,11 +18,11 @@
     'resources/css/patient/record.css',
     'resources/js/record/record.js'])
 
-    <div class="vaccination vh-100 d-flex">
+    <div class="vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column  overflow-auto">
             @include('layout.header')
             <main class="flex-column p-2">
                 <h1>Senior Citizen</h1>

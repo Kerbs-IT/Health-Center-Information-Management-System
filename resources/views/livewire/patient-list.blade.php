@@ -1,19 +1,19 @@
 <div class="container-fluid py-5">
     <div class="card">
-        <div class="card-header">
+        <!-- <div class="card-header">
             <h3 class="card-title">Patient List</h3>
-        </div>
+        </div> -->
         <div class="card-body">
             <!-- Filters -->
-            <div class="row mb-3">
+            <div class="row mb-3 gap-md-0 gap-2">
                 <div class="col-md-6">
                     <input type="text"
                         wire:model.live.debounce.500ms="search"
-                        class="form-control"
+                        class="form-control border-2"
                         placeholder="Search patients...">
                 </div>
                 <div class="col-md-6">
-                    <select wire:model.live="statusFilter" class="form-select">
+                    <select wire:model.live="statusFilter" class="form-select border-2 p-2">
                         <option value="all">All Patients</option>
                         <option value="active">Active Only</option>
                         <option value="archived">Archived Only</option>
@@ -52,7 +52,7 @@
                                 @if($patient->status === 'active')
                                 <button
                                     onclick="confirmArchive({{ $patient->id }})"
-                                    class="btn btn-sm btn-danger">
+                                    class="btn btn-sm btn-danger text-nowrap">
                                     <i class="fas fa-archive"></i> Archive
                                 </button>
                                 @else
@@ -82,7 +82,7 @@
 </div>
 
 <script>
-    
+
     function confirmArchive(patientId) {
         Swal.fire({
             title: 'Archive Patient?',

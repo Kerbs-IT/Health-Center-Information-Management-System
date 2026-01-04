@@ -120,12 +120,12 @@ class HealthHeatmap {
         const purok = purokElement.value;
         const caseType = document.getElementById("case-type-filter").value;
 
-        console.log("🔍 Loading data for:", {
-            purok,
-            caseType,
-            forceRefresh,
-            isOnline: this.isOnline,
-        }); // DEBUG
+        // console.log("🔍 Loading data for:", {
+        //     purok,
+        //     caseType,
+        //     forceRefresh,
+        //     isOnline: this.isOnline,
+        // }); // DEBUG
 
         // If offline and not forcing refresh, use cached data
         if (!this.isOnline && !forceRefresh) {
@@ -141,7 +141,7 @@ class HealthHeatmap {
             const url = `/api/heatmap-data?purok=${encodeURIComponent(
                 purok
             )}&case_type=${encodeURIComponent(caseType)}&_=${Date.now()}`;
-            console.log("🌐 Fetching:", url); // DEBUG
+            // console.log("🌐 Fetching:", url); // DEBUG
 
             const response = await fetch(url, {
                 headers: {
@@ -156,7 +156,7 @@ class HealthHeatmap {
             }
 
             const result = await response.json();
-            console.log("✅ Data received:", result); // DEBUG
+            // console.log("✅ Data received:", result); // DEBUG
 
             if (result.success) {
                 // Update map
@@ -217,7 +217,7 @@ class HealthHeatmap {
             const count = purokCounts[point.purok];
             const intensity = Math.max(0.01, purokCounts[point.purok] / 100);
 
-            console.log("count:", count);
+            // console.log("count:", count);
 
             // Density thresholds based on actual patient counts
             // Density thresholds for larger scale
@@ -356,7 +356,7 @@ class HealthHeatmap {
             localStorage.setItem(cacheKey, JSON.stringify(cacheData));
             this.cachedData = cacheData;
 
-            console.log("✅ Data cached successfully for:", cacheData.filters);
+            // console.log("✅ Data cached successfully for:", cacheData.filters);
         } catch (error) {
             console.error("Error caching data:", error);
         }
@@ -386,12 +386,12 @@ class HealthHeatmap {
                 // Just update the display
                 this.updateFilterDisplay(currentPurok, currentCaseType);
 
-                console.log(
-                    "📦 Loaded cached data from:",
-                    cacheData.timestamp,
-                    "for",
-                    currentPurok
-                );
+                // console.log(
+                //     "📦 Loaded cached data from:",
+                //     cacheData.timestamp,
+                //     "for",
+                //     currentPurok
+                // );
             } else {
                 console.log(
                     "❌ No cached data available for:",

@@ -1,5 +1,10 @@
 import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
+import initSignatureCapture from "../signature/signature.js";
+import { refreshToggleStates, initializeEditModal } from "./editFamilyPlanningRadioToggle.js";
+
+// Initialize the modal on page load
+initializeEditModal();
 
 const viewIcon = document.getElementById("view-family-plan-info") ?? null;
 
@@ -13,7 +18,7 @@ document.addEventListener("click", async (e) => {
         alert("Unable to archive: Invalid ID");
         return;
     }
-    console.log("event delegation working!!!");
+    // console.log("event delegation working!!!");
     try {
         const response = await fetch(
             `/patient-case/family-planning/viewCaseInfo/${caseId}`,
@@ -50,16 +55,61 @@ document.addEventListener("click", async (e) => {
                 }
                 if (key == "spouse_lname") {
                     if (document.getElementById("view_spouse_name")) {
-                        console.log("wording");
+                        // console.log("wording");
                         document.getElementById("view_spouse_name").innerHTML =
                             `${data.caseInfo.spouse_fname ?? ""} ${
                                 data.caseInfo.spouse_MI ?? ""
                             } ${data.caseInfo.spouse_lname ?? ""}`.trim();
                     }
                 }
+                if (key == "signature_image") {
+                    const signaturePath = data.caseInfo.signature_image
+                        ? `/storage/${data.caseInfo.signature_image}`
+                        : null;
+                    const signatureImg = document.getElementById(
+                        "view_signature_image"
+                    );
+                    const noSignatureText =
+                        document.getElementById("view_no_signature");
+                    if (signaturePath) {
+                        signatureImg.src = signaturePath;
+                        signatureImg.style.display = "block";
+                        noSignatureText.style.display = "none";
+                    }
+                }
+                if (key == "acknowledgement_consent_signature_image") {
+                    const signaturePath = data.caseInfo
+                        .acknowledgement_consent_signature_image
+                        ? `/storage/${data.caseInfo.acknowledgement_consent_signature_image}`
+                        : null;
+                    const signatureImg = document.getElementById(
+                        "view_acknowledgement_consent_signature_image"
+                    );
+                    const noSignatureText = document.getElementById(
+                        "view_acknowledgement_consent_signature_image_no"
+                    );
+                    if (signaturePath) {
+                        signatureImg.src = signaturePath;
+                        signatureImg.style.display = "block";
+                        noSignatureText.style.display = "none";
+                    }
+                }
 
                 if (document.getElementById(`view_${key}`)) {
                     document.getElementById(`view_${key}`).innerHTML = value;
+                    const signaturePath = data.caseInfo.signature_image
+                        ? `/storage/${data.caseInfo.signature_image}`
+                        : null;
+                    const signatureImg = document.getElementById(
+                        "view_signature_image"
+                    );
+                    const noSignatureText =
+                        document.getElementById("view_no_signature");
+                    if (signaturePath) {
+                        signatureImg.src = signaturePath;
+                        signatureImg.style.display = "block";
+                        noSignatureText.style.display = "none";
+                    }
                 }
             });
 
@@ -91,7 +141,7 @@ document.addEventListener("click", async (e) => {
                 data.caseInfo.risk_for_sexually_transmitted_infection
             ).forEach(([key, value]) => {
                 if (key == "referred_to" && value == "others") {
-                    console.log(key);
+                    // console.log(key);
                     document.getElementById(
                         `view_${key}`
                     ).innerHTML = `${value} - ${data.caseInfo.risk_for_sexually_transmitted_infection.reffered_to_others}`;
@@ -165,9 +215,81 @@ document.addEventListener("click", async (e) => {
 const editIcon = document.getElementById("edit-family-plan-info") ?? null;
 const editSaveBtn = document.getElementById("edit-family-planning-case-btn");
 
+// signature approach
+ let editFamilyPlanningSignature = null;
+ let editFamilyPlanningConsentSignature = null;
+// signature functionality
+ 
+const editModal = document.getElementById("editfamilyPlanningCaseModal");
+ if (editModal) {
+     editModal.addEventListener("shown.bs.modal", function () {
+        //  console.log("Modal is NOW visible!");
+
+         if (
+             !editFamilyPlanningSignature &&
+             !editFamilyPlanningConsentSignature
+         ) {
+             editFamilyPlanningSignature = initSignatureCapture({
+                 drawBtnId:
+                     "edit_family_planning_acknowledgement_drawSignatureBtn",
+                 uploadBtnId:
+                     "edit_family_planning_acknowledgement_uploadSignatureBtn",
+                 canvasId: "edit_family_planning_acknowledgement_signaturePad",
+                 canvasSectionId:
+                     "edit_family_planning_acknowledgement_signatureCanvas",
+                 uploadSectionId:
+                     "edit_family_planning_acknowledgement_signatureUpload",
+                 previewSectionId:
+                     "edit_family_planning_acknowledgement_signaturePreview",
+                 fileInputId:
+                     "edit_family_planning_acknowledgement_signature_image",
+                 previewImageId:
+                     "edit_family_planning_acknowledgement_previewImage",
+                 errorElementId:
+                     "edit_family_planning_acknowledgement_signature_error",
+                 clearBtnId:
+                     "edit_family_planning_acknowledgement_clearSignature",
+                 saveBtnId:
+                     "edit_family_planning_acknowledgement_saveSignature",
+                 removeBtnId:
+                     "edit_family_planning_acknowledgement_removeSignature",
+                 hiddenInputId:
+                     "edit_family_planning_acknowledgement_signature_data",
+                 maxFileSizeMB: 2,
+             });
+
+             // consent
+             editFamilyPlanningConsentSignature = initSignatureCapture({
+                 drawBtnId: "edit_family_planning_consent_drawSignatureBtn",
+                 uploadBtnId: "edit_family_planning_consent_uploadSignatureBtn",
+                 canvasId: "edit_family_planning_consent_signaturePad",
+                 canvasSectionId:
+                     "edit_family_planning_consent_signatureCanvas",
+                 uploadSectionId:
+                     "edit_family_planning_consent_signatureUpload",
+                 previewSectionId:
+                     "edit_family_planning_consent_signaturePreview",
+                 fileInputId: "edit_family_planning_consent_signature_image",
+                 previewImageId: "edit_family_planning_consent_previewImage",
+                 errorElementId: "edit_family_planning_consent_signature_error",
+                 clearBtnId: "edit_family_planning_consent_clearSignature",
+                 saveBtnId: "edit_family_planning_consent_saveSignature",
+                 removeBtnId: "edit_family_planning_consent_removeSignature",
+                 hiddenInputId: "edit_family_planning_consent_signature_data",
+                 maxFileSizeMB: 2,
+             });
+            //  console.log("✅ SIGNATURE INITIALIZED!");
+         } else {
+             editFamilyPlanningSignature.clear();
+             editFamilyPlanningConsentSignature.clear();
+         }
+     });
+ }
+
 // ================== EDIT EVENT DELEGATION HERE =================================
 document.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".side-A-edit-family-plan-info");
+   
     if (!editBtn) return;
     const caseId = editBtn.dataset.caseId;
 
@@ -328,7 +450,7 @@ document.addEventListener("click", async (e) => {
                     const addressText = `${data.address.house_number},${
                         data.address.street || ""
                     }`.trim();
-                    console.log(addressText);
+                    // console.log(addressText);
                     document.getElementById("edit_street").value = addressText;
                     puroks(
                         document.getElementById("edit_brgy"),
@@ -431,9 +553,14 @@ document.addEventListener("click", async (e) => {
                     }
                 }
             );
-
-           
         }
+
+        // ==========================================
+        // AFTER all data is loaded, refresh toggles
+        // ==========================================
+        setTimeout(() => {
+            refreshToggleStates();
+        }, 100);
     } catch (error) {
         console.error("Error:", error);
         Swal.fire({
@@ -443,6 +570,8 @@ document.addEventListener("click", async (e) => {
             confirmButtonColor: "#3085d6",
         });
     }
+
+   
 });
 
 // update the record
@@ -452,11 +581,33 @@ editSaveBtn.addEventListener("click", async (e) => {
     const form = document.getElementById("edit-family-plan-form");
     const formData = new FormData(form);
 
+    // Manually add the hidden signature data
+    const hiddenSignature = document.getElementById(
+        "edit_family_planning_acknowledgement_signature_data"
+    );
+    if (hiddenSignature && hiddenSignature.value) {
+        formData.set(
+            "edit_family_planning_acknowledgement_signature_data",
+            hiddenSignature.value
+        );
+        // console.log("✅ Manually added signature data");
+    }
+    const hiddenConsentSignature = document.getElementById(
+        "edit_family_planning_consent_signature_data"
+    );
+    if (hiddenConsentSignature && hiddenConsentSignature.value) {
+        formData.set(
+            "edit_family_planning_consent_signature_data",
+            hiddenConsentSignature.value
+        );
+        // console.log("✅ Manually added signature data");
+    }
+
     // id
     const id = editSaveBtn.dataset.caseId;
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}: ${value}`);
+    // }
 
     const response = await fetch(
         `/patient-case/family-planning/update-case-info/${id}`,
@@ -478,7 +629,7 @@ editSaveBtn.addEventListener("click", async (e) => {
         errorElements.forEach((element) => {
             element.textContent = "";
         });
-        
+
         // refresh the wra masterlist
         if (typeof Livewire !== "undefined") {
             Livewire.dispatch("wraMasterlistRefreshTable");
@@ -496,11 +647,11 @@ editSaveBtn.addEventListener("click", async (e) => {
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("editfamilyPlanningCaseModal")
                 );
-                console.log("working dapat");
+                // console.log("working dapat");
                 if (modal) {
                     modal.hide();
                 }
-                
+
                 form.reset();
             }
         });
@@ -560,6 +711,39 @@ side_b_BTN.addEventListener("click", () => {
 
     const today = new Date().toISOString().split("T")[0];
     date_of_visit.value = today;
+
+    // add signature for side B
+    // signature
+    const addSideBmodal = document.getElementById("side-b-add-record");
+    let addSideBsignature = null;
+    if (addSideBmodal) {
+        addSideBmodal.addEventListener("shown.bs.modal", function () {
+            // console.log("Modal is NOW visible!");
+
+            if (!addSideBsignature) {
+                addSideBsignature = initSignatureCapture({
+                    drawBtnId: "add_side_b_drawSignatureBtn",
+                    uploadBtnId: "add_side_b_uploadSignatureBtn",
+                    canvasId: "add_side_b_signaturePad",
+                    canvasSectionId: "add_side_b_signatureCanvas",
+                    uploadSectionId: "add_side_b_signatureUpload",
+                    previewSectionId: "add_side_b_signaturePreview",
+                    fileInputId: "add_side_b_signature_image",
+                    previewImageId: "add_side_b_previewImage",
+                    errorElementId: "add_side_b_signature_error",
+                    clearBtnId: "add_side_b_clearSignature",
+                    saveBtnId: "add_side_b_saveSignature",
+                    removeBtnId: "add_side_b_removeSignature",
+                    hiddenInputId: "add_side_b_signature_data",
+                    maxFileSizeMB: 2,
+                });
+
+                // console.log("✅ SIGNATURE INITIALIZED!");
+            } else {
+                addSideBsignature.clear();
+            }
+        });
+    }
 });
 
 // upload the data to the database
@@ -572,6 +756,16 @@ side_b_save_record_btn.addEventListener("click", async (e) => {
 
     const form = document.getElementById("side-b-add-form");
     const formData = new FormData(form);
+    
+
+    // for signature
+     const hiddenSignature = document.getElementById(
+         "add_side_b_signature_data"
+     );
+     if (hiddenSignature && hiddenSignature.value) {
+         formData.set("add_side_b_signature_data", hiddenSignature.value);
+        //  console.log("✅ Manually added signature data");
+     }
 
     const response = await fetch(
         "/patient-record/family-planning/add/side-b-record/",
@@ -657,14 +851,16 @@ side_b_save_record_btn.addEventListener("click", async (e) => {
 const add_side_A_BTN = document.getElementById("side-a-add-record-btn");
 
 add_side_A_BTN.addEventListener("click", () => {
+    // add modal
+    const addSideAmodal = document.getElementById("side-a-add-record");
     // reset the form first
     const form = document.getElementById("side-a-add-form");
     form.reset();
 
     const patientInfo = JSON.parse(add_side_A_BTN.dataset.patientInfo);
     const address = JSON.parse(add_side_A_BTN.dataset.patientAddress);
-    console.log(patientInfo);
-    console.log(address);
+    // console.log(patientInfo);
+    // console.log(address);
     // get the important element
     const client_fname = document.getElementById("side_A_add_client_fname");
     const client_MI = document.getElementById("side_A_add_client_MI");
@@ -701,7 +897,7 @@ add_side_A_BTN.addEventListener("click", () => {
     if (!add_health_worker_id_element) return;
     add_health_worker_id_element.value =
         patientInfo.family_planning_medical_record.health_worker_id ?? null;
-    console.log(add_health_worker_id_element.value);
+    // console.log(add_health_worker_id_element.value);
     // populate the inputs
     client_fname.value = patientInfo.patient.first_name;
     client_MI.value = patientInfo.patient.middle_initial;
@@ -712,6 +908,85 @@ add_side_A_BTN.addEventListener("click", () => {
         patientInfo.family_planning_medical_record.occupation;
     client_civil_status.value = patientInfo.patient.civil_status;
     client_religion.value = patientInfo.family_planning_medical_record.religion;
+
+    // add side a if ever deleted
+    let addFamilyPlanningSignature = null;
+    let addFamilyPlanningConsentSignature = null;
+    // signature functionality
+    if (addSideAmodal) {
+        addSideAmodal.addEventListener("shown.bs.modal", function () {
+            // console.log("Modal is NOW visible!");
+
+            if (
+                !addFamilyPlanningSignature &&
+                !addFamilyPlanningConsentSignature
+            ) {
+                addFamilyPlanningSignature = initSignatureCapture({
+                    drawBtnId:
+                        "side_A_add_family_planning_acknowledgement_drawSignatureBtn",
+                    uploadBtnId:
+                        "side_A_add_family_planning_acknowledgement_uploadSignatureBtn",
+                    canvasId:
+                        "side_A_add_family_planning_acknowledgement_signaturePad",
+                    canvasSectionId:
+                        "side_A_add_family_planning_acknowledgement_signatureCanvas",
+                    uploadSectionId:
+                        "side_A_add_family_planning_acknowledgement_signatureUpload",
+                    previewSectionId:
+                        "side_A_add_family_planning_acknowledgement_signaturePreview",
+                    fileInputId:
+                        "side_A_add_family_planning_acknowledgement_signature_image",
+                    previewImageId:
+                        "side_A_add_family_planning_acknowledgement_previewImage",
+                    errorElementId:
+                        "side_A_add_family_planning_acknowledgement_signature_error",
+                    clearBtnId:
+                        "side_A_add_family_planning_acknowledgement_clearSignature",
+                    saveBtnId:
+                        "side_A_add_family_planning_acknowledgement_saveSignature",
+                    removeBtnId:
+                        "side_A_add_family_planning_acknowledgement_removeSignature",
+                    hiddenInputId:
+                        "side_A_add_family_planning_acknowledgement_signature_data",
+                    maxFileSizeMB: 2,
+                });
+
+                // consent
+                addFamilyPlanningConsentSignature = initSignatureCapture({
+                    drawBtnId:
+                        "side_A_add_family_planning_consent_drawSignatureBtn",
+                    uploadBtnId:
+                        "side_A_add_family_planning_consent_uploadSignatureBtn",
+                    canvasId: "side_A_add_family_planning_consent_signaturePad",
+                    canvasSectionId:
+                        "side_A_add_family_planning_consent_signatureCanvas",
+                    uploadSectionId:
+                        "side_A_add_family_planning_consent_signatureUpload",
+                    previewSectionId:
+                        "side_A_add_family_planning_consent_signaturePreview",
+                    fileInputId:
+                        "side_A_add_family_planning_consent_signature_image",
+                    previewImageId:
+                        "side_A_add_family_planning_consent_previewImage",
+                    errorElementId:
+                        "side_A_add_family_planning_consent_signature_error",
+                    clearBtnId:
+                        "side_A_add_family_planning_consent_clearSignature",
+                    saveBtnId:
+                        "side_A_add_family_planning_consent_saveSignature",
+                    removeBtnId:
+                        "side_A_add_family_planning_consent_removeSignature",
+                    hiddenInputId:
+                        "side_A_add_family_planning_consent_signature_data",
+                    maxFileSizeMB: 2,
+                });
+                // console.log("✅ SIGNATURE INITIALIZED!");
+            } else {
+                addFamilyPlanningSignature.clear();
+                addFamilyPlanningConsentSignature.clear();
+            }
+        });
+    }
 });
 
 // upload the record
@@ -722,6 +997,27 @@ side_A_upload_btn.addEventListener("click", async (e) => {
     const id = add_side_A_BTN.dataset.medicalCaseRecordId;
     const form = document.getElementById("side-a-add-form");
     const formData = new FormData(form);
+
+    const hiddenSignature = document.getElementById(
+        "side_A_add_family_planning_acknowledgement_signature_data"
+    );
+    if (hiddenSignature && hiddenSignature.value) {
+        formData.set(
+            "side_A_add_family_planning_acknowledgement_signature_data",
+            hiddenSignature.value
+        );
+        //  console.log("✅ Manually added signature data");
+    }
+    const hiddenConsentSignature = document.getElementById(
+        "side_A_add_family_planning_consent_signature_data"
+    );
+    if (hiddenConsentSignature && hiddenConsentSignature.value) {
+        formData.set(
+            "side_A_add_family_planning_consent_signature_data",
+            hiddenConsentSignature.value
+        );
+        //  console.log("✅ Manually added signature data");
+    }
 
     const response = await fetch(
         `/patient-record/family-planning/add/side-a-record/${id}`,
@@ -756,20 +1052,18 @@ side_A_upload_btn.addEventListener("click", async (e) => {
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("side-a-add-record")
                 );
-               if (modal) {
-                   modal.hide();
-               }
+                if (modal) {
+                    modal.hide();
+                }
             }
         });
 
         if (typeof Livewire !== "undefined") {
             Livewire.dispatch("familyPlanningRefreshTable");
-            Livewire.dispatch("wraMasterlistRefreshTable");// ✅ Update dispatch name if needed
+            Livewire.dispatch("wraMasterlistRefreshTable"); // ✅ Update dispatch name if needed
         } else {
             console.warn("Livewire is not available");
         }
-
-        
     } else {
         // Clear all error text first
         errorElements.forEach((element) => {

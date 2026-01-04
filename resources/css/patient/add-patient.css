@@ -72,7 +72,7 @@ select{
 }
 /* xs devices */
 @media (max-width: 600px){
-  .input-field, .address,.vitals, .form-select, .input-field.w-25, .vaccination-vitals, .form-select{
+  .input-field, .address,.vitals, .form-select, .input-field.w-25, .vaccination-vitals, .form-select, option{
     flex: 1 1 100% !important;
   }
 
