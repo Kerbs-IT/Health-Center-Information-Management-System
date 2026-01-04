@@ -95,7 +95,7 @@ document.addEventListener("click", async (e) => {
 
     const data = await response.json();
     if (!response.ok) {
-        console.log(data.errors);
+        // console.log(data.errors);
     } else {
         Object.entries(data.checkUpInfo).forEach(([key, value]) => {
             if (document.getElementById(`view_checkup_${key}`)) {
@@ -117,7 +117,7 @@ const editSaveBtn = document.getElementById("edit-checkup-save-btn");
 
 document.addEventListener("click", async (e) => {
     const editCheckUpBtn = e.target.closest(".tb-dots-edit-check-up");
-    console.log("working");
+    // console.log("working");
     if (!editCheckUpBtn) return;
     const id = editCheckUpBtn.dataset.caseId ?? null;
     editSaveBtn.dataset.caseId = id;
@@ -126,7 +126,7 @@ document.addEventListener("click", async (e) => {
 
     const data = await response.json();
     if (!response.ok) {
-        console.log(data.errors);
+        // console.log(data.errors);
     } else {
         Object.entries(data.checkUpInfo).forEach(([key, value]) => {
             if (document.getElementById(`edit_checkup_${key}`)) {
@@ -236,7 +236,7 @@ document.addEventListener("click", async (e) => {
     const archiveBtn = e.target.closest(".tb-check-up-delete-btn");
     if (!archiveBtn) return;
     const id = archiveBtn.dataset.caseId;
-    console.log("caseId", id);
+    // console.log("caseId", id);
 
     // Validate case ID
     if (!id || id === "undefined" || id === "null") {

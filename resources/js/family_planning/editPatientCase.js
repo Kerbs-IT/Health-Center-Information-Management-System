@@ -113,7 +113,7 @@ function toggleTypeOfClient() {
     const type_of_current_user_label = document.querySelectorAll(
         ".edit_current_user_type_label"
     );
-    console.log("first run:", isCurrentUser);
+    // console.log("first run:", isCurrentUser);
     toggleSubRadioInputs(
         type_of_curent_user,
         type_of_current_user_label,
@@ -125,7 +125,7 @@ function toggleTypeOfClient() {
         "input[name='edit_current_user_reason_for_FP']"
     );
     const current_user_label = document.querySelectorAll(".edit_current_user_label");
-    console.log("After first run(must be true):", isCurrentUser);
+    // console.log("After first run(must be true):", isCurrentUser);
     toggleCurrentMethod();
     toggleSubRadioInputs(
         current_user_reason,
@@ -154,7 +154,7 @@ function toggleTypeOfClient() {
         toggleSubRadioInputs(current_method_type, current_method_label, false);
     } else if (isCurrentUser == true) {
         // Only toggle current method if Current User is selected
-        console.log("check if true first run(must be true):", isCurrentUser);
+        // console.log("check if true first run(must be true):", isCurrentUser);
         toggleCurrentMethod();
     } else {
         // Disable current method for other options

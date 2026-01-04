@@ -1,3 +1,4 @@
+
 <div>
     <main class="d-flex flex-column container-fluid bg-light">
         <h2 class="mb-5 fs-1 text-center">Request Medicine</h2>
@@ -186,10 +187,10 @@
 
                 {{-- Modal Footer --}}
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="resetForm">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" wire:click="resetForm">
                         Cancel
                     </button>
-                    <button type="button" wire:click="submitRequest" class="btn btn-primary" id="submitBtn">Submit
+                    <button type="button" wire:click="submitRequest" class="btn btn-success" id="submitBtn">Submit
                     </button>
                 </div>
             </div>
@@ -256,10 +257,10 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="resetForm">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" wire:click="resetForm">
                         Cancel
                     </button>
-                    <button type="button" class="btn btn-primary" wire:click="updateRequest" id="submitBtn">Submit
+                    <button type="button" class="btn btn-success" wire:click="updateRequest" id="submitBtn">Submit
                     </button>
                 </div>
             </div>
@@ -421,5 +422,5 @@
         });
     </script>
     @endpush
-</div>
 
+</div>

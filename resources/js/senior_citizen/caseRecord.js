@@ -6,7 +6,7 @@ document.addEventListener("click", async (e) => {
 
     if (!viewBtn) return;
     const id = viewBtn.dataset.bsCaseId;
-    console.log("caseId", id);
+    // console.log("caseId", id);
 
     // Validate case ID
     if (!id || id === "undefined" || id === "null") {
@@ -107,7 +107,7 @@ document.addEventListener("click", async (e) => {
             } else {
                 medications.forEach((record, index) => {
                     try {
-                        console.log("Processing medication record:", record);
+                        // console.log("Processing medication record:", record);
 
                         // Safely get values with defaults
                         const medication =
@@ -206,7 +206,7 @@ document.addEventListener("click", async function (e) {
         return;
     }
 
-    console.log("Loading case for edit, ID:", id);
+    // console.log("Loading case for edit, ID:", id);
 
     // Store ID for save button
     currentEditCaseId = id;
@@ -249,7 +249,7 @@ document.addEventListener("click", async function (e) {
                 try {
                     // Skip nested objects/arrays
                     if (typeof value === "object" && value !== null) {
-                        console.log(`Skipping object/array field: ${key}`);
+                        // console.log(`Skipping object/array field: ${key}`);
                         return;
                     }
 
@@ -317,7 +317,7 @@ document.addEventListener("click", async function (e) {
             } else {
                 medications.forEach((record, index) => {
                     try {
-                        console.log("Processing medication record:", record);
+                        // console.log("Processing medication record:", record);
 
                         // Safely get values with defaults
                         const medication = record.maintenance_medication || "";
@@ -498,7 +498,7 @@ if (addBTN) {
             const emptyRow = editTableBody.querySelector("tr.empty-medication");
             if (emptyRow) {
                 emptyRow.remove();
-                console.log("Empty message removed");
+                // console.log("Empty message removed");
             }
             editTableBody.innerHTML += `
                 <tr class="senior-citizen-maintenance-record" >
@@ -615,7 +615,7 @@ document.addEventListener('click', async (e) => {
     if (!archiveBtn) return;
     
     const id = archiveBtn.dataset.bsCaseId;
-    console.log("caseId", id);
+    // console.log("caseId", id);
 
     // Validate case ID
     if (!id || id === "undefined" || id === "null") {

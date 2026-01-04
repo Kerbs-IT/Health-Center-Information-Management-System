@@ -9,10 +9,10 @@ const healthWorkers = fetchHealthworkers();
 const healthWorkerDropDown = document.getElementById("healthWorkersDropDown");
 const healthWorkerId = healthWorkerDropDown.dataset.bsSelectedHealthWorker;
 const dropdown = document.getElementById("brgy"); // the brgy input dropdown
-console.log(healthWorkerId);
+// console.log(healthWorkerId);
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
-        console.log(element);
+        // console.log(element);
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
         }>${element.staff.full_name}</option>`;
@@ -21,7 +21,7 @@ fetchHealthworkers().then((result) => {
 
 // load the current selected address of the patient
 const selected = dropdown.dataset.bsPurok;
-console.log(selected);
+// console.log(selected);
 puroks(dropdown, selected);
 
 // update the record
@@ -34,7 +34,7 @@ updateBtn.addEventListener("click", async (e) => {
         const formData = new FormData(form);
 
         const patientId = updateBtn.dataset.bsPatientId;
-        console.log("Patient id: ", patientId);
+        // console.log("Patient id: ", patientId);
 
         formData.append("_method", "PUT"); // to simulate PUT if your route uses Route::put()
         const response = await fetch(`/patient-record/update/${patientId}`, {
