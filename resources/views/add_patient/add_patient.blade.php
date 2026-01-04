@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <title>Health Center Information Management System</title>
 </head>
 
@@ -21,15 +22,16 @@
     'resources/js/prenatal/addPrenatalPatient.js',
     'resources/js/senior_citizen/addPatient.js',
     'resources/js/tb_dots/add_patient.js',
-    'resources/js/family_planning/add_patient.js'])
+    'resources/js/family_planning/add_patient.js'
+    ])
     @include('sweetalert::alert')
-    <div class="add-patient d-flex vh-100">
+    <div class="add-patient d-flex min-vh-100">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex flex-column" style="min-height: 0;">
+        <div class="flex-grow-1 d-flex  flex-column overflow-x-auto">
             @include('layout.header')
-            <main class=" flex-grow-1 py-2 px-4 basic-info" style="overflow-y: auto; min-height: 0;">
+            <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info overflow-x-auto">
 
                 <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="add-patient-form">
                     @csrf
@@ -41,7 +43,7 @@
                                 <div class="user-info w-100">
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient</label>
-                                        <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-25" onchange="showAdditional()">
+                                        <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
                                             <option value="" disabled selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
                                             <option value="prenatal">Prenatal</option>
@@ -66,7 +68,7 @@
                                         </div>
                                     </div>
                                     <!-- age -->
-                                    <div class="mb-2 d-flex gap-1">
+                                    <div class="mb-2 d-flex gap-md-1 gap-0">
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth</label>
@@ -88,8 +90,8 @@
                                         </div>
                                     </div>
                                     <!-- civil status, contact number, nationality -->
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50">
+                                    <div class="mb-2 d-flex gap-1 flex-md-row flex-column flex-wrap flex-xl-nowrap">
+                                        <div class="input-field flex-fill xl: w-[50%]">
                                             <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2">
                                                 @php
@@ -105,12 +107,12 @@
                                             </div>
                                         </div>
                                         <!-- contact -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="">
                                             <small class="text-danger error-text" id="contact_number_error"></small>
                                         </div>
-                                        <div class="input-field w-50">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
                                             <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="">
                                             <small class="text-danger error-text" id="nationality_error"></small>
@@ -118,15 +120,15 @@
 
                                     </div>
                                     <!-- data of registration -->
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field flex-grow-1">
+                                    <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-md-row flex-column">
+                                        <div class="input-field flex-grow-1 flex-fill xl:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <!-- administered by -->
                                         @if(Auth::user()->role == 'nurse')
-                                        <div class="mb-2 w-50">
+                                        <div class="mb-2 flex-fill xl:w-[50%] ">
                                             <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
                                             <select name="handled_by" id="handled_by" class="form-select ">
                                                 <option value="" disabled selected>Select a person</option>
@@ -144,7 +146,7 @@
                                         </div>
                                         @endif
 
-                                        <div class="mb-2 w-50 tb-dots-inputs d-none flex-column">
+                                        <div class="mb-2 flex-fill xl:w-[50%] tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
                                             <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
                                             <small class="text-danger error-text" id="philhealth_id_no_error"></small>
@@ -196,10 +198,10 @@
                                                 <small class="text-danger error-text" id="blood_type_error"></small>
                                             </div>
                                         </div>
-                                        <div class="mb-3 w-100 d-flex gap-3">
+                                        <div class="mb-3 w-100 d-flex gap-3 flex-wrap flex-xl-nowrap flex-wrap flex-column flex-md-row">
 
                                             <!-- Religion -->
-                                            <div class="input-field w-25">
+                                            <div class="input-field xl:w-[25%] flex-fill">
                                                 <label for="religion" class="form-label">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion" value="">
                                                 <!-- ERROR HANDLING -->
@@ -208,7 +210,7 @@
                                             </div>
 
                                             <!-- PhilHealth -->
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label class="form-label">PhilHealth</label>
                                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                                     <div class="form-check">
@@ -228,7 +230,7 @@
                                             </div>
 
                                             <!-- Family Planning -->
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label class="form-label fw-normal">Would you like to use a family planning method?</label>
                                                 <div class="d-flex gap-3">
                                                     <div class="form-check">
@@ -259,8 +261,8 @@
                                     </div>
                                     <!-- Senior Citizen inputs -->
                                     <div class="senior-citizen-inputs mb-2 d-none flex-column gap-1">
-                                        <div class="mb-2 w-100 d-flex gap-2">
-                                            <div class="input-field w-50">
+                                        <div class="mb-2 w-100 d-flex gap-2 flex-xl-nowrap flex-wrap flex-md-row flex-column">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label for="senior_citizen_civil_status" class="">Civil Status</label>
                                                 <select name="civil_status" id="senior_citizen_civil_status" class="form-select">
                                                     <option value="Single">Single</option>
@@ -269,19 +271,19 @@
                                                 </select>
                                                 <small class="text-danger error-text" id="civil_status_error"></small>
                                             </div>
-                                            <div class="input-field w-50">
+                                            <div class="input-field flex-fill xl:w-[50%]">
                                                 <label for="blood_type">Occupation</label>
                                                 <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                                 <small class="text-danger error-text" id="occupation_error"></small>
                                             </div>
-                                            <div class="mb-3 w-50 d-flex gap-2">
+                                            <div class="mb-3 flex-fill xl:w-[50%] d-flex gap-2">
                                                 <div class="input-field w-100">
                                                     <label for="senior_religion">Religion</label>
                                                     <input type="text" id="senior_religion" placeholder="Enter the Religion" class="form-control" name="religion">
                                                     <small class=" text-danger" id="religion_error"></small>
                                                 </div>
                                             </div>
-                                            <div class="mb-2 w-50  d-flex flex-column">
+                                            <div class="mb-2 flex-fill xl:w-[50%]  d-flex flex-column">
                                                 <label for=""> Member of Social Security System (SSS):</label>
                                                 <div class="radio-input d-flex align-items-center justify-content-center w-100 gap-1 py-2">
                                                     <input type="radio" id="male" class="mb-0" name="SSS" value="Yes" class="mb-0">
@@ -343,15 +345,15 @@
                                     </div>
 
                                     <!-- address -->
-                                    <div class="mb-2 d-flex gap-1 flex-column">
+                                    <div class="mb-md-2 mb-1 d-flex gap-1 flex-column">
                                         <h4>Address</h4>
-                                        <div class="input-field d-flex gap-2 align-items-center">
-                                            <div class=" mb-2 w-50">
+                                        <div class="input-field d-flex gap-2 align-items-center flex-md-row flex-column">
+                                            <div class=" mb-2 w-100 w-md-50">
                                                 <label for="street">Street*</label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="">
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Barangay*</label>
                                                 @php
                                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
@@ -368,18 +370,18 @@
                                     </div>
                                     <div class="vital-sign w-100">
                                         <h5>Vital Sign</h5>
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Blood Pressure:</label>
                                                 <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Temperature:</label>
                                                 <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
@@ -387,31 +389,31 @@
 
                                         </div>
                                         <!-- 2nd row -->
-                                        <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
                                                 <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="height">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="mb-2 flex-fill">
                                                 <label for="BP">Weight(kg):</label>
                                                 <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>
                                         <!-- 3rd row -->
-                                        <div class="mb-2 input-field d-none gap-3 w-100 third-row">
-                                            <div class="mb-2 w-50">
+                                        <div class="vitals mb-2 input-field d-none gap-3 w-100 third-row">
+                                            <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Height(cm):</label>
                                                 <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
-                                            <div class="mb-2 w-50">
+                                            <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Weight(kg):</label>
                                                 <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
@@ -428,60 +430,60 @@
                     <!-- step 2 -->
                     <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
                         <!-- vaccination -->
-                        <div class="vaccination d-none  inner w-50 align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
+                        <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
                             <div class="vaccination-content">
-                                <div class="mb-2 w-100 ">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100 ">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">Patient Name</label>
                                         <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">Administered By:</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="Nurse">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">handled By:</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100 ">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100 ">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
                                         <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
                                         <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="time">Time</label>
                                         <input type="time" class="form-control" name="time_of_vaccination" required>
                                         <small class="text-danger error-text" id="time_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2 w-100">
-                                    <div class="mb-2 w-100">
+                                <div class="mb-md-2 mb-1 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_weight">Weight</label>
                                         <input type="number" class="form-control" name="current_weight" id="current_weight" required>
                                         <small class="text-danger error-text" id="current_weight_error"></small>
                                     </div>
-                                    <div class="mb-2 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="time">Height</label>
                                         <input type="number" class="form-control" name="current_height" id="current_height" required>
                                         <small class="text-danger error-text" id="current_height_error"></small>
                                     </div>
-                                    <div class="mb-2 w-100">
+                                    <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_temperature">Temperature</label>
                                         <input type="number" class="form-control" name="current_temperature" id="current_temperature" required>
                                         <small class="text-danger error-text" id="current_temperature_error"></small>
                                     </div>
                                 </div>
-                                <div class="mb-2">
+                                <div class="mb-md-2 mb-1">
                                     <label for="vaccine_type">Vaccine Type:</label>
-                                    <div class="mb-2 d-flex gap-2">
+                                    <div class="mb-md-2 mb-1 d-flex gap-2">
                                         <select name="vaccine_type" id="vaccine_input" class="form-select w-100" required>
                                             <option value="" selected disabled>Select Vaccine</option>
                                             @foreach($vaccines as $vaccine)
@@ -515,8 +517,8 @@
                                 </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
-                                        <label for="date_of_vaccination">Date of Comeback</label>
-                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_comeback" required>
+                                        <label for="date_of_comeback">Date of Comeback</label>
+                                        <input type="date" class="form-control w-100 " name="date_of_comeback" id="date_of_comeback" required>
                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                     </div>
                                 </div>
@@ -533,12 +535,13 @@
                             </div>
                         </div>
                         <!-- PRENATAL -->
-                        <div class="prenatal d-none patient-type" id="prenatal-con">
+                        <div class="prenatal d-none patient-type overflow-hidden" id="prenatal-con">
                             @include('add_patient.prenatal')
-                            <div class="buttons w-75 align-self-center d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
+                            <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+                                <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
                             </div>
+
                         </div>
                         <!-- TB DOTS -->
                         <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">

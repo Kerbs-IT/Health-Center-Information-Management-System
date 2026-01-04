@@ -42,6 +42,7 @@ class User extends Authenticatable implements CanResetPassword
         'verification_attempts',
         'verification_locked_until',
         'email_verified_at',
+        'profile_image'
     ];
 
     /**
@@ -69,7 +70,6 @@ class User extends Authenticatable implements CanResetPassword
             'email_verified_at' => 'datetime',
             'verification_code_expires_at' => 'datetime',
             'verification_locked_until' => 'datetime',
-            'date_of_birth' => 'date',
             'is_verified' => 'boolean',
         ];
     }

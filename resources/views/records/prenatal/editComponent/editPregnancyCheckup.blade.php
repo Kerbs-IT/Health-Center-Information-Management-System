@@ -224,6 +224,7 @@
         <div class="mb-2 w-100">
             <label for="">Date of comeback</label>
             <input type="date" class="form-control" name="edit_date_of_comeback" id="edit_date_of_comeback">
+            <small class="text-danger" id="edit_date_of_comeback_error"></small>
         </div>
     </div>
 </div>

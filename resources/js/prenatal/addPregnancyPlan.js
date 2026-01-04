@@ -1,36 +1,68 @@
+import initSignatureCapture from "../signature/signature";
 const addPregnancyPlanBtn = document.getElementById(
     "add_pregnancy_plan_add_btn"
 );
-// upload btn
 const pregnacyPlanSaveBtn = document.getElementById("add_pregnancy_plan_btn");
+document.addEventListener("DOMContentLoaded", function () {
+    const addPregnancyModal = document.getElementById("addPregnancyPlanModal");
 
-if (addPregnancyPlanBtn) {
-    addPregnancyPlanBtn.addEventListener("click", async (e) => {
-        const patientInfo = JSON.parse(addPregnancyPlanBtn.dataset.patientInfo);
+    let addPatientSignature = null;
 
-        // get the patient name element
-        const patientNameElement = document.getElementById("add_patient_name");
-        
-        if (patientNameElement) {
-            patientNameElement.value = patientInfo.patient.full_name;
-        }
+    // BUTTON CLICK - ONLY SETS DATA
+    if (addPregnancyPlanBtn) {
+        addPregnancyPlanBtn.addEventListener("click", function (e) {
+            const patientInfo = JSON.parse(
+                addPregnancyPlanBtn.dataset.patientInfo
+            );
 
-        // add the value to hidden inputs
-        const hiddenPatientName = document.getElementById(
-            "add_pregnancy_plan_patient_name"
-        );
+            const patientNameElement =
+                document.getElementById("add_patient_name");
+            if (patientNameElement) {
+                patientNameElement.value = patientInfo.patient.full_name;
+            }
 
-        if (hiddenPatientName) {
-            hiddenPatientName.value = patientInfo.patient.full_name;
-        };
-        console.log(hiddenPatientName.value);
+            const hiddenPatientName = document.getElementById(
+                "add_pregnancy_plan_patient_name"
+            );
+            if (hiddenPatientName) {
+                hiddenPatientName.value = patientInfo.patient.full_name;
+            }
 
-        // add the medical record to the save btn
-        if (pregnacyPlanSaveBtn) {
-            pregnacyPlanSaveBtn.dataset.medicalCaseId = patientInfo.id;
-        }
-    });
-}
+            if (pregnacyPlanSaveBtn) {
+                pregnacyPlanSaveBtn.dataset.medicalCaseId = patientInfo.id;
+            }
+        });
+    }
+
+    // WAIT FOR MODAL TO FULLY OPEN - THIS RUNS **AFTER** MODAL IS VISIBLE
+    if (addPregnancyModal) {
+        addPregnancyModal.addEventListener("shown.bs.modal", function () {
+            // console.log("Modal is NOW visible!");
+
+            if (!addPatientSignature) {
+                addPatientSignature = initSignatureCapture({
+                    drawBtnId: "add_drawSignatureBtn",
+                    uploadBtnId: "add_uploadSignatureBtn",
+                    canvasId: "add_signaturePad",
+                    canvasSectionId: "add_signatureCanvas",
+                    uploadSectionId: "add_signatureUpload",
+                    previewSectionId: "add_signaturePreview",
+                    fileInputId: "add_signature_image",
+                    previewImageId: "add_previewImage",
+                    errorElementId: "add_signature_error",
+                    clearBtnId: "add_clearSignature",
+                    saveBtnId: "add_saveSignature",
+                    removeBtnId: "add_removeSignature",
+                    hiddenInputId: "add_signature_data",
+                    maxFileSizeMB: 2,
+                });
+                // console.log("✅ SIGNATURE INITIALIZED!");
+            } else {
+                addPatientSignature.clear();
+            }
+        });
+    }
+});
 const donor_names_con = document.getElementById("add_donor_names_con");
 const donor_name_input = document.getElementById("add_name_of_donor");
 
@@ -70,12 +102,12 @@ donor_names_con.addEventListener("click", (e) => {
             e.target.closest(".box").remove();
         }
     }
-    console.log("donor deleted");
+    // console.log("donor deleted");
 });
 
 // ==== upload the record
 
-pregnacyPlanSaveBtn.addEventListener('click', async (e) => {
+pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const id = pregnacyPlanSaveBtn.dataset.medicalCaseId;
@@ -90,22 +122,27 @@ pregnacyPlanSaveBtn.addEventListener('click', async (e) => {
     try {
         const form = document.getElementById("add_pregnancy_plan_form");
         const formData = new FormData(form);
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
+
+        // Manually add the hidden signature data
+        const hiddenSignature = document.getElementById("add_signature_data");
+        if (hiddenSignature && hiddenSignature.value) {
+            formData.set("add_signature_data", hiddenSignature.value);
+            // console.log("✅ Manually added signature data");
         }
-        const response = await fetch(
-            `/prenatal/add-pregnancy-plan/${id}`,
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content,
-                    Accept: "application/json",
-                },
-                body: formData,
-            }
-        );
+
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        // }
+        const response = await fetch(`/prenatal/add-pregnancy-plan/${id}`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
 
         const data = await response.json();
 
@@ -136,7 +173,6 @@ pregnacyPlanSaveBtn.addEventListener('click', async (e) => {
                     form.reset();
                 }
             });
-
         } else {
             // reset first
 
@@ -146,7 +182,8 @@ pregnacyPlanSaveBtn.addEventListener('click', async (e) => {
 
             Object.entries(data.errors).forEach(([key, value]) => {
                 if (document.getElementById(`add_${key}_error`)) {
-                    document.getElementById(`add_${key}_error`).textContent = value;
+                    document.getElementById(`add_${key}_error`).textContent =
+                        value;
                 }
             });
 
@@ -170,16 +207,16 @@ pregnacyPlanSaveBtn.addEventListener('click', async (e) => {
                 confirmButtonText: "OK",
             });
         }
-    }catch (error) {
-         console.error("Error adding case:", error);
-         Swal.fire({
-             title: "Error",
-             text: `Failed to add record: ${error.message}`,
-             icon: "error",
-             confirmButtonColor: "#3085d6",
-         });
+    } catch (error) {
+        console.error("Error adding case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to add record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
     }
-})
+});
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
