@@ -3,9 +3,11 @@
 </form>
 <div class="menu-bar  min-vh-100">
     <!-- Close button for mobile/tablet -->
-    <button id="closeSidebar" class=" d-lg-none">&times;</button>
+     <div class="w-100 d-flex justify-content-end mt-3">
+      <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
+     </div>
 
-    <div class="logo-con d-flex justify-content-center p-3 mb-1 mt-3">
+    <div class="logo-con d-flex justify-content-center mb-1 px-3 ">
         <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
