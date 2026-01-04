@@ -26,7 +26,7 @@
         </aside>
         <div class="d-flex flex-grow-1 flex-column">
             @include('layout.header')
-            <main class="flex-column p-2">
+            <main class="flex-column p-2 w-100 overflow-y-auto flex-grow-1 ">
                 <h1>Vaccination</h1>
                 <!-- body part -->
                 <div class="mb-3 w-100 px-5">

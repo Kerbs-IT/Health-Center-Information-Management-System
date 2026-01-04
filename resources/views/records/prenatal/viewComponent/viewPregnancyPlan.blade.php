@@ -62,5 +62,12 @@
             <td class="fw-bold bg-light">Pangalan ng pasyente</td>
             <td id="patient_name_value"></td>
         </tr>
+        <tr>
+            <td class="fw-bold bg-light">Pirma ng pasyente</td>
+            <td>
+                <img src="" id="signature_value" alt="Patient Signature" class="img-fluid border" style="max-width: 400px; max-height: 100px; display: none;">
+                <span id="no_signature" class="text-muted">No signature available</span>
+            </td>
+        </tr>
     </tbody>
 </table>

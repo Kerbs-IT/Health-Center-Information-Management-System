@@ -93,7 +93,7 @@ document.addEventListener("click", async (e) => {
     if (!editBtn) return;
     const id = editBtn.dataset.wraMasterlistId;
     wra_update_btn.dataset.masterlistId = id;
-    console.log(wra_update_btn.dataset.masterlistId);
+    // console.log(wra_update_btn.dataset.masterlistId);
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -107,7 +107,7 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
-            console.log(data.info);
+            // console.log(data.info);
 
             // populate the existing records
             Object.entries(data.info).forEach(([key, value]) => {
@@ -128,7 +128,7 @@ document.addEventListener("click", async (e) => {
                         const formatted = new Date(value)
                             .toISOString()
                             .split("T")[0];
-                        console.log("Formatted: ", formatted);
+                        // console.log("Formatted: ", formatted);
 
                         document.querySelector(`input[name="${key}"]`).value =
                             formatted;
@@ -201,7 +201,7 @@ document.addEventListener("click", async (e) => {
                                     "input[name='currently_using_any_FP_method'][value='no']"
                                 );
                             currently_using_any_FP_method_no.checked = true;
-                            console.log("this must be working!");
+                            // console.log("this must be working!");
                             break;
                         }
 
@@ -281,9 +281,9 @@ wra_update_btn.addEventListener("click", async (e) => {
     // form
     const form = document.getElementById("edit-wra-masterlist-form");
     const formData = new FormData(form);
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}: ${value}`);
+    // }
 
     const id = e.target.dataset.masterlistId;
 
