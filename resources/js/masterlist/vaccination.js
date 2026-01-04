@@ -16,7 +16,7 @@ document.addEventListener("click", async (e) => {
         alert("Unable to archive: Invalid ID");
         return;
     }
-    console.log(id);
+    // console.log(id);
 
     // == try catch block ==
     try {
@@ -29,7 +29,7 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
-            console.log(data.info);
+            // console.log(data.info);
 
             // populate the existing records
             Object.entries(data.info).forEach(([key, value]) => {
@@ -54,7 +54,7 @@ document.addEventListener("click", async (e) => {
                     const formatted = new Date(value)
                         .toISOString()
                         .split("T")[0];
-                    console.log("Formatted: ", formatted);
+                    // console.log("Formatted: ", formatted);
 
                     document.querySelector(`input[name="${key}"]`).value =
                         formatted;
@@ -103,7 +103,7 @@ document.addEventListener("click", async (e) => {
                                 .querySelector(`input[name="${key}"]`)
                                 .classList.remove("bg-light");
                         }
-                        console.log(value);
+                        // console.log(value);
                     }
                 }
             });
@@ -131,9 +131,9 @@ saveBtn.addEventListener("click", async (e) => {
     const formData = new FormData(form);
 
     const id = e.target.dataset.medicalRecordCaseId;
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}: ${value}`);
+    // }
 
     const response = await fetch(`/masterlist/update/vaccination/${id}`, {
         method: "POST",

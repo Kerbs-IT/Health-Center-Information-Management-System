@@ -87,7 +87,7 @@
             <small class="text-danger error-text" id="remarks_error"></small>
         </div>
         <div class="mb-3 ">
-            <label for="date_of_comeback">Date of Comeback</label>
+            <label for="senior_citizen_date_of_comeback">Date of Comeback</label>
             <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback">
         </div>
     </div>
