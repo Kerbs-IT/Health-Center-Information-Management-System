@@ -51,7 +51,7 @@
                             </div>
                             <div class="input-group mb-2">
                                 <label for="" class="w-100">Name of Child</label>
-                                <div class="full-name d-flex gap-2 w-100 flex-grow-1">
+                                <div class="full-name d-flex gap-2 w-100 flex-grow-1 flex-wrap flex-lg-nowrap">
                                     <input type="text" name="wra_masterlist_fname" id="wra_masterlist_fname" placeholder="Enter First Name" class="form-control border">
                                     <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
                                     <input type="text" name="wra_masterlist_lname" id="wra_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
@@ -60,13 +60,13 @@
                             </div>
                             <div class="input-group mb-2">
                                 <h4>Address</h4>
-                                <div class="input-field d-flex gap-2 align-items-center w-100">
-                                    <div class=" mb-2 w-50">
+                                <div class="input-field d-flex gap-2 align-items-center w-100 flex-wrap flex-lg-nowrap">
+                                    <div class=" mb-2 w-full lg:w-[50%]">
                                         <label for="street">Street*</label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
                                         <small class="text-danger error-text" id="street_error"></small>
                                     </div>
-                                    <div class="mb-2 w-50">
+                                    <div class="mb-2 w-full lg:w-[50%]">
                                         <label for="brgy">Barangay*</label>
                                         @php
                                         $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
@@ -94,7 +94,7 @@
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
                                 </div>
                             </div>
-                            <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
+                            <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 flex-wrap flex-lg-nowrap">
 
                                 <div class="input-field flex-grow-1 ">
                                     <label for="age">SE status</label>
