@@ -1,7 +1,7 @@
 <div class="tb-dots card shadow p-md-4 p-1 mx-1">
     <div class="mb-2">
         <label for="patient_name">Patient Name</label>
-        <input type="text" class="form-control w-100 w-md-50 " id="patient_name" name="patient_name" disabled value="Jan Louie Samlimbago">
+        <input type="text" class="form-control w-100 w-md-50 " id="tb_patient_name" name="patient_name" disabled placeholder="Enter the name">
     </div>
     <h4>MEDICAL INFORMATION</h4>
     <div class="mb-2 d-flex gap-2 w-100 flex-wrap flex-md-row flex-column">
@@ -99,7 +99,7 @@
             </div>
             <div class="mb-0 mb-md-2 flex flex-column">
                 <label for="" class="text-white">e</label>
-                 <button type="button" class="btn btn-success px-4" id="tb_medicine_add_btn">Add</button>
+                <button type="button" class="btn btn-success px-4" id="tb_medicine_add_btn">Add</button>
             </div>
         </div>
     </div>
