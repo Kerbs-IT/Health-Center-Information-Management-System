@@ -33,29 +33,30 @@
             </tr>
         </tbody>
     </table>
-
-    <table class="table table-bordered">
-        <thead class="table-secondary text-center table-header">
-            <tr>
-                <th>Year of Pregnancy</th>
-                <th>Type of Delivery</th>
-                <th>Place</th>
-                <th>Attendant</th>
-                <th>Complication</th>
-                <th>Outcome</th>
-            </tr>
-        </thead>
-        <tbody id="pregnancy_history_body">
-            <tr class="text-center">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>`;
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-secondary text-center table-header">
+                <tr>
+                    <th>Year of Pregnancy</th>
+                    <th>Type of Delivery</th>
+                    <th>Place</th>
+                    <th>Attendant</th>
+                    <th>Complication</th>
+                    <th>Outcome</th>
+                </tr>
+            </thead>
+            <tbody id="pregnancy_history_body">
+                <tr class="text-center">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>`;
+            </tbody>
+        </table>
+    </div>
 
     <table class="table table-bordered">
         <thead class="table-secondary text-center table-header">
