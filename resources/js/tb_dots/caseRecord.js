@@ -129,7 +129,7 @@ document.addEventListener("click", async (e) => {
 if (editTable) {
     // remove maintenance
     editTable.addEventListener("click", (e) => {
-        console.log("working delete");
+        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }

@@ -214,17 +214,17 @@
                     </div>
                     <div class="mb-md-3 mb-0 d-flex align-items-center gap-2">
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_current_method" value="current method">
-                        <label for="side_A_add_current_method">Current Method</label>
+                        <label for="side_A_add_current_method" class="side_a_current_user_type_label">Current Method</label>
                     </div>
                     <!-- new clinic -->
                     <div class="mb-md-3 mb-0 d-flex align-items-center gap-2">
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_changing_clinic" value="changing clinic">
-                        <label for="side_A_add_changing_clinic">Changing Clinic</label>
+                        <label for="side_A_add_changing_clinic" class="side_a_current_user_type_label">Changing Clinic</label>
                     </div>
                     <!-- dropout -->
                     <div class="mb-md-3 mb-0 d-flex align-items-center gap-2">
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_dropout_restart" value="dropout restart">
-                        <label for="side_A_add_dropout_restart">Dropout/Restart</label>
+                        <label for="side_A_add_dropout_restart" class="side_a_current_user_type_label">Dropout/Restart</label>
                     </div>
                     <small class="text-danger error-text" id="side_A_add_current_user_type_error"></small>
                 </div>
@@ -237,13 +237,13 @@
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
-                        <div class="answers d-flex gap-2 flex-wrap">
-                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="spacing">
-                            <label for="">spacing</label>
-                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="limiting">
-                            <label for="">limiting</label>
+                        <div class="answers d-flex gap-2">
+                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="spacing" id="side_a_new_acceptor_spacing">
+                            <label for="side_a_new_acceptor_spacing" class="side_a_new_acceptor_label">spacing</label>
+                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="limiting" id="side_a_new_acceptor_limiting">
+                            <label for="side_a_new_acceptor_limiting" class="side_a_new_acceptor_label">limiting</label>
                             <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" id="side_A_add_new_acceptor_reason_for_FP_others" value="others">
-                            <label for="">others</label>
+                            <label for="side_A_add_new_acceptor_reason_for_FP_others" class="side_a_new_acceptor_label">others</label>
                             <input type="text" name="side_A_add_new_acceptor_reason_text" id="side_A_add_new_acceptor_reason_text" class="flex-grow-1">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_new_acceptor_reason_for_FP_error"></small>
@@ -253,14 +253,14 @@
                 <div class="reason-con">
                 <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
-                        <div class="answers d-flex gap-2 flex-wrap">
-                            <input type="radio" name="side_A_add_current_user_reason_for_FP" value="spacing">
-                            <label for="">spacing</label>
-                            <input type="radio" name="side_A_add_current_user_reason_for_FP" value="limiting">
-                            <label for="">limiting</label>
+                        <div class="answers d-flex gap-2">
+                            <input type="radio" name="side_A_add_current_user_reason_for_FP" value="spacing" id="current_user_reason_for_fp_spacing">
+                            <label for="current_user_reason_for_fp_spacing" class="side_a_current_user_label">spacing</label>
+                            <input type="radio" name="side_A_add_current_user_reason_for_FP" value="limiting" id="current_user_reason_for_fp_limiting">
+                            <label for="current_user_reason_for_fp_limiting" class="side_a_current_user_label">limiting</label>
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_for_FP_others" value="others">
-                            <label for="">others</label>
-                            <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text" class="flex-grow-1">
+                            <label for="side_A_add_current_user_reason_for_FP_others" class="side_a_current_user_label">others</label>
+                            <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_user_reason_for_FP_error"></small>
                     </div>
@@ -269,12 +269,12 @@
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-4 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason:</label>
-                        <div class="answers d-flex gap-2 flex-wrap">
-                            <input type="radio" name="side_A_add_current_method_reason" value="medical condition">
-                            <label for="">medical condition</label>
+                        <div class="answers d-flex gap-2">
+                            <input type="radio" name="side_A_add_current_method_reason" value="medical condition" id="side_a_current_method_medical_condition">
+                            <label for="side_a_current_method_medical_condition" class="side_a_current_method_label">medical condition</label>
                             <input type="radio" name="side_A_add_current_method_reason" id="side_A_add_current_method_reason_side_effect" value="side effects">
-                            <label for="">side effects</label>
-                            <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason" class="flex-grow-1">
+                            <label for="side_A_add_current_method_reason_side_effect" class="side_a_current_method_label">side effects</label>
+                            <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_method_reason_error"></small>
                     </div>

@@ -16,8 +16,11 @@ use App\Models\risk_for_sexually_transmitted_infections;
 use App\Models\wra_masterlists;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class FamilyPlanningController extends Controller
 {
@@ -90,12 +93,15 @@ class FamilyPlanningController extends Controller
 
                 // acknowledgement
                 'choosen_method' => 'sometimes|nullable|string',
-                'family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'add_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_family_planning_signature_data' => 'sometimes|nullable|string',
                 'family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
-                'family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'add_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_family_planning_consent_signature_data' => 'sometimes|nullable|string',
                 'family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'current_user_type' => 'sometimes|nullable|string'
             ]);
+           
 
             // medical history
             $medicalHistoryData = $request->validate([
@@ -168,7 +174,8 @@ class FamilyPlanningController extends Controller
                 'side_b_date_of_visit' => 'sometimes|nullable|date',
                 'side_b_medical_findings' => 'sometimes|nullable|string',
                 'side_b_method_accepted' => 'sometimes|nullable|string',
-                'side_b_name_n_signature' => 'sometimes|nullable|string',
+                'add_side_b_name_n_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_side_b_name_n_signature_data' => 'sometimes|nullable|string',
                 'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
                 'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
@@ -261,7 +268,28 @@ class FamilyPlanningController extends Controller
                 'weight' => $medicalData['weight'] ?? null,
             ]);
 
-            $previoulyMethod = implode(",", $caseData['previously_used_method']);
+            $previoulyMethod = implode(",", $caseData['previously_used_method']??[]);
+
+            // signature 
+            $signaturePath = null;
+            $signatureConsentPath = null;
+
+            // If user uploaded an image file
+            if ($request->hasFile('add_family_planning_signature_image')) {
+                $signaturePath = $this->compressAndSaveSignature($request->file('add_family_planning_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('add_family_planning_signature_data')) {
+                $signaturePath = $this->saveCanvasSignature($request->add_family_planning_signature_data);
+            }
+            // signature consent
+            if ($request->hasFile('add_family_planning_consent_signature_image')) {
+                $signatureConsentPath = $this->compressAndSaveSignature($request->file('add_family_planning_consent_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('add_family_planning_consent_signature_data')) {
+                $signatureConsentPath = $this->saveCanvasSignature($request->add_family_planning_consent_signature_data);
+            }
 
             // CREATE THE CASE RECORD
             $caseRecord = family_planning_case_records::create([
@@ -294,11 +322,12 @@ class FamilyPlanningController extends Controller
                 'current_method_reason' => $caseData['current_method_reason'] ?? null,
                 'previously_used_method' => $previoulyMethod ?? null,
                 'choosen_method' => $caseData['choosen_method'] ?? null,
-                'signature_image' => $caseData['family_planning_signature_image'] ?? null,
+                'signature_image' => $signaturePath ?? null,
                 'date_of_acknowledgement' => $caseData['family_planning_date_of_acknowledgement'] ?? null,
-                'acknowledgement_consent_signature_image' => $caseData['family_planning_acknowlegement_consent_signature_image'] ?? null,
+                'acknowledgement_consent_signature_image' => $signatureConsentPath ?? null,
                 'date_of_acknowledgement_consent' => $caseData['family_planning_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['current_user_type'] ?? null,
+                'status'=> 'Active'
             ]);
 
             $caseId = $caseRecord->id;
@@ -377,6 +406,20 @@ class FamilyPlanningController extends Controller
                 'neck_type' => $physicalExaminationData['physical_examination_neck_type'] ?? null
             ]);
 
+            // side b signature
+            // signature 
+            $sideBsignaturePath = null;
+           
+
+            // If user uploaded an image file
+            if ($request->hasFile('add_side_b_name_n_signature_image')) {
+                $sideBsignaturePath = $this->compressAndSaveSignature($request->file('add_side_b_name_n_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('add_side_b_name_n_signature_data')) {
+                $sideBsignaturePath = $this->saveCanvasSignature($request->add_side_b_name_n_signature_data);
+            }
+
             // add side b record
             family_planning_side_b_records::create([
                 'medical_record_case_id' => $medicalCaseId,
@@ -384,14 +427,15 @@ class FamilyPlanningController extends Controller
                 'date_of_visit' => $sideBdata['side_b_date_of_visit'] ?? null,
                 'medical_findings' => $sideBdata['side_b_medical_findings'] ?? null,
                 'method_accepted' => $sideBdata['side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $sideBdata['side_b_name_n_signature'] ?? null,
+                'signature_of_the_provider' => $sideBsignaturePath ?? null,
                 'date_of_follow_up_visit' => $sideBdata['side_b_date_of_follow_up_visit'] ?? null,
                 'baby_Less_than_six_months_question' => $sideBdata['baby_Less_than_six_months_question'] ?? null,
                 'sexual_intercouse_or_mesntrual_period_question' => $sideBdata['sexual_intercouse_or_mesntrual_period_question'] ?? null,
                 'baby_last_4_weeks_question' => $sideBdata['baby_last_4_weeks_question'] ?? null,
                 'menstrual_period_in_seven_days_question' => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
                 'miscarriage_or_abortion_question' => $sideBdata['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null
+                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null,
+                'status'=>'Active'
             ]);
 
             // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
@@ -541,7 +585,7 @@ class FamilyPlanningController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $sex = $data['sex'] ?? $familyPlanningRecord->patient->sex;
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
@@ -549,7 +593,7 @@ class FamilyPlanningController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->last_name)),
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
-                'sex' => ucfirst($data['sex']) ?? $familyPlanningRecord->patient->sex,
+                'sex' => $sex ? ucfirst($sex) : null,
                 'civil_status' => $data['civil_status'] ?? $familyPlanningRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ??null,
                 'date_of_birth' => $data['date_of_birth'] ?? $familyPlanningRecord->patient->date_of_birth,
@@ -706,9 +750,15 @@ class FamilyPlanningController extends Controller
 
                 // acknowledgement
                 'side_A_add_choosen_method' => 'sometimes|nullable|string',
-                'side_A_add_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                'side_A_add_family_planning_acknowledgement_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'side_A_add_family_planning_acknowledgement_signature_data' => 'sometimes|nullable|string',
+
                 'side_A_add_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
-                'side_A_add_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                'side_A_add_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'side_A_add_family_planning_consent_signature_data' => 'sometimes|nullable|string',
+
                 'side_A_add_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'side_A_add_current_user_type' => 'sometimes|nullable|string',
                 'side_A_add_health_worker_id' => 'required'
@@ -785,7 +835,27 @@ class FamilyPlanningController extends Controller
             ]);
 
             // update patient info first
-            $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method']);
+            $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method']??[]);
+
+            $signaturePath = null;
+            $signatureConsentPath = null;
+
+            // If user uploaded an image file
+            if ($request->hasFile('side_A_add_family_planning_acknowledgement_signature_image')) {
+                $signaturePath = $this->compressAndSaveSignature($request->file('side_A_add_family_planning_acknowledgement_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('side_A_add_family_planning_acknowledgement_signature_data')) {
+                $signaturePath = $this->saveCanvasSignature($request->side_A_add_family_planning_acknowledgement_signature_data);
+            }
+            // signature consent
+            if ($request->hasFile('side_A_add_family_planning_consent_signature_image')) {
+                $signatureConsentPath = $this->compressAndSaveSignature($request->file('side_A_add_family_planning_consent_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('side_A_add_family_planning_consent_signature_data')) {
+                $signatureConsentPath = $this->saveCanvasSignature($request->side_A_add_family_planning_consent_signature_data);
+            }
 
             // update the case
             $familyPlanningCaseRecord = family_planning_case_records::create([
@@ -817,9 +887,9 @@ class FamilyPlanningController extends Controller
                 'current_method_reason' => $caseData['side_A_add_current_method_reason'] ?? null,
                 'previously_used_method' => $previoulyMethod ?? null,
                 'choosen_method' => $caseData['side_A_add_choosen_method'] ?? null,
-                'signature_image' => $caseData['side_A_add_family_planning_signature_image'] ?? null,
+                'signature_image' => $signaturePath ?? null,
                 'date_of_acknowledgement' => $caseData['side_A_add_family_planning_date_of_acknowledgement'] ?? null,
-                'acknowledgement_consent_signature_image' => $caseData['side_A_add_family_planning_acknowlegement_consent_signature_image'] ?? null,
+                'acknowledgement_consent_signature_image' => $signatureConsentPath ?? null,
                 'date_of_acknowledgement_consent' => $caseData['side_A_add_family_planning_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['side_A_add_current_user_type'] ?? null,
                 'status' => 'Active'
@@ -1017,7 +1087,7 @@ class FamilyPlanningController extends Controller
             $patientData = $request->validate(
                 [
                     'edit_client_fname' => 'required|string',
-                    'edit_client_MI' => 'sometimes|nullable|string|max:2',
+                    'edit_client_MI' => 'sometimes|nullable|string',
                     'edit_client_lname' => 'required|string',
                     'edit_client_date_of_birth' => 'sometimes|nullable|date',
                     'edit_client_age' => 'required|numeric|max:100',
@@ -1069,12 +1139,18 @@ class FamilyPlanningController extends Controller
 
                     // acknowledgement
                     'edit_choosen_method' => 'sometimes|nullable|string',
-                    'edit_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+                    'edit_family_planning_acknowledgement_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                    'edit_family_planning_acknowledgement_signature_data' => 'sometimes|nullable|string',
+
                     'edit_date_of_acknowledgement' => 'sometimes|nullable|date',
-                    'edit_family_planning_acknowlegement_consent_signature_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                    'edit_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                    'edit_family_planning_consent_signature_data' => 'sometimes|nullable|string',
+
                     'edit_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                     'edit_current_user_type' => 'sometimes|nullable|string'
                 ],
+                
                 [],
                 [ // ✅ Custom attribute names is for removing the edit_
                     'edit_client_id' => 'client ID',
@@ -1224,6 +1300,45 @@ class FamilyPlanningController extends Controller
                 $currentReason = $caseData['edit_current_user_reason_for_FP'] ?? $familyPlanCaseInfo->current_user_reason_for_FP;
             }
 
+            // signature
+            $signaturePath = $familyPlanCaseInfo->signature_image; // Keep old signature by default
+            $consentSignaturePath = $familyPlanCaseInfo->acknowledgement_consent_signature_image;
+
+            // Check if new signature provided (drawn)
+            if ($request->filled('edit_family_planning_acknowledgement_signature_data')) {
+                // Delete old file if exists
+                if ($familyPlanCaseInfo->signature_image) {
+                    Storage::disk('public')->delete($familyPlanCaseInfo->signature_image);
+                }
+                $signaturePath = $this->saveCanvasSignature($request->edit_family_planning_acknowledgement_signature_data);
+            }
+            // Check if new signature provided (uploaded)
+            else if ($request->hasFile('edit_family_planning_acknowledgement_signature_image')) {
+                // Delete old file if exists
+                if ($familyPlanCaseInfo->signature_image) {
+                    Storage::disk('public')->delete($familyPlanCaseInfo->signature_image);
+                }
+                $signaturePath = $this->compressAndSaveSignature($request->file('edit_family_planning_acknowledgement_signature_image'));
+            }
+
+            // consent part
+            // Check if new signature provided (drawn)
+            if ($request->filled('edit_family_planning_consent_signature_data')) {
+                // Delete old file if exists
+                if ($familyPlanCaseInfo->acknowledgement_consent_signature_image) {
+                   Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
+                }
+                 $consentSignaturePath = $this->saveCanvasSignature($request->edit_family_planning_consent_signature_data);
+            }
+            // Check if new signature provided (uploaded)
+            else if ($request->hasFile('edit_family_planning_acknowledgement_signature_image')) {
+                // Delete old file if exists
+                if ($familyPlanCaseInfo->acknowledgement_consent_signature_image) {
+                   Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
+                }
+                 $consentSignaturePath = $this->compressAndSaveSignature($request->file('edit_family_planning_acknowledgement_signature_image'));
+            }
+
             // update the case
             $familyPlanCaseInfo->update([
                 'client_id' => $caseData['edit_client_id'] ?? $familyPlanCaseInfo->client_id,
@@ -1253,9 +1368,9 @@ class FamilyPlanningController extends Controller
                 'current_method_reason' => $caseData['edit_current_method_reason'] ?? $familyPlanCaseInfo->current_method_reason,
                 'previously_used_method' => $previoulyMethod ?? $familyPlanCaseInfo->previously_used_method ?? null,
                 'choosen_method' => $caseData['edit_choosen_method'] ?? $familyPlanCaseInfo->choosen_method,
-                'signature_image' => $caseData['edit_family_planning_signature_image'] ?? $familyPlanCaseInfo->signature_image,
+                'signature_image' => $signaturePath ?? $familyPlanCaseInfo->signature_image,
                 'date_of_acknowledgement' => $caseData['edit_date_of_acknowledgement'] ?? $familyPlanCaseInfo->date_of_acknowledgement,
-                'acknowledgement_consent_signature_image' => $caseData['edit_family_planning_acknowlegement_consent_signature_image'] ?? $familyPlanCaseInfo->acknowledgement_consent_signature_image,
+                'acknowledgement_consent_signature_image' =>  $consentSignaturePath ?? $familyPlanCaseInfo->acknowledgement_consent_signature_image,
                 'date_of_acknowledgement_consent' => $caseData['edit_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo->date_of_acknowledgement_consent,
                 'current_user_type' => $caseData['edit_current_user_type'] ?? $familyPlanCaseInfo->current_user_type,
                 'status' => 'Active'
@@ -1439,8 +1554,9 @@ class FamilyPlanningController extends Controller
                 'side_b_date_of_visit' => 'sometimes|nullable|date',
                 'side_b_medical_findings' => 'sometimes|nullable|string',
                 'side_b_method_accepted' => 'sometimes|nullable|string',
-                'side_b_name_n_signature' => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'add_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_side_b_signature_data' => 'sometimes|nullable|string',
+                'side_b_date_of_follow_up_visit' => 'required|date',
                 'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question' => 'sometimes|nullable|string',
@@ -1448,6 +1564,16 @@ class FamilyPlanningController extends Controller
                 'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
                 'contraceptive_question' => 'sometimes|nullable|string'
             ]);
+            $sideBsignaturePath = null;
+
+            // If user uploaded an image file
+            if ($request->hasFile('add_side_b_signature_image')) {
+                $sideBsignaturePath = $this->compressAndSaveSignature($request->file('add_side_b_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('add_side_b_signature_data')) {
+                $sideBsignaturePath = $this->saveCanvasSignature($request->add_side_b_signature_data);
+            }
 
             // add the data
             family_planning_side_b_records::create([
@@ -1456,14 +1582,15 @@ class FamilyPlanningController extends Controller
                 'date_of_visit' => $data['side_b_date_of_visit'] ?? null,
                 'medical_findings' => $data['side_b_medical_findings'] ?? null,
                 'method_accepted' => $data['side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $data['side_b_name_n_signature'] ?? null,
+                'signature_of_the_provider' => $sideBsignaturePath ?? null,
                 'date_of_follow_up_visit' => $data['side_b_date_of_follow_up_visit'] ?? null,
                 'baby_Less_than_six_months_question' => $data['baby_Less_than_six_months_question'] ?? null,
                 'sexual_intercouse_or_mesntrual_period_question' => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
                 'baby_last_4_weeks_question' => $data['baby_last_4_weeks_question'] ?? null,
                 'menstrual_period_in_seven_days_question' => $data['menstrual_period_in_seven_days_question'] ?? null,
                 'miscarriage_or_abortion_question' => $data['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['contraceptive_question'] ?? null
+                'contraceptive_question' => $data['contraceptive_question'] ?? null,
+                'status' => 'Active'
 
             ]);
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Added'], 200);
@@ -1500,7 +1627,8 @@ class FamilyPlanningController extends Controller
                 'edit_side_b_date_of_visit' => 'sometimes|nullable|date',
                 'edit_side_b_medical_findings' => 'sometimes|nullable|string',
                 'edit_side_b_method_accepted' => 'sometimes|nullable|string',
-                'edit_side_b_name_n_signature' => 'sometimes|nullable|string',
+                'edit_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'edit_side_b_signature_data' => 'sometimes|nullable|string',
                 'edit_side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
                 'edit_baby_Less_than_six_months_question' => 'sometimes|nullable|string',
                 'edit_sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
@@ -1510,13 +1638,32 @@ class FamilyPlanningController extends Controller
                 'edit_contraceptive_question' => 'sometimes|nullable|string'
             ]);
 
+            $signaturePath = $sideBrecord->signature_of_the_provider;
+
+            // Check if new signature provided (drawn)
+            if ($request->filled('edit_side_b_signature_data')) {
+                // Delete old file if exists
+                if ($sideBrecord->signature_of_the_provider) {
+                    Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
+                }
+                $signaturePath = $this->saveCanvasSignature($request->edit_side_b_signature_data);
+            }
+            // Check if new signature provided (uploaded)
+            else if ($request->hasFile('edit_side_b_signature_image')) {
+                // Delete old file if exists
+                if ($sideBrecord->signature_of_the_provider) {
+                    Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
+                }
+                $signaturePath = $this->compressAndSaveSignature($request->file('edit_side_b_signature_image'));
+            }
+
             $sideBrecord->update([
                 'medical_record_case_id' => $data['edit_side_b_medical_record_case_id'],
                 'health_worker_id' => $data['edit_side_b_health_worker_id'],
                 'date_of_visit' => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
                 'medical_findings' => $data['edit_side_b_medical_findings'] ?? $sideBrecord->medical_findings,
                 'method_accepted' => $data['edit_side_b_method_accepted'] ?? $sideBrecord->method_accepted,
-                'signature_of_the_provider' => $data['edit_side_b_name_n_signature'] ?? $sideBrecord->signature_of_the_provider,
+                'signature_of_the_provider' => $signaturePath ?? $sideBrecord->signature_of_the_provider,
                 'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? $sideBrecord->date_of_follow_up_visit,
                 'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? $sideBrecord->baby_Less_than_six_months_question,
                 'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? $sideBrecord->sexual_intercouse_or_mesntrual_period_question,
@@ -1524,7 +1671,7 @@ class FamilyPlanningController extends Controller
                 'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? $sideBrecord->menstrual_period_in_seven_days_question,
                 'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? $sideBrecord->miscarriage_or_abortion_question,
                 'contraceptive_question' => $data['edit_contraceptive_question'] ?? $sideBrecord->contraceptive_question,
-                'status' => 'Done'
+                'status' => 'Active'
             ]);
 
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Updated'], 200);
@@ -1550,11 +1697,6 @@ class FamilyPlanningController extends Controller
                 // update the wra too
                 $wraRecord = wra_masterlists::where('medical_record_case_id', $sideArecord->medical_record_case_id)->first() ?? null;
                 if (!$wraRecord) return;
-
-
-
-
-
 
                 $wraRecord->update([
 
@@ -1598,5 +1740,46 @@ class FamilyPlanningController extends Controller
                 ], 422);
             }
         }
+    }
+    private function compressAndSaveSignature($file)
+    {
+        $filename = time() . '_' . uniqid() . '.jpg';
+        $path = storage_path('app/public/signatures/family_planning/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/public/signatures/family_planning'))) {
+            mkdir(storage_path('app/public/signatures/family_planning'), 0755, true);
+        }
+
+        // Process image
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file);
+        $image->scale(width: 800);
+        $image->toJpeg(quality: 60);
+        $image->save($path);
+
+        return 'signatures/family_planning/' . $filename;
+    }
+
+    private function saveCanvasSignature($base64Data)
+    {
+        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+
+        $filename = time() . '_' . uniqid() . '.jpg';
+        $path = storage_path('app/public/signatures/family_planning/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/public/signatures/family_planning'))) {
+            mkdir(storage_path('app/public/signatures/family_planning'), 0755, true);
+        }
+
+        // Process image
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($imageData);
+        $image->scale(width: 800);
+        $image->toJpeg(quality: 60);
+        $image->save($path);
+
+        return 'signatures/family_planning/' . $filename;
     }
 }

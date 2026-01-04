@@ -101,8 +101,6 @@ class VerificationController extends Controller
                 'status' => 'active', // Change from Pending to Active
                 'is_verified' => true,
                 'email_verified_at' => now(),
-                'recovery_question' => $registrationData['recovery_question'],
-                'recovery_answer' => $registrationData['recovery_answer'],
                 'verification_code' => null,
                 'verification_code_expires_at' => null,
                 'verification_attempts' => 0,
