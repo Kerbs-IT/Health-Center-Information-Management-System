@@ -31,6 +31,8 @@ use App\Http\Controllers\TbDotsController;
 use App\Http\Controllers\vaccineController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\NotificationController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +52,14 @@ Route::get('/', function () {
     return view('layout.app');
 });
 
+Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
+Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
+// MAnage interface color pallete
+Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
+Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
+
+
+
 Route::middleware(['redirect.loggedin'])->group(function () {
     // Show login form
     Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -63,9 +73,9 @@ Route::get('/auth/register', [authController::class, 'register'])->name('registe
 
 
 Route::get('/change-pass', function () {
-    return view('auth.changePass', ['isActive' => true,]);
+    return view('auth.changePass', ['isActive' => true,'page'=>'profile']);
 })->name('change-pass');
-
+Route::post('/change-pass/submit',[authController::class,'changePassword'])->name('submit-new-password');
 // logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -100,11 +110,6 @@ Route::middleware(['role:nurse'])->group(function(){
     // MAnage interface color pallete
 
 });
-Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
-Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
-// MAnage interface color pallete
-Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
-Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
 
 // =============== health worker only
 
@@ -118,7 +123,7 @@ Route::get('/dashboard/staff', function () {
 Route::middleware(['auth','verified','role:patient'])->group(function (){
     Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
     // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'medicalRecord'])->name('view.medical.record');
+    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'renderData'])->name('view.medical.record');
 });
 
 
@@ -132,6 +137,11 @@ Route::get('/forgot-pass', function () {
 })->name('forgot.pass');
 
 Route::middleware(['role:nurse,staff,patient'])->group(function (){
+    // get user info
+    Route::get('/user/profile/{id}',[authController::class,'info']);
+    // edit patient profile
+    Route::post('/patient-profile-edit/{id}', [patientController::class, 'info'])->name('patient-profile');
+    Route::put('/patient-profile/update/{id}', [patientController::class, 'updateInfo'])->name('patient-profile.update');
 
     // forgot pass verify email
     Route::post('/forgot-pass/verify-email', [forgotPassController::class, 'verify'])->name('forgot.pass.verify.email');
@@ -152,6 +162,20 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
 
     // vaccination view
     Route::get('/vaccination-case/record/{id}', [RecordsController::class, 'vaccinationViewCase'])->name('view.case.info');
+    // prenatal view
+    Route::get('/view-case/case-record/{typeOfRecord}/{id}', [CaseController::class, 'viewCase']);
+    Route::get('/view-prenatal/pregnancy-plan/{id}', [PrenatalController::class, 'viewPregnancyPlan']);
+    Route::get('/prenatal/view-pregnancy-checkup-info/{id}', [PrenatalController::class, 'viewCheckupInfo']);//view checkup
+    // family plan view
+    Route::get('/patient-case/family-planning/viewCaseInfo/{id}', [FamilyPlanningController::class, 'viewCaseInfo']);
+    Route::get('/patient-record/family-planning/view/side-b-record/{id}', [FamilyPlanningController::class, 'sideBrecords']);
+    // senior citizen
+    Route::get('/senior-citizen/case-details/{id}', [SeniorCitizenController::class, 'viewCaseDetails']);
+    // tb-dots
+    Route::get('/patient/tb-dots/get-case-info/{id}', [TbDotsController::class, 'caseInfo']);
+    Route::get('/patient-record/view-check-up/tb-dots/{id}', [TbDotsController::class, 'viewPatientCheckUp']);
+
+
     Route::get('/profile', function () {
         return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
     })->name('page.profile');
@@ -182,7 +206,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
         return view('layout.menuBar');
     })->name('menubar');
 
-  
+
 
     // address route
     Route::get('/get-regions', [addressController::class, 'getRegions']);
@@ -203,7 +227,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/vaccination/case/{id}', [RecordsController::class, 'vaccinationCase'])->name('record.vaccination.case');
     Route::put('/patient-record/update/{id}', [RecordsController::class, 'vaccinationUpdateDetails'])->name('record.vaccination.update');
     Route::post('/patient-record/{typeOfPatient}/delete/{id}', [RecordsController::class, 'deletePatient'])->name('record.vaccination.delete');
-    
+
     // ADD VACCINATION CASE RECORD
     Route::post('/add-vaccination-case/{id}', [RecordsController::class, 'addVaccinationCaseRecord']);
     // ---------------- DELETE VACCINATION CASE ----------------------
@@ -220,16 +244,13 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/prenatal/edit-details/{id}', [RecordsController::class, 'editPrenatalDetail'])->name('record.prenatal.edit');
     Route::get('/patient-record/prenatal/view-case/{id}', [RecordsController::class, 'prenatalCase'])->name('record.prenatal.case');
     Route::post('/add-prenatal-patient', [PrenatalController::class, 'addPatient']);
-    Route::put('/update/prenatal-patient-details/{id}', [PrenatalController::class, 'updateDetails']);
-    Route::get('/view-case/case-record/{typeOfRecord}/{id}', [CaseController::class, 'viewCase']); // fetches the case information
-    Route::get('/view-prenatal/pregnancy-plan/{id}', [PrenatalController::class, 'viewPregnancyPlan']);
+    Route::put('/update/prenatal-patient-details/{id}', [PrenatalController::class, 'updateDetails']); 
     Route::put('/update/pregnancy-plan-record/{id}', [PrenatalController::class, 'updatePregnancyPlan']); // route for updating the pregnancy plan record of the patient
     Route::get('/patient-record/view-details/{id}', [PrenatalController::class, 'viewPrenatalDetail']);
     // update the case information
     Route::put('patient-record/update/prenatal-case/{id}', [PrenatalController::class, 'updateCase']);
     Route::post('/prenatal/add-check-up-record/{id}', [PrenatalController::class, "uploadPregnancyCheckup"]);
-    // route for geting checkup info
-    Route::get('/prenatal/view-pregnancy-checkup-info/{id}', [PrenatalController::class, 'viewCheckupInfo']);
+
     // update the checkup
     Route::put('/update/prenatal-check-up/{id}', [PrenatalController::class, 'updatePregnancyCheckUp']);
 
@@ -256,7 +277,6 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     // SENIOR CITIZEN ADD PATIENT
     Route::post('/patient-record/add/senior-citizen-record', [SeniorCitizenController::class, "addPatient"]);
     Route::put('/update/senior-citizen/details/{id}', [SeniorCitizenController::class, 'updateDetails']);
-    Route::get('/senior-citizen/case-details/{id}', [SeniorCitizenController::class, 'viewCaseDetails']);
     Route::put('/patient-case/senior-citizen/{id}', [SeniorCitizenController::class, 'updateCase']); //update the case of senior citizen
     Route::post('/patient-case/senior-citizen/new-case/{id}', [SeniorCitizenController::class, 'addCase']);
 
@@ -269,10 +289,8 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     // add the family planning patient ecord
     Route::post('/patient-record/family-planning/add-record',[FamilyPlanningController::class, 'addPatient']);
     Route::put('/patient-record/family-planning/update-information/{id}', [FamilyPlanningController::class, 'editPatientDetails']); // update the patient details
-    Route::get('/patient-case/family-planning/viewCaseInfo/{id}', [FamilyPlanningController::class, 'viewCaseInfo']);
     Route::put('/patient-case/family-planning/update-case-info/{id}',[FamilyPlanningController::class, 'updateCaseInfo']);
     Route::post('/patient-record/family-planning/add/side-b-record', [FamilyPlanningController::class, 'addSideBrecord']);
-    Route::get('/patient-record/family-planning/view/side-b-record/{id}', [FamilyPlanningController::class, 'sideBrecords']);
     // update side b
     Route::put('/patient-record/family-planning/update/side-b-record/{id}',[FamilyPlanningController::class, 'updateSideBrecord']);
     // add new side A if ever the record is deleted
@@ -294,10 +312,8 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     // add patient
     Route::post('/patient-record/add/tb-dots', [TbDotsController::class, 'addPatient']);
     Route::post('/patient-record/tb-dots/update-details/{id}', [TbDotsController::class, 'updatePatientDetails']);
-    Route::get('/patient/tb-dots/get-case-info/{id}', [TbDotsController::class, 'caseInfo']);
     Route::put('/patient-case/tb-dots/update/{id}', [TbDotsController::class, 'updateCase']);
     Route::post('/patient-record/add/check-up/tb-dots/{id}', [TbDotsController::class, 'addPatientCheckUp']);
-    Route::get('/patient-record/view-check-up/tb-dots/{id}', [TbDotsController::class, 'viewPatientCheckUp']);
     Route::put('/patient-record/tb-dots/update-checkup/{id}', [TbDotsController::class, 'updatePatientCheckUpInfo']);
     // add case
     Route::post("/patient-record/tb-dots/add/case-record/{medicalRecordId}",[TbDotsController::class,'addCase']);
@@ -361,8 +377,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
 
     // patient profile
 
-    Route::post('/patient-profile-edit/{id}', [patientController::class, 'info'])->name('patient-profile');
-    Route::put('/patient-profile/update/{id}', [patientController::class, 'updateInfo'])->name('patient-profile.update');
+ 
 });
 // ---------------------------- home page
 // Route to homepage
@@ -534,3 +549,30 @@ Route::post('/verify-email/resend', [VerificationController::class, 'resend'])->
 // patient list
 
 Route::get('/patient-list',[PatientList::class,'index'])->name('patient-list');
+
+
+// pdf route:
+
+Route::get('/download-medicine-report', [InventoryController::class, 'downloadMedicineReport'])->name('download.medicine.report');
+Route::get('/download-request-report', [InventoryController::class, 'downloadRequestReport'])->name('download.request.report');
+Route::get('/download-distributed-report', [InventoryController::class, 'downloadDistributedReport'])->name('download.distributed.report');
+Route::get('/download-low-stock-report', [InventoryController::class, 'downloadLowStockReport'])->name('download.lowstock.report');
+Route::get('/download-expiring-soon-report', [InventoryController::class, 'downloadExpiringSoonReport'])->name('download.expSoon.report');
+
+// testing area
+Route::get('/pdf/generate/dashbord',[PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
+Route::get('/pdf/generate/graph',[PdfController::class, 'generateDashboardGraph'])->name("generate-dashboard-graph.pdf");
+
+// NOTIFICATION SECTION
+Route::middleware(['auth'])->group(function () {
+    // Notifications routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    Route::get('/notifications/recent', [NotificationController::class, 'getRecent']);
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/delete-all-read', [NotificationController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+   
+});
+

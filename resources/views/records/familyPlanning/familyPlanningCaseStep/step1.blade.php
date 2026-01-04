@@ -247,7 +247,7 @@
                         <label for="FP" class="text-decoration-underline text-nowrap edit_current_user_label">Reason for FP:</label>
                         <div class="answers d-flex gap-2">
                             <input type="radio" name="edit_current_user_reason_for_FP" value="spacing" id="edit_current_user_reason_for_FP_spacing">
-                            <label for="edit_current_user_reason_for_FP_spacing" class=" edit_current_user_label">spacing</label>
+                            <label for="edit_current_user_reason_for_FP_spacing" class="edit_current_user_label">spacing</label>
                             <input type="radio" name="edit_current_user_reason_for_FP" value="limiting" id="edit_current_user_reason_for_FP_limiting">
                             <label for="edit_current_user_reason_for_FP_limiting" class=" edit_current_user_label">limiting</label>
                             <input type="radio" name="edit_current_user_reason_for_FP" id="edit_current_user_reason_for_FP_others" value="others">

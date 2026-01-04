@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -21,8 +22,8 @@ class RecordsTable extends Component
     // new property for searching
     public $search = '';
 
-    protected $queryString = ['entries', 'sortField', 'sortDirection','search'];
-  
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
+
     // dont forget this for changes in the show entries
     public function updatingEntries()
     {
@@ -64,7 +65,7 @@ class RecordsTable extends Component
             return $record;
         });
 
-      
+
         // Sort by priority
         $sortedCollection = $vaccinationRecord->getCollection()->sortBy(function ($record) {
             if ($record->vaccination_status_info) {
@@ -80,7 +81,8 @@ class RecordsTable extends Component
         ]);
     }
 
-    public function exportPdf(){
+    public function exportPdf()
+    {
         return redirect()->route('vaccination.pdf', [
             'search' => $this->search,              // Sends "Maria"
             'sortField' => $this->sortField,        // Sends "full_name"
@@ -95,6 +97,21 @@ class RecordsTable extends Component
     private function calculateVaccinationStatus($medicalRecordCase)
     {
         try {
+            $vaccineDoseConfig = [
+                'BCG' => ['acronym' => 'BCG', 'maxDoses' => 1, 'description' => 'at birth', 'name' => 'BCG Vaccine'],
+                'Hepatitis B' => ['acronym' => 'Hepatitis B', 'maxDoses' => 1, 'description' => 'at birth', 'name' => 'Hepatitis B Vaccine'],
+                'PENTA' => ['acronym' => 'PENTA', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
+                'OPV' => ['acronym' => 'OPV', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Oral Polio Vaccine (OPV)'],
+                'IPV' => ['acronym' => 'IPV', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Inactived Polio Vaccine (IPV)'],
+                'PCV' => ['acronym' => 'PCV', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
+                'MMR' => ['acronym' => 'MMR', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
+                'MCV' => ['acronym' => 'MCV', 'maxDoses' => 1, 'description' => 'dose 1', 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
+                'TD' => ['acronym' =>  'TD', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Tetanus Diphtheria (TD)'],
+                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Human Papiliomavirus Vaccine'],
+                'Influenza Vaccine' => ['acronym' => 'Influenza Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Influenza Vaccine'],
+                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnuemococcal Vaccine'],
+            ];
+
             $lastVaccinationCase = DB::table('vaccination_case_records')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -112,48 +129,74 @@ class RecordsTable extends Component
                 return null;
             }
 
-            // FIX: Change 'dosage' to 'dose_number'
-            if ($lastVaccinationCase->dose_number >= 3) {
-                return null;
-            }
-
-            // FIX: Change 'dosage' to 'dose_number'
-            $nextDosage = $lastVaccinationCase->dose_number + 1;
-
-            // FIX: Change 'dosage' to 'dose_number'
-            $nextDoseExists = DB::table('vaccination_case_records')
-                ->where('medical_record_case_id', $medicalRecordCase->id)
-                ->where('vaccine_type', $lastVaccinationCase->vaccine_type)
-                ->where('status','!=','Archived')
-                ->where('dose_number', $nextDosage)  // ← Changed here
-                ->exists();
-
-            if ($nextDoseExists) {
-                return null;
-            }
-
             // Parse vaccine types
             $vaccines = explode(',', $lastVaccinationCase->vaccine_type ?? '');
+            $currentDose = $lastVaccinationCase->dose_number;
+            $nextDosage = $currentDose + 1;
+
+            // Check if ALL vaccines have reached their maximum doses
+            $allVaccinesComplete = true;
             $dueVaccines = [];
+            $vaccineCompleted = [];
 
             foreach ($vaccines as $vaccine) {
-                $vaccineName = trim($vaccine);
-                if (!empty($vaccineName)) {
-                    $dueVaccines[] = $vaccineName . ' Dose ' . $nextDosage;
+                $vaccineAcronym = trim($vaccine); // IMPORTANT: Added trim() here
+
+                if (isset($vaccineDoseConfig[$vaccineAcronym])) {
+                    $maxDoses = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
+                    $vaccineName = $vaccineDoseConfig[$vaccineAcronym]['acronym'];
+
+                    // Check if this specific vaccine still has doses remaining
+                    if ($currentDose < $maxDoses) {
+                        $allVaccinesComplete = false;
+
+                        // Check if next dose doesn't exist yet
+                        $nextDoseExists = DB::table('vaccination_case_records')
+                            ->where('medical_record_case_id', $medicalRecordCase->id)
+                            ->where('vaccine_type', 'LIKE', '%' . $vaccineAcronym . '%')
+                            ->where('status', '!=', 'Archived')
+                            ->where('dose_number', $nextDosage)
+                            ->exists();
+
+                        if (!$nextDoseExists) {
+                            $dueVaccines[] = $vaccineName . ' Dose ' . $nextDosage;
+                        }
+                    } else {
+                        if ($currentDose >= $maxDoses) {
+                            $vaccineCompleted[] = $vaccine;
+                        }
+                    }
                 }
             }
 
+
+
+            // If all vaccines are complete, show completion status
+            if ($allVaccinesComplete && !empty($vaccineCompleted)) {
+                // implode the completed vaccine
+                $implodedVaccineCompleted = implode(",", $vaccineCompleted);
+                return [
+                    'status' => 'complete',
+                    'badge' => 'Vaccination Complete',
+                    'class' => 'table-light',
+                    'badge_class' => 'badge bg-success',
+                    'due_vaccines' => ["$implodedVaccineCompleted doses is completed. Proceed to another vaccination if needed."],
+                    'sort_priority' => 3
+                ];
+            }
+
+            // If no vaccines are actually due (all next doses already exist)
             if (empty($dueVaccines)) {
                 return null;
             }
 
-            // Determine status
+            // Determine status for vaccines that are still pending
             if ($comebackDate->isToday()) {
                 return [
                     'status' => 'due_today',
                     'badge' => 'Due Today',
-                    'class' => 'table-success',
-                    'badge_class' => 'badge bg-success',
+                    'class' => 'table-warning',
+                    'badge_class' => 'badge bg-warning text-dark',
                     'due_vaccines' => $dueVaccines,
                     'next_dosage' => $nextDosage,
                     'sort_priority' => 2
@@ -173,6 +216,7 @@ class RecordsTable extends Component
                 ];
             }
         } catch (\Exception $e) {
+            Log::error('Vaccination status calculation error: ' . $e->getMessage());
             return null;
         }
     }
