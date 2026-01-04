@@ -1,7 +1,7 @@
 <main class="flex-column">
     <div class="head-part d-flex justify-content-between align-items-center mb-3">
         <h2 class="main-header w-100">{{ $page ?? 'none'}}</h2>
-        <div class="direction d-flex gap-2 align-items-center">
+        <div class="direction d-md-flex d-none gap-2 align-items-center">
             <a href="#" class="text-decoration-none text-black">
                 <h5 class="fw-light text-nowrap mb-0">Master List</h5>
             </a>
@@ -15,96 +15,104 @@
         </div>
     </div>
     <div class="main-content card shadow d-flex flex-column p-3 w-100  ">
-        <div class="mb-3 d-flex justify-content-between w-100 gap-3 ">
-            {{-- Show Entries --}}
-            <div class="input-group flex-column w-50">
-                <label for="entries" class="mb-1">Show</label>
-                <select wire:model.live="entries" id="entries" class="form-select rounded bg-light w-100">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
+         <!-- Filters Section -->
+        <div class="mb-3">
+            <div class="row g-2">
+                {{-- Show Entries --}}
+                <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2">
+                    <label for="entries" class="form-label small mb-1">Show</label>
+                    <select wire:model.live="entries" id="entries" class="form-select rounded bg-light">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
 
-            {{-- Search --}}
-            <div class="input-group flex-column w-100">
-                <label for="search" class="mb-1">Search</label>
-                <input
-                    type="text"
-                    wire:model.live.debounce.300ms="search"
-                    id="search"
-                    class="form-control rounded bg-light w-100"
-                    placeholder="Search by name...">
-            </div>
+                {{-- Search --}}
+                <div class="col-12 col-sm-6 col-md-9 col-lg-4 col-xl-3">
+                    <label for="search" class="form-label small mb-1">Search</label>
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="search"
+                        id="search"
+                        class="form-control rounded bg-light"
+                        placeholder="Search by name...">
+                </div>
 
-            {{-- Barangay Filter (Only for Nurses) --}}
-            @if(Auth::user()->role == 'nurse')
-            <div class="input-group flex-column w-75">
-                <label for="brgy" class="mb-1">Barangay</label>
-                <select wire:model.live="selectedBrgy" id="brgy" class="form-select rounded bg-light w-100">
-                    <option value="">All Barangays</option>
-                    @foreach($brgyList as $brgy)
-                    <option value="{{ $brgy->brgy_unit }}">{{ $brgy->brgy_unit }}</option>
-                    @endforeach
-                </select>
-            </div>
-            @endif
+                {{-- Barangay Filter (Only for Nurses) --}}
+                @if(Auth::user()->role == 'nurse')
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    <label for="brgy" class="form-label small mb-1">Barangay</label>
+                    <select wire:model.live="selectedBrgy" id="brgy" class="form-select rounded bg-light">
+                        <option value="">All Barangays</option>
+                        @foreach($brgyList as $brgy)
+                        <option value="{{ $brgy->brgy_unit }}">{{ $brgy->brgy_unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
 
-            {{-- Month Filter --}}
-            <div class="input-group flex-column w-50">
-                <label for="month" class="mb-1">Month</label>
-                <select wire:model.live="selectedMonth" id="month" class="form-select rounded bg-light w-100">
-                    <option value="">All Months</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-            </div>
+                {{-- Month Filter --}}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    <label for="month" class="form-label small mb-1">Month</label>
+                    <select wire:model.live="selectedMonth" id="month" class="form-select rounded bg-light">
+                        <option value="">All Months</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
 
-            {{-- Year Filter --}}
-            <div class="input-group flex-column w-50">
-                <label for="year" class="mb-1">Year</label>
-                <select wire:model.live="selectedYear" id="year" class="form-select rounded bg-light w-100">
-                    <option value="">All Years</option>
-                    @foreach($availableYears as $year)
-                    <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="input-group flex-column w-75">
-                <label for="unmetNeed">WRA with MFP Unmet Need</label>
-                <select wire:model.live="withUnmetNeed" id="unmetNeed" class="form-select rounded bg-light w-100">
-                    <option value="" selected>Select an option</option>
-                    <option value="no">WRA without MFP Unmet Need</option>
-                    <option value="yes">WRA with MFP Unmet Need</option>
-                </select>
-            </div>
+                {{-- Year Filter --}}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-2 col-xl-1">
+                    <label for="year" class="form-label small mb-1">Year</label>
+                    <select wire:model.live="selectedYear" id="year" class="form-select rounded bg-light">
+                        <option value="">All Years</option>
+                        @foreach($availableYears as $year)
+                        <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- Download Button --}}
-            <div class=" d-flex align-items-end ms-auto">
-                <button
-                    type="button"
-                    class="btn btn-success d-flex justify-content-center align-items-center gap-2 px-3 py-2"
-                    style="height: 38px;"
-                    wire:click="exportPdf()">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height:20px" viewBox="0 0 512 512">
-                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" fill="white" />
-                    </svg>
-                    <span style="font-size: 0.875rem;">Download</span>
-                </button>
+                {{-- Unmet Need Filter --}}
+                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-2">
+                    <label for="unmetNeed" class="form-label small mb-1">WRA with MFP Unmet Need</label>
+                    <select wire:model.live="withUnmetNeed" id="unmetNeed" class="form-select rounded bg-light">
+                        <option value="" selected>Select an option</option>
+                        <option value="no">WRA without MFP Unmet Need</option>
+                        <option value="yes">WRA with MFP Unmet Need</option>
+                    </select>
+                </div>
+
+                {{-- Download Button --}}
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 d-flex align-items-end">
+                    <div>
+                        <button
+                            type="button"
+                            class="btn btn-success d-flex justify-content-center align-items-center gap-2 px-3 py-2 w-100"
+                            style="height: 38px;"
+                            wire:click="exportPdf()">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height:20px" viewBox="0 0 512 512">
+                                <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" fill="white" />
+                            </svg>
+                            <span style="font-size: 0.875rem;">Download</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
+
         <!-- <div class="mb-3 text-center">
                             <h4>MASTER LIST OF 0-59 MONTHS</h4>
                         </div>
