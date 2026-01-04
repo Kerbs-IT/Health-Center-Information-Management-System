@@ -33,13 +33,13 @@
         @yield('content')
 
         <div class="d-flex justify-content-center align-items-center w-100" style="display: flex !important;">
-            <div class="row login-container login-card border w-100 mt-5">
+            <div class="row login-container login-card border w-100 mt-5 mx-2">
                 <!-- Left Image -->
-                <div class="col-6 p-0">
+                <div class="col-12 col-lg-6 p-0">
                     <img src="{{ asset('images/hugo_perez.jpg') }}" alt="Hospital Hallway" class="login-img d-none d-sm-block">
                 </div>
                 <!-- Right Form -->
-                <div class="col-6 login-form-con">
+                <div class="col-12 col-lg-6 login-form-con">
                     <form action="{{route('auth.login')}}" method="POST" class="rounded d-flex flex-column m-0 p-4 bg-white h-100">
                         @csrf
                         <h1 class="text-center fs-1 fw-bold">Login</h1>
