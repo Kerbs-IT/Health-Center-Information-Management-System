@@ -19,6 +19,10 @@ use Illuminate\Validation\Rules\Password;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+;
 
 class authController extends Controller
 {
@@ -63,11 +67,15 @@ class authController extends Controller
             'username' => 'required|unique:users,username',
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'first_name' => 'required',
+            'first_name' => [
+                'required',
+                Rule::unique('users')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })
+            ],
             'middle_initial' => ['sometimes','nullable', 'string'],
             'last_name' => ['required'],
-            'recovery_question' => ['required'],
-            'recovery_answer' => ['required'],
             'patient_type' => 'required',
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|digits_between:7,12',
@@ -76,7 +84,6 @@ class authController extends Controller
         ]);
 
         // Hash sensitive data
-        $data['recovery_answer'] = Hash::make($data['recovery_answer']);
         $data['password'] = Hash::make($data['password']);
 
         // Build full address
@@ -106,8 +113,6 @@ class authController extends Controller
             'role' => 'patient',
             'status' => 'Pending', // Mark as pending until verified
             'is_verified' => false,
-            'recovery_question' => $data['recovery_question'],
-            'recovery_answer' => $data['recovery_answer'],
         ]);
 
         // Store complete registration data in session (will be used after verification)
@@ -119,8 +124,6 @@ class authController extends Controller
                 'patient_type' => $data['patient_type'],
                 'date_of_birth' => $data['date_of_birth'],
                 'contact_number' => $data['contact_number'],
-                'recovery_question' => $data['recovery_question'],
-                'recovery_answer' => $data['recovery_answer'],
                 'full_address' => $fullAddress,
                 'blk_n_street' => $data['blk_n_street'],
                 'brgy' => $data['brgy'],
@@ -454,5 +457,54 @@ class authController extends Controller
 
         Alert::success('Success', 'Account created successfully!');
         return redirect()->back();
+    }
+
+    public function changePassword(Request $request){
+        try {
+            $user = Auth::user();
+            $data = $request -> validate([
+                'current_password' => ['required','current_password'],
+                'new_password' => [
+                    'required',
+                    'confirmed',
+                    Password::min(8)->letters()->mixedCase()->numbers()->symbols()
+                ],
+                
+            ]);
+
+            $user->update([
+                'password' => Hash::make($data['new_password'])
+            ]);
+
+            return response()->json([
+                'message' => 'Password is updated Successfully'
+            ], 200);
+
+          
+        }catch(ValidationException $e){
+            return response()->json([
+                'errors' => $e->errors()
+            ],422);
+        } catch (\Throwable $e) {
+            //throw $th;
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function info($id){
+        try{
+
+            $user = User::findOrFail($id);
+            $address = users_address::where('user_id',$user->id)->first();
+
+            return response()->json(['info'=>$user,'address'=>$address]);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'errors'=> $e->getMessage()
+            ]);
+        }
     }
 }

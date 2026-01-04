@@ -33,7 +33,8 @@ class healthWorkerController extends Controller
                                                 'healthWorker' => $healthWorker,
                                                 'pendingAccounts' => $pendingAccounts, 
                                                 'pendingAccountsCount' => $pendingAccountsCount,
-                                                'occupied_assigned_areas' => $occupiedAreas ]);
+                                                'occupied_assigned_areas' => $occupiedAreas,
+                                            'page'=>'Health worker' ]);
     }
     public function destroy($id){
         
@@ -62,7 +63,7 @@ class healthWorkerController extends Controller
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'role' => 'required|in:staff,patient',
                 'first_name' => 'required',
-                'middle_initial' => ['required', 'max:2'],
+                'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required'],
                 'assigned_area' => 'required',
                 'recovery_question' => ['required'],

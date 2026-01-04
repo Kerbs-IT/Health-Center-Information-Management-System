@@ -31,7 +31,10 @@
                 <pre id="view_medical_findings" style="white-space: pre; font-family: monospace;">N/A</pre>
             </td>
             <td id="view_method_accepted">N/A</td>
-            <td id="view_signature_of_the_provider">N/A</td>
+            <td>
+                <img src="" id="view_signature_of_the_provider" alt="Patient Signature" class="img-fluid" style="object-fit:cover;max-width: 200px; max-height: 200px; display: none;">
+                <span id="view_signature_of_the_provide_no" class="text-muted">No signature available</span>
+            </td>
             <td id="view_date_of_follow_up_visit">N/A</td>
 
         </tr>

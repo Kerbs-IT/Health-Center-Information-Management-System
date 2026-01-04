@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('dosage');
             $table->integer('stock');
             $table->date('expiry_date')->nullable();
-            $table->string('status')->default('In Stock');
+            $table->string('stock_status')->default('In Stock');
+            $table->string('expiry_status')->default('Valid');
             $table->integer('min_age_months')->nullable();
             $table->integer('max_age_months')->nullable();
 
