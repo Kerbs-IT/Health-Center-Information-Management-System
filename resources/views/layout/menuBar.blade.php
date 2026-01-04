@@ -21,6 +21,12 @@
                 <h4 class="mb-0 fs-5">Dashboard</h4>
             </a>
         </div>
+        <div class="wrapper w-100 d-flex justify-content-center">
+            <a href="{{ route('notifications.index')}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="notification">
+                <i class="fa-solid fa-bell"></i>
+                <h4 class="mb-0 fs-5">Notification</h4>
+            </a>
+        </div>
         @if(Auth::user() -> role == 'nurse')
         <!-- manage interface -->
         <div class="wrapper w-100 d-flex justify-content-center">
@@ -180,17 +186,12 @@
             <div class="sub-menu  patient-menu w-75 align-self-end">
                 <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_vaccination">
                     <i class="fa-solid fa-layer-group"></i>
-                    <h5 class="mb-0">Add Category</h5>
+                    <h5 class="mb-0">Category</h5>
                 </a>
                 <!-- senior citizen -->
                 <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
                     <i class="fa-solid fa-plus"></i>
-                    <h5 class="mb-0">Add Medicine</h5>
-                </a>
-                <!-- TB dots -->
-                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
-                    <i class="bi bi-bar-chart-fill"></i>
-                    <h5 class="mb-0">Report</h5>
+                    <h5 class="mb-0">Medicine</h5>
                 </a>
                 <!-- family planning
                 <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
@@ -200,6 +201,11 @@
                 <a href="{{ route('manageMedicineRequests') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
                     <i class="bi bi-capsule"></i>
                     <h5 class="mb-0">Manage Requests</h5>
+                </a>
+                <!-- TB dots -->
+                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <h5 class="mb-0">Report</h5>
                 </a>
                 <a href="{{ route('medicineRequestLog') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
                     <i class="fa-solid fa-clipboard-list"></i>
@@ -215,7 +221,13 @@
             <svg xmlns="http://www.w3.org/2000/svg" class=" icons home-icon" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                 <path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
             </svg>
-            <h4 class="mb-0 fs-5">Dashboard</h4>
+            <h4 class="mb-0 fs-5">Profile</h4>
+        </a>
+        <a href="{{ route('notifications.index')}}" class="menu-option menu-items d-flex align-items-center gap-3 text-decoration-none text-white   w-100 px-3 py-2" id="patient_notification">
+            <svg xmlns="http://www.w3.org/2000/svg" class=" icons home-icon" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                <path fill="currentColor" d="M320 64C302.3 64 288 78.3 288 96L288 99.2C215 114 160 178.6 160 256L160 277.7C160 325.8 143.6 372.5 113.6 410.1L103.8 422.3C98.7 428.6 96 436.4 96 444.5C96 464.1 111.9 480 131.5 480L508.4 480C528 480 543.9 464.1 543.9 444.5C543.9 436.4 541.2 428.6 536.1 422.3L526.3 410.1C496.4 372.5 480 325.8 480 277.7L480 256C480 178.6 425 114 352 99.2L352 96C352 78.3 337.7 64 320 64zM258 528C265.1 555.6 290.2 576 320 576C349.8 576 374.9 555.6 382 528L258 528z" />
+            </svg>
+            <h4 class="mb-0 fs-5">Notification</h4>
         </a>
         <a href="{{ route('view.medical.record', ['userId' => Auth::user()->id]) }}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none text-white  w-100 px-3 py-2" id="patient_medical_record">
             <div class="menu-text d-flex align-items-center my-auto gap-3 ">
@@ -228,9 +240,9 @@
         <a href="{{ route('medicineRequest')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="patient_medical_record">
             <div class="menu-text d-flex align-items-center my-auto gap-3 ">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                    <path fill="currentColor" d="M88.7 223.8L0 375.8 0 96C0 60.7 28.7 32 64 32l117.5 0c17 0 33.3 6.7 45.3 18.7l26.5 26.5c12 12 28.3 18.7 45.3 18.7L416 96c35.3 0 64 28.7 64 64l0 32-336 0c-22.8 0-43.8 12.1-55.3 31.8zm27.6 16.1C122.1 230 132.6 224 144 224l400 0c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-112 192C453.9 474 443.4 480 432 480L32 480c-11.5 0-22-6.1-27.7-16.1s-5.7-22.2 .1-32.1l112-192z" />
+                    <path fill="white" d="M88.7 223.8L0 375.8 0 96C0 60.7 28.7 32 64 32l117.5 0c17 0 33.3 6.7 45.3 18.7l26.5 26.5c12 12 28.3 18.7 45.3 18.7L416 96c35.3 0 64 28.7 64 64l0 32-336 0c-22.8 0-43.8 12.1-55.3 31.8zm27.6 16.1C122.1 230 132.6 224 144 224l400 0c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-112 192C453.9 474 443.4 480 432 480L32 480c-11.5 0-22-6.1-27.7-16.1s-5.7-22.2 .1-32.1l112-192z" />
                 </svg>
-                <h4 class="mb-0 fs-5">Request Medicine</h4>
+                <h4 class="mb-0 fs-5 text-white">Request Medicine</h4>
             </div>
         </a>
         @endif

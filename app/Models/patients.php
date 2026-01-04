@@ -55,7 +55,7 @@ class patients extends Model
 
     // user
     public function user(){
-        return $this->hasOne(User::class,'patient_record_id','id');
+        return $this->belongsTo(User::class,'patient_record_id','id');
     }
 
     public function isBound()
