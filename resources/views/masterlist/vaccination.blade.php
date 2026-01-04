@@ -19,15 +19,15 @@
     'resources/css/patient/record.css',
     'resources/css/masterList/masterlist.css',
     'resources/js/masterlist/vaccination.js'])
-    <div class="masterList-vaccination vh-100 d-flex">
+    <div class="masterList-vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
         <div class="d-flex flex-grow-1 flex-column w-100 overflow-x-hidden">
             @include('layout.header')
-            <div class="d-flex flex-column flex-grow-1 p-3 overflow-y-auto">
+            <div class="d-flex flex-column flex-grow-1 p-md-3 p-1 overflow-y-auto">
                 <main class="flex-column">
-                    <div class="head-part d-flex justify-content-between align-items-center mb-3">
+                    <div class="head-part d-md-flex d-none justify-content-between align-items-center mb-3">
                         <h2 class="main-header w-100">{{ $page ?? 'none'}}</h2>
                         <div class="direction d-flex gap-2 align-items-center">
                             <a href="#" class="text-decoration-none text-black">
@@ -61,22 +61,22 @@
                         <div class="modal-body w-100">
                             <div class="input-group mb-2">
                                 <label for="" class="w-100">Name of Child</label>
-                                <div class="full-name d-flex gap-2 w-100 flex-grow-1">
-                                    <input type="text" name="vaccination_masterlist_fname" id="vaccination_masterlist_fname" placeholder="Enter First Name" class="form-control border">
-                                    <input type="text" name="vaccination_masterlist_MI" id="vaccination_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
-                                    <input type="text" name="vaccination_masterlist_lname" id="vaccination_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
+                                <div class="full-name d-flex gap-2 w-100 flex-grow-1 flex-wrap flex-lg-nowrap">
+                                    <input type="text" name="vaccination_masterlist_fname" id="vaccination_masterlist_fname" placeholder="Enter First Name" class="form-control border flex-fill">
+                                    <input type="text" name="vaccination_masterlist_MI" id="vaccination_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border flex-fill">
+                                    <input type="text" name="vaccination_masterlist_lname" id="vaccination_masterlist_lname" placeholder="Enter Last Name" class="form-control  border flex-fill">
                                 </div>
 
                             </div>
                             <div class="input-group mb-2">
                                 <h4>Address</h4>
-                                <div class="input-field d-flex gap-2 align-items-center w-100">
-                                    <div class=" mb-2 w-50">
+                                <div class="input-field d-flex gap-2 align-items-center w-100 flex-wrap flex-lg-nowrap">
+                                    <div class=" mb-2 w-[100%]  w-lg-[50%]">
                                         <label for="street">Street*</label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
                                         <small class="text-danger error-text" id="street_error"></small>
                                     </div>
-                                    <div class="mb-2 w-50">
+                                    <div class="mb-2 w-[100%]  w-lg-[50%]">
                                         <label for="brgy">Barangay*</label>
                                         @php
                                         $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex gap-2 w-100">
+                            <div class="d-flex gap-2 w-100 flex-wrap">
                                 <div class="vaccination-date flex-grow-1">
                                     <label>SE status</label>
                                     <input type="text" name="SE_status" class="form-control">
