@@ -5,7 +5,7 @@ async function loadPatientData() {
     // Check if data was passed from server (for PDF)
     if (window.patientDataFromServer) {
         const data = window.patientDataFromServer;
-        console.log("Using data from server:", data);
+        // console.log("Using data from server:", data);
 
         // ✅ ADD NULL CHECK BEFORE SETTING COLORS
         if (data && typeof data === "object") {
@@ -33,7 +33,7 @@ async function loadPatientData() {
     }
 
     const data = await response.json();
-    console.log("chart data:", data);
+    // console.log("chart data:", data);
 
     Object.keys(data).forEach((key) => {
         if (data[key] && typeof data[key] === "object") {

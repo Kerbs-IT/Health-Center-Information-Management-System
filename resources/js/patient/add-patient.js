@@ -2,7 +2,6 @@ import Swal from "sweetalert2";
 import { addVaccineInteraction } from "../patient/healthWorkerList";
 window.currentStep = 1;
 document.addEventListener("DOMContentLoaded", () => {
-    
     const typeSelect = document.getElementById("type-of-patient");
 
     window.showStep = function (step) {
@@ -55,9 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 document
                     .getElementById("prenatal-step3")
                     .classList.remove("d-none");
-                
-                 document.getElementById("family-planning-step3").classList.remove("d-flex");
-                document.getElementById("family-planning-step3").classList.add("d-none");
+
+                document
+                    .getElementById("family-planning-step3")
+                    .classList.remove("d-flex");
+                document
+                    .getElementById("family-planning-step3")
+                    .classList.add("d-none");
             } else if (selected == "family-planning") {
                 // console.log("taena gumana kaya boy");
                 document
@@ -71,12 +74,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 document
                     .getElementById("family-planning-step3")
                     .classList.replace("d-none", "d-flex");
-                console.log(
-                    document.querySelectorAll("#family-planning-step3")
-                );
+                // console.log(
+                //     document.querySelectorAll("#family-planning-step3")
+                // );
 
-                document.getElementById("prenatal-step3").classList.remove("d-flex");
-                document.getElementById("prenatal-step3").classList.add("d-none");
+                document
+                    .getElementById("prenatal-step3")
+                    .classList.remove("d-flex");
+                document
+                    .getElementById("prenatal-step3")
+                    .classList.add("d-none");
             }
         } else {
             document.getElementById("step" + step).classList.remove("d-none");
@@ -85,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-     
     window.nextStep = function () {
         // get important values
         const fname = document.getElementById("first_name");
@@ -349,12 +355,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
-
-    typeSelect.addEventListener('change', function () {
+    typeSelect.addEventListener("change", function () {
         disableSubmitBtn(typeSelect.value);
-    })
-   
+    });
 
     // handle adding the vaccine
 
@@ -365,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const vaccineInput = document.getElementById("vaccine_input");
 
-
     addVaccineInteraction(
         addVaccineBtn,
         vaccineInput,
@@ -373,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedVaccinesCon,
         selectedVaccines
     );
-    
+
     if (vaccinesContainer) {
         vaccinesContainer.addEventListener("click", (e) => {
             console.log("before deletion:", selectedVaccines);
@@ -391,10 +393,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         selectedVaccinesCon.value = selectedVaccines.join(",");
                     }
 
-                     setTimeout(() => {
-                         updateDoseDropdown(selectedVaccines);
-                     }, 100);
-                    
+                    setTimeout(() => {
+                        updateDoseDropdown(selectedVaccines);
+                    }, 100);
+
                     e.target.closest(".vaccine").remove();
                 }
 
@@ -414,12 +416,12 @@ document.addEventListener("DOMContentLoaded", () => {
     vaccinationSubmitBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
-
         const doseDropdown = document.getElementById("dose"); // adjust selector
         const selectedDose = parseInt(doseDropdown.value);
         // Validate vaccines against selected dose
         const invalidVaccines = validateVaccinesWithDose(
-            selectedVaccines,selectedDose
+            selectedVaccines,
+            selectedDose
         );
 
         if (invalidVaccines.length > 0) {
@@ -436,7 +438,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             return;
         }
-
 
         const form = document.getElementById("add-patient-form");
         const formData = new FormData(form);
@@ -516,21 +517,56 @@ function capitalizeEachWord(str) {
 
 // add a validation for he vaccine doses
 const vaccineDoseConfig = {
-    1: { maxDoses: 1, description: 'at birth',name:'BCG Vaccine' },
-    2: { maxDoses: 1, description: 'at birth',name:'Hepatitis B Vaccine' },
-    3: { maxDoses: 3, description: 'doses 1-3',name: 'Pentavalent Vaccine (DPT-HEP B-HIB)' },
-    4: { maxDoses: 3, description: 'doses 1-3', name: 'Oral Polio Vaccine (OPV)'},
-    5: { maxDoses: 2, description: 'doses 1-2', name: 'Inactived Polio Vaccine (IPV)' },
-    6: { maxDoses: 3, description: 'doses 1-3', name:'Pnueumococcal Conjugate Vaccine (PCV)' },
-    7: { maxDoses: 2, description: 'doses 1-2',name:'Measles, Mumps, Rubella Vaccine (MMR)' },
-    8: { maxDoses: 1, description: 'dose 1',name:'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)' },
-    9: { maxDoses: 2, description: 'doses 1-2',name:'Measles Containing Vaccine (MCV) MR/MMR (Grade 7)' },
-    10: { maxDoses: 2, description: 'doses 1-2',name: 'Tetanus Diphtheria (TD)'},
-    11: { maxDoses: 2, description: 'doses 1-2', name: 'Human Papiliomavirus Vaccine' },
-    12: { maxDoses: 3, description: 'doses 1-3', name: 'Influenza Vaccine' },
-    13:{ maxDoses: 3, description: 'doses 1-3', name: 'Pnuemococcal Vaccine' },
+    1: { maxDoses: 1, description: "at birth", name: "BCG Vaccine" },
+    2: { maxDoses: 1, description: "at birth", name: "Hepatitis B Vaccine" },
+    3: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Pentavalent Vaccine (DPT-HEP B-HIB)",
+    },
+    4: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Oral Polio Vaccine (OPV)",
+    },
+    5: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Inactived Polio Vaccine (IPV)",
+    },
+    6: {
+        maxDoses: 3,
+        description: "doses 1-3",
+        name: "Pnueumococcal Conjugate Vaccine (PCV)",
+    },
+    7: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Measles, Mumps, Rubella Vaccine (MMR)",
+    },
+    8: {
+        maxDoses: 1,
+        description: "dose 1",
+        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 1)",
+    },
+    9: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 7)",
+    },
+    10: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Tetanus Diphtheria (TD)",
+    },
+    11: {
+        maxDoses: 2,
+        description: "doses 1-2",
+        name: "Human Papiliomavirus Vaccine",
+    },
+    12: { maxDoses: 3, description: "doses 1-3", name: "Influenza Vaccine" },
+    13: { maxDoses: 3, description: "doses 1-3", name: "Pnuemococcal Vaccine" },
 };
-
 
 function updateDoseDropdown(selectedVaccines) {
     const doseDropdown = document.getElementById("dose");
@@ -539,11 +575,11 @@ function updateDoseDropdown(selectedVaccines) {
 
     // Find maximum dose from selected vaccines
     let maxDose = 1;
-   selectedVaccines.forEach((id) => {
-       if (vaccineDoseConfig[id]) {
-           maxDose = Math.max(maxDose, vaccineDoseConfig[id].maxDoses);
-       }
-   });
+    selectedVaccines.forEach((id) => {
+        if (vaccineDoseConfig[id]) {
+            maxDose = Math.max(maxDose, vaccineDoseConfig[id].maxDoses);
+        }
+    });
 
     // Store current selection
     const currentValue = doseDropdown.value;
@@ -560,15 +596,14 @@ function updateDoseDropdown(selectedVaccines) {
 
     // add a condition if the selectedVaccines is empty
     if (selectedVaccines.length <= 0) {
-        doseDropdown.innerHTML = '';
+        doseDropdown.innerHTML = "";
         doseDropdown.innerHTML = '<option value="">Select Dose</option>';
-         for (let i = 1; i <= 3; i++) {
-             const option = document.createElement("option");
-             option.value = `${i}`;
-             option.textContent = `Dose ${i}`;
-             doseDropdown.appendChild(option);
-         }
-
+        for (let i = 1; i <= 3; i++) {
+            const option = document.createElement("option");
+            option.value = `${i}`;
+            option.textContent = `Dose ${i}`;
+            doseDropdown.appendChild(option);
+        }
     }
 
     // Restore selection if still valid
@@ -578,9 +613,9 @@ function updateDoseDropdown(selectedVaccines) {
 }
 
 // Function to validate vaccines with selected dose
-function validateVaccinesWithDose(selectedVaccines,selectedDose) {
+function validateVaccinesWithDose(selectedVaccines, selectedDose) {
     const invalidVaccines = [];
-    
+
     selectedVaccines.forEach((id) => {
         const config = vaccineDoseConfig[id];
         if (config && selectedDose > config.maxDoses) {
@@ -591,7 +626,7 @@ function validateVaccinesWithDose(selectedVaccines,selectedDose) {
             });
         }
     });
-    
+
     return invalidVaccines;
 }
 

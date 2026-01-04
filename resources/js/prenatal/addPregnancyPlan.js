@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // WAIT FOR MODAL TO FULLY OPEN - THIS RUNS **AFTER** MODAL IS VISIBLE
     if (addPregnancyModal) {
         addPregnancyModal.addEventListener("shown.bs.modal", function () {
-            console.log("Modal is NOW visible!");
+            // console.log("Modal is NOW visible!");
 
             if (!addPatientSignature) {
                 addPatientSignature = initSignatureCapture({
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     hiddenInputId: "add_signature_data",
                     maxFileSizeMB: 2,
                 });
-                console.log("✅ SIGNATURE INITIALIZED!");
+                // console.log("✅ SIGNATURE INITIALIZED!");
             } else {
                 addPatientSignature.clear();
             }
@@ -102,7 +102,7 @@ donor_names_con.addEventListener("click", (e) => {
             e.target.closest(".box").remove();
         }
     }
-    console.log("donor deleted");
+    // console.log("donor deleted");
 });
 
 // ==== upload the record
@@ -127,7 +127,7 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
         const hiddenSignature = document.getElementById("add_signature_data");
         if (hiddenSignature && hiddenSignature.value) {
             formData.set("add_signature_data", hiddenSignature.value);
-            console.log("✅ Manually added signature data");
+            // console.log("✅ Manually added signature data");
         }
 
         // for (let [key, value] of formData.entries()) {

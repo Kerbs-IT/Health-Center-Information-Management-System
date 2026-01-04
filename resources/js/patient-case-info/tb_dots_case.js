@@ -69,7 +69,7 @@ document.addEventListener("click", async (e) => {
 
     const data = await response.json();
     if (!response.ok) {
-        console.log(data.errors);
+        // console.log(data.errors);
     } else {
         Object.entries(data.checkUpInfo).forEach(([key, value]) => {
             if (document.getElementById(`view_date_of_comeback`)) {

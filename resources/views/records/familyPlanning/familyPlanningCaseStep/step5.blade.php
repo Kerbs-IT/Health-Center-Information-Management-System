@@ -194,19 +194,19 @@
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_warts" value="warts">
-                                <label for="edit_cervical_abnormalities_type_warts" class="edit_cervical_abnormalities_type">Warts</label>
+                                <label for="edit_cervical_abnormalities_type_warts" class="edit_cervical_abnormalities_type_label">Warts</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_Polyp" value="Polyp or cyst">
-                                <label for="edit_cervical_abnormalities_type_Polyp" class="edit_cervical_abnormalities_type">Polyp or cyst</label>
+                                <label for="edit_cervical_abnormalities_type_Polyp" class="edit_cervical_abnormalities_type_label">Polyp or cyst</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_inflamation_or_erosion" value="inflammation or erosion">
-                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="edit_cervical_abnormalities_type">inflammation or erosion</label>
+                                <label for="edit_cervical_abnormalities_type_inflamation_or_erosion" class="edit_cervical_abnormalities_type_label">inflammation or erosion</label>
                             </div>
                             <div class="mb-2 d-flex align-items-center gap-2">
                                 <input type="radio" name="edit_cervical_abnormalities_type" id="edit_cervical_abnormalities_type_bloody_discharge" value="Bloody discharge">
-                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="edit_cervical_abnormalities_type">Bloody discharge</label>
+                                <label for="edit_cervical_abnormalities_type_bloody_discharge" class="edit_cervical_abnormalities_type_label">Bloody discharge</label>
                             </div>
                             <small class="text-danger error-text" id="edit_cervical_abnormalities_type_error"></small>
                         </div>

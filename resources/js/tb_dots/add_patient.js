@@ -79,12 +79,12 @@ if (addBTN) {
     });
 }
 
-console.log(addTableBody);
+// console.log(addTableBody);
 // remove element
 if (addTableBody) {
     // remove maintenance
     addTableBody.addEventListener("click", (e) => {
-        console.log("working delete");
+        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }

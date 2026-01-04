@@ -1,7 +1,10 @@
 import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
+import { refreshToggleStates,initializeEditModal } from "../family_planning/editFamilyPlanningRadioToggle.js";
 
+// Initialize the modal on page load
+initializeEditModal();
 const viewIcon = document.getElementById("view-family-plan-info") ?? null;
 
 if (viewIcon) {
@@ -452,6 +455,10 @@ if (editIcon) {
 
             // assign the case id
         }
+
+          setTimeout(() => {
+                    refreshToggleStates();
+                }, 100);
 
         let editFamilyPlanningSignature = null;
         let editFamilyPlanningConsentSignature = null;

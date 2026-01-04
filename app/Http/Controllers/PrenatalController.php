@@ -1497,7 +1497,7 @@ class PrenatalController extends Controller
             return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
         }catch(ValidationException $e){
             return response()->json([
-                'error' => $e->getMessage()
+                'errors' => $e->errors()
             ], 404);
         };
 
@@ -1535,8 +1535,8 @@ class PrenatalController extends Controller
                     'edit_check_up_temperature'     => 'nullable|numeric|min:20|max:45',
                     'edit_check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'edit_check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'edit_check_up_height'          => 'nullable|numeric|min:0',
-                    'edit_check_up_weight'          => 'nullable|numeric|min:0',
+                    'edit_check_up_height'          => 'nullable|numeric|min:20',
+                    'edit_check_up_weight'          => 'nullable|numeric|min:20',
 
                     // Symptom questions (all optional but strings)
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
@@ -1559,7 +1559,7 @@ class PrenatalController extends Controller
                     'edit_other_symptoms_question_remarks'  => 'nullable|string|max:500',
 
                     // Final remarks
-                    'edit_overall_remarks'           => 'nullable|string|max:1000',
+                    'edit_overall_remarks' => 'nullable|string|max:1000',
                     'edit_date_of_comeback' => 'required|date'
                 ],
                 [], // this is empty because we didn't customize the error message for each field we just change the name 
@@ -1591,6 +1591,7 @@ class PrenatalController extends Controller
                     'edit_other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
 
                     'edit_overall_remarks'           => 'Overall Remarks',
+                    'edit_date_of_comeback' => 'Date of Comeback'
                 ]
             );
 
@@ -1640,7 +1641,7 @@ class PrenatalController extends Controller
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
-                'error' => $e->getMessage()
+                'errors' => $e->errors()
             ], 404);
         };
     }

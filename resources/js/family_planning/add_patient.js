@@ -196,7 +196,7 @@ saveBTN.addEventListener("click", async (e) => {
             "add_family_planning_signature_data",
             hiddenSignature.value
         );
-        console.log("✅ Manually added signature data");
+        // console.log("✅ Manually added signature data");
     }
 
     // signature consent
@@ -208,7 +208,7 @@ saveBTN.addEventListener("click", async (e) => {
             "add_family_planning_consent_signature_data",
             hiddenSignatureConsent.value
         );
-        console.log("✅ Manually added signature data");
+        // console.log("✅ Manually added signature data");
     }
 
     // side b
@@ -217,7 +217,7 @@ saveBTN.addEventListener("click", async (e) => {
     );
     if (sideBsignature && sideBsignature.value) {
         formData.set("add_side_b_name_n_signature_data", sideBsignature.value);
-        console.log("✅ Manually added signature data");
+        // console.log("✅ Manually added signature data");
     }
     
 

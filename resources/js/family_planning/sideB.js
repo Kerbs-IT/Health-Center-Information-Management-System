@@ -67,6 +67,39 @@ const sideBupdateBTN = document.getElementById(
     "edit-side-b-family-planning-assessment-btn"
 );
 
+// SIDE B SIGNATURE APPROACH
+// signature
+        const editModal = document.getElementById("editSideBcaseModal");
+        let editSideBsignature = null;
+        if (editModal) {
+            editModal.addEventListener("shown.bs.modal", function () {
+                // console.log("Modal is NOW visible!");
+
+                if (!editSideBsignature) {
+                    editSideBsignature = initSignatureCapture({
+                        drawBtnId: "edit_side_b_drawSignatureBtn",
+                        uploadBtnId: "edit_side_b_uploadSignatureBtn",
+                        canvasId: "edit_side_b_signaturePad",
+                        canvasSectionId: "edit_side_b_signatureCanvas",
+                        uploadSectionId: "edit_side_b_signatureUpload",
+                        previewSectionId: "edit_side_b_signaturePreview",
+                        fileInputId: "edit_side_b_signature_image",
+                        previewImageId: "edit_side_b_previewImage",
+                        errorElementId: "edit_side_b_signature_error",
+                        clearBtnId: "edit_side_b_clearSignature",
+                        saveBtnId: "edit_side_b_saveSignature",
+                        removeBtnId: "edit_side_b_removeSignature",
+                        hiddenInputId: "edit_side_b_signature_data",
+                        maxFileSizeMB: 2,
+                    });
+
+                    // console.log("✅ SIGNATURE INITIALIZED!");
+                } else {
+                    editSideBsignature.clear();
+                }
+            });
+        }
+
 // SIDE B EDIT BTN EVENT DELEGATION
 document.addEventListener("click", async (e) => {
     const side_b_edit_btn = e.target.closest(".edit-side-b-record");
@@ -117,37 +150,7 @@ document.addEventListener("click", async (e) => {
                 }
             });
         }
-        // signature
-        const editModal = document.getElementById("editSideBcaseModal");
-        let editSideBsignature = null;
-        if (editModal) {
-            editModal.addEventListener("shown.bs.modal", function () {
-                // console.log("Modal is NOW visible!");
-
-                if (!editSideBsignature) {
-                    editSideBsignature = initSignatureCapture({
-                        drawBtnId: "edit_side_b_drawSignatureBtn",
-                        uploadBtnId: "edit_side_b_uploadSignatureBtn",
-                        canvasId: "edit_side_b_signaturePad",
-                        canvasSectionId: "edit_side_b_signatureCanvas",
-                        uploadSectionId: "edit_side_b_signatureUpload",
-                        previewSectionId: "edit_side_b_signaturePreview",
-                        fileInputId: "edit_side_b_signature_image",
-                        previewImageId: "edit_side_b_previewImage",
-                        errorElementId: "edit_side_b_signature_error",
-                        clearBtnId: "edit_side_b_clearSignature",
-                        saveBtnId: "edit_side_b_saveSignature",
-                        removeBtnId: "edit_side_b_removeSignature",
-                        hiddenInputId: "edit_side_b_signature_data",
-                        maxFileSizeMB: 2,
-                    });
-
-                    // console.log("✅ SIGNATURE INITIALIZED!");
-                } else {
-                    editSideBsignature.clear();
-                }
-            });
-        }
+        
     } catch (error) {
         console.log("Error:", error);
     }

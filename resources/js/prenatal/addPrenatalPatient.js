@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const bloodDonorContainer = document.querySelector(
         ".blood-donor-name-container"
     );
-    console.log(addBloodDonorBtn);
+    // console.log(addBloodDonorBtn);
     if (addBloodDonorBtn) {
         // add event listerner to the btn
         addBloodDonorBtn.addEventListener("click", (e) => {
