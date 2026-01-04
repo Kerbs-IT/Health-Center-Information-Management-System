@@ -22,6 +22,7 @@
                 <label>Address:</label>
                 <span>{{ $fullAddress?? 'N/A' }}</span>
             </div>
+            
         </div>
         <div class="w-50">
             <div class="info-field">
