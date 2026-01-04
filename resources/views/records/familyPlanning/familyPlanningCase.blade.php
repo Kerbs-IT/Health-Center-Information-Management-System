@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <title>Health Center Information Management System</title>
 </head>
 
@@ -19,7 +20,9 @@
     'resources/css/patient/record.css',
     'resources/js/family_planning/case.js',
     'resources/js/family_planning/sideB.js',
-    'resources/js/family_planning/editPatientCase.js'])
+    'resources/js/family_planning/editPatientCase.js',
+    'resources/js/family_planning/familyPlanningRadioToggle.js',
+    'resources/js/family_planning/editFamilyPlanningRadioToggle.js'])
     <div class="patient-case vh-100 d-flex">
         <aside>
             @include('layout.menuBar')

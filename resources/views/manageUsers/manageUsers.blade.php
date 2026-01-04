@@ -19,9 +19,8 @@
     'resources/js/header.js',
     'resources/css/healthWorker.css',
     'resources/css/profile.css',
-    'resources/js/manageUser/manageUser',
-    'resources/css/manageUsers/manageUsers.css'
-    ])
+    'resources/css/manageUsers/manageUsers.css',
+    'resources/js/manageUser/manageUser.js'])
     @include('sweetalert::alert')
     <div class="ms-0 ps-0 d-flex w-100 min-vh-100">
         <!-- aside contains the sidebar menu -->
@@ -59,7 +58,7 @@
                         </div>
                     </nav>
                 </header>
-                <main class=" overflow-y-auto max-h-[calc(100vh-100px)] px-md-3 px-0 shadow-lg mx-2">
+                <main class=" overflow-y-auto max-h-[calc(100vh-100px)] px-3">
 
 
                     <div class="records">
@@ -71,143 +70,135 @@
         </div>
     </div>
 
-    <div class="pop-up  w-100 h-100 d-none align-items-center justify-content-center" id="pop-up">
-        <form action="" method="post" class="p-3 gap-3 w-50 d-flex opacity-[1]" enctype="multipart/form-data" id="profile-form">
-            @csrf
-            <!-- profile image section -->
-            <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
-                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
-                <h3 class=""></h3>
-                <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
-                <div class="upload-image d-flex flex-column">
-                    <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
-                    <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
-                    <span id="fileName" class="text-center text-muted">No file choosen</span>
-                    <small class="text-danger" id="image-error"></small>
+
+    <div class="modal fade" id="edit-user-profile" tabindex="-1" aria-labelledby="editUserProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Edit User Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-            <!-- USER INFORMATION -->
-            <div class="user-info flex-grow-1 ">
-                <h4>Personal Info</h4>
-                <div class="mb-2 d-flex gap-1">
-                    <div class="input-field w-50">
-                        <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
-                        <small class="text-danger" id="fname-error"></small>
-                    </div>
-                    <div class="input-field w-50">
-                        <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
-                        <small class="text-danger" id="middle-initial-error"></small>
-                    </div>
-                    <div class="input-field w-50">
-                        <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
-                        <small class="text-danger" id="lname-error"></small>
-                    </div>
-                </div>
-                <!-- age -->
-                <div class="mb-2 d-flex gap-1">
-                    <div class="input-field w-50">
-                        <label for="age">Age</label>
-                        <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
-                        <small class="text-danger" id="age-error"></small>
-                    </div>
-                    <div class="input-field w-50">
-                        <label for="birthdate">Date of Birth</label>
-                        <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
-                        <small class="text-danger" id="birthdate-error"></small>
-                    </div>
-                    <div class="input-field w-25">
-                        <label for="sex">Sex</label>
-                        <div class="input-field d-flex align-items-center p-2">
-                            @php
-                            $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
-                            @endphp
-                            <div class="sex-input d-flex align-items-center gap-1">
-                                <input type="radio" id="male" class="mb-0" name="sex" value="male" {{ $selectedSex === 'male'? 'checked' : '' }}>
-                                <label for="male" class="mb-0">Male</label>
-                                <input type="radio" id="female" class="mb-0" name="sex" value="female" {{ $selectedSex === 'female'? 'checked' : '' }}>
-                                <label for="female" class="mb-0">Female</label>
+                <div class="modal-body">
+                    <form action="" method="post" class="p-3" enctype="multipart/form-data" id="profile-form">
+                        @csrf
+                        <div class="row g-3">
+                            <!-- Profile Image Section -->
+                            <div class="col-12 col-lg-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <img src="{{ asset('images/default_profile.png') }}"
+                                            alt="profile picture"
+                                            class="rounded-circle mb-3 justify-self-center"
+                                            id="edit_profile_image"
+                                            data-base-url="{{ asset('') }}"
+                                            style="width: 150px; height: 150px; object-fit: cover;">
+
+                                        <h5 class="mb-2 text-capitalize" id="full_name">Full Name</h5>
+                                        <div class="mt-3">
+                                            <label for="fileInput" class="btn btn-success w-100 mb-2">Update Profile</label>
+                                            <input type="file" name="profile_image" class="d-none" id="fileInput" onchange="showFileName(this)">
+                                            <small class="text-muted d-block" id="fileName">No file chosen</small>
+                                            <small class="text-danger d-block" id="image-error"></small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <small class="text-danger" id="sex-error"></small>
-                        </div>
-                    </div>
-                </div>
-                <!-- civil status, contact number, nationality -->
-                <div class="mb-2 d-flex gap-1">
-                    <div class="input-field w-50">
-                        <label for="civil_status" class="">Civil Status</label>
-                        <!-- to display the current status -->
 
-                        <select name="civil_status" id="civil_status" class="form-select">
-                            <option value="single">Single</option>
-                            <option value="married">Married</option>
-                            <option value="divorce">Divorce</option>
-                        </select>
-                        <small class="text-danger" id="civil-status-error"></small>
-                    </div>
-                    <!-- contact -->
-                    <div class="input-field w-50">
-                        <label for="contact_number" class="">Contact Number</label>
-                        <input type="number" placeholder="+63-936-627-8671" class="form-control" id="contact_num" name="contact_number" value="">
-                        <small class="text-danger" id="contact-error"></small>
-                    </div>
-                    <div class="input-field w-50">
-                        <label for="nationality" class="">Nationality</label>
-                        <input type="text" placeholder="ex. Filipino" class="form-control" id="nationality" name="nationality" value="">
-                        <small class="text-danger" id="nationality-error"></small>
-                    </div>
-                </div>
-                <div class="mb-2 d-flex gap-1">
-                    <!-- username -->
-                    <div class="input-field w-50">
-                        <label for="username" class="">Username</label>
-                        <input type="text" placeholder="ex. yato" id="username" class="form-control" name="username" value="">
-                        <small class="text-danger" id="username-error"></small>
-                    </div>
-                    <!-- email -->
-                    <div class="input-field w-50">
-                        <label for="email" class="">Email</label>
-                        <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
-                        <small class="text-danger" id="email-error"></small>
-                    </div>
-                    <!-- password -->
-                    <div class="input-field w-50">
-                        <label for="password" class="">Password</label>
-                        <input type="password" id="edit_password" class="form-control" name="password">
-                        <small class="text-muted">Leave blank if you don't want to change it.</small>
-                        <small class="text-danger"></small>
-                    </div>
-                </div>
-                <!-- address -->
-                <div class="mb-3 w-100" id="patient_type_con">
-                    <label for="patient_type" class="form-label text-nowrap ">Patient Address </label>
+                            <!-- User Information Section -->
+                            <div class="col-12 col-lg-8">
+                                <h4 class="mb-3">Personal Info</h4>
 
-                    <div class=" w-100 d-flex gap-2">
-                        <div class="items w-50">
-                            <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
-                            <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
-                            @error('blk_n_street')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
-                        </div>
-                        <div class="items w-50">
-                            <label for="patient_purok_dropdown">Puroks*</label>
-                            <select id="update_patient_purok_dropdown" class="form-select w-100" name="patient_purok_dropdown" required>
-                                <option value="" selected disabled>Select a purok</option>
-                            </select>
-                            @error('patient_purok_dropdown')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
-                        </div>
+                                <!-- Name Fields -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-12 col-md-4">
+                                        <input type="text" id="edit_first_name" placeholder="First Name" class="form-control" name="first_name" value="">
+                                        <small class="text-danger" id="fname-error"></small>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <input type="text" id="edit_middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
+                                        <small class="text-danger" id="middle-initial-error"></small>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <input type="text" id="edit_last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
+                                        <small class="text-danger" id="lname-error"></small>
+                                    </div>
+                                </div>
 
-                    </div>
-                </div>
-                <!-- save button -->
-                <div class="mb-2 d-flex justify-content-end gap-2">
-                    <button class="btn btn-danger px-4" id="cancel-btn">Cancel</button>
-                    <input type="submit" value="Save" class="btn btn-success px-4" id="submit-btn" data-user>
+                                <!-- Age, Birthdate, and Sex -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-12 col-md-12">
+                                        <label for="birthdate" class="form-label">Date of Birth</label>
+                                        <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="">
+                                        <small class="text-danger" id="birthdate-error"></small>
+                                    </div>
+
+                                </div>
+
+                                <!-- Civil Status, Contact, Nationality -->
+                                <div class="row g-2 mb-3">
+
+                                    <div class="col-12 col-md-12">
+                                        <label for="contact_num" class="form-label">Contact Number</label>
+                                        <input type="number" placeholder="+63-936-627-8671" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
+                                        <small class="text-danger" id="contact-error"></small>
+                                    </div>
+
+                                </div>
+
+                                <!-- Username, Email, Password -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-12 col-md-4">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" placeholder="ex. yato" id="edit_username" class="form-control" name="username" value="">
+                                        <small class="text-danger" id="username-error"></small>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" placeholder="ex. yato@example.com" id="edit_email" class="form-control" name="email" value="">
+                                        <small class="text-danger" id="email-error"></small>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label for="edit_password" class="form-label">Password</label>
+                                        <input type="password" id="edit_password" class="form-control" name="password">
+                                        <small class="text-muted d-block">Leave blank if you don't want to change it.</small>
+                                        <small class="text-danger"></small>
+                                    </div>
+                                </div>
+
+                                <!-- Address -->
+                                <div class="mb-3">
+                                    <label class="form-label">Patient Address</label>
+                                    <div class="row g-2">
+                                        <div class="col-12 col-md-6">
+                                            <label for="edit_blk_n_street" class="form-label text-muted small">Blk & lot, Street*</label>
+                                            <input type="text" id="edit_blk_n_street" name="blk_n_street" placeholder="Enter blk & lot & street" class="form-control">
+
+                                            <small class="text-danger"></small>
+
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Puroks*</label>
+                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                                <option value="" selected disabled>Select a purok</option>
+                                            </select>
+
+                                            <small class="text-danger"></small>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end gap-2 mt-4">
+                                    <button type="button" class="btn btn-secondary px-4" id="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn" >Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
@@ -247,6 +238,20 @@
                             <input type="email" placeholder="Enter your email" name="email" class="py-2 px-2 w-100 fs-5 bg-light" value="{{old('email')}}">
                             <small class="text-danger email-error"></small>
                         </div>
+                        <div class="mb-2 w-100">
+                            <label for="date_of_birth" class="mb-1 h6 ">Date of Birth:</label>
+                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}">
+
+                            <small class="text-danger date_of_birth_error"></small>
+
+                        </div>
+                        <div class="mb-2 w-100">
+                            <label for="contact_number" class="mb-1 h6 ">Contact Number:</label>
+                            <input type="text" placeholder="Enter your email" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
+
+                            <small class="text-danger contact_number_error"></small>
+
+                        </div>
                         <!-- Password -->
                         <div class="mb-3 w-100">
                             <label for="password" class="mb-1 h4 fs-4 w-100">Password:</label>
@@ -267,6 +272,18 @@
                         </div>
                         <!-- hidden input -->
                         <input type="text" name="role" value="patient" hidden>
+                        <div class="mb-3 roles w-100">
+                            <label for="patient_type" class="">Type of User</label>
+                            <select name="patient_type" id="patient_type" class="form-select text-center w-100">
+                                <option value="" selected disabled>Select the type of patient</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="prenatal">PRE-NATAL</option>
+                                <option value="tb-dots">Tb-dots</option>
+                                <option value="senior-citizen">Senior Citizen</option>
+                                <option value="family-planning">Family Planning</option>
+                            </select>
+                            <small class="text-danger patient-type-error"></small>
+                        </div>
                         <!-- patient address -->
                         <div class="mb-3 w-100 " id="patient_type_con">
                             <label for="patient_type" class="form-label text-nowrap fs-4 fw-bold">Patient Address </label>
@@ -288,20 +305,6 @@
                             </div>
                         </div>
                         <!-- RECOVERY QUESTION -->
-                        <div class="mb-3 w-100">
-                            <div class="input-group w-100">
-                                <label for="recovery_question" class="fs-4 fw-bold w-100">Recovery Question:</label>
-                                <select name="recovery_question" id="recovery_question" class="form-select mb-2 w-100" required>
-                                    <option value="">Select a question</option>
-                                    <option value="1">What is your nickname? </option>
-                                    <option value="2">What is the ame of your mother?</option>
-                                    <option value="3">What is the name of your pet? </option>
-                                </select>
-                                <small class="text-danger recovery-question-error"></small>
-                                <input type="text" name="recovery_answer" placeholder="Enter your answer" class="form-control w-100" required>
-                                <small class="text-danger recovery-answer-error"></small>
-                            </div>
-                        </div>
 
 
                         <div class="mb-3 w-95">

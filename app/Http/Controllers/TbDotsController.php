@@ -236,7 +236,7 @@ class TbDotsController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $sex = $data['sex'] ??  $tbDotsRecord->patient->sex;
             // update the patient data first
             $tbDotsRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),
@@ -244,13 +244,14 @@ class TbDotsController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->last_name)),
                 'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
-                'sex' => ucfirst($data['sex'] )?? ucfirst($tbDotsRecord->patient->sex),
+                'sex' =>$sex?ucfirst($sex):null,
                 'civil_status' => $data['civil_status'] ?? $tbDotsRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,
                 'nationality' => $data['nationality'] ?? $tbDotsRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $tbDotsRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $tbDotsRecord->patient->place_of_birth,
+                
             ]);
             // update the address
             $blk_n_street = explode(',', $data['street']);
@@ -266,13 +267,13 @@ class TbDotsController extends Controller
             $tbDotsRecord->tb_dots_medical_record->update([
                 'health_worker_id' => $data['handled_by'] ?? $tbDotsRecord->tb_dots_medical_record->health_worker_id,
                 'patient_name' => $tbDotsRecord->patient->full_name,
-                'philheath_id_no' => $data['philheath_id']?? $tbDotsRecord->tb_dots_medical_record->philheath_id_no,
+                'philhealth_id_no' => $data['philheath_id']?? $tbDotsRecord->tb_dots_medical_record->philheath_id_no,
                 'blood_pressure' => $data['blood_pressure'] ?? $tbDotsRecord->tb_dots_medical_record->blood_pressure,
                 'temperature' => $data['temperature'] ?? $tbDotsRecord->tb_dots_medical_record->temperature,
                 'pulse_rate' => $data['pulse_rate'] ?? $tbDotsRecord->tb_dots_medical_record->pulse_rate,
                 'respiratory_rate' => $data['respiratory_rate'] ?? $tbDotsRecord->tb_dots_medical_record->respiratory_rate,
                 'height' => $data['height'] ?? $tbDotsRecord->tb_dots_medical_record->height,
-                'weight' => $data['weight'] ?? $tbDotsRecord->tb_dots_medical_record->weight
+                'weight' => $data['weight'] ?? $tbDotsRecord->tb_dots_medical_record->weight,
             ]);
 
             // update each case patient name

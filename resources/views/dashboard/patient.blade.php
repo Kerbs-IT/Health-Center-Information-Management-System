@@ -35,91 +35,192 @@
                     <div class="top-content d-flex w-100  shadow mb-5 rounded b patient-profile">
                         <!-- Left panel -->
                         <div class="edit-profile p-3 d-flex w-25 flex-column align-items-center border-end">
-                            <img src="{{ optional(Auth::user()->patient)->profile_image 
-    ? asset(Auth::user()->patient->profile_image) 
-    : asset('images/default_profile.png') }}"
-                                alt="profile_img" class="mb-3 profile-section-image"  style="width: 100px; height: 100px; object-fit: cover;">
-                            <h4 class="mb-3">{{ optional(Auth::user()->patient)->full_name ?? 'none' }}</h4>
+                            <img src="{{ 
+    asset(
+        optional(Auth::user())->profile_image ??
+        optional(Auth::user()->patient)->profile_image 
+        ?? 'images/default_profile.png'
+    ) 
+}}"
+                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
+                            <h4 class="mb-3">{{ optional(Auth::user())->username ?? 'none' }}</h4>
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
 
                         <!-- Right panel -->
                         <div class="personal-info p-4 flex-grow-1">
-                            <div class="info">
-                                <h4>Personal Information</h4>
-                                <div class="mb-3 d-flex px-4">
-                                    <div class="box w-50">
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Sex: </h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> sex ?? 'none'}}</p>
+                            <!-- Personal Information Section -->
+                            <div class="info mb-4">
+                                <div class="d-flex w-100 justify-content-between mb-3">
+                                    <h4 class="mb-0 pb-2 border-bottom fw-bold no-wrap flex-1">Personal Information</h4>
+                                    <div class="change-pass-button w-100 d-flex justify-content-end px-4 flex-1">
+                                        <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
+                                    </div>
+                                </div>
+
+                                <div class="row px-3">
+                                    <!-- Left Column -->
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Name:</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->full_name ?? trim((Auth::user()->first_name ?? '') . ' ' . (Auth::user()->middle_initial ?? '') . ' ' . (Auth::user()->last_name ?? '')) ?: 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Age:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> age ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Sex</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->sex ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Contact No:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> contact_number ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Age</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->age ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Register Date:</h5>
-                                            <p>{{ optional(Auth::user()) -> created_at -> format('m/d/Y') ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Contact Number</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->contact_number ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Register Date</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user())->created_at->format('m/d/Y') ?? 'Not specified' }}</p>
                                         </div>
                                     </div>
-                                    <!-- 2nd box -->
-                                    <div class="box w-50 px-4">
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Nationality:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> nationality ?? 'none'}}</p>
+
+                                    <!-- Right Column -->
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Nationality</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->nationality ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Date of Birth:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> date_of_birth ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Date of Birth</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->date_of_birth ?? 'Not specified' }}</p>
                                         </div>
-                                        <div class="mb-2 d-flex gap-1">
-                                            <h5>Civil Status:</h5>
-                                            <p>{{ optional(Auth::user()-> patient) -> civil_status ?? 'none'}}</p>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Place of Birth</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->place_of_birth ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Civil Status</label>
+                                            <p class="mb-0 fw-medium">{{ optional(Auth::user()->patient)->civil_status ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Section -->
+                            <div class="address mb-3">
+                                <h4 class="mb-3 pb-2 border-bottom fw-bold">Address</h4>
+                                <div class="px-3">
+                                    <p class="mb-0 fw-normal">{{ $fullAddress }}</p>
+                                </div>
+                            </div>
+                            <div class="other-info">
+                                <h4 class="mb-3 pb-2 border-bottom fw-bold">{{ucwords($typeOfPatient)}} Medical Record Information</h4>
+                                @if(($typeOfPatient ?? null) === 'vaccination')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Mother Name</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->mother_name ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Birth Weight</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->birth_weight?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Father Name</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->father_name?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Birth Height</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->birth_height ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'prenatal')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Head of the Family</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->family_head_name ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Blood Type</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->blood_type?? 'Not specified' }}</p>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philHealth_number ?? 'Not specified' }}</p>
                                         </div>
 
                                     </div>
                                 </div>
-                            </div>
-                            <div class="address">
-                                <h4>Address</h4>
-                                <p class="fs-5 fw-light px-3">{{ $fullAddress }}</p>
+                                @elseif(($typeOfPatient ?? null) === 'tb-dots')
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth ID No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philhealth_id_no ?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'senior-citizen')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Occupation</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->occupation ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Member of Social Security System (SSS)</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->SSS?? 'Not specified' }}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                @elseif(($typeOfPatient ?? null) === 'family-planning')
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Religion</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->religion ?? 'Not specified' }}</p>
+                                        </div>
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Occupation</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->occupation ?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item mb-3">
+                                            <label class="text-muted small mb-1">Philhealth No.</label>
+                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->philhealth_no?? 'Not specified' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @else
+                                @endif
                             </div>
                         </div>
                     </div>
-                    <div class="record w-100">
-                        <h4 class="text-start">Recent History</h4>
-                        <table class="w-100">
-                            <thead class="table-header">
-                                <tr>
-                                    <th>Case No.</th>
-                                    <th>Type of Record</th>
-                                    <th>Administed By</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>C-01</td>
-                                    <td>Medical Record</td>
-                                    <td>Nurse Joy</td>
-                                    <td>05-21-2025</td>
-                                    <td>Done</td>
-                                    <td>
-                                        <button class="btn-success btn">View Details</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
                 </main>
             </div>
         </div>
@@ -127,16 +228,19 @@
 
     <div class="modal fade" id="profile_modal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="">
         <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <form action="" method="post" class="w-100 " enctype="multipart/form-data" id="profile-form">
+            <form action="" method="post" class="w-100 " enctype="multipart/form-data" id="profile-form">
+                <div class="modal-content">
+
                     @method('PUT')
                     @csrf
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title" id="simpleModalLabel">Modal Title</h5>
+                        <h5 class="modal-title" id="simpleModalLabel">Edit User Profile</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
                     </div>
-                    <div class="moda-body h-100">
+                    <div class="modal-body">
                         <div class="pop-up  w-100 h-100 d-flex align-items-start justify-content-center px-3 gap-3 mt-2" id="pop-up">
+                            <!-- type of patient if available -->
+                            <input type="hidden" name="typeOfPatient" value="{{$typeOfPatient??null}}">
 
                             <!-- profile image section -->
                             <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center h-100" style="min-width:280px;">
@@ -152,7 +256,7 @@
                             </div>
                             <!-- USER INFORMATION -->
                             <div class="user-info flex-grow-1 ">
-                                <h4>Personal Info</h4>
+                                <h4 class="fw-bold">Personal Info</h4>
                                 <div class="mb-2 d-flex gap-1">
                                     <div class="input-field w-50">
                                         <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
@@ -169,17 +273,20 @@
                                 </div>
                                 <!-- age -->
                                 <div class="mb-2 d-flex gap-1">
-                                    <div class="input-field w-50">
+                                    @if($typeOfPatient)
+                                    <div class="input-field flex-1">
                                         <label for="age">Age</label>
                                         <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
                                         <small class="text-danger" id="age-error"></small>
                                     </div>
-                                    <div class="input-field w-50">
+                                    @endif
+                                    <div class="input-field flex-1">
                                         <label for="birthdate">Date of Birth</label>
                                         <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
                                         <small class="text-danger" id="birthdate-error"></small>
                                     </div>
-                                    <div class="input-field w-25">
+                                    @if($typeOfPatient)
+                                    <div class="input-field flex-1">
                                         <label for="sex">Sex</label>
                                         <div class="input-field d-flex align-items-center p-2">
                                             @php
@@ -194,10 +301,12 @@
                                             <small class="text-danger" id="sex-error"></small>
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
                                 <!-- civil status, contact number, nationality -->
                                 <div class="mb-2 d-flex gap-1">
-                                    <div class="input-field w-50">
+                                    @if($typeOfPatient)
+                                    <div class="input-field flex-1">
                                         <label for="civil_status" class="">Civil Status</label>
                                         <!-- to display the current status -->
 
@@ -208,17 +317,20 @@
                                         </select>
                                         <small class="text-danger" id="civil-status-error"></small>
                                     </div>
+                                    @endif
                                     <!-- contact -->
-                                    <div class="input-field w-50">
+                                    <div class="input-field flex-1">
                                         <label for="contact_number" class="">Contact Number</label>
                                         <input type="number" placeholder="+63-936-627-8671" class="form-control" id="contact_num" name="contact_number" value="">
                                         <small class="text-danger" id="contact-error"></small>
                                     </div>
-                                    <div class="input-field w-50">
+                                    @if($typeOfPatient)
+                                    <div class="input-field flex-1">
                                         <label for="nationality" class="">Nationality</label>
                                         <input type="text" placeholder="ex. Filipino" class="form-control" id="nationality" name="nationality" value="">
                                         <small class="text-danger" id="nationality-error"></small>
                                     </div>
+                                    @endif
                                 </div>
                                 <div class="mb-2 d-flex gap-1">
                                     <!-- username -->
@@ -265,16 +377,158 @@
 
                                     </div>
                                 </div>
+                                <!-- ADDITIONAL INFORMATION -->
+                                <div class="mb-3 w-100">
+                                    @if($typeOfPatient )
+                                    <h4 class="fw-bold">{{ucwords($typeOfPatient)}} Medical Record Information</h4>
+                                    @endif
+                                    @if(($typeOfPatient ?? null) === 'vaccination')
+                                    <div class="d-flex gap-2">
+                                        <div class="input-field flex-1">
+                                            <label for="motherName">Mother Name</label>
+                                            <input type="text" id="mother_name" placeholder="mother name" class="form-control" name="mother_name" value="">
+                                            <!-- ERROR HANDLING -->
+                                            <small class="text-danger error-text" id="mother_name_error"></small>
+                                        </div>
+                                        <div class="input-field flex-1">
+                                            <label for="fatherName">Father Name</label>
+                                            <input type="text" id="father_name" placeholder="Father Name" class="form-control" name="father_name" value="">
+                                            <small class="text-danger error-text" id="father_name_error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <div class="mb-2 flex-1">
+                                            <label for="BP">Birth Height(cm):</label>
+                                            <input type="number" class="form-control w-100" id="vaccination_height" placeholder="00.00" name="vaccination_height">
+                                            <small class="text-danger error-text" id="vaccination_height_error"></small>
+                                        </div>
+                                        <div class="mb-2 flex-1">
+                                            <label for="BP">Birth Weight(kg):</label>
+                                            <input type="text" class="form-control w-100" id="vaccination_weight" placeholder=" 00.00" name="vaccination_weight">
+                                            <small class="text-danger error-text" id="vaccination_weight_error"></small>
+                                        </div>
+                                    </div>
+                                    @elseif(($typeOfPatient ?? null) === 'prenatal')
+                                    <div class="mb-2 d-flex gap-2">
+                                        <div class="input-field flex-1">
+                                            <label for="motherName">Head of the Family</label>
+                                            <input type="text" id="head_of_the_family" placeholder="Enter the Name" class="form-control" name="family_head_name" value="">
+                                            <small class="text-danger error-text" id="family_head_name_error"></small>
+
+                                        </div>
+                                        <div class="input-field flex-1">
+                                            <label for="blood_type">Blood Type</label>
+                                            <select name="blood_type" id="blood_type" class="form-select" required>
+                                                <option value="" disabled selected>Select Blood Type</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                            </select>
+                                            <small class="text-danger error-text" id="blood_type_error"></small>
+                                        </div>
+                                        <div class="input-field flex-1">
+                                            <label for="religion" class="form-label">Religion</label>
+                                            <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion" value="">
+                                            <!-- ERROR HANDLING -->
+                                            <small class="text-danger error-text" id="religion_error"></small>
+
+                                        </div>
+                                    </div>
+                                    <div class="mb-2 d-flex gap-2">
+                                        <div class="input-field w-50">
+                                            <label class="form-label">PhilHealth</label>
+                                            <div class="d-flex align-items-center  gap-2">
+                                                <div class="form-check d-flex align-items-center">
+                                                    <input class="" type="radio" name="philhealth_number_radio" id="philhealth_yes" value="yes">
+                                                    <label class="form-check-label" for="philhealth_yes">(Yes)</label>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <label class="form-label mb-0">Number:</label>
+                                                    <input type="text" class="form-control form-control-sm w-100" name="philHealth_number" id="philhealth_number">
+                                                </div>
+                                                <div class="form-check d-flex align-items-center">
+                                                    <input class="" type="radio" name="philhealth_number_radio" id="philhealth_no" value="no">
+                                                    <label class="form-check-label" for="philhealth_no">(No)</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-danger error-text" id="philHealth_number_error"></small>
+                                        </div>
+
+
+
+                                    </div>
+                                    @elseif(($typeOfPatient ?? null) === 'tb-dots')
+                                    <div class="mb-2 flex-1 tb-dots-inputs d-flex flex-column">
+                                        <label for="">PhilHealth ID No.</label>
+                                        <input type="text" placeholder="ex.1234-5678-9012" name="philhealth_id" class="form-control" id="philheath_id">
+                                        <small class="text-danger error-text" id="philhealth_id_no_error"></small>
+                                    </div>
+                                    @elseif(($typeOfPatient ?? null) === 'senior-citizen')
+                                    <div class="mb-2 d-flex gap-2">
+                                        <div class="input-field flex-1">
+                                            <label for="blood_type">Occupation</label>
+                                            <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
+                                            <small class="text-danger error-text" id="occupation_error"></small>
+                                        </div>
+                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                            <div class="input-field w-100">
+                                                <label for="senior_religion">Religion</label>
+                                                <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
+                                                <small class=" text-danger" id="religion_error"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <div class="mb-2 flex-1  d-flex  justify-content-center">
+                                            <label for="" class="flex-1"> Member of Social Security System (SSS):</label>
+                                            <div class="radio-input d-flex align-items-center justify-content-center flex-1 gap-1 py-2">
+                                                <input type="radio" id="sss_yes" class="mb-0" name="SSS" value="Yes" class="mb-0">
+                                                <label for="sss_yes">Yes</label>
+                                                <input type="radio" id="sss_no" class="mb-0" name="SSS" value="No" class="mb-0">
+                                                <label for="sss_no">No</label>
+                                            </div>
+                                            <small class="text-danger error-text" id="SSS_error"></small>
+                                        </div>
+                                    </div>
+                                    @elseif(($typeOfPatient ?? null) === 'family-planning')
+                                    <div class="mb-2 d-flex gap-2">
+                                        <div class="input-field flex-1">
+                                            <label for="blood_type">Occupation</label>
+                                            <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
+                                            <small class="text-danger error-text" id="occupation_error"></small>
+                                        </div>
+                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                            <div class="input-field w-100">
+                                                <label for="senior_religion">Religion</label>
+                                                <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
+                                                <small class=" text-danger" id="religion_error"></small>
+                                            </div>
+                                        </div>
+                                        <div class="input-field flex-1">
+                                            <label for="philhealth_no">Philhealth No:</label>
+                                            <input type="text" id="philhealth_no" placeholder="Enter the philhealth no." class="form-control" name="philhealth_no">
+                                            <small class="text-danger error-text" id="philhealth_no_error"></small>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                </div>
 
                             </div>
+
                         </div>
                     </div>
                     <div class="modal-footer d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Cancel</button>
                         <input type="submit" value="Save" class="btn btn-success px-4" id="submit-btn" data-user>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
     @if($isActive)
