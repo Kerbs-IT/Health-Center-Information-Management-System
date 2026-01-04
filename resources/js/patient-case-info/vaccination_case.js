@@ -12,7 +12,7 @@ document.addEventListener("click", async (e) => {
     try {
         const response = await fetch(`/vaccination-case/record/${caseId}`);
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
 
         // get the elements
         const patientName = document.getElementById("view-patient-name");

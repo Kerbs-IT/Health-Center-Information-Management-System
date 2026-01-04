@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
@@ -151,19 +152,6 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- RECOVERY QUESTION -->
-                        <div class="mb-3">
-                            <div class="input-group w-100">
-                                <label for="recovery_question" class="h6 fw-bold w-100">Recovery Question:</label>
-                                <select name="recovery_question" id="recovery_question" class="form-select w-75 mb-2" required>
-                                    <option value="">Select a question</option>
-                                    <option value="1">What is your nickname? </option>
-                                    <option value="2">What is the ame of your mother?</option>
-                                    <option value="3">What is the name of your pet? </option>
-                                </select>
-                                <input type="text" name="recovery_answer" placeholder="Enter your answer" class="form-control w-100" required>
                             </div>
                         </div>
 

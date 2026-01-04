@@ -123,7 +123,7 @@ async function InputcurrentColorPallete() {
 }
 
 
-console.log(primaryBox);
+// console.log(primaryBox);
 
 async function updateColorPallete(form) {
 

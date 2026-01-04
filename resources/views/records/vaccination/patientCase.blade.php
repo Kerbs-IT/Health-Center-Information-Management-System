@@ -21,17 +21,17 @@
     'resources/js/vaccination/vaccinationCase.js'])
 
     @include('sweetalert::alert')
-    <div class="patient-case vh-100 d-flex">
+    <div class="patient-case min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <div class="flex flex-column flex-grow-1">
-                <main class="flex-column p-2">
+                <main class="flex-column p-2 shadow-lg m-md-3 m-2">
                     <div class="top-part d-flex justify-content-between px-2 align-items-center">
                         <h2>View Patient Details</h2>
-                        <div class="sequence-links d-flex justify-content-center align-items-center">
+                        <div class="sequence-links d-md-flex d-none justify-content-center align-items-center">
                             <h5 class="mb-0 text-muted cursor-pointer fw-normal">Records</h5>
                             <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-5">
+                    <div class="flex-grow-1 py-3 px-lg-5 px-md-3 px-2">
 
                         <livewire:vaccination.patient-case :medicalRecordCase="$medical_record_case" />
                         <!-- view case info -->
@@ -124,18 +124,18 @@
                                                     <input type="time" class="form-control" name="add_time_of_vaccination" id="add-time-of-vaccination">
                                                     <small class="text-danger w-100" id="add-time-error"></small>
                                                 </div>
-                                                <div class="mb-2 w-100 d-flex gap-2">
-                                                    <div class="mb-2 w-50">
+                                                <div class="mb-2 w-100 d-flex gap-2 flex-md-nowrap">
+                                                    <div class="mb-2  w-[100%] md:w-[50%]">
                                                         <label for="add_weight">Weight</label>
                                                         <input type="number" class="form-control" name="add_weight" id="add_weight" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="add_weight_error"></small>
                                                     </div>
-                                                    <div class="mb-2 w-50">
+                                                    <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="time">Height</label>
                                                         <input type="number" class="form-control" name="add_height" id="add_height" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="add_height_error"></small>
                                                     </div>
-                                                    <div class="mb-2 w-50">
+                                                    <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="add_temperature">Temperature</label>
                                                         <input type="number" class="form-control" name="add_temperature" id="add_temperature" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="add_temperature_error"></small>
@@ -243,18 +243,18 @@
                                                 </div>
                                                 <!-- Hidden data -->
                                                 <div class="vaccine-administered" hidden id="vaccine-administered"></div>
-                                                <div class="mb-2 w-100 d-flex gap-2">
-                                                    <div class="mb-2 w-50">
+                                                <div class="mb-2 w-100 d-flex gap-2 flex-md-nowrap">
+                                                    <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="weight">Weight</label>
                                                         <input type="number" class="form-control" name="weight" id="edit-weight" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="weight_error"></small>
                                                     </div>
-                                                    <div class="mb-2 w-50">
+                                                    <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="time">Height</label>
                                                         <input type="number" class="form-control" name="height" id="edit-height" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="height_error"></small>
                                                     </div>
-                                                    <div class="mb-2 w-50">
+                                                    <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="temperature">Temperature</label>
                                                         <input type="number" class="form-control" name="temperature" id="edit-temperature" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="temperature_error"></small>

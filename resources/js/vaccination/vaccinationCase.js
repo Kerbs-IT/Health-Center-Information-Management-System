@@ -32,7 +32,7 @@ document.addEventListener("click", async (e) => {
     try {
         const response = await fetch(`/vaccination-case/record/${caseId}`);
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
 
         // get the elements
         const patientName = document.getElementById("view-patient-name");
@@ -176,7 +176,7 @@ if (addCaseBtn) {
         // Format HH:MM
         let currentTime = `${hours}:${minutes}`;
 
-        console.log(currentTime);
+        // console.log(currentTime);
 
         // provide the value
         timeCon.value = currentTime;
@@ -210,29 +210,29 @@ if (vaccineDropdown) {
 
 if (vaccineContainer) {
   vaccineContainer.addEventListener("click", (e) => {
-      console.log(
-          "before deletion selected input:",
-          addselectedVaccineCon.value
-      );
-      console.log("before deletion:", addSelectedVaccine);
+    //   console.log(
+    //       "before deletion selected input:",
+    //       addselectedVaccineCon.value
+    //   );
+    //   console.log("before deletion:", addSelectedVaccine);
       if (e.target.closest(".vaccine")) {
           const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-          console.log("id of element:", vaccineId);
+        //   console.log("id of element:", vaccineId);
           const deleteBtn = e.target.closest(".delete-icon");
           if (deleteBtn) {
               if (addSelectedVaccine.includes(Number(vaccineId))) {
                   const selectedElement = addSelectedVaccine.indexOf(
                       Number(vaccineId)
                   );
-                  console.log("index", selectedElement);
+                //   console.log("index", selectedElement);
                   addSelectedVaccine.splice(selectedElement, 1);
                   addselectedVaccineCon.value = addSelectedVaccine.join(",");
               }
               e.target.closest(".vaccine").remove();
           }
 
-          console.log("update with deleted id:", addSelectedVaccine);
-          console.log("updated value:", addselectedVaccineCon.value);
+        //   console.log("update with deleted id:", addSelectedVaccine);
+        //   console.log("updated value:", addselectedVaccineCon.value);
       }
   });  
 }
@@ -252,11 +252,11 @@ if (vaccinationSubmitCaseBtn) {
         );
         const caseFormData = new FormData(addCaseForm);
         const caseId = e.target.dataset.bsCaseId;
-        console.log(caseId);
+        // console.log(caseId);
 
-        for (let [key, value] of caseFormData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of caseFormData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
 
         const response = await fetch(`/add-vaccination-case/${caseId}`, {
             method: "POST", // Yes, use POST
@@ -368,9 +368,9 @@ document.addEventListener("click", async (e) => {
 
         const response = await fetch(`/vaccination-case/record/${caseId}`);
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         vaccineAdministered = data.vaccineAdministered;
-        console.log(vaccineAdministered);
+        // console.log(vaccineAdministered);
 
         // get the id from the data we got from the database
         const healthWorkerId = data.vaccinationCase.health_worker_id;
@@ -412,8 +412,8 @@ document.addEventListener("click", async (e) => {
             selectedVaccinesCon.value = selectedVaccines.join();
         });
 
-        console.log("currently seleected:", selectedVaccines);
-        console.log("hidden input value:", selectedVaccinesCon.value);
+        // console.log("currently seleected:", selectedVaccines);
+        // console.log("hidden input value:", selectedVaccinesCon.value);
 
         // LOAD OTHER DATA OF THE PATIENT
         const doseSelect = document.getElementById("edit-dose");
@@ -442,7 +442,7 @@ document.addEventListener("click", async (e) => {
         date_of_comeback.value = data.vaccinationCase.date_of_comeback;
 
         for (let option of doseSelect.options) {
-            console.log(data.vaccinationCase.dose_number);
+            // console.log(data.vaccinationCase.dose_number);
             if (option.value == data.vaccinationCase.dose_number) {
                 option.selected = true;
                 break;
@@ -473,25 +473,25 @@ addVaccineInteraction(
 // function to remove the vaccine from the selected
 
 vaccinesContainer.addEventListener("click", (e) => {
-    console.log("before deletion:", selectedVaccines);
+    // console.log("before deletion:", selectedVaccines);
     if (e.target.closest(".vaccine")) {
         const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-        console.log("id of element:", vaccineId);
+        // console.log("id of element:", vaccineId);
         const deleteBtn = e.target.closest(".delete-icon");
         if (deleteBtn) {
             if (selectedVaccines.includes(Number(vaccineId))) {
                 const selectedElement = selectedVaccines.indexOf(
                     Number(vaccineId)
                 );
-                console.log("index", selectedElement);
+                // console.log("index", selectedElement);
                 selectedVaccines.splice(selectedElement, 1);
                 selectedVaccinesCon.value = selectedVaccines.join(",");
             }
             e.target.closest(".vaccine").remove();
         }
 
-        console.log("update with deleted id:", selectedVaccines);
-        console.log("updated value:", selectedVaccinesCon.value);
+        // console.log("update with deleted id:", selectedVaccines);
+        // console.log("updated value:", selectedVaccinesCon.value);
     }
 });
 
@@ -505,9 +505,9 @@ updateSaveBtn.addEventListener("click", async (e) => {
     try {
           const form = document.getElementById("edit-vaccination-case-form");
           const formData = new FormData(form);
-          for (let [key, value] of formData.entries()) {
-              console.log(`${key}: ${value}`);
-          }
+        //   for (let [key, value] of formData.entries()) {
+        //       console.log(`${key}: ${value}`);
+        //   }
 
           const caseId = document.getElementById("case_record_id");
 
