@@ -4,8 +4,8 @@
         <h1 class="mb-0 text-white">IMMUNIZATION CARD</h1>
     </div>
 
-    <div class="patient-info-con d-flex justify-content-between">
-        <div class="w-50">
+    <div class="patient-info-con d-flex justify-content-between flex-lg-nowrap flex-wrap">
+        <div class="w-[100%] lg:w-[50%]">
             <div class="info-field">
                 <label>NAME:</label>
                 <span>{{ $caseRecord->full_name ?? 'N/A' }}</span>
@@ -24,7 +24,7 @@
             </div>
             
         </div>
-        <div class="w-50">
+        <div class="w-[100%] lg:w-[50%]">
             <div class="info-field">
                 <label>MOTHER'S NAME:</label>
                 <span>{{ $medicalRecord->vaccination_medical_record->mother_name?? 'N/A' }}</span>
@@ -53,197 +53,199 @@
 
     </div>
 
-    <table class="vaccine-table">
-        <thead>
-            <tr >
-                <th style="width: 30%;" class="text-center">BAKUNA</th>
-                <th style="width: 20%;" class="text-center">DOSES</th>
-                <th colspan="3" style="text-align: center;" class="text-center">PETSA NG BAKUNA</th>
-                <th style="width: 20%;" class="text-center">REMARKS</th>
-            </tr>
-            <tr>
-                <th colspan="2"></th>
-                <th class="dose-cell">1</th>
-                <th class="dose-cell">2</th>
-                <th class="dose-cell">3</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-            // Group vaccines by category based on vaccine_acronym or type
-            $infantVaccines = collect([
-            ['id' => 1, 'name' => 'BCG Vaccine', 'acronym' => 'BCG'],
-            ['id' => 2, 'name' => 'Hepatitis B Vaccine', 'acronym' => 'Hepatitis B'],
-            ['id' => 3, 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)', 'acronym' => 'PENTA'],
-            ['id' => 4, 'name' => 'Oral Polio Vaccine (OPV)', 'acronym' => 'OPV'],
-            ['id' => 5, 'name' => 'Inactivated Polio Vaccine (IPV)', 'acronym' => 'IPV'],
-            ['id' => 6, 'name' => 'Pneumococcal Conjugate Vaccine (PCV)', 'acronym' => 'PCV'],
-            ['id' => 7, 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)', 'acronym' => 'MMR'],
-            ]);
+    <div class="table-responsive">
+        <table class="vaccine-table">
+            <thead>
+                <tr >
+                    <th style="width: 30%;" class="text-center">BAKUNA</th>
+                    <th style="width: 20%;" class="text-center">DOSES</th>
+                    <th colspan="3" style="text-align: center;" class="text-center">PETSA NG BAKUNA</th>
+                    <th style="width: 20%;" class="text-center">REMARKS</th>
+                </tr>
+                <tr>
+                    <th colspan="2"></th>
+                    <th class="dose-cell">1</th>
+                    <th class="dose-cell">2</th>
+                    <th class="dose-cell">3</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                // Group vaccines by category based on vaccine_acronym or type
+                $infantVaccines = collect([
+                ['id' => 1, 'name' => 'BCG Vaccine', 'acronym' => 'BCG'],
+                ['id' => 2, 'name' => 'Hepatitis B Vaccine', 'acronym' => 'Hepatitis B'],
+                ['id' => 3, 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)', 'acronym' => 'PENTA'],
+                ['id' => 4, 'name' => 'Oral Polio Vaccine (OPV)', 'acronym' => 'OPV'],
+                ['id' => 5, 'name' => 'Inactivated Polio Vaccine (IPV)', 'acronym' => 'IPV'],
+                ['id' => 6, 'name' => 'Pneumococcal Conjugate Vaccine (PCV)', 'acronym' => 'PCV'],
+                ['id' => 7, 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)', 'acronym' => 'MMR'],
+                ]);
 
-            $schoolVaccines = collect([
-            ['id' => 8, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)', 'acronym' => 'MCV'],
-            ['id' => 9, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 7)', 'acronym' => 'MCV'],
-            ['id' => 10, 'name' => 'Tetanus Diphtheria (TD)', 'acronym' => 'TD'],
-            ['id' => 11, 'name' => 'Human Papillomavirus Vaccine', 'acronym' => 'Human Papillomavirus'],
-            ]);
+                $schoolVaccines = collect([
+                ['id' => 8, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)', 'acronym' => 'MCV'],
+                ['id' => 9, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 7)', 'acronym' => 'MCV'],
+                ['id' => 10, 'name' => 'Tetanus Diphtheria (TD)', 'acronym' => 'TD'],
+                ['id' => 11, 'name' => 'Human Papillomavirus Vaccine', 'acronym' => 'Human Papillomavirus'],
+                ]);
 
-            $seniorVaccines = collect([
-            ['id' => 12, 'name' => 'Influenza Vaccine', 'acronym' => 'Influenza Vaccine'],
-            ['id' => 13, 'name' => 'Pneumococcal Vaccine', 'acronym' => 'Pneumococcal Vaccine'],
-            ]);
-            @endphp
+                $seniorVaccines = collect([
+                ['id' => 12, 'name' => 'Influenza Vaccine', 'acronym' => 'Influenza Vaccine'],
+                ['id' => 13, 'name' => 'Pneumococcal Vaccine', 'acronym' => 'Pneumococcal Vaccine'],
+                ]);
+                @endphp
 
-            {{-- INFANT VACCINES --}}
-            @foreach($infantVaccines as $vaccine)
-            <tr>
-                <td class="vaccine-name">{{ $vaccine['name'] }}</td>
-                <td>
-                    @switch($vaccine['id'])
-                    @case(1)
-                    @case(2)
-                    At Birth
-                    @break
-                    @case(3)
-                    @case(4)
-                    @case(6)
-                    1 1/2, 2 1/2, 3 1/2 Months
-                    @break
-                    @case(5)
-                    3 1/2 & 9 months
-                    @break
-                    @case(7)
-                    9 months & 1 Year
-                    @break
-                    @endswitch
-                </td>
-
-                @for($dose = 1; $dose <= 3; $dose++)
-                    @php
-                    // Find vaccination record for this vaccine and dose
-                    $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
-                    return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
-                    });
-                    @endphp
-                    <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
-                        @if($record)
-                        {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
-                        @endif
+                {{-- INFANT VACCINES --}}
+                @foreach($infantVaccines as $vaccine)
+                <tr>
+                    <td class="vaccine-name">{{ $vaccine['name'] }}</td>
+                    <td>
+                        @switch($vaccine['id'])
+                        @case(1)
+                        @case(2)
+                        At Birth
+                        @break
+                        @case(3)
+                        @case(4)
+                        @case(6)
+                        1 1/2, 2 1/2, 3 1/2 Months
+                        @break
+                        @case(5)
+                        3 1/2 & 9 months
+                        @break
+                        @case(7)
+                        9 months & 1 Year
+                        @break
+                        @endswitch
                     </td>
-                    @endfor
 
-                    <td class="remarks-cell">
+                    @for($dose = 1; $dose <= 3; $dose++)
                         @php
-                        // Collect all remarks for this vaccine
-                        $remarks = $vaccineAdministered
-                        ->where('vaccine_id', $vaccine['id'])
-                        ->map(function($item) {
-                        return $item->vaccination_case_record->remarks ?? null;
-                        })
-                        ->filter()
-                        ->unique()
-                        ->implode(', ');
+                        // Find vaccination record for this vaccine and dose
+                        $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
+                        return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
+                        });
                         @endphp
-                        {{ $remarks }}
+                        <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
+                            @if($record)
+                            {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
+                            @endif
+                        </td>
+                        @endfor
+
+                        <td class="remarks-cell">
+                            @php
+                            // Collect all remarks for this vaccine
+                            $remarks = $vaccineAdministered
+                            ->where('vaccine_id', $vaccine['id'])
+                            ->map(function($item) {
+                            return $item->vaccination_case_record->remarks ?? null;
+                            })
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                            @endphp
+                            {{ $remarks }}
+                        </td>
+                </tr>
+                @endforeach
+
+                {{-- SCHOOL AGED CHILDREN --}}
+                <tr>
+                    <td colspan="6" class="category-header">SCHOOL AGED CHILDREN</td>
+                </tr>
+
+                @foreach($schoolVaccines as $vaccine)
+                <tr>
+                    <td class="vaccine-name">{{ $vaccine['name'] }}</td>
+                    <td>
+                        @switch($vaccine['id'])
+                        @case(8)
+                        (Grade 1)
+                        @break
+                        @case(9)
+                        (Grade 7)
+                        @break
+                        @case(10)
+                        (Grade 1 & 7)
+                        @break
+                        @case(11)
+                        (Grade 4 FEMALE 9-14 Years Old)
+                        @break
+                        @endswitch
                     </td>
-            </tr>
-            @endforeach
 
-            {{-- SCHOOL AGED CHILDREN --}}
-            <tr>
-                <td colspan="6" class="category-header">SCHOOL AGED CHILDREN</td>
-            </tr>
-
-            @foreach($schoolVaccines as $vaccine)
-            <tr>
-                <td class="vaccine-name">{{ $vaccine['name'] }}</td>
-                <td>
-                    @switch($vaccine['id'])
-                    @case(8)
-                    (Grade 1)
-                    @break
-                    @case(9)
-                    (Grade 7)
-                    @break
-                    @case(10)
-                    (Grade 1 & 7)
-                    @break
-                    @case(11)
-                    (Grade 4 FEMALE 9-14 Years Old)
-                    @break
-                    @endswitch
-                </td>
-
-                @for($dose = 1; $dose <= 3; $dose++)
-                    @php
-                    $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
-                    return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
-                    });
-                    @endphp
-                    <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
-                        @if($record)
-                        {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
-                        @endif
-                    </td>
-                    @endfor
-
-                    <td class="remarks-cell">
+                    @for($dose = 1; $dose <= 3; $dose++)
                         @php
-                        $remarks = $vaccineAdministered
-                        ->where('vaccine_id', $vaccine['id'])
-                        ->map(function($item) {
-                        return $item->vaccination_case_record->remarks ?? null;
-                        })
-                        ->filter()
-                        ->unique()
-                        ->implode(', ');
+                        $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
+                        return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
+                        });
                         @endphp
-                        {{ $remarks }}
-                    </td>
-            </tr>
-            @endforeach
+                        <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
+                            @if($record)
+                            {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
+                            @endif
+                        </td>
+                        @endfor
 
-            {{-- SENIOR CITIZEN --}}
-            <tr>
-                <td colspan="6" class="category-header">SENIOR CITIZEN</td>
-            </tr>
+                        <td class="remarks-cell">
+                            @php
+                            $remarks = $vaccineAdministered
+                            ->where('vaccine_id', $vaccine['id'])
+                            ->map(function($item) {
+                            return $item->vaccination_case_record->remarks ?? null;
+                            })
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                            @endphp
+                            {{ $remarks }}
+                        </td>
+                </tr>
+                @endforeach
 
-            @foreach($seniorVaccines as $vaccine)
-            <tr>
-                <td class="vaccine-name">{{ $vaccine['name'] }}</td>
-                <td></td>
+                {{-- SENIOR CITIZEN --}}
+                <tr>
+                    <td colspan="6" class="category-header">SENIOR CITIZEN</td>
+                </tr>
 
-                @for($dose = 1; $dose <= 3; $dose++)
-                    @php
-                    $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
-                    return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
-                    });
-                    @endphp
-                    <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
-                        @if($record)
-                        {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
-                        @endif
-                    </td>
-                    @endfor
+                @foreach($seniorVaccines as $vaccine)
+                <tr>
+                    <td class="vaccine-name">{{ $vaccine['name'] }}</td>
+                    <td></td>
 
-                    <td class="remarks-cell">
+                    @for($dose = 1; $dose <= 3; $dose++)
                         @php
-                        $remarks = $vaccineAdministered
-                        ->where('vaccine_id', $vaccine['id'])
-                        ->map(function($item) {
-                        return $item->vaccination_case_record->remarks ?? null;
-                        })
-                        ->filter()
-                        ->unique()
-                        ->implode(', ');
+                        $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
+                        return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
+                        });
                         @endphp
-                        {{ $remarks }}
-                    </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
+                            @if($record)
+                            {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
+                            @endif
+                        </td>
+                        @endfor
+
+                        <td class="remarks-cell">
+                            @php
+                            $remarks = $vaccineAdministered
+                            ->where('vaccine_id', $vaccine['id'])
+                            ->map(function($item) {
+                            return $item->vaccination_case_record->remarks ?? null;
+                            })
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                            @endphp
+                            {{ $remarks }}
+                        </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+     </div>
 </div>
 
 <style>
@@ -366,7 +368,7 @@
         gap: 10px;
     }
 
-   
+
 
 
     .btn-print {
