@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
@@ -88,6 +89,20 @@
                                     </svg>
                                 </div>
                                 <h4 class="text-black text-center mt-1">Family Planning</h4>
+                            </div>
+                        </div>
+
+                        <div class="button-con w-100 px-5">
+                            <h4 class="fw-bold text-center">Generate Report</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <a href="{{route('generate-dashboad.pdf')}}" class="btn bg-success d-flex align-items-center gap-3 p-3">
+                                    <i class="fa-solid fa-clipboard fs-5" style="color: #ffffff;"></i>
+                                    <h5 class="mb-0 text-white fs-5 fw-500">Patient List & Totals</h5>
+                                </a>
+                                <a href="{{route('generate-dashboard-graph.pdf')}}" target="_blank" class="btn bg-success d-flex align-items-center gap-3 p-3">
+                                    <i class="fa-solid fa-chart-bar fs-5" style="color: #ffffff;"></i>
+                                    <h5 class="mb-0 text-white fs-5 fw-500">Patient Charts & Trends</h5>
+                                </a>
                             </div>
                         </div>
                         <!-- chart n recent patient -->

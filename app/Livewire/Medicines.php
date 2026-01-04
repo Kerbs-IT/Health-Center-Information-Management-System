@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 class Medicines extends Component
 {
     use WithPagination;
-    public $medicine_name, $category_id, $dosage, $stock, $expiry_date, $edit_id;
+    public $medicine_name, $category_id, $dosage, $stock, $stock_status,$expiry_status , $expiry_date, $edit_id ;
 
     // Age fields - separate for months and years
     public $min_age_value, $min_age_unit = 'months';
@@ -19,7 +19,6 @@ class Medicines extends Component
 
     // Internal storage in months
     public $min_age_months, $max_age_months;
-    public $medicine_name,$category_id, $dosage, $stock, $expiry_date, $edit_id, $deleteMedicineId;
 
     public $sortField = null;
     public $sortDirection = null;
@@ -32,7 +31,7 @@ class Medicines extends Component
         'medicine_name' => 'required|string|max:255',
         'category_id'   => 'required|integer|exists:categories,category_id',
         'dosage'        => 'required|string',
-        'stock'         => 'required|numeric|min:1',
+        'stock'         => 'required|numeric|min:0',
         'expiry_date'   => 'required|date',
         'min_age_value' => 'nullable|integer|min:0',
         'max_age_value' => 'nullable|integer|min:0'
@@ -41,6 +40,9 @@ class Medicines extends Component
     protected $messages = [
         'category_id.required' => 'Please select a category.',
     ];
+
+
+
 
     // Convert age value and unit to months
     private function convertToMonths($value, $unit)
@@ -89,20 +91,26 @@ class Medicines extends Component
         return true;
     }
 
-    private function determineStatus($stock, $expiry_date)
-    {
-        if (now()->diffInDays($expiry_date, false) <= 30) {
-            return 'Expiring Soon';
-        }
-        if ($stock <= 0) {
+
+    private function  determineStockStatus($stock){
+        if($stock <=0){
             return 'Out of Stock';
         }
-
-        if ($stock <= 10) {
+        if($stock <= 10){
             return 'Low Stock';
         }
-
         return 'In Stock';
+    }
+    private function determineExpiryStatus($expiry_date){
+        $daysUntilExpry = now()->diffInDays($expiry_date, false);
+        if($daysUntilExpry < 0){
+            return 'Expired';
+        }
+        if($daysUntilExpry <= 30){
+            return 'Expiring Soon';
+        }
+
+        return 'Valid';
     }
 
     public function storeMedicineData()
@@ -125,14 +133,17 @@ class Medicines extends Component
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
 
-        $status = $this->determineStatus($this->stock, $this->expiry_date);
+        $stockStatus = $this->determineStockStatus($this->stock);
+        $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
+
         Medicine::create([
             'medicine_name' => $this->medicine_name,
             'category_id'   => $this->category_id,
             'dosage'        => $this->dosage,
             'stock'         => $this->stock,
             'expiry_date'   => $this->expiry_date,
-            'status'        => $status,
+            'stock_status'   => $stockStatus,
+            'expiry_status' =>  $expiryStatus,
             'min_age_months' => $min_age_months,
             'max_age_months' => $max_age_months
         ]);
@@ -173,7 +184,12 @@ class Medicines extends Component
             return;
         }
 
-        $status = $this->determineStatus($this->stock, $this->expiry_date);
+        $stockStatus = $this->determineStockStatus($this->stock);
+        $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
+
+
+
+
         $exists = Medicine::where('medicine_name', $this->medicine_name)
             ->where('dosage', $this->dosage)
             ->where('medicine_id', '!=', $this->edit_id)
@@ -190,12 +206,13 @@ class Medicines extends Component
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
 
         Medicine::where('medicine_id', $this->edit_id)->update([
-            'medicine_name' => $this->medicine_name,
-            'category_id'   => $this->category_id,
-            'dosage'        => $this->dosage,
-            'stock'         => $this->stock,
-            'expiry_date'   => $this->expiry_date,
-            'status'        => $status,
+            'medicine_name'  => $this->medicine_name,
+            'category_id'    => $this->category_id,
+            'dosage'         => $this->dosage,
+            'stock'          => $this->stock,
+            'expiry_date'    => $this->expiry_date,
+            'stock_status'  => $stockStatus,
+            'expiry_status' => $expiryStatus,
             'min_age_months' => $min_age_months,
             'max_age_months' => $max_age_months
         ]);
@@ -227,8 +244,6 @@ class Medicines extends Component
         $this->dispatch('success-medicine-delete');
 
     }
-
-
 
     public function sortBy($field)
     {
