@@ -3,7 +3,7 @@ document.addEventListener("click", async (e) => {
 
     if (!viewBtn) return;
     const id = viewBtn.dataset.bsCaseId;
-    console.log("caseId", id);
+    // console.log("caseId", id);
 
     // Validate case ID
     if (!id || id === "undefined" || id === "null") {
@@ -104,7 +104,7 @@ document.addEventListener("click", async (e) => {
             } else {
                 medications.forEach((record, index) => {
                     try {
-                        console.log("Processing medication record:", record);
+                        // console.log("Processing medication record:", record);
 
                         // Safely get values with defaults
                         const medication =

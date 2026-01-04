@@ -238,8 +238,8 @@
                         </div>
                         <!-- uterine position -->
                         <div class="mb-2 d-flex align-items-center gap-2">
-                            <input type="radio" name="side_A_add_extremites_UID_type" id="physical_examination_extremites_UID_type_uterine" value="uterine position">
-                            <label for="physical_examination_extremites_UID_type_uterine">Uterine position</label>
+                            <input type="radio" name="side_A_add_extremites_UID_type" id="side_a_physical_examination_extremites_UID_type_uterine" value="uterine position">
+                            <label for="side_a_physical_examination_extremites_UID_type_uterine">Uterine position</label>
                         </div>
                         <div class="inner-type-abnormalities" style="padding-left: 30px;">
                             <div class="mb-2 d-flex align-items-center gap-2">

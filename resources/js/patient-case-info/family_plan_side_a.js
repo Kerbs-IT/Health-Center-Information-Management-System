@@ -39,7 +39,7 @@ if (viewIcon) {
                 }
                 if (key == "spouse_lname") {
                     if (document.getElementById("view_spouse_name")) {
-                        console.log("wording");
+                        // console.log("wording");
                         document.getElementById("view_spouse_name").innerHTML =
                             `${data.caseInfo.spouse_fname ?? ""} ${
                                 data.caseInfo.spouse_MI ?? ""
@@ -80,7 +80,7 @@ if (viewIcon) {
                 data.caseInfo.risk_for_sexually_transmitted_infection
             ).forEach(([key, value]) => {
                 if (key == "referred_to" && value == "others") {
-                    console.log(key);
+                    // console.log(key);
                     document.getElementById(
                         `view_${key}`
                     ).innerHTML = `${value} - ${data.caseInfo.risk_for_sexually_transmitted_infection.reffered_to_others}`;

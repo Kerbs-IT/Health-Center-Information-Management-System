@@ -50,7 +50,7 @@ export function addVaccineInteraction(
     if (!btn) return;
     btn.addEventListener("click", (e) => {
         //  const vaccineInput = document.getElementById("vaccine_input");
-        console.log("current selected vaccine:", selectedVaccines);
+        // console.log("current selected vaccine:", selectedVaccines);
         const selectedText =
             vaccineInput.options[vaccineInput.selectedIndex].text;
         const selectedId = Number(
@@ -98,7 +98,7 @@ export function addVaccineInteraction(
          }, 100);
 
         
-        console.log("updated vaccine:", selectedVaccinesCon.value);
+        // console.log("updated vaccine:", selectedVaccinesCon.value);
         vaccineInput.value = '';
     });
 }
@@ -115,7 +115,7 @@ export function removeVaccine(allContainers, selectedVaccines) {
                 }
 
                 parentDiv.remove();
-                console.log(selectedVaccines);
+                // console.log(selectedVaccines);
             }
         });
     });

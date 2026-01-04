@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.addEventListener('click', (e) => {
             e.preventDefault();
             const removeId = icon.dataset.id;
-            console.log(removeId);
+            // console.log(removeId);
 
             Swal.fire({
                 title: 'Are you sure?',
@@ -196,9 +196,9 @@ document.addEventListener('DOMContentLoaded', () =>{
         let form = document.getElementById('profile-form');
         let formData = new FormData(form);
 
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
 
         formData.append('_method', 'PUT'); // Laravel will detect this
         

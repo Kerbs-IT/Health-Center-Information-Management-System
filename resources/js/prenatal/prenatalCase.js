@@ -137,7 +137,7 @@ document.addEventListener("click", async (e) => {
     // get the response data
     const data = await response.json();
 
-    console.log(data);
+    // console.log(data);
 
     // get the id of response container
     const midwifeName = document.getElementById("midwife_name_value");
@@ -213,7 +213,7 @@ document.addEventListener("click", async (e) => {
 document.addEventListener("click", async (e) => {
     const caseEditBtn = e.target.closest(".case-edit-icon");
     if (!caseEditBtn) return;
-    console.log("working tong case");
+    // console.log("working tong case");
     // this is the id of the case record itself
     const medicalId = caseEditBtn.dataset.bsMedicalId;
 
@@ -604,7 +604,7 @@ document.addEventListener("click", async (e) => {
         `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`
     );
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     // get the inputs container
     const midwife_name = document.getElementById("midwife_name");
     const place_of_birth = document.getElementById("place_of_birth");
@@ -640,7 +640,7 @@ document.addEventListener("click", async (e) => {
     Object.entries(data.pregnancyPlan).forEach(([key, value]) => {
         if (key == "authorized_by_philhealth") {
             if (value == "yes") {
-                console.log("yes");
+                // console.log("yes");
                 document.getElementById(
                     "authorized_by_philhealth_yes"
                 ).checked = true;
@@ -678,7 +678,7 @@ document.addEventListener("click", async (e) => {
                 e.target.closest(".box").remove();
             }
         }
-        console.log("donor deleted");
+        // console.log("donor deleted");
     });
 
     // signature part
@@ -689,7 +689,7 @@ const editPregnancyModal = document.getElementById("case2PrenatalModal");
 let editPatientSignature = null;
 if (editPregnancyModal) {
     editPregnancyModal.addEventListener("shown.bs.modal", function () {
-        console.log("Modal is NOW visible!");
+        // console.log("Modal is NOW visible!");
 
         if (!editPatientSignature) {
             editPatientSignature = initSignatureCapture({
@@ -708,7 +708,7 @@ if (editPregnancyModal) {
                 hiddenInputId: "edit_signature_data",
                 maxFileSizeMB: 2,
             });
-            console.log("✅ SIGNATURE INITIALIZED!");
+            // console.log("✅ SIGNATURE INITIALIZED!");
         } else {
             editPatientSignature.clear();
         }
@@ -753,7 +753,7 @@ if (updateBTN) {
     updateBTN.addEventListener("click", async (e) => {
         e.preventDefault();
         const pregnancyPlanId = updateBTN.dataset.pregnancyPlanId;
-        console.log(pregnancyPlanId);
+        // console.log(pregnancyPlanId);
         const form = document.getElementById("pregnancy_plan_update_form");
         const formData = new FormData(form);
 
@@ -761,7 +761,7 @@ if (updateBTN) {
         const hiddenSignature = document.getElementById("edit_signature_data");
         if (hiddenSignature && hiddenSignature.value) {
             formData.set("edit_signature_data", hiddenSignature.value);
-            console.log("✅ Manually added signature data");
+            // console.log("✅ Manually added signature data");
         }
 
         // for (const [key, value] of formData.entries()) {
@@ -845,7 +845,7 @@ const uploadBTN = document.getElementById("check-up-save-btn");
 prentalCheckUpBTN.addEventListener("click", async (e) => {
     const medicalId = e.target.dataset.bsMedicalRecordId;
     uploadBTN.dataset.bsMedicalRecordId = medicalId;
-    console.log("medical id: ", medicalId);
+    // console.log("medical id: ", medicalId);
     const response = await fetch(`/patient-record/view-details/${medicalId}`);
     // get the data
     const data = await response.json();
@@ -884,7 +884,7 @@ uploadBTN.addEventListener("click", async (e) => {
         body: formData,
     });
 
-    const data = response.json();
+    const data = await response.json();
 
     const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {

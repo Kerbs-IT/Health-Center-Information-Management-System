@@ -16,13 +16,13 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
-            console.log(data);
+            // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (document.getElementById(`view_${key}`)) {
                     const element = document.getElementById(`view_${key}`);
 
                     if (key == "medical_findings") {
-                        console.log(value);
+                        // console.log(value);
                     }
                     document.getElementById(`view_${key}`).innerHTML = value;
                 }

@@ -7,7 +7,7 @@ const submitBtn = document.getElementById("submit-btn");
 editIcon.addEventListener("click", (e) => {
     e.preventDefault();
     const id = editIcon.dataset.id;
-    console.log(id);
+    // console.log(id);
 
     fetch(`/patient-profile-edit/${id}`, {
         method: "POST",
@@ -23,7 +23,7 @@ editIcon.addEventListener("click", (e) => {
             }
         })
         .then((data) => {
-            console.log(data);
+            // console.log(data);
 
             // reset first
             submitBtn.dataset.user = data.response.user_id;
@@ -98,7 +98,7 @@ editIcon.addEventListener("click", (e) => {
                 baseUrl + data.response.user.profile_image ??
                 baseUrl + data.response.patient.profile_image;
             // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
-            console.log(profileImg);
+            // console.log(profileImg);
            
             fname.value = patient?.first_name || user?.first_name || "";
             lname.value = patient?.last_name || user?.last_name || "";
@@ -126,7 +126,7 @@ editIcon.addEventListener("click", (e) => {
             username.value = data.response.user.username;
             email.value = data.response.user.email;
 
-            console.log(username.value);
+            // console.log(username.value);
             blkNstreet.value =
                 data.response.patient_address.house_number +
                 (data.response.patient_address.street

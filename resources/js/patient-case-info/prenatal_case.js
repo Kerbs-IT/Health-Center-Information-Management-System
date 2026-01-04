@@ -124,7 +124,7 @@ document.addEventListener("click", async (e) => {
     // get the response data
     const data = await response.json();
 
-    console.log(data);
+    // console.log(data);
 
     // get the id of response container
     const midwifeName = document.getElementById("midwife_name_value");
@@ -203,7 +203,7 @@ document.addEventListener("click", async function (e) {
         return;
     }
 
-    console.log("Loading checkup ID:", checkupId);
+    // console.log("Loading checkup ID:", checkupId);
 
     // Show loading state
     showLoadingModal();
