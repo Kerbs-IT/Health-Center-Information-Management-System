@@ -76,6 +76,7 @@ tbody{
 .print-btn .print-icon {
   width: 60%;
   height: 60%;
+
 }
 
 
@@ -153,3 +154,21 @@ table tr th{
 /* test add for vaccination */
 /* test add for seniorCitizen */
 /* test add for tbDots */
+
+.input-field input{
+  font-size: clamp(1rem, 3vw, 1.2rem) !important;
+}
+
+.save-record {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem) !important;
+    padding-inline: clamp(1rem, 4vw, 3rem) !important;
+    padding-block: clamp(0.5rem, 1.5vw, 0.75rem) !important;
+
+}
+.medical-history p, .medical-history label, .sexually-transmitted p, .sexually-transmitted label, .physical-examination p, .physical-examination label{
+  font-size: clamp(0.9rem, 2vw, 1.2rem) !important;
+}
+
+.side-b-content p, .side-b-content label {
+    font-size: clamp(0.9rem, 2vw, 1.2rem) !important;
+}
