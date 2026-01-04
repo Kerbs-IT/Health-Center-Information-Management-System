@@ -1,6 +1,6 @@
-<div class="mb-3 w-100 px-5">
-    <div class="filters d-flex justify-content-between">
-        <div class="mb-3 w-25">
+<div class="mb-3 w-100 px-lg-5 px-md-3 px-2 shadow-lg min-h-[75vh]">
+    <div class="filters d-flex justify-content-lg-between  justify-content-end  flex-wrap flex-xl-nowrap gap-3 mb-2 mb-md-0">
+        <div class="mb-3 w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
             <label>Show Entries</label>
             <select class="form-select" wire:model.live="entries">
                 <option value="10">10</option>
@@ -10,11 +10,11 @@
             </select>
         </div>
         <!-- Search -->
-        <div class="w-25">
+        <div class="w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
             <small>Search</small>
             <input type="text" class="form-control bg-light" placeholder="Search here..." wire:model.live.debounce.1000ms="search">
         </div>
-        <div class="mb-3 w-25">
+        <div class="mb-3 w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
             <small>Filter</small>
             <select name="filter_option" id="" class="form-select bg-light">
                 <option value="" disabled selected>Filter by Age</option>
@@ -35,7 +35,7 @@
             </svg>
         </div>
     </div>
-    <div class="tables">
+    <div class="tables table-responsive">
         <table class="w-100 table">
             <thead class="table-header">
                 <tr>

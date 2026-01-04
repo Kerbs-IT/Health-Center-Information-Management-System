@@ -1,12 +1,40 @@
 <div>
-    <div class="tables d-flex flex-column p-3">
+    <div class="tables d-flex flex-column  p-md-3 p-0">
         <div class="add-btn mb-3 d-flex justify-content-between">
-            <a href="{{route('record.family.planning')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
-            <div class="add-btn">
+            <div>
+                <a href="{{route('record.family.planning')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
+            </div>
+            <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-2">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-a-add-record" data-patient-info='@json($patientInfo)' data-patient-address='@json($address)' data-medical-case-record-id="{{$patientInfo->id}}" id="side-a-add-record-btn">Add Side A Record</button>
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-b-add-record" data-patient-info='@json($patientInfo)' id="side-b-add-record-btn">Add Side B Record</button>
             </div>
         </div>
+        <div class="table-responsive">
+            <table class="w-100 table table-hover ">
+                <thead class="table-header text-nowrap">
+                    <tr>
+                        <th>Case No.</th>
+                        <th>Type of Record</th>
+                        <th>Nurse</th>
+                        <th style="cursor:pointer;" wire:click="sortBy('created_at')">
+                            Date
+                            @if ($sortField === 'created_at')
+                            {{ $sortDirection === 'asc' ? '▼' : '▲' }}
+                            @endif
+                        </th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <!-- data of patient -->
+                <tbody>
+                    @foreach($familyPlanningCases as $case)
+                    <tr class="px-">
+                        <td>{{$case->id}}</td>
+                        <td>{{$case->type_of_record}}</td>
+                        <td>Nurse Joy</td>
+                        <td>{{$case->created_at->format('M d, Y')}}</td>
+                        <td>{{$case->status}}</td>
 
         <table class="w-100 table ">
             <thead class="table-header">
@@ -77,6 +105,7 @@
 
             </tbody>
 
-        </table>
+            </table>
+        </div>
     </div>
 </div>
