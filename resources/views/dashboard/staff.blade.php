@@ -20,7 +20,7 @@
 
     <div class="ms-0 ps-0 d-flex w-100">
         <!-- aside contains the sidebar menu -->
-        <div class="d-flex w-100" style="height:100vh">
+        <div class="d-flex w-100 min-vh-100">
             <aside>
                 @include('layout.menuBar')
             </aside>
@@ -30,8 +30,8 @@
                 @include('layout.header')
                 <main class="pt-3 w-100 overflow-y-auto flex-grow-1 ">
                     <div class="contents">
-                        <div class="data-over-view d-flex gap-3 flex-wrap justify-content-center mb-3 w-100">
-                            <div class="item rounded">
+                        <div class="data-over-view d-flex gap-3 flex-wrap justify-content-center mb-3 w-100 p-md-4 p-2">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="overall-patient-counts">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -41,7 +41,7 @@
                                 <h4 class="text-black text-center mt-1">Overall Patient</h4>
                             </div>
                             <!-- vaccination -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="vaccination-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -51,7 +51,7 @@
                                 <h4 class="text-black text-center mt-1">Vaccination</h4>
                             </div>
                             <!-- prenatal  -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="prenatal-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -61,7 +61,7 @@
                                 <h4 class="text-black text-center mt-1">Prenatal</h4>
                             </div>
                             <!-- senior citizen -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="senior-citizen-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -71,7 +71,7 @@
                                 <h4 class="text-black text-center mt-1">Senior Citizen</h4>
                             </div>
                             <!-- TB DOTS -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="tb-dots-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -81,7 +81,7 @@
                                 <h4 class="text-black text-center mt-1">TB Dots</h4>
                             </div>
                             <!-- WRA -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="family-planning-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -106,8 +106,8 @@
                             </div>
                         </div>
                         <!-- chart n recent patient -->
-                        <div class="charts d-flex px-5 justify-content-center">
-                            <div class="chart-container w-50 card">
+                        <div class="charts d-flex flex-wrap px-2 px-md-4 justify-content-center">
+                            <div class="chart-container flex-fill  card">
                                 <div class="chart-header">
                                     <h1 class="chart-title">Monthly Patient Statistics</h1>
                                     <div class="filter-container">
@@ -127,14 +127,14 @@
                                     <canvas id="patientChart"></canvas>
                                 </div>
                             </div>
-                            <div class="w-[520px] h-[390px] d-flex align-items-center chart-canvas justify-content-center bg-white rounded p-3 shadow ">
+                            <div class="flex-grow-1 flex-shrink-1 xl:max-w-[520px] xl:min-h-[390px] d-flex align-items-center chart-canvas justify-content-center bg-white rounded p-3 shadow">
                                 <canvas id="myPieChart"></canvas>
                             </div>
                             <!-- end  -->
                         </div>
                         <!-- other -->
-                        <div class="patient-today w-100 px-5 d-flex gap-3 mb-3">
-                            <div class="card shadow-sm mt-4 w-50">
+                        <div class="patient-today w-100 px-lg-4 px-md-3 px-2 d-flex gap-3 mb-3 flex-wrap">
+                            <div class="card shadow-sm mt-4 flex-fill">
                                 <div class="card-header bg-success text-white">
                                     <h5 class="mb-0">Patients Per Service Today</h5>
                                 </div>
@@ -170,7 +170,7 @@
 
                                 </div>
                             </div>
-                            <div class="card shadow-sm mt-4 w-50 overflow-hidden">
+                            <div class="card shadow-sm mt-4 flex-fill overflow-hidden">
                                 <div class="card-header bg-success text-white">
                                     <h5 class="mb-0">Number of Patient per Area</h5>
                                 </div>
