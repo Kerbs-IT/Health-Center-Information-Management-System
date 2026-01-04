@@ -38,23 +38,25 @@ class PatientCaseTable extends Component
 
     public function render()
     {
-        // For single record by ID, no sorting needed
-        $prenatalCaseRecords = medical_record_cases::with(
-            'pregnancy_checkup'
-        )->where('id', $this->caseId)
+        $prenatalCaseRecords = medical_record_cases::with('pregnancy_checkup')
+            ->where('id', $this->caseId)
             ->firstOrFail();
 
-        $prenatal_case_record = prenatal_case_records::with('pregnancy_timeline_records') -> where("medical_record_case_id", $this->caseId)->where("status",'!=','Archived')
-        ->get();
-        $pregnancy_plan = pregnancy_plans::where("medical_record_case_id", $this->caseId)->where("status", '!=', 'Archived')->first();
+        // Get all records without pagination first
+        $prenatal_case_record = prenatal_case_records::with('pregnancy_timeline_records')
+            ->where("medical_record_case_id", $this->caseId)
+            ->where("status", '!=', 'Archived')
+            ->get();
 
-        // For multiple records, use ONLY orderBy OR latest, not both
+        $pregnancy_plan = pregnancy_plans::where("medical_record_case_id", $this->caseId)
+            ->where("status", '!=', 'Archived')
+            ->first();
+
         $prenatalCheckupRecords = pregnancy_checkups::where('medical_record_case_id', $this->caseId)
             ->where('status', '!=', 'Archived')
-            ->orderBy($this->sortField, $this->sortDirection) // Choose this OR latest(), not both
-            ->paginate(8);
+            ->get();
 
-        // Rest of your code...
+        // Get family planning records
         $familyPlanningMedicalCase = medical_record_cases::where('patient_id', $prenatalCaseRecords->patient_id)
             ->where('type_of_case', 'family-planning')
             ->latest()
@@ -70,7 +72,7 @@ class PatientCaseTable extends Component
                 'risk_for_sexually_transmitted_infection',
                 'physical_examinations'
             ])->where('medical_record_case_id', $familyPlanningMedicalCase->id)
-                ->where('status', '!=','Archived')
+                ->where('status', '!=', 'Archived')
                 ->latest()
                 ->first();
 
@@ -80,21 +82,97 @@ class PatientCaseTable extends Component
                 ->first();
         }
 
-        // for viewing patient info
-        $patientInfo = medical_record_cases::with(['patient', 'prenatal_medical_record']) -> where('id', $this->caseId)->first();
-        
+        // Combine all records into one collection
+        $allRecords = collect();
+
+        // Add prenatal case records
+        foreach ($prenatal_case_record as $record) {
+            $allRecords->push([
+                'id' => $record->id,
+                'type_of_record' => $record->type_of_record,
+                'created_at' => $record->created_at,
+                'status' => $record->status,
+                'record_type' => 'prenatal_case',
+                'data' => $record
+            ]);
+        }
+
+        // Add pregnancy plan
+        if ($pregnancy_plan) {
+            $allRecords->push([
+                'id' => $pregnancy_plan->id,
+                'type_of_record' => $pregnancy_plan->type_of_record,
+                'created_at' => $pregnancy_plan->created_at,
+                'status' => $pregnancy_plan->status,
+                'record_type' => 'pregnancy_plan',
+                'data' => $pregnancy_plan
+            ]);
+        }
+
+        // Add family planning records
+        if ($familyPlanCaseInfo) {
+            $allRecords->push([
+                'id' => $familyPlanCaseInfo->id,
+                'type_of_record' => $familyPlanCaseInfo->type_of_record,
+                'created_at' => $familyPlanCaseInfo->created_at,
+                'status' => $familyPlanCaseInfo->status,
+                'record_type' => 'family_planning',
+                'data' => $familyPlanCaseInfo
+            ]);
+        }
+
+        if ($familyPlanSideB) {
+            $allRecords->push([
+                'id' => $familyPlanSideB->id,
+                'type_of_record' => $familyPlanSideB->type_of_record,
+                'created_at' => $familyPlanSideB->created_at,
+                'status' => $familyPlanSideB->status,
+                'record_type' => 'family_planning_side_b',
+                'data' => $familyPlanSideB
+            ]);
+        }
+
+        // Add prenatal checkup records
+        foreach ($prenatalCheckupRecords as $checkup) {
+            $allRecords->push([
+                'id' => $checkup->id,
+                'type_of_record' => $checkup->type_of_record,
+                'created_at' => $checkup->created_at,
+                'status' => $checkup->status,
+                'record_type' => 'checkup',
+                'data' => $checkup
+            ]);
+        }
+
+        // Sort the collection
+        if ($this->sortDirection === 'asc') {
+            $allRecords = $allRecords->sortBy('created_at');
+        } else {
+            $allRecords = $allRecords->sortByDesc('created_at');
+        }
+
+        // Manual pagination
+        $perPage = 15;
+        $currentPage = request()->get('page', 1);
+        $paginatedRecords = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allRecords->forPage($currentPage, $perPage),
+            $allRecords->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $patientInfo = medical_record_cases::with(['patient', 'prenatal_medical_record'])
+            ->where('id', $this->caseId)
+            ->first();
 
         return view('livewire.prenatal.patient-case-table', [
             'isActive' => true,
             'page' => 'RECORD',
             'prenatalCaseRecords' => $prenatalCaseRecords,
-            'familyPlanningRecord' => $familyPlanCaseInfo,
-            'familyPlanSidebRecord' => $familyPlanSideB,
             'patientInfo' => $patientInfo,
             'caseId' => $this->caseId,
-            'prenatalCheckupRecords' => $prenatalCheckupRecords,
-            'prenatal_case_record'=> $prenatal_case_record,
-            'pregnancy_plan' => $pregnancy_plan
+            'allRecords' => $paginatedRecords,
         ]);
     }
     public function exportPdf($caseId){

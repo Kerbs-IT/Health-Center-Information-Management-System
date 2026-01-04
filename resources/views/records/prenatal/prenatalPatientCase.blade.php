@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <title>Health Center Information Management System</title>
 </head>
 
@@ -578,7 +579,7 @@
                             <div class="modal fade" id="case2PrenatalModal" tabindex="-1" aria-labelledby="editVaccinationModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                     <div class="modal-content">
-                                        <form method="POST" action="" class="flex-column" id="pregnancy_plan_update_form">
+                                        <form method="POST" action="" class="flex-column" id="pregnancy_plan_update_form" enctype="multipart/form-data">
                                             @method('PUT')
                                             @csrf
                                             <div class="modal-header">
@@ -749,11 +750,42 @@
                                                         </div>
                                                         <!-- signature -->
                                                         <div class="mb-3 w-100 d-flex flex-column border-bottom">
-                                                            <label for="signature_image">Upload Signature</label>
-                                                            <input type="file" name="signature_image" id="signature_image" class="form-control" accept="image/*" required>
-                                                            <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+                                                            <label>Signature</label>
+
+                                                            <!-- Two Action Buttons -->
+                                                            <div class="d-flex gap-2 mb-2">
+                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_drawSignatureBtn">
+                                                                    <i class="bi bi-pencil"></i> Draw Signature
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_uploadSignatureBtn">
+                                                                    <i class="bi bi-upload"></i> Upload Signature Photo
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Drawing Canvas (hidden by default) -->
+                                                            <div id="edit_signatureCanvas" class="d-none mb-2">
+                                                                <canvas id="edit_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                                                                <div class="d-flex gap-2 mt-2">
+                                                                    <button type="button" class="btn btn-sm btn-secondary" id="edit_clearSignature">Clear</button>
+                                                                    <button type="button" class="btn btn-sm btn-success" id="edit_saveSignature">Save Signature</button>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- File Upload (hidden by default) -->
+                                                            <div id="edit_signatureUpload" class="d-none mb-2">
+                                                                <input type="file" name="edit_signature_image" id="edit_signature_image" class="form-control" accept="image/*">
+                                                                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                                                            </div>
+
+                                                            <!-- Preview Area -->
+                                                            <div id="edit_signaturePreview" class="d-none">
+                                                                <img id="edit_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                                                                <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_removeSignature">Remove</button>
+                                                            </div>
+
+                                                            <small class="text-danger error-text" id="edit_signature_error"></small>
                                                         </div>
-                                                        <small id="signature_image_error" class="text-danger error-text"></small>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -1123,7 +1155,7 @@
                             <div class="modal fade" id="addPregnancyPlanModal" tabindex="-1" aria-labelledby="addPregnancyPlanModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                     <div class="modal-content">
-                                        <form method="POST" action="" class="flex-column" id="add_pregnancy_plan_form">
+                                        <form method="POST" action="" class="flex-column" id="add_pregnancy_plan_form" enctype="multipart/form-data">
                                             @csrf
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="vaccinationModalLabel">Pregnancy Planning Details</h5>
@@ -1297,9 +1329,40 @@
                                                         </div>
                                                         <!-- signature -->
                                                         <div class="mb-3 w-100 d-flex flex-column border-bottom">
-                                                            <label for="add_signature_image">Upload Signature</label>
-                                                            <input type="file" name="signature_image" id="add_signature_image" class="form-control" accept="image/*" required>
-                                                            <small class="text-muted text-center">Upload a clear photo or scanned image of the signature.</small>
+                                                            <label>Signature</label>
+
+                                                            <!-- Two Action Buttons -->
+                                                            <div class="d-flex gap-2 mb-2">
+                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="add_drawSignatureBtn">
+                                                                    <i class="bi bi-pencil"></i> Draw Signature
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="add_uploadSignatureBtn">
+                                                                    <i class="bi bi-upload"></i> Upload Signature Photo
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Drawing Canvas (hidden by default) -->
+                                                            <div id="add_signatureCanvas" class="d-none mb-2">
+                                                                <canvas id="add_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                                                                <div class="d-flex gap-2 mt-2">
+                                                                    <button type="button" class="btn btn-sm btn-secondary" id="add_clearSignature">Clear</button>
+                                                                    <button type="button" class="btn btn-sm btn-success" id="add_saveSignature">Save Signature</button>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- File Upload (hidden by default) -->
+                                                            <div id="add_signatureUpload" class="d-none mb-2">
+                                                                <input type="file" name="add_signature_image" id="add_signature_image" class="form-control" accept="image/*">
+                                                                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                                                            </div>
+
+                                                            <!-- Preview Area -->
+                                                            <div id="add_signaturePreview" class="d-none">
+                                                                <img id="add_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                                                                <button type="button" class="btn btn-sm btn-danger mt-2" id="add_removeSignature">Remove</button>
+                                                            </div>
+
+                                                            <small class="text-danger error-text" id="add_signature_error"></small>
                                                         </div>
                                                         <small id="add_signature_image_error" class="text-danger error-text"></small>
                                                     </div>
