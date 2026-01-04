@@ -14,7 +14,6 @@
     'resources/js/menudropdown.js',
     'resources/js/header.js',
     'resources/css/profile.css',
-    'resources/js/patient/add-patient.js',
     'resources/css/patient/record.css'])
     <div class="patient-details vh-100 d-flex">
         <aside>

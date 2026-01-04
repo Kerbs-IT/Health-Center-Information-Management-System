@@ -1,0 +1,125 @@
+/* --- Base Layout --- */
+.prenatal-con {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
+
+.prenatal-con .item {
+    flex: 1 1 150px;
+    min-width: 150px;
+}
+
+
+.prenatal-con table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.prenatal-con table th,
+.prenatal-con table td {
+    white-space: nowrap;
+}
+
+/* --- Headings and Spacing --- */
+.prenatal-con h3,
+.prenatal-con h4 {
+    font-size: 1.3rem;
+    margin-top: 1rem;
+}
+
+/* --- Inputs and Labels --- */
+.prenatal-con label {
+    font-weight: 500;
+}
+
+.prenatal-con input,
+.prenatal-con select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+/* --- Media Queries --- */
+
+/* Tablets */
+@media (max-width: 992px) {
+    .prenatal-con {
+        width: 90%;
+    }
+
+    .prenatal-con .type-of-pregnancy,
+    .prenatal-con .previous-record,
+    .prenatal-con .subjective-info .d-flex,
+    .prenatal-con .assessment-con .checkboxes {
+        flex-wrap: wrap;
+    }
+
+    .prenatal-con .item {
+        flex: 1 1 45%;
+    }
+
+    .prenatal-con table {
+        font-size: 0.8rem;
+    }
+}
+
+/* medium */
+@media (max-width: 768px) {
+    .prenatal-con {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .prenatal-con .type-of-pregnancy,
+    .prenatal-con .previous-record,
+    .prenatal-con .subjective-info .d-flex,
+    .prenatal-con .assessment-con .checkboxes,
+    .prenatal-con .current-prenancy {
+        flex-direction: column;
+    }
+
+    .prenatal-con .item {
+        flex: 1 1 100%;
+    }
+
+    .prenatal-con h3,
+    .prenatal-con h4 {
+        font-size: 1.1rem;
+    }
+
+
+    .prenatal-con table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+
+    .prenatal-con button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Very Small Devices */
+@media (max-width: 576px) {
+    .prenatal-con input,
+    .prenatal-con select,
+    .prenatal-con label {
+        font-size: 0.9rem;
+    }
+
+    .prenatal-con h3,
+    .prenatal-con h4 {
+        font-size: 1rem;
+    }
+
+    .prenatal-con .checkboxes label {
+        font-size: 0.9rem;
+    }
+}

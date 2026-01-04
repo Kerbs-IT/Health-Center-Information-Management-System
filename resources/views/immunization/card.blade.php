@@ -232,6 +232,7 @@
                     <label>CONTACT NO.</label>
                     <span>{{$caseRecord->contact_number ?? 'N/A' }}</span>
                 </div>
+                
             </div>
 
         </div>
