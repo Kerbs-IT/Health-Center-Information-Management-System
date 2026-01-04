@@ -24,7 +24,11 @@
                 </tr>
                 <tr>
                     <th>Time</th>
-                    <td id="check_up_time">{{ \Carbon\Carbon::createFromFormat('H:i:s', $pregnancy_checkup_info->check_up_time)->format('h:i') }}
+                    <td id="check_up_time">@if($pregnancy_checkup_info->check_up_time)
+                        {{ \Carbon\Carbon::createFromFormat('H:i:s', $pregnancy_checkup_info->check_up_time)->format('h:i A') }}
+                        @else
+                        N/A
+                        @endif
                     </td>
                 </tr>
             </tbody>

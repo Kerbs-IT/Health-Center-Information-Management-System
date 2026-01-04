@@ -31,47 +31,51 @@
                 <pre id="view_medical_findings" style="white-space: pre; font-family: monospace;">N/A</pre>
             </td>
             <td id="view_method_accepted">N/A</td>
-            <td id="view_signature_of_the_provider">N/A</td>
+            <td>
+                <img src="" id="view_signature_of_the_provider" alt="Patient Signature" class="img-fluid" style="object-fit:cover;max-width: 200px; max-height: 200px; display: none;">
+                <span id="view_signature_of_the_provide_no" class="text-muted">No signature available</span>
+            </td>
             <td id="view_date_of_follow_up_visit">N/A</td>
 
-        </tr>
-        <tr class="bg-light">
-            <td colspan="4" class="text-start align-middle">
-                <h5 class="mb-0">How to Reasonable sure a Client is Not Pregnant</h5>
-            </td>
-            <td>Answer</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">1. Did you have a baby less than six (6) months ago, are you fully or nearly-fully breastfeeding, and have you had no menstrual period since then?</td>
-            <td id="view_baby_Less_than_six_months_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">2. Have you abstained from sexual intercourse since your last menstrual period or delivery?</td>
-            <td id="view_sexual_intercouse_or_mesntrual_period_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">3. Have you had a baby in the last four (4) weeks</td>
-            <td id="view_baby_last_4_weeks_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">4. Did your last menstrual period start within the past seven (7) days</td>
-            <td id="view_menstrual_period_in_seven_days_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">5. Have you had a miscarriage or abortion in the last seven (7) days?</td>
-            <td id="view_miscarriage_or_abortion_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="text-start">6. Have you been using reliable contraceptive method consistenly and correctly?</td>
-            <td id="view_contraceptive_question">N/A</td>
-        </tr>
-        <tr>
-            <td colspan="6">- If the client answered YES to at least one of the questions and she is free of signs or sign or symptoma of pregnancy, provide client with desired method</td>
+            </tr>
+            <tr class="bg-light">
+                <td colspan="4" class="text-start align-middle">
+                    <h5 class="mb-0">How to Reasonable sure a Client is Not Pregnant</h5>
+                </td>
+                <td>Answer</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">1. Did you have a baby less than six (6) months ago, are you fully or nearly-fully breastfeeding, and have you had no menstrual period since then?</td>
+                <td id="view_baby_Less_than_six_months_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">2. Have you abstained from sexual intercourse since your last menstrual period or delivery?</td>
+                <td id="view_sexual_intercouse_or_mesntrual_period_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">3. Have you had a baby in the last four (4) weeks</td>
+                <td id="view_baby_last_4_weeks_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">4. Did your last menstrual period start within the past seven (7) days</td>
+                <td id="view_menstrual_period_in_seven_days_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">5. Have you had a miscarriage or abortion in the last seven (7) days?</td>
+                <td id="view_miscarriage_or_abortion_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-start">6. Have you been using reliable contraceptive method consistenly and correctly?</td>
+                <td id="view_contraceptive_question">N/A</td>
+            </tr>
+            <tr>
+                <td colspan="6">- If the client answered YES to at least one of the questions and she is free of signs or sign or symptoma of pregnancy, provide client with desired method</td>
 
-        </tr>
-        <tr>
-            <td colspan="6">- If the client answered NO to all the question, pregnancy cannot be ruled out. the client should await menses or use a pregnancy test</td>
-        </tr>
+            </tr>
+            <tr>
+                <td colspan="6">- If the client answered NO to all the question, pregnancy cannot be ruled out. the client should await menses or use a pregnancy test</td>
+            </tr>
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>

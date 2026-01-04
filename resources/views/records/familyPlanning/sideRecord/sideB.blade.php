@@ -24,8 +24,41 @@
         </div>
         <div class="input-field">
             <label for="side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
-            <input type="file" id="side_b_name_n_signature" name="side_b_name_n_signature" accept="image/*" class="w-100 form-control">
-            <small class="text-danger" id="side_b_name_n_signature_error"></small>
+            <!-- signature -->
+            <div class="mb-1 w-100 d-flex flex-column border-bottom">
+                <!-- Two Action Buttons -->
+                <div class="d-flex gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="add_side_b_drawSignatureBtn">
+                        <i class="bi bi-pencil"></i> Draw Signature
+                    </button>
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="add_side_b_uploadSignatureBtn">
+                        <i class="bi bi-upload"></i> Upload Signature Photo
+                    </button>
+                </div>
+
+                <!-- Drawing Canvas (hidden by default) -->
+                <div id="add_side_b_signatureCanvas" class="d-none mb-2">
+                    <canvas id="add_side_b_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-secondary" id="add_side_b_clearSignature">Clear</button>
+                        <button type="button" class="btn btn-sm btn-success" id="add_side_b_saveSignature">Save Signature</button>
+                    </div>
+                </div>
+
+                <!-- File Upload (hidden by default) -->
+                <div id="add_side_b_signatureUpload" class="d-none mb-2">
+                    <input type="file" name="add_side_b_signature_image" id="add_side_b_signature_image" class="form-control" accept="image/*">
+                    <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="add_side_b_signaturePreview" class="d-none">
+                    <img id="add_side_b_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                    <button type="button" class="btn btn-sm btn-danger mt-2" id="add_side_b_removeSignature">Remove</button>
+                </div>
+
+                <small class="text-danger error-text" id="add_side_b_signature_error"></small>
+            </div>
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
@@ -38,12 +71,12 @@
     <div class="side-follow-up-questions">
         <h5>How to Reasonable sure a Client is Not Pregnant</h5>
         <!-- q1 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">1. Did you have a baby less than six (6) months ago, are you fully or nearly-fully breastfeeding, and have you had no menstrual period since then?</p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="baby_Less_than_six_months_question" id="baby_Less_than_six_months_question_yes" value="Yes">
                 <label for="baby_Less_than_six_months_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="baby_Less_than_six_months_question" id="baby_Less_than_six_months_question_no" value="No">
@@ -52,12 +85,12 @@
             <small class="text-danger" id="baby_Less_than_six_months_question_error"></small>
         </div>
         <!-- q2 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">2. Have you abstained from sexual intercourse since your last menstrual period or delivery?</p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="sexual_intercouse_or_mesntrual_period_question" id="sexual_intercouse_or_mesntrual_period_question_yes" value="Yes">
                 <label for="sexual_intercouse_or_mesntrual_period_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="sexual_intercouse_or_mesntrual_period_question" id="sexual_intercouse_or_mesntrual_period_question_no" value="No">
@@ -66,12 +99,12 @@
             <small class="text-danger" id="sexual_intercouse_or_mesntrual_period_question_error"></small>
         </div>
         <!-- q3 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">3. Have you had a baby in the last four (4) weeks</p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="baby_last_4_weeks_question" id="baby_last_4_weeks_question_yes" value="Yes">
                 <label for="baby_last_4_weeks_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="baby_last_4_weeks_question" id="baby_last_4_weeks_question_no" value="No">
@@ -80,12 +113,12 @@
             <small class="text-danger" id="baby_last_4_weeks_question_error"></small>
         </div>
         <!-- q4 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">4. Did your last menstrual period start within the past seven (7) days</p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="menstrual_period_in_seven_days_question" id="menstrual_period_in_seven_days_question_yes" value="Yes">
                 <label for="menstrual_period_in_seven_days_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="menstrual_period_in_seven_days_question" id="menstrual_period_in_seven_days_question_no" value="No">
@@ -94,12 +127,12 @@
             <small class="text-danger" id="menstrual_period_in_seven_days_question_error"></small>
         </div>
         <!-- q5 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">5. Have you had a miscarriage or abortion in the last seven (7) days? </p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="miscarriage_or_abortion_question" id="miscarriage_or_abortion_question_yes" value="Yes">
                 <label for="miscarriage_or_abortion_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="miscarriage_or_abortion_question" id="miscarriage_or_abortion_question_no" value="No">
@@ -108,12 +141,12 @@
             <small class="text-danger" id="miscarriage_or_abortion_question_error"></small>
         </div>
         <!-- q6 -->
-        <div class="mb-2 d-flex align-items-center justify-content-between">
-            <div class="question d-flex align-items-center gap-3">
+        <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
+            <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                 <p class="mb-0 fs-5 fw-light">6. Have you been using reliable contraceptive method consistenly and correctly?</p>
             </div>
-            <div class="answers d-flex align-items-center justify-content-center gap-2">
+            <div class="answers d-flex align-items-center justify-content-center gap-2 w-[20%] ms-2">
                 <input type="radio" name="contraceptive_question" id="contraceptive_question_yes" value="Yes">
                 <label for="contraceptive_question_yes" class="fs-5">Yes</label>
                 <input type="radio" name="contraceptive_question" id="contraceptive_question_no" value="No">
