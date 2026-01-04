@@ -22,13 +22,14 @@
     'resources/js/prenatal/addPrenatalPatient.js',
     'resources/js/senior_citizen/addPatient.js',
     'resources/js/tb_dots/add_patient.js',
-    'resources/js/family_planning/add_patient.js'])
+    'resources/js/family_planning/add_patient.js'
+    ])
     @include('sweetalert::alert')
-    <div class="add-patient d-flex vh-100">
+    <div class="add-patient d-flex min-vh-100">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex flex-column" style="min-height: 0;">
+        <div class="flex-grow-1 d-flex  flex-column overflow-x-auto">
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info" style="overflow-y: auto; min-height: 0;">
 
@@ -534,12 +535,13 @@
                             </div>
                         </div>
                         <!-- PRENATAL -->
-                        <div class="prenatal d-none patient-type" id="prenatal-con">
+                        <div class="prenatal d-none patient-type overflow-hidden" id="prenatal-con">
                             @include('add_patient.prenatal')
-                            <div class="buttons w-75 align-self-center d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
+                            <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+                                <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
                             </div>
+
                         </div>
                         <!-- TB DOTS -->
                         <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">
