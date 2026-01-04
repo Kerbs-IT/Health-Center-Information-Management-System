@@ -19,7 +19,7 @@ document.addEventListener("click", async function(e) {
         return;
     }
     
-    console.log('Loading checkup ID:', checkupId);
+    // console.log('Loading checkup ID:', checkupId);
     
     // Show loading state
     showLoadingModal();
@@ -54,7 +54,7 @@ document.addEventListener("click", async function(e) {
         if (data.pregnancy_checkup_info && typeof data.pregnancy_checkup_info === 'object') {
             populateCheckupInfo(data.pregnancy_checkup_info);
         } else {
-            console.warn('No pregnancy_checkup_info in response');
+            // console.warn('No pregnancy_checkup_info in response');
         }
         
         // Populate health worker info
@@ -344,7 +344,7 @@ document.addEventListener("click", async function(e) {
         return;
     }
     
-    console.log('Loading checkup ID for edit:', checkupId);
+    // console.log('Loading checkup ID for edit:', checkupId);
 
     try {
         const response = await fetch(
@@ -393,8 +393,8 @@ document.addEventListener("click", async function(e) {
                         
                         if (hiddenElement) {
                             hiddenElement.value = value || '';
-                            console.log("name", value);
-                            console.log("hidden value:", hiddenElement.value);
+                            // console.log("name", value);
+                            // console.log("hidden value:", hiddenElement.value);
                         } else {
                             console.warn('Element not found: edit_check_up_full_name');
                         }
@@ -459,9 +459,9 @@ updateBTN.addEventListener("click", async (e) => {
     const form = document.getElementById("edit-check-up-form");
     const formData = new FormData(form);
 
-    for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    // }
 
     const response = await fetch(`/update/prenatal-check-up/${medicalId}`, {
         method: "POST",
@@ -473,7 +473,7 @@ updateBTN.addEventListener("click", async (e) => {
         body: formData,
     });
 
-    const data = response.json();
+    const data = await response.json();
 
     const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
@@ -483,8 +483,8 @@ updateBTN.addEventListener("click", async (e) => {
         });
         // if there's an validation error load the error text
         Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+            if (document.getElementById(`${key}_error`) && value !=null) {
+                document.getElementById(`${key}_error`).innerHTML = value;
             }
         });
 
@@ -558,7 +558,7 @@ document.addEventListener("click", async function(e) {
         
         if (!result.isConfirmed) return;
         
-        console.log('Archiving case ID:', caseId);
+        // console.log('Archiving case ID:', caseId);
         
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {

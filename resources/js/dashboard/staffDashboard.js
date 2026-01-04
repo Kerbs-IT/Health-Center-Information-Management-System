@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         seniorCitizenElement.innerHTML = data.seniorCitizenCount ?? 0;
         familyPlanningElement.innerHTML = data.familyPlanningCount ?? 0;
 
-        console.log(data.baseData);
+        // console.log(data.baseData);
     } catch (error) {
         console.error("Error");
     }

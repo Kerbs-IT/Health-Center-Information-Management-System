@@ -26,7 +26,10 @@ use App\Models\staff;
 use App\Models\wra_masterlists;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class PrenatalController extends Controller
 {
@@ -138,9 +141,11 @@ class PrenatalController extends Controller
                 'emergency_person_name' => 'sometimes|nullable|string',
                 'emergency_person_residency' => 'sometimes|nullable|string',
                 'emergency_person_contact_number' => 'sometimes|nullable|string',
-                'signature_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:5120',
+                'signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'signature_data' => 'sometimes|nullable|string',
                 'names_of_donor' => 'sometimes|nullable|array'
             ]);
+
 
             // insertion of the information
 
@@ -163,7 +168,7 @@ class PrenatalController extends Controller
                 'last_name'      => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => ucfirst($patientData['sex']) ?? null,
+                'sex' => isset($patientData['sex']) ? ucfirst($patientData['sex']) : null,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -216,9 +221,9 @@ class PrenatalController extends Controller
                 'family_head_name' => $medicalCaseData['family_head_name'] ?? null,
                 'blood_type' => $medicalCaseData['blood_type'] ?? null,
                 'religion' => $medicalCaseData['religion'] ?? null,
-                'philHealth_number' => $medicalCaseData['philHealth_number'],
-                'family_serial_no' => $medicalCaseData['family_serial_no'],
-                'family_planning_decision' => $medicalCaseData['family_planning'],
+                'philHealth_number' => $medicalCaseData['philHealth_number']??null,
+                'family_serial_no' => $medicalCaseData['family_serial_no']??null,
+                'family_planning_decision' => $medicalCaseData['family_planning']??null,
                 'health_worker_id' => $patientData['handled_by'],
                 'type_of_record' => 'Medical Record'
             ]);
@@ -302,6 +307,16 @@ class PrenatalController extends Controller
             ]);
 
             // pregnancy plan
+            $signaturePath = null;
+
+            // If user uploaded an image file
+            if ($request->hasFile('signature_image')) {
+                $signaturePath = $this->compressAndSaveSignature($request->file('signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('signature_data')) {
+                $signaturePath = $this->saveCanvasSignature($request->signature_data);
+            }
 
 
             $pregnancyPlanRecord = pregnancy_plans::create([
@@ -319,7 +334,7 @@ class PrenatalController extends Controller
                 'emergency_person_name' => $pregnancy_plan['emergency_person_name'] ?? null,
                 'emergency_person_residency' => $pregnancy_plan['emergency_person_residency'] ?? null,
                 'emergency_person_contact_number' => $pregnancy_plan['emergency_person_contact_number'] ?? null,
-                'signature' => $pregnancy_plan['signature_image'] ?? null,
+                'signature' =>  $signaturePath ?? null,
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
 
@@ -659,7 +674,7 @@ class PrenatalController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $sex = $data['sex'] ?? $prenatalRecord->patient->sex;
             // update the patient data first
             $prenatalRecord->patient->update([
                 'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
@@ -667,7 +682,7 @@ class PrenatalController extends Controller
                 'last_name' => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
                 'full_name' =>$fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,
-                'sex' => ucfirst($data['sex']) ?? ucfirst($prenatalRecord->patient->sex),
+                'sex' => $sex? ucfirst($sex):null,
                 'civil_status' => $data['civil_status'] ?? $prenatalRecord->patient->civil_status,
                 'contact_number' => $data['contact_number'],
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
@@ -1279,11 +1294,30 @@ class PrenatalController extends Controller
                 'emergency_person_name' => 'sometimes|nullable|string',
                 'emergency_person_residency' => 'sometimes|nullable|string',
                 'emergency_person_contact_number' => 'sometimes|nullable|string',
-                'signature_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:5120',
+                'edit_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'edit_signature_data' => 'sometimes|nullable|string',
                 'donor_names' => 'sometimes|nullable|array'
             ]);
 
             // update
+            $signaturePath = $pregnancyPlanRecord->signature; // Keep old signature by default
+
+            // Check if new signature provided (drawn)
+            if ($request->filled('edit_signature_data')) {
+                // Delete old file if exists
+                if ($pregnancyPlanRecord->signature) {
+                    Storage::delete('public/' . $pregnancyPlanRecord->signature);
+                }
+                $signaturePath = $this->saveCanvasSignature($request->edit_signature_data);
+            }
+            // Check if new signature provided (uploaded)
+            else if ($request->hasFile('edit_signature_image')) {
+                // Delete old file if exists
+                if ($pregnancyPlanRecord->signature) {
+                    Storage::delete('public/' . $pregnancyPlanRecord->signature);
+                }
+                $signaturePath = $this->compressAndSaveSignature($request->file('edit_signature_image'));
+            }
 
             $pregnancyPlanRecord->update([
                 'midwife_name' => $data['midwife_name'] ?? $pregnancyPlanRecord->midwife_name,
@@ -1298,7 +1332,7 @@ class PrenatalController extends Controller
                 'emergency_person_name' => $data['emergency_person_name'] ?? $pregnancyPlanRecord->emergency_person_name,
                 'emergency_person_residency' => $data['emergency_person_residency'] ?? $pregnancyPlanRecord->emergency_person_residency,
                 'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? $pregnancyPlanRecord->emergency_person_contact_number,
-                'signature' => $data['signature_image'] ?? $pregnancyPlanRecord->signature,
+                'signature' => $signaturePath ?? $pregnancyPlanRecord->signature,
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
             // delete all the donor name as update logic
@@ -1463,7 +1497,7 @@ class PrenatalController extends Controller
             return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
         }catch(ValidationException $e){
             return response()->json([
-                'error' => $e->getMessage()
+                'errors' => $e->errors()
             ], 404);
         };
 
@@ -1501,8 +1535,8 @@ class PrenatalController extends Controller
                     'edit_check_up_temperature'     => 'nullable|numeric|min:20|max:45',
                     'edit_check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'edit_check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'edit_check_up_height'          => 'nullable|numeric|min:0',
-                    'edit_check_up_weight'          => 'nullable|numeric|min:0',
+                    'edit_check_up_height'          => 'nullable|numeric|min:20',
+                    'edit_check_up_weight'          => 'nullable|numeric|min:20',
 
                     // Symptom questions (all optional but strings)
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
@@ -1525,7 +1559,7 @@ class PrenatalController extends Controller
                     'edit_other_symptoms_question_remarks'  => 'nullable|string|max:500',
 
                     // Final remarks
-                    'edit_overall_remarks'           => 'nullable|string|max:1000',
+                    'edit_overall_remarks' => 'nullable|string|max:1000',
                     'edit_date_of_comeback' => 'required|date'
                 ],
                 [], // this is empty because we didn't customize the error message for each field we just change the name 
@@ -1557,6 +1591,7 @@ class PrenatalController extends Controller
                     'edit_other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
 
                     'edit_overall_remarks'           => 'Overall Remarks',
+                    'edit_date_of_comeback' => 'Date of Comeback'
                 ]
             );
 
@@ -1606,7 +1641,7 @@ class PrenatalController extends Controller
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
-                'error' => $e->getMessage()
+                'errors' => $e->errors()
             ], 404);
         };
     }
@@ -1782,11 +1817,30 @@ class PrenatalController extends Controller
                 'add_emergency_person_name' => 'sometimes|nullable|string',
                 'add_emergency_person_residency' => 'sometimes|nullable|string',
                 'add_emergency_person_contact_number' => 'sometimes|nullable|string',
-                'add_signature_image' => 'sometimes|image|mimes:jpg,jpeg,png|max:5120',
+                'add_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_signature_data' => 'sometimes|nullable|string',
                 'add_donor_names' => 'sometimes|nullable|array'
             ]);
+            $signaturePath = null;
+            // dd([
+            //     'hasFile' => $request->hasFile('add_signature_image'),
+            //     'hasDraw' => $request->filled('add_signature_data'),
+            //     'fileValue' => $request->file('add_signature_image'),
+            //     'drawValue' => $request->add_signature_data ? substr($request->add_signature_data, 0, 50) . '...' : null,
+            //     'signaturePath' => $signaturePath
+            // ]);
 
-            // update
+            // pregnancy plan
+            
+
+            // If user uploaded an image file
+            if ($request->hasFile('add_signature_image')) {
+                $signaturePath = $this->compressAndSaveSignature($request->file('add_signature_image'));
+            }
+            // If user drew a signature
+            else if ($request->filled('add_signature_data')) {
+                $signaturePath = $this->saveCanvasSignature($request->add_signature_data);
+            }
 
             $pregnancyPlanRecord = pregnancy_plans::create([
                 'medical_record_case_id' => $medicalRecordCaseId,
@@ -1803,7 +1857,7 @@ class PrenatalController extends Controller
                 'emergency_person_name' => $data['add_emergency_person_name'] ?? null,
                 'emergency_person_residency' => $data['add_emergency_person_residency'] ?? null,
                 'emergency_person_contact_number' => $data['add_emergency_person_contact_number'] ?? null,
-                'signature' => $data['add_signature_image'] ?? null,
+                'signature' => $signaturePath ?? null,
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
             // delete all the donor name as update logic
@@ -1857,5 +1911,47 @@ class PrenatalController extends Controller
                 'error' => $e->getMessage()
             ], 404);
         }
+    }
+
+    private function compressAndSaveSignature($file)
+    {
+        $filename = time() . '_' . uniqid() . '.jpg';
+        $path = storage_path('app/public/signatures/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/public/signatures'))) {
+            mkdir(storage_path('app/public/signatures'), 0755, true);
+        }
+
+        // Process image
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file);
+        $image->scale(width: 800);
+        $image->toJpeg(quality: 60);
+        $image->save($path);
+
+        return 'signatures/' . $filename;
+    }
+
+    private function saveCanvasSignature($base64Data)
+    {
+        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+
+        $filename = time() . '_' . uniqid() . '.jpg';
+        $path = storage_path('app/public/signatures/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/public/signatures'))) {
+            mkdir(storage_path('app/public/signatures'), 0755, true);
+        }
+
+        // Process image
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($imageData);
+        $image->scale(width: 800);
+        $image->toJpeg(quality: 60);
+        $image->save($path);
+
+        return 'signatures/' . $filename;
     }
 }

@@ -1,3 +1,5 @@
+import changeLmp from "../LMP/lmp";
+
 const addPrenatalCase =
     document.getElementById("add_case_record_add_btn") ?? null;
 
@@ -177,6 +179,17 @@ if (addPrenatalCase) {
                 }
             }
         });
+    });
+}
+
+// add a expected delivery change in the LMP
+const LMP = document.getElementById("add_LMP_input") ?? null;
+
+if (LMP) {
+    const expectedDelivery = document.getElementById("add_expected_delivery_input");
+
+    LMP.addEventListener("change", () => {
+        changeLmp(LMP, expectedDelivery);
     });
 }
 const addCaseSaveBtn = document.getElementById("add-case-record-save-btn");
