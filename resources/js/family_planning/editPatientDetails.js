@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
-console.log("health-worker-id", healthWorkerId);
+// console.log("health-worker-id", healthWorkerId);
 
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
@@ -27,7 +27,7 @@ const saveBtn = document.getElementById("edit-save-btn");
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const id = saveBtn.dataset.bsMedicalId;
-    console.log(id);
+    // console.log(id);
     const form = document.getElementById("edit-family-planning-form");
     const formData = new FormData(form);
 

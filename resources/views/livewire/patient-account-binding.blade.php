@@ -120,6 +120,8 @@
                                 Bind
                             </button>
                             @endif
+                            <button type="button" class="btn btn-sm btn-info text-white edit-user-profile" data-bs-toggle="modal" data-bs-target="#edit-user-profile" data-id="{{$user->id}}">Edit</button>
+                            <button type="button" class="btn btn-sm btn-danger text-white delete-user"  data-id="{{$user->id}}">Delete</button>
                         </td>
                     </tr>
                     @empty
@@ -235,6 +237,8 @@
         </div>
     </div>
     @endif
+
+
 
     {{-- Loading --}}
     <div wire:loading class="position-fixed top-50 start-50">

@@ -24,8 +24,41 @@
         </div>
         <div class="input-field">
             <label for="side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
-            <input type="file" id="side_b_name_n_signature" name="side_b_name_n_signature" accept="image/*" class="w-100 form-control">
-            <small class="text-danger" id="side_b_name_n_signature_error"></small>
+            <!-- signature -->
+            <div class="mb-1 w-100 d-flex flex-column border-bottom">
+                <!-- Two Action Buttons -->
+                <div class="d-flex gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="add_side_b_drawSignatureBtn">
+                        <i class="bi bi-pencil"></i> Draw Signature
+                    </button>
+                    <button type="button" class="btn btn-outline-primary flex-fill" id="add_side_b_uploadSignatureBtn">
+                        <i class="bi bi-upload"></i> Upload Signature Photo
+                    </button>
+                </div>
+
+                <!-- Drawing Canvas (hidden by default) -->
+                <div id="add_side_b_signatureCanvas" class="d-none mb-2">
+                    <canvas id="add_side_b_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-secondary" id="add_side_b_clearSignature">Clear</button>
+                        <button type="button" class="btn btn-sm btn-success" id="add_side_b_saveSignature">Save Signature</button>
+                    </div>
+                </div>
+
+                <!-- File Upload (hidden by default) -->
+                <div id="add_side_b_signatureUpload" class="d-none mb-2">
+                    <input type="file" name="add_side_b_signature_image" id="add_side_b_signature_image" class="form-control" accept="image/*">
+                    <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="add_side_b_signaturePreview" class="d-none">
+                    <img id="add_side_b_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                    <button type="button" class="btn btn-sm btn-danger mt-2" id="add_side_b_removeSignature">Remove</button>
+                </div>
+
+                <small class="text-danger error-text" id="add_side_b_signature_error"></small>
+            </div>
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
