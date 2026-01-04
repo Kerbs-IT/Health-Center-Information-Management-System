@@ -204,3 +204,18 @@ select{
 .medical-history p, .medical-history label{
   font-size: clamp(11, 3vw, 20px);
 }
+
+
+
+.step input{
+  font-size: clamp(0.8rem, 1.1vw, 1.1rem) !important;
+}
+.step label{
+  font-size: clamp(0.8rem, 4vw, 1.1rem) !important;
+}
+.step .buttons .btn {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem) !important;
+    padding-inline: clamp(1rem, 4vw, 3rem) !important;
+    padding-block: clamp(0.5rem, 1.5vw, 0.75rem) !important;
+
+}
