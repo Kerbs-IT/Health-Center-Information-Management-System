@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <title>Health Center Information Management System</title>
 </head>
 
@@ -21,13 +22,14 @@
     'resources/js/prenatal/addPrenatalPatient.js',
     'resources/js/senior_citizen/addPatient.js',
     'resources/js/tb_dots/add_patient.js',
-    'resources/js/family_planning/add_patient.js'])
+    'resources/js/family_planning/add_patient.js'
+    ])
     @include('sweetalert::alert')
-    <div class="add-patient d-flex vh-100">
+    <div class="add-patient d-flex min-vh-100">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex flex-column min-vh-100">
+        <div class="flex-grow-1 d-flex  flex-column overflow-x-auto">
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info overflow-x-auto">
 
@@ -515,8 +517,8 @@
                                 </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
-                                        <label for="date_of_vaccination">Date of Comeback</label>
-                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_comeback" required>
+                                        <label for="date_of_comeback">Date of Comeback</label>
+                                        <input type="date" class="form-control w-100 " name="date_of_comeback" id="date_of_comeback" required>
                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                     </div>
                                 </div>
@@ -533,12 +535,13 @@
                             </div>
                         </div>
                         <!-- PRENATAL -->
-                        <div class="prenatal d-none patient-type" id="prenatal-con">
+                        <div class="prenatal d-none patient-type overflow-hidden" id="prenatal-con">
                             @include('add_patient.prenatal')
-                            <div class="buttons w-75 align-self-center d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
-                                <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
+                            <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+                                <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
                             </div>
+
                         </div>
                         <!-- TB DOTS -->
                         <div class="tb-dots d-none patient-type w-100 flex-column" id="tb-dots-con">
