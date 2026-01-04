@@ -18,13 +18,13 @@
     'resources/css/patient/record.css',
     'resources/js/record/record.js'])
 
-    <div class="vaccination vh-100 d-flex">
+    <div class="vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
-            <main class="flex-column p-2">
+            <main class="flex-column p-2 px-md-4 px-1">
                 <h1>Prenatal</h1>
                 <!-- body part -->
                 <livewire:prenatal.records-table>
