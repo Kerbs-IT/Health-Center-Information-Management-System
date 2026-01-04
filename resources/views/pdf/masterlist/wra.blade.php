@@ -254,7 +254,7 @@
                     {{-- Fill remaining rows to maintain consistent table height --}}
                     @php
                     $currentCount = $masterlistRecords->count();
-                    $emptyRowsNeeded = 20 - $currentCount;
+                    $emptyRowsNeeded = 15 - $currentCount;
                     @endphp
 
                     @if($currentCount > 0 && $emptyRowsNeeded > 0)
