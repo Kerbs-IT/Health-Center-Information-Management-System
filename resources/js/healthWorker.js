@@ -363,8 +363,8 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
         const email_error = document.querySelector('.email-error');
         const password_error = document.querySelector('.password-error');
         const assigned_area_error = document.querySelector('.assigned-area-error');
-        const recovery_question_error = document.querySelector('.recovery-question-error');
-        const recovery_answer_error = document.querySelector('.recovery-answer-error');
+        // const recovery_question_error = document.querySelector('.recovery-question-error');
+        // const recovery_answer_error = document.querySelector('.recovery-answer-error');
         
         const response = await fetch('/add-health-worker-account', {
             method: 'POST',
@@ -387,8 +387,7 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
             email_error.innerHTML = '';
             password_error.innerHTML = '';
             assigned_area_error.innerHTML = '';
-            recovery_question_error.innerHTML = '';
-            recovery_answer_error.innerHTML = '';
+          
             Swal.fire({
                 title: 'Add New Health Worker',
                 text: "Health Worker Account is successfully added",
@@ -407,8 +406,7 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
             email_error.innerHTML = result.errors?.email?.[0] ?? '';
             password_error.innerHTML = result.errors?.password?.[0] ?? '';
             assigned_area_error.innerHTML = result.errors?.assigned_area?.[0] ?? '';
-            recovery_question_error.innerHTML = result.errors?.recovery_question?.[0] ?? '';
-            recovery_answer_error.innerHTML = result.errors?.recovery_answer?.[0] ?? '';
+          
             Swal.fire({
                 title: 'Add New Health Worker',
                 text: "Invalid input value",
