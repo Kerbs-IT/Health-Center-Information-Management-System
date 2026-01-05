@@ -354,8 +354,6 @@ class authController extends Controller
             'first_name' => 'required',
             'middle_initial' => ['required', 'string'],
             'last_name' => ['required'],
-            'recovery_question' => ['required'],
-            'recovery_answer' => ['required'],
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|digits_between:7,12',
             'blk_n_street' => 'required',
@@ -365,9 +363,6 @@ class authController extends Controller
             'assigned_area' => 'required_if:role,staff',
         ]);
 
-        // Hash sensitive data
-        $data['recovery_answer'] = Hash::make($data['recovery_answer']);
-        $data['password'] = Hash::make($data['password']);
 
         // Build full address
         $fullAddress = implode(' ', array_filter([
@@ -391,8 +386,6 @@ class authController extends Controller
             'role' => $data['role'],
             'status' => 'Active', // Immediately active
             'password' => $data['password'],
-            'recovery_question' => $data['recovery_question'],
-            'recovery_answer' => $data['recovery_answer'],
             'is_verified' => true, // Auto-verified
             'email_verified_at' => now(),
         ]);

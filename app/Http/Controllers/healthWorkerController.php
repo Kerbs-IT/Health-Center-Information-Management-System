@@ -66,12 +66,10 @@ class healthWorkerController extends Controller
                 'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required'],
                 'assigned_area' => 'required',
-                'recovery_question' => ['required'],
-                'recovery_answer' => ['required'],
+               
             ]);
 
-            $data['recovery_answer'] = Hash::make($data['recovery_answer']);
-            $data['password'] = Hash::make($data['password']);
+          
 
             switch ($data['role']) {
                 case 'nurse':

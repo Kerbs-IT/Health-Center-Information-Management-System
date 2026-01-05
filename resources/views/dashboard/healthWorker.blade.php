@@ -468,20 +468,6 @@
                             </div>
                         </div>
                         <!-- RECOVERY QUESTION -->
-                        <div class="mb-3 w-100">
-                            <div class="input-group w-100">
-                                <label for="recovery_question" class="fs-4 fw-bold w-100">Recovery Question:</label>
-                                <select name="recovery_question" id="recovery_question" class="form-select w-100 mb-2" required>
-                                    <option value="">Select a question</option>
-                                    <option value="1">What is your nickname? </option>
-                                    <option value="2">What is the ame of your mother?</option>
-                                    <option value="3">What is the name of your pet? </option>
-                                </select>
-                                <small class="text-danger recovery-question-error"></small>
-                                <input type="text" name="recovery_answer" placeholder="Enter your answer" class="form-control w-100" required>
-                                <small class="text-danger recovery-answer-error"></small>
-                            </div>
-                        </div>
 
 
                         <div class="mb-3 w-95">

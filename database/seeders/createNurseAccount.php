@@ -20,8 +20,6 @@ class createNurseAccount extends Seeder
             'username'          => 'nurse01',
             'email'             => 'nurse01@example.com',
             'password'          => Hash::make('Password123!'),
-            'recovery_question' => 1,
-            'recovery_answer'   => Hash::make('nurse123'),
             'status'            => 'active',
             'role' => 'nurse'
         ]);
