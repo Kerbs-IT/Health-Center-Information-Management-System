@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-md-3 md-1 w-100 px-lg-5 px-md-3 px-2 shadow-lg min-h-[75vh]">
+    <div class="mb-md-3 md-1 w-100 px-lg-5 px-md-3 px-2  min-h-[75vh]">
         <div class="filters d-flex justify-content-lg-between  justify-content-end  flex-wrap flex-xl-nowrap gap-md-3 gap-1 mb-2 mb-md-0">
             <div class="mb-md-3 md-1 w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
                 <label>Show Entries</label>
