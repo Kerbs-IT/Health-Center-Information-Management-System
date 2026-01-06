@@ -15,7 +15,7 @@ document.addEventListener("click", async (e) => {
     // Validate case ID
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
-        alert("Unable to archive: Invalid ID");
+       
         return;
     }
     // console.log("event delegation working!!!");
@@ -297,7 +297,7 @@ document.addEventListener("click", async (e) => {
     // Validate case ID
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
-        alert("Unable to archive: Invalid ID");
+        alert("Unable to edit: Invalid ID");
         return;
     }
 
@@ -1164,12 +1164,12 @@ document.addEventListener("click", async (e) => {
         // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Family Planning Client Assessment Record - Side A will be deleted.",
+            text: "The Family Planning Client Assessment Record - Side A will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
             cancelButtonText: "Cancel",
         });
 

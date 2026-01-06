@@ -271,8 +271,8 @@ input.form-control,
     transition: color .5s ease;
 }
 
-.wrapper a svg {
-    fill: var(--menu-text-color) !important;
+.wrapper a i {
+    color: var(--menu-text-color) !important;
 }
 
 /* .wrapper a.active svg,
@@ -280,6 +280,9 @@ input.form-control,
     fill: var(--active-menu-text) !important;
 } */
 .wrapper a.active {
+    color: var(--active-menu-text) !important;
+}
+.wrapper a.active > i{
     color: var(--active-menu-text) !important;
 }
 
@@ -406,6 +409,7 @@ main h3,
 /* Medium to small devices - override collapsed behavior */
 @media (max-width: 991px) {
     .menu-bar {
+        overflow-y: auto;
         position: fixed;
         left: -280px;
         top: 0;
@@ -416,6 +420,10 @@ main h3,
     /* Don't allow collapsed state on mobile */
     .menu-bar.collapsed {
         width: 280px;
+        overflow-y: auto;
+    }
+    #side-bar{
+    overflow-y: auto !important;
     }
 
     .menu-bar.collapsed h4,
@@ -427,6 +435,7 @@ main h3,
 
     .menu-bar.show {
         left: 0;
+
     }
   .logo {
     width: clamp(100px, 13vw, 140px);

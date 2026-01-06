@@ -14,12 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will permanently remove the user.",
+                text: "This health worker account will be moved to archived status.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Yes, archive it!'
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`/health-worker/${removeId}`, {
@@ -376,17 +376,10 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
         })
 
         // get the response in json format
-        const result = await response.json();
+        const data = await response.json();
     
         if (response.ok) {
-            // make the errors gone
-            username_error.innerHTML =  '';
-            fname_error.innerHTML =  '';
-            middle_initial_error.innerHTML = '';
-            lname_error.innerHTML = '';
-            email_error.innerHTML = '';
-            password_error.innerHTML = '';
-            assigned_area_error.innerHTML = '';
+            
           
             Swal.fire({
                 title: 'Add New Health Worker',
@@ -399,14 +392,11 @@ addHealthWorkerSubmitBTN.addEventListener('click', async (e) => {
         } else {
 
             // set the errors
-            username_error.innerHTML = result.errors?.username?.[0] ?? '';
-            fname_error.innerHTML = result.errors?.first_name?.[0] ?? '';
-            middle_initial_error.innerHTML = result.errors?.middle_initial?.[0] ?? '';
-            lname_error.innerHTML = result.errors?.last_name?.[0] ?? '';
-            email_error.innerHTML = result.errors?.email?.[0] ?? '';
-            password_error.innerHTML = result.errors?.password?.[0] ?? '';
-            assigned_area_error.innerHTML = result.errors?.assigned_area?.[0] ?? '';
-          
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).innerHTML = value;
+                }
+            })
             Swal.fire({
                 title: 'Add New Health Worker',
                 text: "Invalid input value",
@@ -436,22 +426,16 @@ addHealthWorkerBtn.addEventListener('click', () => {
     const email_error = document.querySelector(".email-error");
     const password_error = document.querySelector(".password-error");
     const assigned_area_error = document.querySelector(".assigned-area-error");
-    const recovery_question_error = document.querySelector(
-        ".recovery-question-error"
-    );
-    const recovery_answer_error = document.querySelector(
-        ".recovery-answer-error"
-    );
+   
 
     // set the errors to empty for reset
-    username_error.innerHTML =  "";
-    fname_error.innerHTML =  "";
-    middle_initial_error.innerHTML =  "";
-    lname_error.innerHTML =  "";
-    email_error.innerHTML =  "";
-    password_error.innerHTML =  "";
-    assigned_area_error.innerHTML =  "";
-    recovery_question_error.innerHTML =
-         "";
-    recovery_answer_error.innerHTML =  "";
+   
+    const errors = document.querySelectorAll(".add-healthworker-error");
+
+    if (errors) {
+        errors.forEach((error) => {
+            error.innerHTML = "";
+        });
+    }
+    
 });

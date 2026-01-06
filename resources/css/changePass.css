@@ -1,0 +1,7 @@
+.change-pass-input{
+    border-radius: 10px 0 0 10px !important;
+    border: 1px solid black;
+}
+.eye-icon:hover{
+    cursor: pointer;
+}

@@ -218,11 +218,11 @@
         </div>
         <!-- overall remarks -->
         <div class="mb-2 w-100">
-            <label for="remarks">Remarks*</label>
+            <label for="remarks">Remarks</label>
             <input type="text" class="form-control" name="edit_overall_remarks" id="edit_overall_remarks">
         </div>
         <div class="mb-2 w-100">
-            <label for="">Date of comeback</label>
+            <label for="">Date of comeback*</label>
             <input type="date" class="form-control" name="edit_date_of_comeback" id="edit_date_of_comeback">
             <small class="text-danger" id="edit_date_of_comeback_error"></small>
         </div>

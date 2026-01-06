@@ -15,7 +15,8 @@
     'resources/js/menudropdown.js',
     'resources/js/header.js',
     'resources/css/profile.css',
-    'resources/js/changePassword.js'])
+    'resources/js/changePassword.js',
+    'resources/css/changePass.css'])
     <!-- always include the sweetalert -->
     @include('sweetalert::alert')
     <div class="ms-0 ps-0 d-flex w-100">
@@ -46,21 +47,38 @@
                             <!-- Current Password -->
                             <div class="mb-3">
                                 <label for="current_password" class="form-label">Current Password</label>
-                                <input type="password" name="current_password" id="current_password" class="form-control" required>
+                                <div class="inputs d-flex align-items-center">
+                                    <input type="password" name="current_password" id="current_password" class="form-control change-pass-input" required>
+                                    <div class="eye-icon bg-light text-success px-2 align-self-stretch d-flex align-items-center" id="current_password_eye_icon">
+                                        <i class="fa-solid fa-eye fs-4"></i>
+                                    </div>
+                                </div>
                                 <small class="text-danger" id="current_password_error"></small>
                             </div>
 
                             <!-- New Password -->
                             <div class="mb-3">
                                 <label for="new_password" class="form-label">New Password</label>
-                                <input type="password" name="new_password" id="new_password" class="form-control" required>
+                                <div class="inputs d-flex align-items-center">
+                                    <input type="password" name="new_password" id="new_password" class="form-control change-pass-input" required>
+                                    <div class="eye-icon bg-light text-success px-2 align-self-stretch d-flex align-items-center" id="new_password_eye_icon">
+                                        <i class="fa-solid fa-eye  fs-4"></i>
+                                    </div>
+                                </div>
+
                                 <small class="text-danger" id="new_password_error"></small>
                             </div>
 
                             <!-- Confirm New Password -->
                             <div class="mb-3">
                                 <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
-                                <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="form-control" required>
+                                <div class="inputs d-flex align-items-center">
+                                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="form-control change-pass-input" required>
+                                    <div class="eye-icon bg-light text-success px-2 align-self-stretch d-flex align-items-center" id="new_password_confirmation_eye_icon">
+                                        <i class="fa-solid fa-eye fs-4"></i>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <!-- Submit Button -->

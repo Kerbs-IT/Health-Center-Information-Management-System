@@ -170,14 +170,14 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="add_date_of_vaccination">Date of Comeback</label>
+                                                        <label for="add_date_of_vaccination">Date of Comeback*</label>
                                                         <input type="date" placeholder="20" class="form-control w-100 " name="add_date_of_comeback" required>
                                                         <small class="text-danger error-text" id="add-date-of-comeback-error"></small>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="remarks">Remarks*</label>
+                                                    <label for="remarks">Remarks</label>
                                                     <input type="text" class="form-control" id="remarks" name="add_case_remarks" id="add_case_remarks">
                                                 </div>
                                             </div>
@@ -299,7 +299,7 @@
                                                 </div>
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="remarks">Remarks*</label>
+                                                    <label for="remarks">Remarks</label>
                                                     <input type="text" class="form-control" id="edit-remarks" name="remarks">
                                                     <small class="text-danger error-text" id="remarks_error"></small>
                                                 </div>
