@@ -170,8 +170,8 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="add_date_of_vaccination">Date of Comeback*</label>
-                                                        <input type="date" placeholder="20" class="form-control w-100 " name="add_date_of_comeback" required>
+                                                        <label for="add_date_of_comeback">Date of Comeback*</label>
+                                                        <input type="date" placeholder="20" id="add_date_of_comeback" class="form-control w-100 " name="add_date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="add-date-of-comeback-error"></small>
                                                     </div>
                                                 </div>
@@ -292,8 +292,8 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="date_of_vaccination">Date of Comeback</label>
-                                                        <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required>
+                                                        <label for="edit-date-of-comeback">Date of Comeback*</label>
+                                                        <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                     </div>
                                                 </div>

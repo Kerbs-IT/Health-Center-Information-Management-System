@@ -63,7 +63,7 @@
             <!-- date of follow up visit -->
             <div class="input-field mb-3">
                 <label for="side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit*</label>
-                <input type="date" class="form-control w-100 py-2" name="side_b_date_of_follow_up_visit" id="side_b_date_of_follow_up_visit">
+                <input type="date" class="form-control w-100 py-2" name="side_b_date_of_follow_up_visit" id="side_b_date_of_follow_up_visit"  max="{{date('Y-m-d',strtotime('+5 years'))}}">
                 <small class="text-danger" id="side_b_date_of_follow_up_visit_error"></small>
             </div>
         </div>

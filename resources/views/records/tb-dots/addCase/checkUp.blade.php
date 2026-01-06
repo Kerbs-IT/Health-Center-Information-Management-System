@@ -114,7 +114,7 @@
         </div>
         <div class="mb-3">
             <label for="add_date_of_comeback">Date of Comeback*</label>
-            <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback">
+            <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
 </div>

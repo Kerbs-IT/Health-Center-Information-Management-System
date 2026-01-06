@@ -400,14 +400,23 @@ document.addEventListener("click", async function(e) {
                         }
                     } 
                     else if (value === "Yes" || value === "No") {
-                        const element = document.getElementById(`edit_${key}_${value}`);
+                        const element = document.getElementById(
+                            `edit_${key}_${value}`
+                        );
                         if (element) {
                             element.checked = true;
                         } else {
-                            console.warn(`Element not found: edit_${key}_${value}`);
+                            console.warn(
+                                `Element not found: edit_${key}_${value}`
+                            );
                         }
-                    } 
-                    else {
+                    } else if (key == "date_of_comeback") {
+                        const element = document.getElementById(`edit_${key}`);
+                        if (element && value) {
+                            const date = value.split("T")[0]; // Gets "2025-12-24"
+                            element.value = date;
+                        }
+                    } else {
                         const element = document.getElementById(`edit_${key}`);
                         if (element) {
                             element.value = value ?? "";
