@@ -71,7 +71,7 @@
                                     <div class="mb-2 d-flex gap-md-1 gap-0">
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
-                                            <label for="birthdate">Date of Birth</label>
+                                            <label for="birthdate">Date of Birth*</label>
                                             <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
@@ -517,13 +517,13 @@
                                 </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
-                                        <label for="date_of_comeback">Date of Comeback</label>
+                                        <label for="date_of_comeback">Date of Comeback*</label>
                                         <input type="date" class="form-control w-100 " name="date_of_comeback" id="date_of_comeback" required>
                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                     </div>
                                 </div>
                                 <div class="mb-2 w-100">
-                                    <label for="remarks">Remarks*</label>
+                                    <label for="remarks">Remarks</label>
                                     <input type="text" class="form-control" id="remarks" name="remarks">
                                     <small class="text-danger error-text" id="remarks_error"></small>
                                 </div>

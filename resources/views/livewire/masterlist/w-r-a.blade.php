@@ -282,7 +282,9 @@
                         <td>{{optional($record)->selected_modern_FP_method ?? ''}}</td>
                         <td>{{optional($record)->date_when_FP_method_accepted ?? ''}}</td>
                         <td class="">
-                            <button class="btn btn-success wra-masterlist-edit-btn" data-wra-masterlist-id="{{$record->id}}" data-bs-toggle="modal" data-bs-target="#wraMasterListModal">Edit</button>
+                            <button class="text-success fs-2 wra-masterlist-edit-btn" data-wra-masterlist-id="{{$record->id}}" data-bs-toggle="modal" data-bs-target="#wraMasterListModal">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                         </td>
                     </tr>
                     @empty

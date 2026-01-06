@@ -628,12 +628,12 @@ document.addEventListener('click', async (e) => {
         // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Senior Citizen Case Record will be archived.",
+            text: "The Senior Citizen Case Record will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
             cancelButtonText: "Cancel"
         });
         

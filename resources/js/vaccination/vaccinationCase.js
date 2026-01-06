@@ -606,12 +606,12 @@ document.addEventListener("click", async (e) => {
     try {
         Swal.fire({
             title: "Are you sure?",
-            text: "The Vaccination Case Record will be deleted.",
+            text: "The Vaccination Case Record will be moved to achived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {

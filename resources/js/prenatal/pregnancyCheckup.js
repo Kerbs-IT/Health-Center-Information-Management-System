@@ -548,12 +548,12 @@ document.addEventListener("click", async function(e) {
     try {
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Prenatal Check-up Record will be archived.",
+            text: "The Prenatal Check-up Record will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
         });
         
         if (!result.isConfirmed) return;

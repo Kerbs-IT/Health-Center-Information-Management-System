@@ -69,7 +69,7 @@
                             <td colspan="5" class="w-75 bg-white" id="view_prescribe_by_nurse">Nurse Joy</td>
                         </tr>
                         <tr>
-                            <td colspan="2" class="bg-light">Remarks*</td>
+                            <td colspan="2" class="bg-light">Remarks</td>
                             <td colspan="5" id="view_remarks">none</td>
                         </tr>
                     </table>

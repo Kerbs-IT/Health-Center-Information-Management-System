@@ -73,7 +73,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="birthdate">Date of Birth</label>
+                                            <label for="birthdate">Date of Birth*</label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($seniorCitizenRecord -> patient)->date_of_birth?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>

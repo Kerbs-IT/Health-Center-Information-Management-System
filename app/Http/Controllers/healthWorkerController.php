@@ -6,6 +6,7 @@ use App\Models\addresses;
 use App\Models\nurses;
 use App\Models\staff;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class healthWorkerController extends Controller
 {   
@@ -62,30 +64,37 @@ class healthWorkerController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'role' => 'required|in:staff,patient',
-                'first_name' => 'required',
+                'first_name' => ['required', Rule::unique('users')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                })],
                 'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required'],
                 'assigned_area' => 'required',
+                'add_date_of_birth' => 'required|date',
+                'add_contact_number' => 'sometimes|nullable|numeric|digits_between:7,12'
                
             ]);
 
           
 
-            switch ($data['role']) {
-                case 'nurse':
-                case 'staff':
-                    $data['status'] = 'pending';  // Needs admin or nurse approval
-                    break;
-
-                case 'patient':
-                    $data['status'] = 'active';   // Patients get access immediately
-                    break;
-
-                default:
-                    $data['status'] = 'pending';  // fallback
-                    break;
-            }
-            $newUser = User::create($data);
+            $data['status'] = 'active';
+            $data['password'] = Hash::make($data['password']);
+            $middleInitial = $data['middle_initial']? ucwords(strtolower($data['middle_initial'])):null;
+            $newUser = User::create([
+                'username' => ucwords(strtolower($data['username'])),
+                'first_name' => ucwords(strtolower($data['first_name'])),
+                'middle_initial' => $middleInitial,
+                'last_name' => ucwords(strtolower($data['last_name'])),
+                'patient_type' => 'none',
+                'email' => $data['email'],
+                'date_of_birth' => $data['add_date_of_birth'],
+                'contact_number' => $data['add_contact_number']??null,
+                'password' => $data['password'],
+                'role' => 'staff',
+                'status' => $data['status'], // Mark as pending until verified
+                'is_verified' => true,
+            ]);
             $userId = $newUser->id;
 
             // address
@@ -100,20 +109,33 @@ class healthWorkerController extends Controller
                 'role' => $newUser->role
             ]);
 
+            // full name
+            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name'])
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
+            $age = Carbon::parse($data['add_date_of_birth'])->age;
+
             staff::create([
                 'user_id' => $userId,
-                'first_name' => $data['first_name'],
-                'middle_initial' => $data['middle_initial'],
-                'last_name' => $data['last_name'],
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                'first_name' => ucwords(strtolower($data['first_name'])),
+                'middle_initial' => $middleInitial,
+                'last_name' => ucwords(strtolower($data['last_name'])),
+                'full_name' => $fullName,
                 'assigned_area_id' => $data['assigned_area'],
                 'address_id' => $address->address_id,
                 'profile_image' => 'images/default_profile.png',
-                'age' => null,
-                'date_of_birth' => null,
+                'age' => $age??null,
+                'date_of_birth' => $data['add_date_of_birth']??null,
                 'sex' => null,
                 'civil_status' => null,
-                'contact_number' => null,
+                'contact_number' => $data['add_contact_number'],
                 'nationality' => null,
             ]);
 
@@ -130,9 +152,9 @@ class healthWorkerController extends Controller
         try{
             $user = User::findOrFail($id);
             $data = $request -> validate([
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string|max:2',
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'middle_initial' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'sex' => 'sometimes|nullable|string',

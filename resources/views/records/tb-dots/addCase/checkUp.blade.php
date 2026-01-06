@@ -113,7 +113,7 @@
             <small class="text-danger error-text" id="outcome_error"></small>
         </div>
         <div class="mb-3">
-            <label for="add_date_of_comeback">Date of Comeback</label>
+            <label for="add_date_of_comeback">Date of Comeback*</label>
             <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback">
         </div>
     </div>

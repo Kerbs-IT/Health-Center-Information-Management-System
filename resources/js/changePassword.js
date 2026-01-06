@@ -81,3 +81,30 @@ btn.addEventListener("click", async (e) => {
        });
    }
 });
+
+// inputs
+const currentPassword= document.getElementById("current_password");
+const newPassword= document.getElementById("new_password");
+const newPasswordConfirmation= document.getElementById("new_password_confirmation");
+// eyeIcon
+const currentPasswordEyeIcon = document.getElementById("current_password_eye_icon");
+const newPasswordEyeIcon = document.getElementById("new_password_eye_icon");
+const newPasswordConfirmationEyeIcon = document.getElementById("new_password_confirmation_eye_icon");
+
+// call the function
+passwordToggle(currentPasswordEyeIcon, currentPassword);
+passwordToggle(newPasswordEyeIcon, newPassword);
+passwordToggle(newPasswordConfirmationEyeIcon, newPasswordConfirmation);
+
+// eye icon toggle
+function passwordToggle(eyeIcon, passwordInput) {
+    eyeIcon.addEventListener("click", () => {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+        } else {
+            passwordInput.type = "password";
+        }
+    });
+}
+
+

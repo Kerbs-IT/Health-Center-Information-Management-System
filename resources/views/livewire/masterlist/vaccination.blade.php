@@ -177,7 +177,9 @@
                     <td>{{optional($masterlist)->MCV_2}}</td>
                     <td>{{optional($masterlist)->remarks}}</td>
                     <td>
-                        <button class="btn btn-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">Edit</button>
+                        <button class=" fs-2 text-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
                     </td>
                 </tr>
                 @empty

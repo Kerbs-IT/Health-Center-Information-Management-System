@@ -128,7 +128,7 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-12 col-md-12">
                                         <label for="birthdate" class="form-label">Date of Birth</label>
-                                        <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="">
+                                        <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="" max="{{date('Y-m-d')}}">
                                         <small class="text-danger" id="birthdate-error"></small>
                                     </div>
 
@@ -191,7 +191,7 @@
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end gap-2 mt-4">
                                     <button type="button" class="btn btn-secondary px-4" id="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn" >Save</button>
+                                    <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn">Save</button>
                                 </div>
                             </div>
                         </div>

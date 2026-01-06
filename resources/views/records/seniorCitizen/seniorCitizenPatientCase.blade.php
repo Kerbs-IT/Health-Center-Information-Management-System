@@ -151,12 +151,12 @@
                                                             <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
-                                                            <label for="" class="text-nowrap">Remarks *</label>
+                                                            <label for="" class="text-nowrap">Remarks</label>
                                                             <input type="text" class="form-control p-2 border" name="add_medication_maintenance_remarks">
                                                             <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
-                                                            <label for="add_date_of_comeback">Date of Comeback</label>
+                                                            <label for="add_date_of_comeback">Date of Comeback*</label>
                                                             <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback">
                                                         </div>
                                                     </div>
@@ -273,7 +273,7 @@
 
                                                         <!-- date of comeback -->
                                                         <div class="mb-3 ">
-                                                            <label for="edit_date_of_comeback">Date of Comeback</label>
+                                                            <label for="edit_date_of_comeback">Date of Comeback*</label>
                                                             <input type="date" class="form-control bg-light border" name="edit_date_of_comeback" id="edit_date_of_comeback">
                                                             <small class="text-danger error-text" id="edit_date_of_comeback_error"></small>
                                                         </div>
