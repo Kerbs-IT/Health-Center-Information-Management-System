@@ -318,7 +318,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date:</label>
-        <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement" id="side_A_add_date_of_acknowledgement">
+        <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement" id="side_A_add_date_of_acknowledgement" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
     <small class="text-danger error-text" id="side_A_add_date_of_acknowledgement_error"></small>
     <div class="mb-md-3 mb-0 w-100">
@@ -365,7 +365,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date:</label>
-        <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement_consent" id="side_A_add_date_of_acknowledgement_consent">
+        <input type="date" class="form-control w-100 text-center" name="side_A_add_date_of_acknowledgement_consent" id="side_A_add_date_of_acknowledgement_consent" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
     <small class="text-danger error-text" id="signature_image_error"></small>
     <small class="text-danger error-text" id="side_A_add_date_of_acknowledgement_consent_error"></small>

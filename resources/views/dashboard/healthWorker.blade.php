@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="birthdate">Date of Birth</label>
-                                    <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                    <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                                     <small class="text-danger" id="birthdate-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">

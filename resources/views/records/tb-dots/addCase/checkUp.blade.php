@@ -3,7 +3,7 @@
         <!-- Date of Visit -->
         <div class="mb-3">
             <label for="visit_date" class="form-label">Date of Visit</label>
-            <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>">
+            <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="patient_name" value="{{$patient_name}}">
             <input type="hidden" name="handled_by" value="{{$healthWorkerId}}">
         </div>

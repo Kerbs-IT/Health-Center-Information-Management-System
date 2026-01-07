@@ -111,7 +111,7 @@
                                 </div>
                                 <div class="input-field flex-grow-1 ">
                                     <label for="birthdate">Date of Birth</label>
-                                    <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
                                 </div>
                             </div>
@@ -124,77 +124,77 @@
 
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="BCG_input">BCG</label>
-                                    <input type="date" class="form-control" name="BCG" id="BCG_input">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="BCG" id="BCG_input">
                                 </div>
 
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="Hepatitis_w/in_24hrs">Hepatitis w/in 24hrs</label>
-                                    <input type="date" class="form-control" name="Hepatitis_B" id="Hepatitis_w/in_24hrs_input">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="Hepatitis_B" id="Hepatitis_w/in_24hrs_input">
                                 </div>
                             </div>
 
                             <div class="input-group d-flex gap-2 w-100">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 1</label>
-                                    <input type="date" name="PENTA_1" class="form-control w-100 border">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_1" class="form-control w-100 border">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 2</label>
-                                    <input type="date" name="PENTA_2" class="form-control w-100 border">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_2" class="form-control w-100 border">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 3</label>
-                                    <input type="date" name="PENTA_3" class="form-control w-100 border">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_3" class="form-control w-100 border">
                                 </div>
                             </div>
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 1</label>
-                                    <input type="date" name="OPV_1" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_1" class="form-control border w-100">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 2</label>
-                                    <input type="date" name="OPV_2" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_2" class="form-control border w-100">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 3</label>
-                                    <input type="date" name="OPV_3" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_3" class="form-control border w-100">
                                 </div>
                             </div>
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 1</label>
-                                    <input type="date" name="PCV_1" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_1" class="form-control border w-100">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 2</label>
-                                    <input type="date" name="PCV_2" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_2" class="form-control border w-100">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 3</label>
-                                    <input type="date" name="PCV_3" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_3" class="form-control border w-100">
                                 </div>
                             </div>
                             <!-- ipv -->
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">IPV 1</label>
-                                    <input type="date" name="IPV_1" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_1" class="form-control border w-100">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">IPV 2</label>
-                                    <input type="date" name="IPV_2" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_2" class="form-control border w-100">
                                 </div>
                             </div>
                             <!-- mcv -->
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">MCV 1</label>
-                                    <input type="date" name="MCV_1" class="form-control border w-100" id="MCV_1">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_1" class="form-control border w-100" id="MCV_1">
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">MCV 2</label>
-                                    <input type="date" name="MCV_2" class="form-control border w-100">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_2" class="form-control border w-100">
                                 </div>
                             </div>
                             <div class="mb-2">

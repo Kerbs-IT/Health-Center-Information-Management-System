@@ -73,7 +73,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($tbDotsRecord -> patient)->date_of_birth?->format('Y-m-d')??''}}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($tbDotsRecord -> patient)->date_of_birth?->format('Y-m-d')??''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
 
@@ -129,7 +129,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($tbDotsRecord-> patient)->date_of_registration->format('Y-m-d')??''}}">
+                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" min="1950-01-01" max="{{date('Y-m-d')}}" value="{{optional($tbDotsRecord-> patient)->date_of_registration->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
