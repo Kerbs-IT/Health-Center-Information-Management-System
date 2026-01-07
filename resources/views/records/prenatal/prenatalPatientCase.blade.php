@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-0 shadow-lg min-h-[75vh]">
+                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-0 min-h-[75vh]">
 
                         <livewire:prenatal.patient-case-table caseId="{{$caseId}}">
 
