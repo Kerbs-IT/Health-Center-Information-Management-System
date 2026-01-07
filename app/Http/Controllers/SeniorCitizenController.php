@@ -46,12 +46,16 @@ class SeniorCitizenController extends Controller
                 'occupation' => 'sometimes|nullable|string',
                 'religion' => 'sometimes|nullable|string',
                 'SSS' => 'sometimes|nullable|string',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
             ]);
 
             // validate case info
@@ -217,12 +221,16 @@ class SeniorCitizenController extends Controller
                 'religion' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
              
             ]);
 

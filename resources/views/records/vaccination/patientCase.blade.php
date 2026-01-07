@@ -127,17 +127,17 @@
                                                 <div class="mb-2 w-100 d-flex gap-2 flex-md-nowrap">
                                                     <div class="mb-2  w-[100%] md:w-[50%]">
                                                         <label for="add_weight">Weight</label>
-                                                        <input type="number" class="form-control" name="add_weight" id="add_weight" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_weight" id="add_weight" required placeholder="Enter the weight">
                                                         <small class="text-danger error-text" id="add_weight_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="time">Height</label>
-                                                        <input type="number" class="form-control" name="add_height" id="add_height" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_height" id="add_height" required placeholder="Enter the height">
                                                         <small class="text-danger error-text" id="add_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="add_temperature">Temperature</label>
-                                                        <input type="number" class="form-control" name="add_temperature" id="add_temperature" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_temperature" id="add_temperature" required placeholder="Enter the temperature">
                                                         <small class="text-danger error-text" id="add_temperature_error"></small>
                                                     </div>
                                                 </div>

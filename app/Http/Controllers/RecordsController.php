@@ -63,9 +63,24 @@ class RecordsController extends Controller
                 'case_record_id' => 'required',
                 'dose' => 'required',
                 'remarks' => 'sometimes',
-                'height' => 'nullable|numeric',
-                'weight' => 'nullable|numeric',
-                'temperature'    => 'nullable|numeric',
+                'height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+
+                'weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+
+                'temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
+
                 'date_of_comeback' => 'required|date'
             ]);
 
@@ -482,9 +497,21 @@ class RecordsController extends Controller
                 'selected_vaccine_type' => 'required',
                 'add_record_dose' => 'required',
                 'add_case_remarks' => 'sometimes|nullable|string',
-                'add_height' => 'nullable|numeric',
-                'add_weight' => 'nullable|numeric',
-                'add_temperature'    => 'nullable|numeric',
+                'add_height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+                'add_weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+                'add_temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
                 'add_date_of_comeback' => 'required|date'
             ]);
 

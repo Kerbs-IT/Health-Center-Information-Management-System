@@ -233,17 +233,17 @@
                                         <div class="mb-md-2 mb-0 input-field d-flex gap-3 w-100 first-row flex-wrap flex-md-nowrap flex-md-row flex-column">
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" name="blood_pressure" placeholder="ex. 120/80" value="{{optional($familyPlanningRecord->family_planning_medical_record)->blood_pressure??''}}">
+                                                <input type="text" class="form-control w-100" name="blood_pressure" placeholder="Enter the blood pressure" value="{{optional($familyPlanningRecord->family_planning_medical_record)->blood_pressure??''}}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100" name="temperature" placeholder="00 C" value="{{optional($familyPlanningRecord->family_planning_medical_record)->temperature??''}}">
+                                                <input type="text" class="form-control w-100" name="temperature" placeholder="Enter the value temperature"{{optional($familyPlanningRecord->family_planning_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" name="pulse_rate" placeholder=" 60-100" value="{{optional($familyPlanningRecord->family_planning_medical_record)->pulse_rate??''}}">
+                                                <input type="text" class="form-control w-100" name="pulse_rate" placeholder="Enter the pulse rate" value="{{optional($familyPlanningRecord->family_planning_medical_record)->pulse_rate??''}}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -252,17 +252,17 @@
                                         <div class="mb-md-2 mb-0 input-field d-flex gap-3 w-100 second-row flex-wrap flex-md-nowrap flex-md-row flex-column">
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" name="respiratory_rate" placeholder="ex. 25" value="{{optional($familyPlanningRecord->family_planning_medical_record)->respiratory_rate??''}}">
+                                                <input type="text" class="form-control w-100" name="respiratory_rate" placeholder="Enter the respiratory rate" value="{{optional($familyPlanningRecord->family_planning_medical_record)->respiratory_rate??''}}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="height" value="{{optional($familyPlanningRecord->family_planning_medical_record)->height??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" value="{{optional($familyPlanningRecord->family_planning_medical_record)->height??''}}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight" value="{{optional($familyPlanningRecord->family_planning_medical_record)->weight??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight" value="{{optional($familyPlanningRecord->family_planning_medical_record)->weight??''}}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

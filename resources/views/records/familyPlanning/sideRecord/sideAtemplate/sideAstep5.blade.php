@@ -5,13 +5,13 @@
         <div class="mb-md-2 mb-0 input-field d-flex gap-md-3 gap-1 w-100 first-row flex-wrap flex-lg-nowrap">
             <div class="mb-md-2 mb-0 flex-fill lg:w-[50%]">
                 <label for="BP">Blood Pressure:</label>
-                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="side_A_add_blood_pressure" id="side_A_add_blood_pressure">
+                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="side_A_add_blood_pressure" id="side_A_add_blood_pressure">
                 <small class="text-danger error-text" id="side_A_add_blood_pressure_error"></small>
             </div>
 
             <div class="mb-md-2 mb-0 flex-fill lg:w-[50%]">
                 <label for="BP">Pulse Rate(Bpm):</label>
-                <input type="text" class="form-control w-100" placeholder=" 60-100" name="side_A_add_pulse_rate" id="side_A_add_pulse_rate">
+                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="side_A_add_pulse_rate" id="side_A_add_pulse_rate">
                 <small class="text-danger error-text" id="side_A_add_pulse_rate_error"></small>
             </div>
         </div>
@@ -20,12 +20,12 @@
 
             <div class="mb-md-2 mb-0 flex-fill lg:w-[50%]">
                 <label for="BP">Height(cm):</label>
-                <input type="number" class="form-control w-100" placeholder="00.00" name="side_A_add_height" id="side_A_add_height">
+                <input type="text" class="form-control w-100" placeholder="Enter the height" name="side_A_add_height" id="side_A_add_height">
                 <small class="text-danger error-text" id="side_A_add_height_error"></small>
             </div>
             <div class="mb-md-2 mb-0 flex-fill lg:w-[50%]">
                 <label for="BP">Weight(kg):</label>
-                <input type="number" class="form-control w-100" placeholder=" 00.00" name="side_A_add_weight" id="side_A_add_weight">
+                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="side_A_add_weight" id="side_A_add_weight">
                 <small class="text-danger error-text" id="side_A_add_weight_error"></small>
             </div>
         </div>

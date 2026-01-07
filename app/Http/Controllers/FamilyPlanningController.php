@@ -60,12 +60,16 @@ class FamilyPlanningController extends Controller
                     'nullable',
                     'regex:/^\d{2}-\d{9}-\d{1}$/'
                 ],
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
             ]);
             $caseData = $request->validate([
                 'client_id' => 'sometimes|nullable|string',
@@ -561,12 +565,16 @@ class FamilyPlanningController extends Controller
                 'religion' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
                 'client_id' =>  'sometimes|nullable|string',
                 'philhealth_no' => [
                     'sometimes',
@@ -817,10 +825,14 @@ class FamilyPlanningController extends Controller
 
             // physical examination
             $physicalExaminationData = $request->validate([
-                'side_A_add_blood_pressure' => 'sometimes|nullable|numeric',
+                'side_A_add_blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'side_A_add_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'side_A_add_height'            => 'nullable|numeric|between:30,300', // cm range
-                'side_A_add_weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'side_A_add_weight'            => 'nullable|numeric|between:1,300',  // kg range
                 'side_A_add_skin_type' => 'sometimes|nullable|string',
                 'side_A_add_conjuctiva_type' => 'sometimes|nullable|string',
                 'side_A_add_breast_type' => 'sometimes|nullable|string',
@@ -1234,10 +1246,14 @@ class FamilyPlanningController extends Controller
 
             // physical examination
             $physicalExaminationData = $request->validate([
-                'edit_blood_pressure' => 'sometimes|nullable|numeric',
+                'edit_blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'edit_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'edit_height'            => 'nullable|numeric|between:30,300', // cm range
-                'edit_weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'edit_weight'            => 'nullable|numeric|between:1,300',  // kg range
                 'edit_skin_type' => 'sometimes|nullable|string',
                 'edit_conjuctiva_type' => 'sometimes|nullable|string',
                 'edit_breast_type' => 'sometimes|nullable|string',

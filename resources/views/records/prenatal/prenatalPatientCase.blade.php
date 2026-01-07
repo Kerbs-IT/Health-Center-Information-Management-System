@@ -129,17 +129,17 @@
                                                         <div class="mb-md-2 mb-1 input-field d-flex gap-md-3 gap-1 w-100 first-row flex-lg-nowrap flex-wrap">
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Blood Pressure:</label>
-                                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="check_up_blood_pressure">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="check_up_blood_pressure">
                                                                 <small class="text-danger error-text" id="check_up_blood_pressure_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Temperature:</label>
-                                                                <input type="number" class="form-control w-100" placeholder="00 C" name="check_up_temperature">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="check_up_temperature">
                                                                 <small class="text-danger error-text" id="check_up_temperature_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="check_up_pulse_rate">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="check_up_pulse_rate">
                                                                 <small class="text-danger error-text" id="check_up_pulse_rate_error"></small>
                                                             </div>
 
@@ -148,17 +148,17 @@
                                                         <div class="mb-md-2 mb-1 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-lg-nowrap flex-wrap">
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP" class="text-nowrap">Respiratory Rate (breaths/min):</label>
-                                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="check_up_respiratory_rate">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="check_up_respiratory_rate">
                                                                 <small class="text-danger error-text" id="check_up_respiratory_rate_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Height(cm):</label>
-                                                                <input type="number" class="form-control w-100" placeholder="00.00" name="check_up_height">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="check_up_height">
                                                                 <small class="text-danger error-text" id="check_up_height_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Weight(kg):</label>
-                                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="check_up_weight">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the  weight" name="check_up_weight">
                                                                 <small class="text-danger error-text" id="check_up_weight_error"></small>
                                                             </div>
                                                         </div>
