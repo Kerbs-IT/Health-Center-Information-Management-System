@@ -72,7 +72,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
                                             <label for="birthdate">Date of Birth*</label>
-                                            <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                            <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
                                         <!-- place of birth -->
@@ -85,7 +85,7 @@
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="20" class="form-control" name="age" value="">
+                                            <input type="number" id="age" placeholder="0" class="form-control" name="age" value="">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>
@@ -373,17 +373,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -392,17 +392,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="height">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>
@@ -410,12 +410,12 @@
                                         <div class="vitals mb-2 input-field d-none gap-3 w-100 third-row">
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height">
+                                                <input type="number" class="form-control w-100" placeholder="Enter the birth height" name="vaccination_height">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the birth weight" name="vaccination_weight">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>
@@ -467,17 +467,17 @@
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_weight">Weight</label>
-                                        <input type="number" class="form-control" name="current_weight" id="current_weight" required>
+                                        <input type="text" class="form-control" name="current_weight" id="current_weight" required>
                                         <small class="text-danger error-text" id="current_weight_error"></small>
                                     </div>
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="time">Height</label>
-                                        <input type="number" class="form-control" name="current_height" id="current_height" required>
+                                        <input type="text" class="form-control" name="current_height" id="current_height" required>
                                         <small class="text-danger error-text" id="current_height_error"></small>
                                     </div>
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="current_temperature">Temperature</label>
-                                        <input type="number" class="form-control" name="current_temperature" id="current_temperature" required>
+                                        <input type="text" class="form-control" name="current_temperature" id="current_temperature" required>
                                         <small class="text-danger error-text" id="current_temperature_error"></small>
                                     </div>
                                 </div>

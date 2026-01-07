@@ -63,16 +63,28 @@ class addPatientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy'=> 'required',
-                'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/', 'between:30,250'],
+                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/', 'between:1,300'],
                 'date_of_vaccination' => 'required|date',
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
                 'dose_number' => 'required|numeric',
                 'remarks' => 'sometimes|nullable|string',
-                'current_height' => 'sometimes|nullable|numeric',
-                'current_weight' => 'sometimes|nullable|numeric',
-                'current_temperature' => 'nullable|numeric',
+                'current_height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+                'current_weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+                'current_temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
                 'date_of_comeback' => 'required|date'
 
             ]);

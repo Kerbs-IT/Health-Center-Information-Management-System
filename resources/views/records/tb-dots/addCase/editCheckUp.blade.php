@@ -14,17 +14,17 @@
             <div class="mb-2 input-field d-flex gap-3 w-100 first-row">
                 <div class="mb-2 w-50">
                     <label for="BP">Blood Pressure:</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 120/80" id="edit_checkup_blood_pressure" name="edit_checkup_blood_pressure">
+                    <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" id="edit_checkup_blood_pressure" name="edit_checkup_blood_pressure">
                     <small class="text-danger error-text" id="edit_checkup_blood_pressure_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Temperature:</label>
-                    <input type="number" class="form-control w-100" placeholder="00 C" id="edit_checkup_temperature" name="edit_checkup_temperature">
+                    <input type="text" class="form-control w-100" placeholder="Enter the temperature" id="edit_checkup_temperature" name="edit_checkup_temperature">
                     <small class="text-danger error-text" id="edit_checkup_temperature_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Pulse Rate(Bpm):</label>
-                    <input type="text" class="form-control w-100" placeholder=" 60-100" id="edit_checkup_pulse_rate" name="edit_checkup_pulse_rate">
+                    <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="edit_checkup_pulse_rate" name="edit_checkup_pulse_rate">
                     <small class="text-danger error-text" id="edit_checkup_pulse_rate_error"></small>
                 </div>
 
@@ -33,17 +33,17 @@
             <div class="mb-2 input-field d-flex gap-3 w-100 second-row">
                 <div class="mb-2 w-50">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 25" id="edit_checkup_respiratory_rate" name="edit_checkup_respiratory_rate">
+                    <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" id="edit_checkup_respiratory_rate" name="edit_checkup_respiratory_rate">
                     <small class="text-danger error-text" id="edit_checkup_respiratory_rate_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Height(cm):</label>
-                    <input type="number" class="form-control w-100" placeholder="00.00" id="edit_checkup_height" name="edit_checkup_height">
+                    <input type="text" class="form-control w-100" placeholder="Enter the height" id="edit_checkup_height" name="edit_checkup_height">
                     <small class="text-danger error-text" id="edit_checkup_height_error"></small>
                 </div>
                 <div class="mb-2 w-50">
                     <label for="BP">Weight(kg):</label>
-                    <input type="number" class="form-control w-100" placeholder=" 00.00" id="edit_checkup_weight" name="edit_checkup_weight">
+                    <input type="text" class="form-control w-100" placeholder="Enter the weight" id="edit_checkup_weight" name="edit_checkup_weight">
                     <small class="text-danger error-text" id="edit_checkup_weight_error"></small>
                 </div>
             </div>

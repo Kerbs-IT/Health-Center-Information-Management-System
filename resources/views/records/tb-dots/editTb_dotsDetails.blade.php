@@ -179,17 +179,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->blood_pressure??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->blood_pressure??''}}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100" placeholder="00 C" name="temperature" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->temperature??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->pulse_rate??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->pulse_rate??''}}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -198,17 +198,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->respiratory_rate??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->respiratory_rate??''}}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="height" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->height??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->height??''}}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->weight??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the  weight" name="weight" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->weight??''}}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

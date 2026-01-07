@@ -181,12 +181,12 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 third-row flex-wrap flex-md-nowrap">
                                             <div class="mb-2 w-[100%] md:w-[50%]">
                                                 <label for="BP">Birth Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="vaccination_height" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="mb-2 w-[100%] md:w-[50%]">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_weight ?? 'N/A'}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="vaccination_weight" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_weight ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>

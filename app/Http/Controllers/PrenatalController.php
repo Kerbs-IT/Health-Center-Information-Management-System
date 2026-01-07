@@ -90,7 +90,11 @@ class PrenatalController extends Controller
                 'TT4' => 'sometimes|nullable|numeric',
                 'TT5' => 'sometimes|nullable|numeric',
                 'nurse_decision' => 'sometimes|nullable|string',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
@@ -645,7 +649,11 @@ class PrenatalController extends Controller
                 'family_planning' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
@@ -1399,12 +1407,16 @@ class PrenatalController extends Controller
                     // Optional fields
                     'health_worker_id'         => 'nullable|exists:staff,user_id',
                     'check_up_time'            => 'nullable|date_format:H:i',
-                    'check_up_blood_pressure'  => 'nullable|string|max:20',
-                    'check_up_temperature'     => 'nullable|numeric|min:20|max:45',
+                    'check_up_blood_pressure'  => [
+                        'sometimes',
+                        'nullable',
+                        'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                    ],
+                    'check_up_temperature'     => 'nullable|numeric|min:20|max:100',
                     'check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'check_up_height'          => 'nullable|numeric|min:0',
-                    'check_up_weight'          => 'nullable|numeric|min:0',
+                    'check_up_height'          => 'nullable|numeric|between:30,250',
+                    'check_up_weight'          => 'nullable|numeric|min:1|between:1,300',
 
                     // Symptom questions (all optional but strings)
                     'abdomen_question'                 => 'nullable|string|max:255',
@@ -1531,12 +1543,16 @@ class PrenatalController extends Controller
                     // Optional fields
                     'edit_health_worker_id'         => 'nullable|exists:staff,user_id',
                     'edit_check_up_time'            => 'nullable|date_format:H:i:s',
-                    'edit_check_up_blood_pressure'  => 'nullable|string|max:20',
+                    'edit_check_up_blood_pressure'  => [
+                        'sometimes',
+                        'nullable',
+                        'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                    ],
                     'edit_check_up_temperature'     => 'nullable|numeric|min:20|max:45',
                     'edit_check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'edit_check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'edit_check_up_height'          => 'nullable|numeric|min:20',
-                    'edit_check_up_weight'          => 'nullable|numeric|min:20',
+                    'edit_check_up_height'          => 'nullable|numeric|between:30,250',
+                    'edit_check_up_weight'          => 'nullable|numeric|between:1,300',
 
                     // Symptom questions (all optional but strings)
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
