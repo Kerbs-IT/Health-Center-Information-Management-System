@@ -474,12 +474,12 @@
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
                                                                 <label for="place_of_delivery">LMP</label>
-                                                                <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input">
+                                                                <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="expected_delivery">Expected Delivery</label>
-                                                                <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input">
+                                                                <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="expected_delivery_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
@@ -1050,12 +1050,12 @@
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
                                                                 <label for="add_LMP">LMP</label>
-                                                                <input type="date" name="add_LMP" class="form-control w-100" placeholder="trece" id="add_LMP_input">
+                                                                <input type="date" name="add_LMP" class="form-control w-100" placeholder="trece" id="add_LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="add_expected_delivery_input">Expected Delivery</label>
-                                                                <input type="date" name="add_expected_delivery" class="form-control w-100" placeholder="trece" id="add_expected_delivery_input">
+                                                                <input type="date" name="add_expected_delivery" class="form-control w-100" placeholder="trece" id="add_expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_expected_delivery_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">

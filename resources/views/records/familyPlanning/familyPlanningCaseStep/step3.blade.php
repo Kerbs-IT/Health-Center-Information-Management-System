@@ -42,7 +42,7 @@
             <!-- date of last delivery -->
             <div class="mb-md-3 mb-1">
                 <label for="edit_date_of_last_delivery" class="text-nowrap">Date of Last Delivery:</label>
-                <input type="date" name="edit_date_of_last_delivery" id="edit_date_of_last_delivery" class="form-control">
+                <input type="date" name="edit_date_of_last_delivery" id="edit_date_of_last_delivery" class="form-control" min="1950-01-01" max="{{date('Y-m-d')}}">
                 <small class="text-danger error-text" id="edit_date_of_last_delivery_error"></small>
             </div>
             <div class="mb-md-3 mb-1 d-flex gap-md-2 gap-1 w-100 flex-wrap">
@@ -58,13 +58,13 @@
             <!-- last menstrual period -->
             <div class="mb-md-3 mb-1">
                 <label for="edit_date_of_last_delivery_menstrual_period" class="text-nowrap">Last menstrual period:</label>
-                <input type="date" name="edit_date_of_last_delivery_menstrual_period" id="edit_date_of_last_delivery_menstrual_period" class="form-control">
+                <input type="date" name="edit_date_of_last_delivery_menstrual_period" id="edit_date_of_last_delivery_menstrual_period" class="form-control" min="1950-01-01" max="{{date('Y-m-d')}}">
                 <small class="text-danger error-text" id="edit_date_of_last_delivery_menstrual_period_error"></small>
             </div>
             <!-- previous -->
             <div class="mb-md-3 mb-1">
                 <label for="edit_date_of_previous_delivery_menstrual_period" class="text-nowrap">Previous menstrual period:</label>
-                <input type="date" name="edit_date_of_previous_delivery_menstrual_period" id="edit_date_of_previous_delivery_menstrual_period" class="form-control">
+                <input type="date" name="edit_date_of_previous_delivery_menstrual_period" id="edit_date_of_previous_delivery_menstrual_period" class="form-control" min="1950-01-01" max="{{date('Y-m-d')}}">
                 <small class="text-danger error-text" id="edit_date_of_previous_delivery_menstrual_period_error"></small>
             </div>
             <!-- mesntrual flow -->

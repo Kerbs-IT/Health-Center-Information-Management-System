@@ -318,7 +318,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date:</label>
-        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement">
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
     <div class="mb-3 w-100">
         <p class="text-center">I hereby consent to the inclusion of my FP 1 in the Family Health Registry</p>
@@ -365,7 +365,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date</label>
-        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent">
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
 
 </div>

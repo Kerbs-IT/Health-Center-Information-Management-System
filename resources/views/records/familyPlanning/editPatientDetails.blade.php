@@ -72,7 +72,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control bg-light w-100 px-5" name="date_of_birth" value="{{optional($familyPlanningRecord->patient)->date_of_birth?->format('Y-m-d')??''}}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control bg-light w-100 px-5" min="1950-01-01" max="{{date('Y-m-d')}}" name="date_of_birth" value="{{optional($familyPlanningRecord->patient)->date_of_birth?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="data_of_birth_error"></small>
 
@@ -127,7 +127,7 @@
                                     <div class="mb-md-2 mb-0 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control bg-light text-center w-100 px-5 " name="date_of_registration" value="{{optional($familyPlanningRecord->patient)->date_of_registration?->format('Y-m-d')??''}}">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control bg-light text-center w-100 px-5 " min="1950-01-01" max="{{date('Y-m-d')}}" name="date_of_registration" value="{{optional($familyPlanningRecord->patient)->date_of_registration?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
@@ -238,7 +238,7 @@
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="text" class="form-control w-100" name="temperature" placeholder="Enter the value temperature"{{optional($familyPlanningRecord->family_planning_medical_record)->temperature??''}}">
+                                                <input type="text" class="form-control w-100" name="temperature" placeholder="Enter the value temperature" {{optional($familyPlanningRecord->family_planning_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">

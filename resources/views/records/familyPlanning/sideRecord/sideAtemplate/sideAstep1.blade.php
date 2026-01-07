@@ -59,7 +59,7 @@
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="side_A_add_client_date_of_birth">Date of Birth</label>
-                            <input type="date" id="side_A_add_client_date_of_birth" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
+                            <input type="date" id="side_A_add_client_date_of_birth" min="1950-01-01" max="{{date('Y-m-d')}}" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
 
                             <small class="text-danger error-text" id="side_A_add_client_date_of_birth_error"></small>
 
@@ -251,7 +251,7 @@
                 </div>
                 <!-- FP of current user -->
                 <div class="reason-con">
-                <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
+                    <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
                         <div class="answers d-flex gap-2">
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" value="spacing" id="current_user_reason_for_fp_spacing">

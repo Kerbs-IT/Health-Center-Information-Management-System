@@ -70,7 +70,7 @@
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($info)->date_of_birth?? ''}}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($info)->date_of_birth?->format('Y-m-d')?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
                                         <!-- place of birth -->
@@ -104,7 +104,7 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($info)-> contact_number ?? 'none'}}">
+                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($info)-> contact_number ?? ''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
@@ -120,7 +120,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-[100%] md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 

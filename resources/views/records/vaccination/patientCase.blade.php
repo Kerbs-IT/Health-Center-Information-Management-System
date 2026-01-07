@@ -115,7 +115,7 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
-                                                    <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination">
+                                                    <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger w-100" id="add-date-error"></small>
                                                 </div>
 
@@ -232,7 +232,7 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
-                                                    <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination">
+                                                    <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                                 </div>
 

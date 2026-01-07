@@ -54,7 +54,7 @@
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="edit_client_date_of_birth">Date of Birth</label>
-                            <input type="date" id="edit_client_date_of_birth" placeholder="01-02-25" class="form-control w-100 px-5" name="edit_client_date_of_birth">
+                            <input type="date" id="edit_client_date_of_birth" placeholder="01-02-25" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control w-100 px-5" name="edit_client_date_of_birth">
 
                             <small class="text-danger error-text" id="edit_client_date_of_birth_error"></small>
 
