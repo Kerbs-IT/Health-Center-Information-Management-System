@@ -4,11 +4,12 @@
             <div>
                 <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
             </div>
-            <div class="add-buttons d-flex justify-content-end gap-2 flex-wrap">
-                <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
-                <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
-                <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
-
+            <div>
+                <div class="add-buttons d-flex justify-content-end gap-2 flex-wrap">
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
+                </div>
             </div>
 
         </div>
