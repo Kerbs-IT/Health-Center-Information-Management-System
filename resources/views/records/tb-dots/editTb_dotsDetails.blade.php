@@ -90,8 +90,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{optional($tbDotsRecord->patient)->age??''}}">
-
+                                            <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($tbDotsRecord->patient)->age??''}}">
+                                            <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>

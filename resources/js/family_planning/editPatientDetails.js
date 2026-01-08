@@ -1,6 +1,7 @@
 import { fetchHealthworkers } from "../patient/healthWorkerList.js";
 import { puroks } from "../patient/healthWorkerList.js";
 import Swal from "sweetalert2";
+import { automateAge } from "../automateAge.js";
 const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
@@ -89,6 +90,16 @@ saveBtn.addEventListener("click", async (e) => {
         });
     }
 });
+
+// HANDLE THE AUTOMATED AGE VIA DATE OF BIRTH
+
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

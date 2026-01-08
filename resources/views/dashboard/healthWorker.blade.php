@@ -142,6 +142,18 @@
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                     <small class="text-danger" id="lname-error"></small>
                                 </div>
+                                <div class="input-field flex-fill">
+                                    <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
+                                        <option value="" selected>None</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="edit-suffix-error"></small>
+                                </div>
                             </div>
                             <!-- age -->
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-xl-nowrap flex-md-row flex-column">
@@ -328,6 +340,18 @@
                                 <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
                                 <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
                                 <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
+                                <div class="input-field flex-fill">
+                                    <select name="add_suffix" id="add_suffix" class="form-select responsive-input py-2">
+                                        <option value="" disabled selected>None</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="add_suffix_error"></small>
+                                </div>
                             </div>
                             <small class="text-danger add-healthworker-error" id="first_name_error"></small>
                             <small class="text-danger middle-initial-error add-healthworker-error" id="middle_initial_error"></small>

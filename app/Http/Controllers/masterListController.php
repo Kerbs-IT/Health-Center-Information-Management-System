@@ -74,7 +74,7 @@ class masterListController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'sex' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric|max:50',
+                'age' => 'sometimes|nullable|numeric|max:100',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'SE_status' => 'sometimes|nullable|string',
                 'remarks' => 'sometimes|nullable|string'

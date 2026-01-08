@@ -1,4 +1,5 @@
 import { puroks } from "../patient/healthWorkerList.js";
+import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
 
 const plan_to_have_more_children_yes = document.getElementById("plan_yes");
@@ -352,6 +353,14 @@ wra_update_btn.addEventListener("click", async (e) => {
         });
     }
 });
+
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

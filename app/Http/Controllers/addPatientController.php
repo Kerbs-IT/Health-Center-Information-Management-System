@@ -93,6 +93,7 @@ class addPatientController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleInitial = $data['middle_initial']? ucwords($data['middle_initial']):'';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -104,7 +105,7 @@ class addPatientController extends Controller
             $vaccinationPatient = patients::create([
                 'user_id' => null,
                 'first_name' => ucwords(strtolower($data['first_name'])),
-                'middle_initial' => ucwords(strtolower($data['middle_initial'])),
+                'middle_initial' => $middleInitial,
                 'last_name' => ucwords(strtolower($data['last_name'])),
                 'full_name' => $fullName,
                 'age' => $data['age']?? 0,
