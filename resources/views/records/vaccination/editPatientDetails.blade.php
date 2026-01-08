@@ -83,8 +83,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{optional($info)-> age ?? 'none'}}">
-
+                                            <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($info)-> age ?? 'none'}}">
+                                            <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>
@@ -121,7 +121,6 @@
                                         <div class="input-field w-[100%] md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
-
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
                                         </div>

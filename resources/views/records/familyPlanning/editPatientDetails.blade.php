@@ -89,8 +89,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="20" class="form-control bg-light" name="age" value="{{optional($familyPlanningRecord->patient)->age??''}}">
-
+                                            <input type="number" id="age" placeholder="20" class="form-control bg-light" disabled value="{{optional($familyPlanningRecord->patient)->age??''}}">
+                                            <input type="hidden" id="hiddenEditAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>

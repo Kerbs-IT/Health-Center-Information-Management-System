@@ -42,7 +42,8 @@ class User extends Authenticatable implements CanResetPassword
         'verification_attempts',
         'verification_locked_until',
         'email_verified_at',
-        'profile_image'
+        'profile_image',
+        'suffix'
     ];
 
     /**

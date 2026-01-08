@@ -25,6 +25,7 @@ class staff extends Model
         'civil_status',
         'contact_number',
         'nationality',
+        'suffix'
 
     ];
 

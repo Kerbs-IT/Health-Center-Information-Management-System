@@ -82,16 +82,16 @@
                                 </div>
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
-
-                                <div class="input-field flex-grow-1 ">
-                                    <label for="age">Age</label>
-                                    <input type="number" id="age" placeholder="20" class="form-control" name="age" value="">
-                                    <small class="text-danger error-text" id="age_error"></small>
-                                </div>
                                 <div class="input-field flex-grow-1 ">
                                     <label for="birthdate">Date of Birth</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="" class="form-control w-100 px-5" name="date_of_birth" value="">
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
+                                </div>
+                                <div class="input-field flex-grow-1 ">
+                                    <label for="age">Age</label>
+                                    <input type="number" id="age" placeholder="20" class="form-control" disabled value="">
+                                    <input type="hidden" id="hiddenAge" name="age">
+                                    <small class="text-danger error-text" id="age_error"></small>
                                 </div>
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 flex-wrap flex-lg-nowrap">

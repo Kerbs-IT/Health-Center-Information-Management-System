@@ -1,5 +1,6 @@
 import { fetchHealthworkers } from "./healthWorkerList.js";
 import { puroks } from "./healthWorkerList.js";
+import { automateAge } from "../automateAge.js";
 
 import Swal from "sweetalert2";
 
@@ -100,6 +101,16 @@ updateBtn.addEventListener("click", async (e) => {
         console.log("Error:", error);
     }
 });
+
+// date of birth and age automated
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
+
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

@@ -72,7 +72,8 @@ class healthWorkerController extends Controller
                 'last_name' => ['required'],
                 'assigned_area' => 'required',
                 'add_date_of_birth' => 'required|date',
-                'add_contact_number' => 'sometimes|nullable|numeric|digits_between:7,12'
+                'add_contact_number' => 'sometimes|nullable|numeric|digits_between:7,12',
+                'add_suffix' => 'sometimes|nullable|string',
                
             ]);
 
@@ -80,7 +81,10 @@ class healthWorkerController extends Controller
 
             $data['status'] = 'active';
             $data['password'] = Hash::make($data['password']);
+
             $middleInitial = $data['middle_initial']? ucwords(strtolower($data['middle_initial'])):null;
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
             $newUser = User::create([
                 'username' => ucwords(strtolower($data['username'])),
                 'first_name' => ucwords(strtolower($data['first_name'])),
@@ -94,6 +98,7 @@ class healthWorkerController extends Controller
                 'role' => 'staff',
                 'status' => $data['status'], // Mark as pending until verified
                 'is_verified' => true,
+                'suffix' => $data['add_suffix']??null
             ]);
             $userId = $newUser->id;
 
@@ -110,12 +115,12 @@ class healthWorkerController extends Controller
             ]);
 
             // full name
-            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
-            $middle = $middle ? strtoupper($middle) . '.' : null;
+           
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['add_suffix']
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -137,6 +142,7 @@ class healthWorkerController extends Controller
                 'civil_status' => null,
                 'contact_number' => $data['add_contact_number'],
                 'nationality' => null,
+                'suffix' => $data['add_suffix'] ?? null
             ]);
 
             return response()->json(['message' => 'New Health Worker has been added'],201);
@@ -171,7 +177,8 @@ class healthWorkerController extends Controller
                 'postal_code' => 'sometimes|nullable|numeric',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-                'update_assigned_area' => 'required'
+                'update_assigned_area' => 'required',
+                'edit_suffix' => 'sometimes|nullable|string'
             ]);
 
             if(!empty($data['password'])){
@@ -237,13 +244,34 @@ class healthWorkerController extends Controller
             $staff = $user-> staff;
             $nurse = $user -> nurses;
 
+            $middle = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleInitial = $data['middle_initial'] ? ucwords($data['middle_initial']) : '';
+            $parts = [
+                strtolower($data['first_name']),
+                $middle,
+                strtolower($data['last_name']),
+                $data['edit_suffix']
+            ];
+            
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+            
+
             // dd($staff);
+            $user->update([
+                'first_name' => ucwords(strtolower($data['first_name'])),
+                'middle_initial' => $middleInitial,
+                'last_name' => ucwords(strtolower($data['last_name'])),
+                'suffix' => $data['edit_suffix']?? $user->suffix
+            ]);
             
             $staff -> update([
-                'first_name' => $data['first_name']?? null,
-                'middle_initial' => $data['middle_initial']?? null,
-                'last_name' => $data['last_name']?? null,
-                'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                'first_name' => ucwords(strtolower($data['first_name'])),
+                'middle_initial' => $middleInitial,
+                'last_name' => ucwords(strtolower($data['last_name'])),
+                'full_name' => $fullName,
+                'suffix' => $data['edit_suffix']??$staff->suffix,
                 'age' => $data['age'],
                 'date_of_birth' => $data['date_of_birth']?? null,
                 'sex' => $data['sex']?? null,

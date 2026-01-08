@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
+import { automateAge } from "../automateAge.js";
 import { refreshToggleStates, initializeEditModal } from "./editFamilyPlanningRadioToggle.js";
 
 // Initialize the modal on page load
@@ -1228,3 +1229,22 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+
+// handle the automation of age
+const dob = document.getElementById("edit_client_date_of_birth");
+const age = document.getElementById("edit_client_age");
+const hiddenAge = document.getElementById("hiddenEditAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
+
+// ADD
+const addDob = document.getElementById("side_A_add_client_date_of_birth");
+const addAge = document.getElementById("side_A_add_client_age");
+const addHiddenAge = document.getElementById("hiddenEditAge");
+
+if (addDob && addAge && addHiddenAge) {
+    automateAge(addDob, addAge, addHiddenAge);
+}
+
