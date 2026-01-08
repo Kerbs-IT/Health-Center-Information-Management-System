@@ -51,23 +51,27 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="{{optional($seniorCitizenRecord -> patient)->first_name??''}}">
-
                                             <small class="text-danger error-text" id="first_name_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{optional($seniorCitizenRecord -> patient)->middle_initial??''}}">
-
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{optional($seniorCitizenRecord -> patient)->last_name??''}}">
-
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2 ">
+                                                <option value="" disabled {{ !optional($seniorCitizenRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ optional($seniorCitizenRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ optional($seniorCitizenRecord)->patient?->suffix== 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ optional($seniorCitizenRecord)->patient?->suffix== 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ optional($seniorCitizenRecord)->patient?->suffix== 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ optional($seniorCitizenRecord)->patient?->suffix== 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ optional($seniorCitizenRecord)->patient?->suffix== 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
@@ -83,7 +87,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
                                             <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="{{optional($seniorCitizenRecord -> patient)->place_of_birth??''}}">
-                                            
+
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
 
                                         </div>

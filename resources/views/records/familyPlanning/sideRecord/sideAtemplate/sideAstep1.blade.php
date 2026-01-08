@@ -49,6 +49,18 @@
                                     <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
                                     <small class="text-danger error-text" id="side_A_add_client_lname_error"></small>
                                 </div>
+                                <div class="input-form flex-fill lg:w-[50%]">
+                                    <select name="side_A_add_client_suffix" id="side_A_add_client_suffix" class="form-select py-2 ">
+                                        <option value="" disabled>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="side_A_add_client_suffix_error"></small>
+                                </div>
 
                             </div>
                             <!-- HIDDEN INPUTS -->
@@ -69,7 +81,7 @@
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="side_A_add_client_age">Age</label>
                             <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" disabled>
-                            <input type="hidden" id="hiddenEditAge" name="side_A_add_client_age">
+                            <input type="hidden" id="hiddenAddAge" name="side_A_add_client_age">
                             <small class="text-danger error-text" id="side_A_add_client_age_error"></small>
                         </div>
                         <!-- place of birth -->
@@ -100,7 +112,7 @@
                         </div>
                     </div>
                     <div class="input-group mb-md-2 mb-1">
-                        <h5>Address</h5>
+                        <h5 class="w-100">Address</h5>
                         <div class="input-field d-flex gap-2 align-items-lg-center align-items-none w-100  flex-md-nowrap flex-lg-nowrap flex-wrap flex-lg-row flex-column">
                             <div class=" mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                 <label for="street">Street*</label>
@@ -140,6 +152,18 @@
                                 <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="side_A_add_spouse_lname_error"></small>
                             </div>
+                            <div class="input-form flex-fill">
+                                <select name="side_A_add_spouse_suffix" id="side_A_add_spouse_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="side_A_add_spouse_suffix_error"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -153,14 +177,14 @@
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Age</label>
-                        <input type="text" id="side_A_add_spouse_age" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_age">
+                        <input type="text" id="side_A_add_spouse_age" placeholder="Enter the age" class="form-control bg-light" name="side_A_add_spouse_age">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_age_error"></small>
 
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Occupation</label>
-                        <input type="text" id="side_A_add_spouse_occupation" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_occupation">
+                        <input type="text" id="side_A_add_spouse_occupation" placeholder="Enter the occupation" class="form-control bg-light" name="side_A_add_spouse_occupation">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_occupation_error"></small>
 

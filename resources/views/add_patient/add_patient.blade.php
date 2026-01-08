@@ -66,6 +66,18 @@
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
+                                        <div class="input-field w-50">
+                                            <select name="suffix" id="edit_suffix" class="form-select py-2">
+                                                <option value="" disabled selected>Select Suffix</option>
+                                                <option value="Jr.">Jr</option>
+                                                <option value="Sr.">Sr</option>
+                                                <option value="II.">II</option>
+                                                <option value="III.">III</option>
+                                                <option value="IV.">IV</option>
+                                                <option value="V.">V</option>
+                                            </select>
+                                            <small class="text-danger" id="edit-suffix-error"></small>
+                                        </div>
                                     </div>
                                     <!-- age -->
                                     <div class="mb-2 d-flex gap-md-1 gap-0">
@@ -85,7 +97,8 @@
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="0" class="form-control" name="age" value="">
+                                            <input type="number" id="age" placeholder="Enter the age" disabled class="form-control"  >
+                                            <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age" >
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>

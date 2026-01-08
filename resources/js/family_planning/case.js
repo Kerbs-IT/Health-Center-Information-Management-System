@@ -57,10 +57,19 @@ document.addEventListener("click", async (e) => {
                 if (key == "spouse_lname") {
                     if (document.getElementById("view_spouse_name")) {
                         // console.log("wording");
+                        // middle initial
+                        const mi = data.caseInfo.spouse_MI
+                            ?.trim()
+                            .charAt(0)
+                            .toUpperCase();
+
+                        const formattedMI = mi ? `${mi}.` : "";
                         document.getElementById("view_spouse_name").innerHTML =
                             `${data.caseInfo.spouse_fname ?? ""} ${
-                                data.caseInfo.spouse_MI ?? ""
-                            } ${data.caseInfo.spouse_lname ?? ""}`.trim();
+                                formattedMI ?? ""
+                            } ${data.caseInfo.spouse_lname ?? ""} ${
+                                data.caseInfo.spouse_suffix ?? ""
+                            }`.trim();
                     }
                 }
                 if (key == "signature_image") {
@@ -904,7 +913,11 @@ add_side_A_BTN.addEventListener("click", () => {
     client_MI.value = patientInfo.patient.middle_initial;
     client_lname.value = patientInfo.patient.last_name;
     client_age.value = patientInfo.patient.age;
-    client_bday.value = patientInfo.patient.date_of_birth;
+    client_bday.value = patientInfo.patient.date_of_birth
+        ? new Date(patientInfo.patient.date_of_birth)
+              .toISOString()
+              .split("T")[0]
+        : "";
     client_occupation.value =
         patientInfo.family_planning_medical_record.occupation;
     client_civil_status.value = patientInfo.patient.civil_status;
@@ -1242,7 +1255,7 @@ if (dob && age && hiddenAge) {
 // ADD
 const addDob = document.getElementById("side_A_add_client_date_of_birth");
 const addAge = document.getElementById("side_A_add_client_age");
-const addHiddenAge = document.getElementById("hiddenEditAge");
+const addHiddenAge = document.getElementById("hiddenAddAge");
 
 if (addDob && addAge && addHiddenAge) {
     automateAge(addDob, addAge, addHiddenAge);

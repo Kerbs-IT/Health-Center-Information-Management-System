@@ -21,57 +21,7 @@
             <!-- the main content -->
             <!-- we use flex-grow-1 to take the remaining space of the right side -->
             <div class="flex-grow-1">
-                <header class=" d-flex align-items-center px-1 ">
-                    <nav class="d-flex justify-content-between align-items-center w-100 ">
-                        <div class="left-side d-flex align-items-center justify-content-center gap-3">
-                            <button class="btn hamburger d-lg-block fs-6 mx-1" id="toggleSidebar">
-                                <i class="fa-solid fa-bars fs-2"></i>
-                            </button>
-                            <h1 class="mb-0">Profile</h1>
-                        </div>
-
-                        <div class="right-info d-flex align-items-center justify-content-center gap-3">
-                            <button type="button" class="btn position-relative p-0 border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                                <!-- Bell SVG -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
-                                    class="bi bi-bell" viewBox="0 0 16 16">
-                                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2z" />
-                                    <path d="M8 1a4 4 0 0 0-4 4c0 1.098-.354 2.5-.975 3.5-.356.596-.525 1.057-.525 1.5h11c0-.443-.169-.904-.525-1.5C12.354 7.5 12 6.098 12 5a4 4 0 0 0-4-4z" />
-                                </svg>
-
-                                <!-- Red Dot Badge -->
-                                <span style="
-                    position: absolute;
-                    top: 2px;
-                    right: 2px;
-                    width: 10px;
-                    height: 10px;
-                    background-color: red;
-                    border-radius: 50%;
-                    border: 2px solid white;">
-                                </span>
-                            </button>
-                            <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2">
-                                <img src="{{ optional(Auth::user()->nurses)->profile_image
-                        ? asset(optional(Auth::user()->nurses)->profile_image)
-                        : (optional(Auth::user()->staff)->profile_image
-                            ? asset(optional(Auth::user()->staff)->profile_image)
-                            : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-img" id="profile_img">
-                                <div class="username-n-role">
-                                    <h5 class="mb-0">{{ optional(Auth::user()->nurses)-> full_name
-                                                    ?? optional(Auth::user()->staff)-> full_name
-                                                    ?? 'none'  }}</h5>
-                                    <h6 class="mb-0 text-muted fw-light">{{Auth::user() -> role ?? 'none';}}</h6>
-                                </div>
-                                <div class="links position-absolute flex-column top-17 w-100 bg-white" id="links">
-                                    <a href="{{ route('page.profile') }}" class="text-decoration-none text-black">view profile</a>
-                                    <a href="{{route('logout')}}" class="text-decoration-none text-black">Logout</a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </nav>
-                </header>
+                @include('layout.header')
                 <main class="mt-4">
                     <div class="change-pass-button w-100 d-flex justify-content-end px-4">
                         <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
@@ -86,7 +36,9 @@
                         : (optional(Auth::user()->staff)->profile_image
                             ? asset(optional(Auth::user()->staff)->profile_image)
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
-                            <h3 class="text-black">{{optional(Auth::user() -> staff) -> full_name ?? optional(Auth::user() -> nurses) -> full_name ?? 'none'}}</h3>
+                            <h3 class="text-black">
+                                {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none') . ' ' . (optional(Auth::user()->staff)->suffix ?? optional(Auth::user()->nurses)->suffix ?? '')) }}
+                            </h3>
                             <h5 class="mb-3 text-muted text-capitalize fw-normal">{{ optional(Auth::user()) -> role ?? 'none'}}</h5>
                             <div class="upload-image d-flex flex-column">
                                 <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
@@ -110,7 +62,7 @@
                                     @enderror
 
                                 </div>
-                                <div class="input-field flex-fill"styl>
+                                <div class="input-field flex-fill" styl>
                                     <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{ optional(Auth::user() -> staff) -> middle_initial ??
                                                                                                                                                  optional(Auth::user() -> nurses) -> middle_initial ?? null }}">
                                     @error('middle_initial')
@@ -122,6 +74,23 @@
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{ optional(Auth::user() -> staff) -> last_name ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> last_name ?? null }}">
                                     @error('last_name')
+                                    <small class="text-danger">{{$message}}</small>
+                                    @enderror
+                                </div>
+                                <div class="input-field flex-fill">
+                                    @php
+                                    $currentSuffix = optional(Auth::user()->staff)->suffix ?? optional(Auth::user()->nurses)->suffix ?? null;
+                                    @endphp
+                                    <select name="suffix" id="edit_suffix" class="form-select responsive-input py-2">
+                                        <option value="" disabled {{ !$currentSuffix ? 'selected' : '' }}>Select Suffix</option>
+                                        <option value="Jr." {{ $currentSuffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                        <option value="Sr." {{ $currentSuffix == 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                        <option value="II." {{ $currentSuffix == 'II.' ? 'selected' : '' }}>II</option>
+                                        <option value="III." {{ $currentSuffix == 'III.' ? 'selected' : '' }}>III</option>
+                                        <option value="IV." {{ $currentSuffix == 'IV.' ? 'selected' : '' }}>IV</option>
+                                        <option value="V." {{ $currentSuffix == 'V.' ? 'selected' : '' }}>V</option>
+                                    </select>
+                                    @error('suffix')
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
                                 </div>

@@ -85,7 +85,8 @@ class addPatientController extends Controller
                     'numeric',
                     'between:35,42'       // °C
                 ],
-                'date_of_comeback' => 'required|date'
+                'date_of_comeback' => 'required|date',
+                'suffix' => 'sometimes|nullable|string'
 
             ]);
 
@@ -97,7 +98,8 @@ class addPatientController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null,
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -117,6 +119,7 @@ class addPatientController extends Controller
                 'nationality' => $data['nationality'] ?? null,
                 'date_of_registration' => $data['date_of_registration']??null,
                 'place_of_birth' => $data['place_of_birth']??null,
+                'suffix' => $data['suffix']??null
             ]);
 
 

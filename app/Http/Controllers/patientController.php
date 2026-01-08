@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\users_address;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_medical_records;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -261,8 +262,7 @@ class patientController extends Controller
                 'first_name' => 'required|string',
                 'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string',
-                'age' => $hasPatient ? 'required|numeric' : 'sometimes|nullable|numeric',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date',
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
@@ -273,6 +273,7 @@ class patientController extends Controller
                 'patient_purok_dropdown' => 'required',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+                'edit_suffix' => 'sometimes|nullable|string'
             ]);
 
             $additionalData = $request->validate([
@@ -296,22 +297,27 @@ class patientController extends Controller
             $blk_n_street = explode(',', $data['blk_n_street'], 2);
             $house_number = trim($blk_n_street[0] ?? '');
             $street = trim($blk_n_street[1] ?? null);
+            if(!$hasPatient){
+                
+                $address->update([
+                    'house_number' => $house_number,
+                    'street' => $street,
+                    'purok' => $data['patient_purok_dropdown']
+                ]);
 
-            $address->update([
-                'house_number' => $house_number,
-                'street' => $street,
-                'purok' => $data['patient_purok_dropdown']
-            ]);
+                $address->refresh();
+                $fullAddress = collect([
+                    $address->house_number,
+                    $address->street,
+                    $address->purok,
+                    $address->barangay ?? null,
+                    $address->city ?? null,
+                    $address->province ?? null,
+                ])->filter()->join(', ');
+            }
+          
 
-            $address->refresh();
-            $fullAddress = collect([
-                $address->house_number,
-                $address->street,
-                $address->purok,
-                $address->barangay ?? null,
-                $address->city ?? null,
-                $address->province ?? null,
-            ])->filter()->join(', ');
+            
 
             // Handle profile image upload
             $profileImagePath = null;
@@ -340,14 +346,18 @@ class patientController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['edit_suffix']
             ];
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             $patient = $user->patient ?? null;
 
+            $age = Carbon::parse($data['date_of_birth'])->age;
+
             if ($patient) {
                 // Patient exists - only update patient and related records
+
 
                 // Update patient information
                 $patient->update([
@@ -355,12 +365,13 @@ class patientController extends Controller
                     'middle_initial' => ucwords($data['middle_initial']) ?? null,
                     'last_name' => ucwords($data['last_name']) ?? null,
                     'full_name' => $fullName,
-                    'age' => $data['age'],
+                    'age' => $age ,
                     'date_of_birth' => $data['date_of_birth'] ?? null,
-                    'sex' => $data['sex'] ?? null,
+                    'sex' => $data['sex']?? null,
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality' => $data['nationality'] ?? null,
+                    'suffix' => $data['edit_suffix'] ?? ''
                 ]);
 
                 $patient->address->update([
@@ -368,6 +379,32 @@ class patientController extends Controller
                     'street' => $street,
                     'purok' => $data['patient_purok_dropdown']
                 ]);
+
+                $patient->address->refresh();
+                $fullAddress = collect([
+                    $patient->address->house_number,
+                    $patient->address->street,
+                    $patient->address->purok,
+                    $patient->address->barangay ?? null,
+                    $patient->address->city ?? null,
+                    $patient->address->province ?? null,
+                ])->filter()->join(', ');
+
+
+                // also update the account
+                $userUpdateData = [
+                    'username' => $data['username'] ?? $user->username,
+                    'email' => $data['email'] ?? $user->email,
+                    'first_name' => $data['first_name'] ?? $user->first_name,
+                    'last_name' => $data['last_name'] ?? $user->last_name,
+                    'middle_initial' => $data['middle_initial'] ?? $user->middle_initial,
+                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'],
+                    'address' => $fullAddress,
+                    'suffix' => $data['edit_suffix'] ?? ''
+                ];
+                // update the user account
+                $user->update($userUpdateData);
 
                 // Update medical record cases
                 $medicalRecordCases = medical_record_cases::where('patient_id', $patient->id)
@@ -391,6 +428,7 @@ class patientController extends Controller
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'],
                     'address' => $fullAddress,
+                    'suffix' => $data['edit_suffix'] ?? ''
                 ];
 
                 // Add password to update if provided

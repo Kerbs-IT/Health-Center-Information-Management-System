@@ -164,7 +164,8 @@ class authController extends Controller
             'brgy' => 'sometimes|nullable|numeric',
             'postal_code' => 'sometimes|nullable|numeric',
             'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048']
+            'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'suffix' => 'sometimes|nullable|string'
         ]);
 
         if (!empty($data['password'])) {
@@ -249,6 +250,7 @@ class authController extends Controller
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality' => $data['nationality'] ?? null,
+                    'suffix' => $data['suffix']??''
                 ]);
 
 
@@ -265,6 +267,7 @@ class authController extends Controller
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality' => $data['nationality'] ?? null,
+                    'suffix' => $data['suffix']??''
                 ]);
         }
 
@@ -490,7 +493,13 @@ class authController extends Controller
         try{
 
             $user = User::findOrFail($id);
-            $address = users_address::where('user_id',$user->id)->first();
+            $connectedToPatient = $user->patient;
+            if(!$connectedToPatient){
+                $address = users_address::where('user_id', $user->id)->first();
+            }else{
+                $address = patient_addresses::where("patient_id", $connectedToPatient->id)->first();
+            }
+            
 
             return response()->json(['info'=>$user,'address'=>$address]);
 

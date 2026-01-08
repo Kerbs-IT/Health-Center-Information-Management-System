@@ -41,6 +41,7 @@ class TbDotsController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             // validate for medical
@@ -63,7 +64,8 @@ class TbDotsController extends Controller
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
-                strtolower($patientData['last_name'])
+                strtolower($patientData['last_name']),
+                $patientData['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -83,6 +85,7 @@ class TbDotsController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                'suffix' => $patientData['suffix']??'',
             ]);
 
             // use the id of the created patient for medical case record
@@ -232,7 +235,8 @@ class TbDotsController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,300',  // kg range
-                'philheath_id' => 'sometimes|nullable|string'
+                'philheath_id' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
 
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -240,7 +244,8 @@ class TbDotsController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -259,6 +264,7 @@ class TbDotsController extends Controller
                 'nationality' => $data['nationality'] ?? $tbDotsRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $tbDotsRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $tbDotsRecord->patient->place_of_birth,
+                'suffix' => $data['suffix']??''
                 
             ]);
             // update the address

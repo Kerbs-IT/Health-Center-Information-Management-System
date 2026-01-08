@@ -39,6 +39,7 @@ class SeniorCitizenController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             // validate for medical
@@ -73,7 +74,8 @@ class SeniorCitizenController extends Controller
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
-                strtolower($patientData['last_name'])
+                strtolower($patientData['last_name']),
+                $patientData['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -93,6 +95,7 @@ class SeniorCitizenController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                'suffix' => $patientData['suffix']??''
             ]);
 
             // use the id of the created patient for medical case record
@@ -231,6 +234,7 @@ class SeniorCitizenController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'suffix' => 'nullable|sometimes|string'
              
             ]);
 
@@ -239,7 +243,8 @@ class SeniorCitizenController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -258,6 +263,7 @@ class SeniorCitizenController extends Controller
                 'nationality' => $data['nationality'] ?? $seniorCitizenRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $seniorCitizenRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $seniorCitizenRecord->patient->place_of_birth,
+                'suffix'=> $data['suffix']??'',
             ]);
             // update the address
             $blk_n_street = explode(',', $data['street']);

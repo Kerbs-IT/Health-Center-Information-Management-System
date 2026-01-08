@@ -41,7 +41,8 @@ class manageUserController extends Controller
                 'date_of_birth' => 'required|date',
                 'patient_type' => 'required',
                 'blk_n_street' => 'required',
-                'patient_purok_dropdown' => 'required'
+                'patient_purok_dropdown' => 'required',
+                'add_suffix' => 'sometimes|nullable|string'
 
             ]);
            
@@ -85,7 +86,8 @@ class manageUserController extends Controller
                 'address' => $fullAddress,
                 'status' => 'active',
                 'password' => $data['password'],
-                'role' => 'patient'
+                'role' => 'patient',
+                'suffix' => $data['add_suffix']??''
             ]);
 
            

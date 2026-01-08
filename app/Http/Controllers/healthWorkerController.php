@@ -41,7 +41,9 @@ class healthWorkerController extends Controller
     public function destroy($id){
         
         $user = User::findOrFail($id);
-        $user -> delete();
+        $user -> update([
+            'status' => 'archived'
+        ]);
 
         return response()->json(['message' => 'Health worker deleted successfully.']);
     }

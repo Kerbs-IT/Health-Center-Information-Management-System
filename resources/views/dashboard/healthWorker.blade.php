@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="input-field flex-fill">
                                     <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
-                                        <option value="" selected>None</option>
+                                        <option value="" disabled selected>Select Suffix</option>
                                         <option value="Jr.">Jr</option>
                                         <option value="Sr.">Sr</option>
                                         <option value="II.">II</option>
@@ -342,7 +342,7 @@
                                 <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
                                 <div class="input-field flex-fill">
                                     <select name="add_suffix" id="add_suffix" class="form-select responsive-input py-2">
-                                        <option value="" disabled selected>None</option>
+                                        <option value="" disabled selected>Select Suffix</option>
                                         <option value="Jr.">Jr</option>
                                         <option value="Sr.">Sr</option>
                                         <option value="II.">II</option>

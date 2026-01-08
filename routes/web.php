@@ -101,7 +101,7 @@ Route::middleware(['role:nurse'])->group(function(){
     Route::get('/Dashboard/Health-workers', [healthWorkerController::class, 'dashboard'])->name('health.worker');
 
     // ------------------------------------DELETE n Update HEALTH WORKER RECORD-----------------------------------------
-    Route::delete('/health-worker/{id}', [healthWorkerController::class, 'destroy'])->name('health-worker.destroy');
+    Route::post('/health-worker/{id}', [healthWorkerController::class, 'destroy'])->name('health-worker.destroy');
     Route::post('/health-worker/get-info/{id}', [healthWorkerController::class, 'getInfo'])->name('heath-worker.get-info');
     Route::put('/health-worker/update/{id}', [healthWorkerController::class, 'update'])->name('health-worker.update');
 
@@ -177,7 +177,7 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
 
 
     Route::get('/profile', function () {
-        return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
+        return view('pages.profile', ['isActive' => true, 'page' => 'PROFILE']);
     })->name('page.profile');
 });
 
