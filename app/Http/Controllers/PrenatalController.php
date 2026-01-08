@@ -56,6 +56,7 @@ class PrenatalController extends Controller
                 'handled_by' => 'required',
                 'street' => 'required',
                 'brgy' => 'required',
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             $medicalCaseData = $request->validate([
@@ -160,7 +161,8 @@ class PrenatalController extends Controller
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
-                strtolower($patientData['last_name'])
+                strtolower($patientData['last_name']),
+                $patientData['suffix']
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -180,6 +182,7 @@ class PrenatalController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                'suffix' => $patientData['suffix']??'',
             ]);
 
             // use the id of the created patient for medical case record
@@ -394,6 +397,7 @@ class PrenatalController extends Controller
                     'client_name' =>  $prenatalPatient->full_name,
                     'client_date_of_birth' => $prenatalPatient['date_of_birth'] ?? null,
                     'client_age' => $prenatalPatient['age'] ?? null,
+                    'client_suffix' => $patientData['suffix']??'',
                     'occupation' => null,
                     'client_address' => $fullAddress,
                     'client_contact_number' => $prenatalPatient['contact_number'] ?? null,
@@ -670,7 +674,8 @@ class PrenatalController extends Controller
                 'q2_answer4' => 'sometimes|nullable|string',
                 'q2_answer5' => 'sometimes|nullable|string',
                 'family_serial_no' => 'sometimes|nullable|numeric',
-                'nurse_decision' => 'sometimes|nullable|numeric'
+                'nurse_decision' => 'sometimes|nullable|numeric',
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -678,7 +683,8 @@ class PrenatalController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -697,16 +703,19 @@ class PrenatalController extends Controller
                 'nationality' => $data['nationality'] ?? $prenatalRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $prenatalRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $prenatalRecord->patient->place_of_birth,
+                'suffix'=> $data['suffix']??'',
             ]);
 
             // update the address
-            $blk_n_street = explode(',', $data['street']);
+            // Parse address - limit to 2 parts maximum
+            $blk_n_street = explode(',', $data['street'], 2);
+
             $address->update([
-                'house_number' => $blk_n_street[0] ?? $address->house_number,
-                'street' => $blk_n_street[1] ?? $address->street,
+                'house_number' => trim($blk_n_street[0]),
+                'street' => isset($blk_n_street[1]) ? trim($blk_n_street[1]) : '',
                 'purok' => $data['brgy'] ?? $address->purok
             ]);
-             $address->refresh(); // <-- this pulls in DB defaults
+            $address->refresh(); // <-- this pulls in DB defaults
 
             $fullAddress = collect([
                  $address->house_number,
@@ -858,6 +867,7 @@ class PrenatalController extends Controller
                         'NHTS' =>  null,
                         'client_name' =>  $prenatalRecord->patient->full_name,
                         'client_date_of_birth' => $data['date_of_birth'] ?? null,
+                        'client_suffix'=> $data['suffix']??'',
                         'client_age' => $data['age'] ?? null,
                         'occupation' => null,
                         'client_address' => $fullAddress,

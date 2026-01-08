@@ -52,20 +52,26 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light" name="first_name" value="{{optional($familyPlanningRecord->patient)->first_name??''}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light" name="middle_initial" value="{{optional($familyPlanningRecord->patient)->middle_initial??''}}">
-
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light" name="last_name" value="{{optional($familyPlanningRecord->patient)->last_name??''}}">
-
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2 ">
+                                                <option value="" disabled {{ !optional($familyPlanningRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ optional($familyPlanningRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ optional($familyPlanningRecord)->patient?->suffix== 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ optional($familyPlanningRecord)->patient?->suffix== 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ optional($familyPlanningRecord)->patient?->suffix== 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ optional($familyPlanningRecord)->patient?->suffix== 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ optional($familyPlanningRecord)->patient?->suffix== 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-md-2 mb-0 d-flex gap-1  flex-xl-nowrap flex-wrap">
@@ -83,14 +89,13 @@
                                             <input type="text" id="place_of_birth" placeholder="20" class="form-control bg-light" name="place_of_birth" value="{{optional($familyPlanningRecord->patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
-
                                         </div>
 
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
                                             <input type="number" id="age" placeholder="20" class="form-control bg-light" disabled value="{{optional($familyPlanningRecord->patient)->age??''}}">
-                                            <input type="hidden" id="hiddenEditAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -211,7 +216,7 @@
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap flex-md-row flex-column">
                                             <div class=" mb-md-2 mb-0  w-full md:w-[50%]">
                                                 <label for="street">Street*</label>
-                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control bg-light py-2" name="street" value="{{trim($address->house_number . ' '. $address->street)}}">
+                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control bg-light py-2" name="street" value="{{ trim(($address->house_number ?: '') . ', ' . ($address->street ?: '')) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 

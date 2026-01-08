@@ -59,13 +59,22 @@
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2 bg-light border-dark">
+                                                <option value="" disabled {{ !optional($prenatalRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ optional($prenatalRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ optional($prenatalRecord)->patient?->suffix== 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ optional($prenatalRecord)->patient?->suffix== 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ optional($prenatalRecord)->patient?->suffix== 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ optional($prenatalRecord)->patient?->suffix== 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ optional($prenatalRecord)->patient?->suffix== 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
@@ -90,7 +99,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" disabled value="{{optional($prenatalRecord)->patient?->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -252,7 +261,7 @@
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap">
                                             <div class=" mb-2 w-full md:w-[50%]">
                                                 <label for="street">Street*</label>
-                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim($address->house_number . ' ' . optional($address->street)->name) }}">
+                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim(($address->house_number ?: '') . ', ' . ($address->street ?: '')) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 

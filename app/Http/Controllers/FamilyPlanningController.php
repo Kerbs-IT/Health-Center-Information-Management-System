@@ -48,6 +48,7 @@ class FamilyPlanningController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
             ], [
                 'first_name.unique' => 'This patient already exists.',
             ]);
@@ -85,6 +86,7 @@ class FamilyPlanningController extends Controller
                 'spouse_date_of_birth' => 'sometimes|nullable|date',
                 'spouse_age' => 'sometimes|nullable|numeric|max:100',
                 'spouse_occupation' => 'sometimes|nullable|string',
+                'spouse_suffix' => 'sometimes|nullable|string',
 
                 'number_of_living_children' => 'sometimes|nullable|numeric|max:50',
                 'plan_to_have_more_children' => 'sometimes|nullable|string',
@@ -196,7 +198,8 @@ class FamilyPlanningController extends Controller
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
-                strtolower($patientData['last_name'])
+                strtolower($patientData['last_name']),
+                $patientData['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -217,6 +220,7 @@ class FamilyPlanningController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                'suffix' => $patientData['suffix']??'',
             ]);
 
             $familyPlanningPatientRecordId = $familPlanningPatient->id;
@@ -310,12 +314,14 @@ class FamilyPlanningController extends Controller
                 'client_contact_number' => $patientData['contact_number'] ?? null,
                 'client_civil_status' => $patientData['civil_status'] ?? null,
                 'client_religion' => $medicalData['religion'] ?? null,
+                'client_suffix' => $patientData['suffix'] ?? '',
                 'spouse_lname' => $caseData['spouse_lname'] ?? null,
                 'spouse_fname' => $caseData['spouse_fname'] ?? null,
                 'spouse_MI' => $caseData['spouse_MI'] ?? null,
                 'spouse_date_of_birth' => $caseData['spouse_date_of_birth'] ?? null,
                 'spouse_age' => $caseData['spouse_age'] ?? null,
                 'spouse_occupation' => $caseData['spouse_occupation'] ?? null,
+                'spouse_suffix' => $caseData['spouse_suffix']??'',
                 'number_of_living_children' => $caseData['number_of_living_children'] ?? null,
                 'plan_to_have_more_children' => $caseData['plan_to_have_more_children'] ?? null,
 
@@ -582,6 +588,7 @@ class FamilyPlanningController extends Controller
                     'regex:/^\d{2}-\d{9}-\d{1}$/'
                 ],
                 'NHTS' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
 
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -589,7 +596,8 @@ class FamilyPlanningController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -608,12 +616,13 @@ class FamilyPlanningController extends Controller
                 'nationality' => $data['nationality'] ?? $familyPlanningRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $familyPlanningRecord->patient->place_of_birth,
+                'suffix' => $data['suffix']??''
             ]);
             // update the address
-            $blk_n_street = explode(',', $data['street']);
+            $blk_n_street = explode(',', $data['street'], 2);
             $address->update([
-                'house_number' => $blk_n_street[0] ?? $address->house_number,
-                'street' => $blk_n_street[1] ?? $address->street,
+                'house_number' => trim($blk_n_street[0]),
+                'street' => isset($blk_n_street[1]) ? trim($blk_n_street[1]) : '',
                 'purok' => $data['brgy'] ?? $address->purok
             ]);
 
@@ -654,6 +663,7 @@ class FamilyPlanningController extends Controller
                 'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
                 'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
                 'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
+                'client_suffix' => $data['suffix']??'',
                 'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
                 'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
                 'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
@@ -729,7 +739,8 @@ class FamilyPlanningController extends Controller
                 'side_A_add_client_civil_status' => 'sometimes|nullable|string',
                 'side_A_add_client_religion' => 'sometimes|nullable|string',
                 'add_street' => 'required',
-                'add_brgy' => 'required'
+                'add_brgy' => 'required',
+                'side_A_add_client_suffix' => 'sometimes|nullable|string'
             ]);
 
             $caseData = $request->validate([
@@ -746,6 +757,7 @@ class FamilyPlanningController extends Controller
                 'side_A_add_spouse_date_of_birth' => 'sometimes|nullable|date',
                 'side_A_add_spouse_age' => 'sometimes|nullable|numeric|max:100',
                 'side_A_add_spouse_occupation' => 'sometimes|nullable|string',
+                'side_A_add_spouse_suffix' => 'sometimes|nullable|string',
 
                 'side_A_add_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
                 'side_A_add_plan_to_have_more_children' => 'sometimes|nullable|string',
@@ -879,6 +891,7 @@ class FamilyPlanningController extends Controller
                 'client_name' => trim(($patientData['side_A_add_client_fname'] . ' ' . $patientData['side_A_add_client_MI'] . ' ' . $patientData['side_A_add_client_lname'])) ?? null,
                 'client_date_of_birth' => $patientData['side_A_add_client_date_of_birth'] ?? null,
                 'client_age' => $patientData['side_A_add_client_age'] ?? null,
+                'client_suffix' => $patientData['side_A_add_client_suffix']??'',
                 'occupation' => $patientData['side_A_add_occupation'] ?? null,
                 'client_contact_number' => $patientData['side_A_add_client_contact_number'] ?? null,
                 'client_civil_status' => $patientData['side_A_add_client_civil_status'] ?? null,
@@ -889,6 +902,7 @@ class FamilyPlanningController extends Controller
                 'spouse_date_of_birth' => $caseData['side_A_add_spouse_date_of_birth'] ?? null,
                 'spouse_age' => $caseData['side_A_add_spouse_age'] ?? null,
                 'spouse_occupation' => $caseData['side_A_add_spouse_occupation'] ?? null,
+                'spouse_suffix' => $caseData['spouse_suffix']?? '',
                 'number_of_living_children' => $caseData['side_A_add_number_of_living_children'] ?? null,
                 'plan_to_have_more_children' => $caseData['side_A_add_plan_to_have_more_children'] ?? null,
 
@@ -1109,6 +1123,7 @@ class FamilyPlanningController extends Controller
                     'edit_street' => 'required',
                     'edit_brgy' => 'required',
                     'edit_client_contact_number' => 'sometimes|nullable|digits_between:7,12',
+                    'edit_client_suffix'=> 'sometimes|nullable|string',
                 ],
                 [],
                 [ // Custom attribute names
@@ -1134,10 +1149,11 @@ class FamilyPlanningController extends Controller
                     'edit_NHTS' => 'sometimes|nullable|string',
                     'edit_spouse_lname' => 'sometimes|nullable|string',
                     'edit_spouse_fname' => 'sometimes|nullable|string',
-                    'edit_spouse_MI' => 'sometimes|nullable|string|max:2',
+                    'edit_spouse_MI' => 'sometimes|nullable|string',
                     'edit_spouse_date_of_birth' => 'sometimes|nullable|date',
                     'edit_spouse_age' => 'sometimes|nullable|numeric|max:100',
                     'edit_spouse_occupation' => 'sometimes|nullable|string',
+                    'edit_spouse_suffix' => 'sometimes|nullable|string',
 
                     'edit_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
                     'edit_plan_to_have_more_children' => 'sometimes|nullable|string',
@@ -1267,16 +1283,28 @@ class FamilyPlanningController extends Controller
                 'edit_neck_type' => 'sometimes|nullable|string',
             ]);
 
+            $middle = substr($patientData['edit_client_MI'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $parts = [
+                strtolower($patientData['edit_client_fname']),
+                $middle,
+                strtolower($patientData['edit_client_lname']),
+                $patientData ['edit_client_suffix'] ?? null
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
             // update patient info first
             $medical_case_record->patient->update([
                 'first_name' => $patientData['edit_client_fname'] ?? $medical_case_record->patient->first_name,
                 'middle_initial' => $patientData['edit_client_MI'] ?? $medical_case_record->patient->middle_initial,
                 'last_name' => $patientData['edit_client_lname'] ?? $medical_case_record->patient->last_name,
-                'full_name' => trim(($patientData['edit_client_fname'] . ' ' . $patientData['edit_client_MI'] . ' ' . $patientData['edit_client_lname'])) ?? $medical_case_record->patient->full_name,
+                'full_name' => $fullName,
                 'age' => $patientData['edit_client_age'] ?? $medical_case_record->patient->age,
                 'contact_number' => $patientData['edit_client_contact_number'] ?? $medical_case_record->patient->contact_number,
                 'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $medical_case_record->patient->date_of_birth,
-                'civil_status' => $patientData['edit_client_civil_status'] ?? $medical_case_record->patient->civil_status
+                'civil_status' => $patientData['edit_client_civil_status'] ?? $medical_case_record->patient->civil_status,
+                'suffix' => $patientData['edit_client_suffix']??''
             ]);
             $address = patient_addresses::where('patient_id',  $medical_case_record->patient->id)->firstOrFail();
             $blk_n_street = explode(',', $patientData['edit_street']);
@@ -1368,9 +1396,11 @@ class FamilyPlanningController extends Controller
                 'client_contact_number' => $patientData['edit_client_contact_number'] ?? $familyPlanCaseInfo->client_contact_number,
                 'client_civil_status' => $patientData['edit_client_civil_status'] ?? $familyPlanCaseInfo->client_civil_status,
                 'client_religion' => $patientData['edit_client_religion'] ?? $familyPlanCaseInfo->client_religion,
+                'client_suffix'=> $patientData['edit_client_suffix']?? '',
                 'spouse_lname' => $caseData['edit_spouse_lname'] ?? $familyPlanCaseInfo->spouse_lname,
                 'spouse_fname' => $caseData['edit_spouse_fname'] ?? $familyPlanCaseInfo->spouse_fname,
                 'spouse_MI' => $caseData['edit_spouse_MI'] ?? $familyPlanCaseInfo->spouse_MI,
+                'spouse_suffix' => $caseData['edit_spouse_suffix']??'',
                 'spouse_date_of_birth' => $caseData['edit_spouse_date_of_birth'] ?? $familyPlanCaseInfo->spouse_date_of_birth,
                 'spouse_age' => $caseData['edit_spouse_age'] ?? $familyPlanCaseInfo->spouse_age,
                 'spouse_occupation' => $caseData['edit_spouse_occupation'] ?? $familyPlanCaseInfo->spouse_occupation,

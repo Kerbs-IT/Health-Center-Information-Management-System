@@ -63,7 +63,18 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{$info->last_name}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2">
+                                                <option value="" disabled {{ !$info->suffix ? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ $info->suffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ $info->suffix == 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ $info->suffix == 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ $info->suffix == 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ $info->suffix == 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ $info->suffix == 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">

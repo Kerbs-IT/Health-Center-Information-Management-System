@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`/health-worker/${removeId}`, {
-                        method: "DELETE",
+                        method: "POST",
                         headers: {
                             "X-CSRF-TOKEN": document.querySelector(
                                 'meta[name="csrf-token"]'
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     blkNstreet.value = data.response.street ?? "none";
                     postalCode.value = data.response.postal_code;
                     suffix.value = data.response.suffix ?? "";
-                    console.log(data.response.suffix);
+                    
 
                     // assigned area
                     const puroks = async function () {

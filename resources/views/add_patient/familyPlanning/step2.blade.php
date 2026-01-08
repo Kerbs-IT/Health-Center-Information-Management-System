@@ -3,9 +3,21 @@
          <div class="mb-3 w-100 ">
              <label for="name_of_spouse" class="text-nowrap">Name of Spouse:</label>
              <div class="group d-flex align-items-center justify-content-center gap-2 flex-wrap flex-md-nowrap">
-                 <input type="text" class="form-control flex-fill" name="spouse_lname"  placeholder="Enter the LastName">
+                 <input type="text" class="form-control flex-fill" name="spouse_lname" placeholder="Enter the LastName">
                  <input type="text" class="form-control flex-fill" name="spouse_fname" placeholder=" Enter the FirstName">
                  <input type="text" class="form-control flex-fill" name="spouse_MI" placeholder="Enter the Middle Initial">
+                 <div class="input-field w-50">
+                     <select name="spouse_suffix" id="spouse_suffix" class="form-select py-2">
+                         <option value="" disabled selected>Select Suffix</option>
+                         <option value="Jr.">Jr</option>
+                         <option value="Sr.">Sr</option>
+                         <option value="II.">II</option>
+                         <option value="III.">III</option>
+                         <option value="IV.">IV</option>
+                         <option value="V.">V</option>
+                     </select>
+                     <small class="text-danger" id="spouse_suffix_error"></small>
+                 </div>
              </div>
              <small class="text-danger error-text" id="spouse_fname_error"></small>
              <small class="text-danger error-text" id="spouse_lname_error"></small>

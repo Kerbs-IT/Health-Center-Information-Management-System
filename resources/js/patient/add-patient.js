@@ -515,10 +515,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
  // ================================= HANDLE THE DATE OF BIRTH ========================================
     const date_of_birth = document.getElementById("birthdate");
-    const age = document.getElementById("age")
+    const age = document.getElementById("age");
+    const hiddenAge = document.getElementById("hiddenAge");
 
     if (date_of_birth && age) {
-        automateAge(date_of_birth, age);
+        automateAge(date_of_birth, age, hiddenAge);
     }
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

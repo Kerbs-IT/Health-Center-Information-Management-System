@@ -48,6 +48,18 @@
                                 <input type="text" class="form-control" id="edit_client_lname" name="edit_client_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_client_lname_error"></small>
                             </div>
+                            <div class="input-form flex-fill lg:w-[50%]">
+                                <select name="edit_client_suffix" id="edit_client_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="edit_client_suffix_error"></small>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-md-2 mb-1 d-flex gap-1 flex-wrap flex-lg-nowrap">
@@ -143,6 +155,18 @@
                             <div class="input-form flex-fill">
                                 <input type="text" class="form-control" id="edit_spouse_lname" name="edit_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_spouse_lname_error"></small>
+                            </div>
+                            <div class="input-form flex-fill">
+                                <select name="edit_spouse_suffix" id="edit_spouse_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="edit_spouse_suffix_error"></small>
                             </div>
 
                         </div>
