@@ -43,18 +43,18 @@ class InventoryController extends Controller
 
     public function downloadRequestReport()
     {
-        $requests = MedicineRequest::with(['medicine', 'patients.user'])
-            ->select('id', 'patients_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
+        $requests = MedicineRequest::with(['medicine', 'patients', 'user'])
+            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
             ->orderByDesc('created_at')
             ->get()
             ->map(function($request) {
-                $request->full_name = $request->patients && $request->patients->user
-                    ? $request->patients->user->name
-                    : 'N/A';
+                // Use the requester_name attribute from the model (same as in InventoryReport)
+                $request->requester_name = $request->requester_name;
+
                 $request->medicine_name = $request->medicine
                     ? $request->medicine->medicine_name
                     : 'N/A';
-                $request->dosage = $request->medicine ?  $request->medicine->dosage : 'N/A';
+                $request->dosage = $request->medicine ? $request->medicine->dosage : 'N/A';
                 return $request;
             });
 
