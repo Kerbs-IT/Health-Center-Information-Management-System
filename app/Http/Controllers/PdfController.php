@@ -1142,6 +1142,15 @@ class PdfController extends Controller
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--disable-breakpad',
+                    '--disable-crash-reporter',
+                ])
+                ->setOption('env', [
+                    'CHROME_DEVEL_SANDBOX' => '',
+                    'GOOGLE_API_KEY' => 'no',
+                    'GOOGLE_DEFAULT_CLIENT_ID' => 'no',
+                    'GOOGLE_DEFAULT_CLIENT_SECRET' => 'no',
                 ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
