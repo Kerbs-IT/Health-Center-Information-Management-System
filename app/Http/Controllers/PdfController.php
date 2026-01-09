@@ -1128,7 +1128,11 @@ class PdfController extends Controller
             $filename = 'dashboard-report-' . date('m-d-Y-His') . '.pdf';
             $path = storage_path('app/public/' . $filename);
 
+            // ADD THIS LINE - explicitly set Chrome path
+            $chromePath = '/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome';
+
             Browsershot::html($html)
+                ->setChromePath($chromePath)  // ADD THIS LINE
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
                 ->margins(10, 10, 10, 10)
