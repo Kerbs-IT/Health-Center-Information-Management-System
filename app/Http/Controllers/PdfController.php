@@ -1132,12 +1132,14 @@ class PdfController extends Controller
             $chromePath = '/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome';
 
             Browsershot::html($html)
-                ->setChromePath($chromePath)  // ADD THIS LINE
+                ->setChromePath('/usr/bin/chromium-browser')
+                ->setNodeBinary('/usr/bin/node')
+                ->setNpmBinary('/usr/bin/npm')
+                ->noSandbox()  // Important for running as web server user
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
                 ->margins(10, 10, 10, 10)
                 ->save($path);
-
             return response()->download($path)->deleteFileAfterSend();
         } catch (\Exception $e) {
             return response()->json([
