@@ -1143,8 +1143,9 @@ class PdfController extends Controller
                     '--disable-gpu',
                     '--disable-software-rasterizer',
                     '--single-process',
-                    '--disable-crash-reporter',
-                    '--crash-dumps-dir=/tmp'
+                    // Remove these two lines:
+                    // '--disable-crash-reporter',
+                    // '--crash-dumps-dir=/tmp'
                 ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
