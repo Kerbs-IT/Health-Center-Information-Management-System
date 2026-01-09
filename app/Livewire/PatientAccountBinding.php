@@ -26,9 +26,9 @@ class PatientAccountBinding extends Component
     public function render()
     {
         $users = User::where('role', 'patient')
+            ->where('status', '!=', 'archived')  // <-- Move this OUTSIDE
             ->where(function ($query) {
                 $query->where('first_name', 'like', '%' . $this->search . '%')
-                    ->where("status", "!=", 'Archived')
                     ->orWhere('last_name', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%')
                     ->orWhere('username', 'like', '%' . $this->search . '%');
@@ -43,6 +43,7 @@ class PatientAccountBinding extends Component
             ->paginate(15);
 
         $unboundCount = User::where('role', 'patient')
+            ->where('status', '!=', 'archived')  // <-- Add here too
             ->whereNull('patient_record_id')
             ->count();
 
@@ -65,12 +66,14 @@ class PatientAccountBinding extends Component
         $this->patientRecords = patients::whereNull('user_id')
             ->where('status', '!=', 'Archived')
             ->where(function ($query) {
-                $query->where('first_name', 'like', '%' . $this->recordSearch . '%')
-                    ->orWhere('last_name', 'like', '%' . $this->recordSearch . '%')
-                    ->orWhere('middle_initial','like','%'. $this->recordSearch . '%')
-                    ->orWhere('id', 'like', '%' . trim($this->recordSearch," "). '%')
-                    ->orWhere(DB::raw("CONCAT(first_name, ' ',middle_initial,' ', last_name)"), 'like', '%' . $this->recordSearch . '%');
-                    
+                $searchTerm = str_replace(' ', '%', $this->recordSearch);
+
+                $query->where('first_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('middle_initial', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('full_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('id', 'like', '%' . trim($this->recordSearch) . '%')
+                    ->orWhere('contact_number', 'like', '%' . $this->recordSearch . '%');
             })
             ->limit(20)
             ->get();
