@@ -1138,6 +1138,12 @@ class PdfController extends Controller
             Browsershot::html($html)
                 ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome')
                 ->noSandbox()
+                ->setOption('args', [
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--single-process'
+                ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
                 ->margins(10, 10, 10, 10)
