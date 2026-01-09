@@ -1137,15 +1137,9 @@ class PdfController extends Controller
             //     ->save($path);
             Browsershot::html($html)
                 ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome')
-                ->noSandbox()
+                ->noSandbox()  // Required for VPS/Docker environments
                 ->setOption('args', [
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--disable-software-rasterizer',
-                    '--single-process',
-                    // Remove these two lines:
-                    // '--disable-crash-reporter',
-                    // '--crash-dumps-dir=/tmp'
+                    '--disable-dev-shm-usage',  // Prevents shared memory issues
                 ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
