@@ -1136,21 +1136,12 @@ class PdfController extends Controller
             //     ->margins(10, 10, 10, 10)
             //     ->save($path);
             Browsershot::html($html)
-                ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome')
+                ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-120.0.6099.109/chrome-linux64/chrome')
                 ->setOption('args', [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
-                    '--disable-software-rasterizer',
-                    '--disable-breakpad',
-                    '--disable-crash-reporter',
-                ])
-                ->setOption('env', [
-                    'CHROME_DEVEL_SANDBOX' => '',
-                    'GOOGLE_API_KEY' => 'no',
-                    'GOOGLE_DEFAULT_CLIENT_ID' => 'no',
-                    'GOOGLE_DEFAULT_CLIENT_SECRET' => 'no',
                 ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
