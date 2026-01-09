@@ -22,6 +22,7 @@ class notifications extends Model
         'is_read',
         'link_url',
         'read_at',
+        'status'
     ];
 
     protected $casts = [

@@ -943,21 +943,206 @@ class PdfController extends Controller
 
         return $pdf->download('patient-list-&-total-report' . date('m-d-Y') . '.pdf');
     }
-    public function generateDashboardGraph()
+    public function generateDashboardGraph(Request $request)
     {
-        $patientData = $this->monthlyPatientStats();
-        $pieData = $this->patientCount();
-        // return view('pdf.dashboard.graph-table', compact('patientData','pieData'));
-        $html = view('pdf.dashboard.graph-table', compact('patientData','pieData'))->render();
-        $path = storage_path('app/public/patient-report-' . date('m-d-Y') . '.pdf');
+        // Get BAR CHART date range
+        $barStartDate = $request->input('bar_start_date', Carbon::now()->startOfYear()->format('Y-m-d'));
+        $barEndDate = $request->input('bar_end_date', Carbon::now()->endOfYear()->format('Y-m-d'));
 
-        Browsershot::html($html)
-            ->waitUntilNetworkIdle()
-            ->format('Letter')
-            ->save($path);
+        // Get PIE CHART date range
+        $pieStartDate = $request->input('pie_start_date', Carbon::now()->startOfYear()->format('Y-m-d'));
+        $pieEndDate = $request->input('pie_end_date', Carbon::now()->endOfYear()->format('Y-m-d'));
 
-        return response()->download($path)->deleteFileAfterSend();
+        // Get the selected patient type (default to 'all')
+        $selectedType = $request->input('patient_type', 'all');
 
+        try {
+            $user = Auth::user();
+
+            // ===== BAR CHART DATA (using barStartDate and barEndDate) =====
+            $query = medical_record_cases::with('patient')
+                ->whereHas('patient', function ($q) {
+                    $q->where('status', '!=', 'Archived');
+                })
+                ->where('status', '!=', 'Archived')
+                ->whereDate('created_at', '>=', $barStartDate)
+                ->whereDate('created_at', '<=', $barEndDate);
+
+            // If staff, filter by health worker
+            if ($user->role === 'staff') {
+                $staffId = $user->id;
+                $query->where(function ($q) use ($staffId) {
+                    $q->whereHas('vaccinationRecords', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    })
+                        ->orWhereHas('prenatalRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('seniorCitizenRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('tbDotsRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('familyPlanningRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        });
+                });
+            }
+
+            // Get all records for bar chart
+            $records = $query->get();
+
+            // Process data
+            $monthlyData = [];
+            foreach ($records as $record) {
+                $yearMonth = Carbon::parse($record->created_at)->format('Y-m');
+                $type = $record->type_of_case;
+
+                if (!isset($monthlyData[$yearMonth])) {
+                    $monthlyData[$yearMonth] = [];
+                }
+                if (!isset($monthlyData[$yearMonth][$type])) {
+                    $monthlyData[$yearMonth][$type] = 0;
+                }
+                $monthlyData[$yearMonth][$type]++;
+            }
+
+            // Generate months for bar chart
+            $start = Carbon::parse($barStartDate);
+            $end = Carbon::parse($barEndDate);
+            $uniqueMonths = [];
+            $monthLabels = [];
+
+            while ($start <= $end) {
+                $yearMonth = $start->format('Y-m');
+                $uniqueMonths[] = $yearMonth;
+                $monthLabels[] = $start->format('M Y');
+                $start->addMonth();
+            }
+
+            // Build result
+            $caseMap = [
+                'vaccination'     => 'vaccination',
+                'prenatal'        => 'prenatal',
+                'senior'          => 'senior-citizen',
+                'tb'              => 'tb-dots',
+                'family_planning' => 'family-planning',
+            ];
+
+            $patientData = [
+                'all' => [
+                    'label' => 'All Patients',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'vaccination' => [
+                    'label' => 'Vaccination',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'prenatal' => [
+                    'label' => 'Prenatal Care',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'senior' => [
+                    'label' => 'Senior Citizen',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'tb' => [
+                    'label' => 'TB Treatment',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'family_planning' => [
+                    'label' => 'Family Planning',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+            ];
+
+            foreach ($uniqueMonths as $index => $yearMonth) {
+                if (isset($monthlyData[$yearMonth])) {
+                    foreach ($monthlyData[$yearMonth] as $type => $count) {
+                        $patientData['all']['data'][$index] += $count;
+                        $key = array_search($type, $caseMap);
+                        if ($key !== false) {
+                            $patientData[$key]['data'][$index] = $count;
+                        }
+                    }
+                }
+            }
+
+            // ===== PIE CHART DATA (using pieStartDate and pieEndDate) =====
+            $baseQuery = medical_record_cases::with('patient')
+                ->whereHas('patient', function ($q) {
+                    $q->where('status', '!=', 'Archived');
+                })
+                ->where('status', '!=', 'Archived')
+                ->whereDate('created_at', '>=', $pieStartDate)
+                ->whereDate('created_at', '<=', $pieEndDate);
+
+            if ($user->role === 'staff') {
+                $baseQuery->where(function ($q) use ($staffId) {
+                    $q->whereHas('vaccinationRecords', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    })
+                        ->orWhereHas('prenatalRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('seniorCitizenRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('tbDotsRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('familyPlanningRecords', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        });
+                });
+            }
+
+            $pieData = [
+                'vaccinationCount' => (clone $baseQuery)->where('type_of_case', 'vaccination')->count(),
+                'prenatalCount' => (clone $baseQuery)->where('type_of_case', 'prenatal')->count(),
+                'seniorCitizenCount' => (clone $baseQuery)->where('type_of_case', 'senior-citizen')->count(),
+                'tbDotsCount' => (clone $baseQuery)->where('type_of_case', 'tb-dots')->count(),
+                'familyPlanningCount' => (clone $baseQuery)->where('type_of_case', 'family-planning')->count(),
+            ];
+
+            // Format BOTH date ranges for display
+            $barDateRangeText = Carbon::parse($barStartDate)->format('M d, Y') . ' - ' . Carbon::parse($barEndDate)->format('M d, Y');
+            $pieDateRangeText = Carbon::parse($pieStartDate)->format('M d, Y') . ' - ' . Carbon::parse($pieEndDate)->format('M d, Y');
+
+            // Render the view
+            $html = view('pdf.dashboard.graph-table', compact(
+                'patientData',
+                'pieData',
+                'barDateRangeText',
+                'pieDateRangeText',
+                'selectedType'
+            ))->render();
+
+            $filename = 'dashboard-report-' . date('m-d-Y-His') . '.pdf';
+            $path = storage_path('app/public/' . $filename);
+
+            Browsershot::html($html)
+                ->waitUntilNetworkIdle()
+                ->format('Letter')
+                ->margins(10, 10, 10, 10)
+                ->save($path);
+
+            return response()->download($path)->deleteFileAfterSend();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to generate PDF',
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
     }
 
     private function patientCount()

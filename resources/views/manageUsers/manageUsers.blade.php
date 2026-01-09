@@ -347,6 +347,12 @@
 
                     </form>
                 </div>
+                @if(session('debug'))
+                <div class="alert alert-info">
+                    <strong>Debug:</strong>
+                    <pre>{{ json_encode(session('debug'), JSON_PRETTY_PRINT) }}</pre>
+                </div>
+                @endif
 
                 <!-- Modal Footer -->
                 <!-- <div class="modal-footer">

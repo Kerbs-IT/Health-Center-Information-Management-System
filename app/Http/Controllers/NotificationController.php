@@ -16,6 +16,7 @@ class NotificationController extends Controller
         $page = 'Notification';
         $isActive = true;
         $notifications = notifications::where('user_id', Auth::id())
+            ->where("status","!=",'Archived')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -89,7 +90,9 @@ class NotificationController extends Controller
             ->where('id', $id)
             ->firstOrFail();
 
-        $notification->delete();
+        $notification->update([
+            'status'=>'Archived'
+        ]);
 
         return response()->json(['success' => true]);
     }

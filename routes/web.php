@@ -396,7 +396,7 @@ Route::get('/patient-register', function () {
 
 // manager patient account
 Route::post('/add-patient-account', [manageUserController::class, 'store'])->name('manageUser.addPatientAccount');
-Route::delete('/delete-patient-account/{id}', [manageUserController::class, 'remove'])->name('manageUser.delete');
+Route::post('/delete-patient-account/{id}', [manageUserController::class, 'remove'])->name('manageUser.delete');
 Route::post('/patient-account/get-patient-info/{id}', [manageUserController::class, 'info'])->name('manageUser.info');
 Route::put('/update-patient-account-information/{id}', [manageUserController::class, 'updateInfo'])->name('manageUser.update');
 
@@ -561,7 +561,8 @@ Route::get('/download-expiring-soon-report', [InventoryController::class, 'downl
 
 // testing area
 Route::get('/pdf/generate/dashbord',[PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
-Route::get('/pdf/generate/graph',[PdfController::class, 'generateDashboardGraph'])->name("generate-dashboard-graph.pdf");
+Route::get('/pdf/generate/graph', [PdfController::class, 'generateDashboardGraph'])
+    ->name('generate-dashboard-graph.pdf');
 
 // NOTIFICATION SECTION
 Route::middleware(['auth'])->group(function () {
@@ -576,3 +577,4 @@ Route::middleware(['auth'])->group(function () {
    
 });
 
+Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);
