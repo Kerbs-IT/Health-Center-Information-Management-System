@@ -23,7 +23,7 @@
   <title>Barangay Health Center System</title>
   @vite(['resources/css/app.css',
   'resources/js/app.js',
-  'resources/css/homepage.css',
+'resources/css/homepage.css',
   'resources/js/homepage.js',
   'resources/css/navbar.css',
   'resources/js/navbar.js'])
