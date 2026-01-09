@@ -37,7 +37,7 @@
             @foreach($requests as $index => $request)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $request->patients->full_name }}</td>
+                <td>{{ $request->requester_name }}</td>
                 <td>{{ $request->medicine_name}}</td>
                 <td>{{ $request->dosage }}</td>
                 <td>{{ $request->quantity_requested }}</td>

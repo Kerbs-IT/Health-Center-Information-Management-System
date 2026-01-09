@@ -51,6 +51,9 @@
                         <option value="">All Status</option>
                     </select>
                 </div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#walkInModal" wire:click="resetWalkInForm">
+                    <i class="fa-solid fa-user-plus me-1"></i>Add Walk-In
+                </button>
             </div>
 
             {{-- Statistics Cards --}}
@@ -94,7 +97,7 @@
                 <table class="table table-hover" id="requestsTable">
                     <thead class="table-header">
                         <tr>
-                            <th class="text-center" scope="col">No.</th>
+                            <!-- <th class="text-center" scope="col">No.</th> -->
                             <th class="text-center" scope="col">Patient Name</th>
                             <th class="text-center" scope="col">Medicine</th>
                             <th class="text-center" scope="col">Quantity</th>
@@ -107,8 +110,8 @@
                     <tbody>
                     @forelse($requests as $index => $request)
                             <tr>
-                                <td class="text-center">{{ $request->id }}</td>
-                                <td class="text-center">{{ $request->patients->full_name}}</td>
+                                <!-- <td class="text-center">{{ $request->id }}</td> -->
+                                <td class="text-center">{{ $request->requester_name }}</td>
                                 <td class="text-center">
                                     <strong>{{$request->medicine->medicine_name}}</strong><br>
                                     <small class="text-muted">{{ $request->medicine->dosage }}</small>
@@ -166,6 +169,116 @@
         </div>
     </main>
 
+    {{-- Walk-In Modal --}}
+    <div class="modal fade" id="walkInModal" tabindex="-1" aria-labelledby="walkInModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow">
+                {{-- Modal Header --}}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="walkInModalLabel">
+                        <i class="fa-solid fa-user-plus me-2"></i>Walk-In Medicine Request
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" wire:click="resetWalkInForm"></button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="modal-body">
+                    <form wire:submit.prevent="createWalkIn">
+                        @csrf
+
+                        {{-- User Search & Selection --}}
+                        <div class="mb-3">
+                            <label class="form-label">Search User/Patient <span class="text-danger">*</span></label>
+                            <input wire:model.live.debounce.300ms="userSearch"
+                                   type="search"
+                                   class="form-control mb-2"
+                                   placeholder="Search by name...">
+
+                            <select wire:model="walkInUserId" class="form-select @error('walkInUserId') is-invalid @enderror">
+                                <option value="">Select user/patient</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->full_name }}
+                                        @if($user->patient)
+                                            <span class="text-success">✓ Has Patient Record</span>
+                                        @endif
+                                        @if($user->patient_type)
+                                            - {{ $user->patient_type }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('walkInUserId')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted mt-1 d-block">
+                                <i class="fa-solid fa-info-circle me-1"></i>
+                                The system will automatically use their patient record if available, otherwise their user account.
+                            </small>
+                        </div>
+
+                        {{-- Medicine Selection --}}
+                        <div class="mb-3">
+                            <label class="form-label">Medicine <span class="text-danger">*</span></label>
+                            <select wire:model="walkInMedicineId" class="form-select @error('walkInMedicineId') is-invalid @enderror">
+                                <option value="">Select medicine</option>
+                                @foreach($medicines as $medicine)
+                                    <option value="{{ $medicine->medicine_id }}">
+                                        {{ $medicine->medicine_name }} - {{ $medicine->dosage }}
+                                        (Stock: {{ $medicine->stock }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('walkInMedicineId')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Quantity --}}
+                        <div class="mb-3">
+                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input wire:model="walkInQuantity"
+                                   type="number"
+                                   class="form-control @error('walkInQuantity') is-invalid @enderror"
+                                   min="1"
+                                   placeholder="Enter quantity">
+                            @error('walkInQuantity')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Reason --}}
+                        <div class="mb-3">
+                            <label class="form-label">Reason <span class="text-danger">*</span></label>
+                            <textarea wire:model="walkInReason"
+                                      class="form-control @error('walkInReason') is-invalid @enderror"
+                                      rows="3"
+                                      placeholder="Enter reason for medicine request..."></textarea>
+                            @error('walkInReason')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="alert alert-success">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            <small>This is a walk-in request. The medicine will be dispensed immediately upon submission.</small>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="resetWalkInForm">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="createWalkIn" class="btn btn-success">
+                        <i class="fa-solid fa-check me-1"></i>Dispense Medicine
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- View Details Modal --}}
     <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -196,7 +309,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Patient Name</label>
-                                <p class="fw-bold">{{ $viewRequest->patients->full_name }}</p>
+                                <p class="fw-bold">{{ $viewRequest->requester_name }}</p>
                             </div>
 
                             <div class="col-md-6">
@@ -323,4 +436,18 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        // Close walk-in modal after successful submission
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('close-walkin-modal', () => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('walkInModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            });
+        });
+    </script>
+    @endpush
 </div>
