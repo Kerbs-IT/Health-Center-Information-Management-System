@@ -1142,10 +1142,7 @@ class PdfController extends Controller
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
-                    '--no-first-run',
-                    '--no-zygote',
                 ])
-                ->setOption('dumpio', false)
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
                 ->margins(10, 10, 10, 10)
