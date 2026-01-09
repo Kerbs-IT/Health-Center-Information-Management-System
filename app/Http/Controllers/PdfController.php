@@ -1130,6 +1130,11 @@ class PdfController extends Controller
 
             // ADD THIS LINE - explicitly set Chrome path
             $chromePath = '/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome';
+            // Browsershot::html($html)
+            //     ->waitUntilNetworkIdle()
+            //     ->format('Letter')
+            //     ->margins(10, 10, 10, 10)
+            //     ->save($path);
 
             Browsershot::html($html)
                 ->setChromePath('/usr/bin/chromium-browser')
