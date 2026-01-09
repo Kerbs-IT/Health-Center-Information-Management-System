@@ -1137,8 +1137,13 @@ class PdfController extends Controller
             //     ->save($path);
 
             Browsershot::html($html)
-                ->setChromePath('/usr/bin/chromium-browser')
+                ->setChromePath('/snap/bin/chromium')
                 ->noSandbox()
+                ->setOption('args', [
+                    '--disable-dev-shm-usage',
+                    '--disable-setuid-sandbox',
+                    '--user-data-dir=/tmp/chromium-data'
+                ])
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
                 ->margins(10, 10, 10, 10)
