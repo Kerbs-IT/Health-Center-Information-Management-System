@@ -457,7 +457,8 @@ main h3,
     .menu-bar.collapsed #manage_user i,
     .menu-bar.collapsed #profile i,
     .menu-bar.collapsed #add-patient i,
-    .menu-bar.collapsed #logout-btn i {
+    .menu-bar.collapsed #logout-btn i,
+    .menu-bar.collapsed #notification i {
         width: 100%;
         text-align: center;
     }
@@ -472,3 +473,13 @@ main h3,
     }
 }
 
+.menu-bar {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.menu-bar-content {
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}

@@ -71,7 +71,7 @@
                                 <h4 class="text-black text-center mt-1">Senior Citizen</h4>
                             </div>
                             <!-- TB DOTS -->
-                            <div class="item rounded">
+                            <div class="item rounded flex-fill">
                                 <div class="d-flex gap-3 justify-content-between px-3 ">
                                     <div class="overall-data fs-1 align-self-center text-black p-3" id="tb-dots-count">0</div>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
@@ -93,7 +93,7 @@
                         </div>
                         <div class="button-con w-100 px-4">
                             <h4 class="fw-bold text-center">Generate Report</h4>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                 <a href="{{route('generate-dashboad.pdf')}}" class="btn bg-success d-flex align-items-center gap-3 p-3">
                                     <i class="fa-solid fa-clipboard fs-5" style="color: #ffffff;"></i>
                                     <h5 class="mb-0 text-white fs-5 fw-500">Patient List & Totals</h5>
