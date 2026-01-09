@@ -1135,8 +1135,8 @@ class PdfController extends Controller
             //     ->format('Letter')
             //     ->margins(10, 10, 10, 10)
             //     ->save($path);
-
             Browsershot::html($html)
+                ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome')
                 ->noSandbox()
                 ->waitUntilNetworkIdle()
                 ->format('Letter')
