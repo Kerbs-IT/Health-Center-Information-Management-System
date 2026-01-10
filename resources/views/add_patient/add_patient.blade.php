@@ -97,8 +97,8 @@
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="Enter the age" disabled class="form-control"  >
-                                            <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age" >
+                                            <input type="number" id="age" placeholder="Enter the age" disabled class="form-control">
+                                            <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>
@@ -369,12 +369,27 @@
                                             <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Barangay*</label>
                                                 @php
-                                                $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
+                                                $brgy = \App\Models\brgy_unit::orderBy('brgy_unit')->get();
+                                                $user = auth()->user();
+                                                $isStaff = $user->role === 'staff'; // or however you check if user is staff
+                                                $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID
                                                 @endphp
                                                 <select name="brgy" id="brgy" class="form-select py-2">
                                                     <option value="" disabled selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
-                                                    <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
+                                                    @if($isStaff)
+                                                    {{-- Staff: only their assigned area is enabled --}}
+                                                    <option value="{{ $brgy_unit->brgy_unit }}"
+                                                        {{ $brgy_unit->id != $assignedAreaId ? 'disabled' : '' }}
+                                                        {{ $brgy_unit->id == $assignedAreaId ? 'selected' : '' }}>
+                                                        {{ $brgy_unit->brgy_unit }}
+                                                    </option>
+                                                    @else
+                                                    {{-- Nurse: all options enabled --}}
+                                                    <option value="{{ $brgy_unit->brgy_unit }}">
+                                                        {{ $brgy_unit->brgy_unit }}
+                                                    </option>
+                                                    @endif
                                                     @endforeach
                                                 </select>
                                                 <small class="text-danger error-text" id="brgy_error"></small>
@@ -466,7 +481,7 @@
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
-                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
+                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required min="1950-01-01" max="{{date('Y-m-d')}}">
                                         <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
                                 </div>
