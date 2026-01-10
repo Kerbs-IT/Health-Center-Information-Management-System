@@ -1,3 +1,5 @@
+// inventory-report.js
+
 // Wait for DOM before initializing
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeCharts);
@@ -8,7 +10,7 @@ if (document.readyState === 'loading') {
 function initializeCharts() {
     // Check if we're on the right page
     if (!document.getElementById('dateRangePicker')) {
-        console.log('Not on inventory report page, skipping initialization');
+        // console.log('Not on inventory report page, skipping initialization');
         return;
     }
 
@@ -51,7 +53,7 @@ function initializeCharts() {
 
     // Line Chart Date Picker
     $('#dateRangePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        console.log('Line chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        // console.log('Line chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#dateRangePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
         const livewireElement = document.querySelector('[wire\\:id]');
@@ -64,7 +66,7 @@ function initializeCharts() {
 
     // Bar Chart Date Picker
     $('#barChartDatePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        console.log('Bar chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        // console.log('Bar chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#barChartDatePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
         const livewireElement = document.querySelector('[wire\\:id]');
@@ -77,7 +79,7 @@ function initializeCharts() {
 
     // Pie Chart Date Picker
     $('#pieChartDatePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        console.log('Pie chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        // console.log('Pie chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#pieChartDatePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
         const livewireElement = document.querySelector('[wire\\:id]');

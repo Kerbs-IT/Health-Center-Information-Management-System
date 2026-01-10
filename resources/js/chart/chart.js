@@ -1,6 +1,11 @@
+// chart.js
 import Chart from "chart.js/auto";
 import jQuery from "jquery";
 import momentLib from "moment";
+
+// ✅ Import daterangepicker directly (no dynamic import needed)
+import "daterangepicker";
+import "daterangepicker/daterangepicker.css";
 
 // Set globals for daterangepicker
 if (typeof window !== "undefined") {
@@ -27,21 +32,20 @@ let pieChartDateRange = {
     end: moment().endOf("year"),
 };
 
-// Load daterangepicker dynamically
-let daterangepickerLoaded = false;
-async function loadDateRangePicker() {
-    if (!daterangepickerLoaded) {
-        try {
-            await import("daterangepicker");
-            await import("daterangepicker/daterangepicker.css");
-            daterangepickerLoaded = true;
-            // console.log("✓ Daterangepicker loaded");
-        } catch (error) {
-            console.error("Failed to load daterangepicker:", error);
-            throw error;
-        }
-    }
-}
+// ❌ REMOVE THIS - No longer needed
+// let daterangepickerLoaded = false;
+// async function loadDateRangePicker() {
+//     if (!daterangepickerLoaded) {
+//         try {
+//             await import("daterangepicker");
+//             await import("daterangepicker/daterangepicker.css");
+//             daterangepickerLoaded = true;
+//         } catch (error) {
+//             console.error("Failed to load daterangepicker:", error);
+//             throw error;
+//         }
+//     }
+// }
 
 // Fetch patient data for charts
 async function loadPatientData(startDate, endDate) {
@@ -58,7 +62,6 @@ async function loadPatientData(startDate, endDate) {
         }
 
         const data = await response.json();
-        // console.log("✓ Patient data loaded:", data);
 
         // Add colors to datasets
         Object.keys(data).forEach((key) => {
@@ -76,8 +79,6 @@ async function loadPatientData(startDate, endDate) {
 
 // Initialize date range pickers
 function initDateRangePickers() {
-    // console.log("Initializing date range pickers...");
-
     const pickerConfig = {
         opens: "left",
         drops: "down",
@@ -150,17 +151,10 @@ function initDateRangePickers() {
                 endDate: barChartDateRange.end,
             },
             function (start, end, label) {
-                // console.log(
-                //     "Bar chart date range changed:",
-                //     start.format("YYYY-MM-DD"),
-                //     "to",
-                //     end.format("YYYY-MM-DD")
-                // );
                 barChartDateRange = { start, end };
                 reloadBarChart();
             }
         );
-        // console.log("✓ Bar chart date picker initialized");
     } else {
         console.warn("⚠ Bar chart date range input not found");
     }
@@ -175,17 +169,10 @@ function initDateRangePickers() {
                 endDate: pieChartDateRange.end,
             },
             function (start, end, label) {
-                // console.log(
-                //     "Pie chart date range changed:",
-                //     start.format("YYYY-MM-DD"),
-                //     "to",
-                //     end.format("YYYY-MM-DD")
-                // );
                 pieChartDateRange = { start, end };
                 reloadPieChart();
             }
         );
-        // console.log("✓ Pie chart date picker initialized");
     } else {
         console.warn("⚠ Pie chart date range input not found");
     }
@@ -193,8 +180,6 @@ function initDateRangePickers() {
 
 // Initialize bar chart
 async function initBarChart() {
-    // console.log("Initializing bar chart...");
-
     const canvas = document.getElementById("patientChart");
     if (!canvas) {
         console.error("✗ Canvas element 'patientChart' not found!");
@@ -323,7 +308,6 @@ async function initBarChart() {
             },
         });
 
-        // console.log("✓ Bar chart initialized successfully");
         updateStats("all");
     } catch (error) {
         console.error("✗ Failed to initialize bar chart:", error);
@@ -352,8 +336,6 @@ function updateChart(patientType) {
     barChart.data.labels = selectedData.months || [];
     barChart.update("active");
     updateStats(patientType);
-
-    // console.log("✓ Chart updated to:", patientType);
 }
 
 // Update statistics summary
@@ -380,14 +362,11 @@ function updateStats(patientType) {
 
 // Reload bar chart with new date range
 async function reloadBarChart() {
-    // console.log("Reloading bar chart...");
     await initBarChart();
 }
 
 // Initialize pie chart
 async function initPieChart() {
-    // console.log("Initializing pie chart...");
-
     const canvas = document.getElementById("myPieChart");
     if (!canvas) {
         console.error("✗ Canvas element 'myPieChart' not found!");
@@ -423,7 +402,6 @@ async function reloadPieChart() {
         }
 
         const data = await response.json();
-        // console.log("✓ Pie chart data loaded:", data);
 
         const canvas = document.getElementById("myPieChart");
         const ctx = canvas.getContext("2d");
@@ -513,8 +491,6 @@ async function reloadPieChart() {
                 },
             },
         });
-
-        // console.log("✓ Pie chart initialized successfully");
     } catch (error) {
         console.error("✗ Failed to load pie chart:", error);
     }
@@ -522,8 +498,6 @@ async function reloadPieChart() {
 
 // Initialize patient count per area
 async function initCountPerArea() {
-    // console.log("Loading patient count per area...");
-
     try {
         const response = await fetch("/dashboard/patient-count-per-area", {
             headers: {
@@ -536,7 +510,6 @@ async function initCountPerArea() {
         }
 
         const data = await response.json();
-        // console.log("✓ Count per area data loaded:", data);
 
         const container = document.querySelector(".patient-per-area-con");
         if (!container) {
@@ -556,8 +529,6 @@ async function initCountPerArea() {
                 </div>
             `;
         });
-
-        // console.log("✓ Patient count per area rendered");
     } catch (error) {
         console.error("✗ Failed to load count per area:", error);
     }
@@ -565,8 +536,6 @@ async function initCountPerArea() {
 
 // Initialize today's patient count
 async function initPatientToday() {
-    // console.log("Loading today's patient count...");
-
     try {
         const response = await fetch("/dashboard/today/added-patient", {
             headers: {
@@ -579,7 +548,6 @@ async function initPatientToday() {
         }
 
         const data = await response.json();
-        // console.log("✓ Today's patient data loaded:", data);
 
         const elements = {
             vaccination: document.getElementById("vaccination-patient-today"),
@@ -603,22 +571,15 @@ async function initPatientToday() {
             elements.tbDots.textContent = data.tbDotsCount || 0;
         if (elements.familyPlanning)
             elements.familyPlanning.textContent = data.familyPlanningCount || 0;
-
-        // console.log("✓ Today's patient count rendered");
     } catch (error) {
         console.error("✗ Failed to load today's patient count:", error);
     }
 }
 
 // Main initialization
-// Replace your existing dashboardCharts event listener with this:
-
 document.addEventListener("DOMContentLoaded", async function () {
-    // console.log("=== Dashboard Initialization Started ===");
-
     try {
-        // Load daterangepicker library
-        await loadDateRangePicker();
+        // ✅ No need to load daterangepicker - it's already imported at the top
 
         // Initialize date range pickers
         initDateRangePickers();
@@ -637,7 +598,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             patientTypeSelect.addEventListener("change", function (e) {
                 updateChart(e.target.value);
             });
-            // console.log("✓ Patient type dropdown listener attached");
         } else {
             console.warn("⚠ Patient type dropdown not found");
         }
@@ -649,15 +609,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 e.preventDefault();
 
                 // Get BAR CHART date range
-                const barStartDate = barChartDateRange.start.format("YYYY-MM-DD");
+                const barStartDate =
+                    barChartDateRange.start.format("YYYY-MM-DD");
                 const barEndDate = barChartDateRange.end.format("YYYY-MM-DD");
 
                 // Get PIE CHART date range
-                const pieStartDate = pieChartDateRange.start.format("YYYY-MM-DD");
+                const pieStartDate =
+                    pieChartDateRange.start.format("YYYY-MM-DD");
                 const pieEndDate = pieChartDateRange.end.format("YYYY-MM-DD");
 
                 // Get the selected patient type
-                const patientType = document.getElementById("patientType").value;
+                const patientType =
+                    document.getElementById("patientType").value;
 
                 // Build the URL with BOTH date ranges
                 const params = new URLSearchParams({
@@ -665,28 +628,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                     bar_end_date: barEndDate,
                     pie_start_date: pieStartDate,
                     pie_end_date: pieEndDate,
-                    patient_type: patientType
+                    patient_type: patientType,
                 });
 
                 const url = `/pdf/generate/graph?${params.toString()}`;
 
-                // console.log("📊 Generating PDF with parameters:", {
-                //     barChart: `${barStartDate} to ${barEndDate}`,
-                //     pieChart: `${pieStartDate} to ${pieEndDate}`,
-                //     patientType: patientType
-                // });
-
                 // Open in new tab
                 window.open(url, "_blank");
             });
-            // console.log("✓ Dashboard charts PDF button listener attached");
         } else {
             console.warn("⚠ Dashboard charts button not found");
         }
 
-        // console.log("=== Dashboard Initialization Complete ===");
+        console.log("✅ Dashboard initialization complete");
     } catch (error) {
-        console.error("=== Dashboard Initialization Failed ===");
-        console.error(error);
+        console.error("❌ Dashboard initialization failed:", error);
     }
 });

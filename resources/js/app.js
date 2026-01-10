@@ -1,6 +1,6 @@
-
+// app.js
 // import styles bundle
-import 'swiper/css/bundle';
+import "swiper/css/bundle";
 
 // ⭐ Import Bootstrap correctly
 import * as bootstrap from "bootstrap";
@@ -9,25 +9,25 @@ window.bootstrap = bootstrap;
 import Swal from "sweetalert2";
 window.Swal = Swal;
 
-import $ from 'jquery';
+import $ from "jquery";
 window.$ = window.jQuery = $;
 
 // Moment.js (required for daterangepicker)
-import moment from 'moment';
+import moment from "moment";
 window.moment = moment;
 
-// Daterangepicker
-import 'daterangepicker';
-import 'daterangepicker/daterangepicker.css';
-
 // Chart.js
-import Chart from 'chart.js/auto';
+import Chart from "chart.js/auto";
 window.Chart = Chart;
 
-import './inventory-report.js';
+// ❌ REMOVE THESE LINES - Move to inventory-report.js
+// import 'daterangepicker';
+// import 'daterangepicker/daterangepicker.css';
+
+import "./inventory-report.js";
 
 const root = document.querySelector(":root");
-const logoutBtn = document.getElementById('logout-btn');
+const logoutBtn = document.getElementById("logout-btn");
 const logoutUrl = "{{ route('logout') }}";
 
 function logout(btn) {
@@ -80,9 +80,7 @@ async function currentColorPallete() {
         }
         hexToRgb(data.secondaryColor, rootTextBarProperty);
         hexToRgb(data.primaryColor, rootPrimaryTextProperty);
-    } catch (error) {
-
-    }
+    } catch (error) {}
 }
 
 function hexToRgb(hex, rootElement) {
@@ -166,4 +164,3 @@ if (overlay) {
         overlay.classList.remove("active");
     });
 }
-
