@@ -43,6 +43,7 @@ class InventoryReport extends Component
             topMedicinesData: $this->getTopMedicinesDateRangeData()
         );
     }
+
     public function updateBarChartDateRange($startDate, $endDate){
         $this->barChartStartDate = $startDate;
         $this->barChartEndDate = $endDate;
@@ -51,6 +52,7 @@ class InventoryReport extends Component
             categoriesData: $this->getMedicineCategoriesData()
         );
     }
+
     public function updatePieChartDateRange($startDate, $endDate){
         $this->pieChartStartDate = $startDate;
         $this->pieChartEndDate = $endDate;
@@ -83,8 +85,32 @@ class InventoryReport extends Component
     public function getMedicineCategoriesData(){
         $start = Carbon::parse($this->barChartStartDate);
         $end = Carbon::parse($this->barChartEndDate);
+        $daysDiff = $start->diffInDays($end);
 
-        // Get categories based on medicines dispensed in the date range
+        // For single day, show hourly breakdown by category
+        if ($daysDiff == 0) {
+            // Get all categories that have dispensed medicines today
+            $hourlyData = DB::table('medicine_request_logs')
+                ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
+                ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
+                ->where('medicine_request_logs.action', 'approved')
+                ->whereDate('medicine_request_logs.performed_at', $start)
+                ->selectRaw('categories.category_name, HOUR(medicine_request_logs.performed_at) as hour, SUM(medicine_request_logs.quantity) as count')
+                ->groupBy('categories.category_id', 'categories.category_name', 'hour')
+                ->get();
+
+            // Aggregate by category for the whole day
+            $categories = $hourlyData->groupBy('category_name')->map(function($items) {
+                return $items->sum('count');
+            });
+
+            return [
+                'labels' => $categories->keys()->toArray(),
+                'data' => $categories->values()->toArray()
+            ];
+        }
+
+        // For multiple days, use existing aggregate logic
         $categories = DB::table('medicine_request_logs')
             ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
             ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
@@ -104,12 +130,22 @@ class InventoryReport extends Component
     public function getPieChartData(){
         $start = Carbon::parse($this->pieChartStartDate);
         $end = Carbon::parse($this->pieChartEndDate);
+        $daysDiff = $start->diffInDays($end);
 
         // Get medicines that were active/dispensed in this date range
-        $medicineIds = MedicineRequestLog::where('action', 'approved')
-            ->whereBetween('performed_at', [$start, $end])
-            ->distinct()
-            ->pluck('medicine_name');
+        if ($daysDiff == 0) {
+            // For single day, use whereDate to ensure we capture the entire day
+            $medicineIds = MedicineRequestLog::where('action', 'approved')
+                ->whereDate('performed_at', $start)
+                ->distinct()
+                ->pluck('medicine_name');
+        } else {
+            // For multiple days, use whereBetween
+            $medicineIds = MedicineRequestLog::where('action', 'approved')
+                ->whereBetween('performed_at', [$start, $end])
+                ->distinct()
+                ->pluck('medicine_name');
+        }
 
         // Get current stock status for those medicines
         $inStock = Medicine::whereIn('medicine_name', $medicineIds)
@@ -244,30 +280,30 @@ class InventoryReport extends Component
         // Determine grouping based on date range
 
         if ($daysDiff == 0) {
-        $records = MedicineRequest::selectRaw('HOUR(created_at) as hour, COUNT(*) as total')
-            ->whereDate('created_at', $start)
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->pluck('total', 'hour')
-            ->toArray();
+            $records = MedicineRequest::selectRaw('HOUR(created_at) as hour, COUNT(*) as total')
+                ->whereDate('created_at', $start)
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->pluck('total', 'hour')
+                ->toArray();
 
-        $labels = [];
-        $fullLabels = [];
-        $data = [];
-        $currentHour = $start->copy()->startOfDay();
+            $labels = [];
+            $fullLabels = [];
+            $data = [];
+            $currentHour = $start->copy()->startOfDay();
 
-        for ($i = 0; $i < 24; $i++) {
-            $labels[] = $currentHour->format('g A');
-            $fullLabels[] = $currentHour->format('g:00 A');
-            $data[] = $records[$i] ?? 0;
-            $currentHour->addHour();
-        }
+            for ($i = 0; $i < 24; $i++) {
+                $labels[] = $currentHour->format('g A');
+                $fullLabels[] = $currentHour->format('g:00 A');
+                $data[] = $records[$i] ?? 0;
+                $currentHour->addHour();
+            }
 
-        return [
-            'labels' => $labels,
-            'fullLabels' => $fullLabels,
-            'data' => $data
-        ];
+            return [
+                'labels' => $labels,
+                'fullLabels' => $fullLabels,
+                'data' => $data
+            ];
         }elseif ($daysDiff >= 364) {
             // Group by month for ranges over 1 year
             $records = MedicineRequest::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as date, COUNT(*) as total')
@@ -355,6 +391,7 @@ class InventoryReport extends Component
 
         $datasets = [];
         $labels = [];
+        $fullLabels = [];
 
         // If no medicines dispensed in this period, return empty data
         if ($topMedicines->isEmpty()) {
@@ -363,29 +400,34 @@ class InventoryReport extends Component
                 $currentHour = $start->copy()->startOfDay();
                 for ($i = 0; $i < 24; $i++) {
                     $labels[] = $currentHour->format('g A');
+                    $fullLabels[] = $currentHour->format('g:00 A');
                     $currentHour->addHour();
                 }
             } elseif ($daysDiff >= 364) {
                 $current = $start->copy()->startOfMonth();
                 while ($current <= $end) {
                     $labels[] = $current->format('M Y');
+                    $fullLabels[] = $current->format('F Y');
                     $current->addMonth();
                 }
             } elseif ($daysDiff > 60) {
                 $current = $start->copy()->startOfWeek();
                 while ($current <= $end) {
                     $labels[] = $current->format('M d');
+                    $fullLabels[] = 'Week of ' . $current->format('M d, Y');
                     $current->addWeek();
                 }
             } else {
                 $period = CarbonPeriod::create($start, $end);
                 foreach ($period as $date) {
                     $labels[] = $date->format('M d');
+                    $fullLabels[] = $date->format('F d, Y');
                 }
             }
 
             return [
                 'labels' => $labels,
+                'fullLabels' => $fullLabels,
                 'datasets' => []
             ];
         }
@@ -396,6 +438,7 @@ class InventoryReport extends Component
 
             for ($i = 0; $i < 24; $i++) {
                 $labels[] = $currentHour->format('g A');
+                $fullLabels[] = $currentHour->format('g:00 A');
                 $currentHour->addHour();
             }
 
@@ -424,6 +467,7 @@ class InventoryReport extends Component
             $current = $start->copy()->startOfMonth();
             while ($current <= $end) {
                 $labels[] = $current->format('M Y');
+                $fullLabels[] = $current->format('F Y');
                 $current->addMonth();
             }
 
@@ -455,6 +499,7 @@ class InventoryReport extends Component
             $current = $start->copy()->startOfWeek();
             while ($current <= $end) {
                 $labels[] = $current->format('M d');
+                $fullLabels[] = 'Week of ' . $current->format('M d, Y');
                 $current->addWeek();
             }
 
@@ -486,6 +531,7 @@ class InventoryReport extends Component
             $period = CarbonPeriod::create($start, $end);
             foreach ($period as $date) {
                 $labels[] = $date->format('M d');
+                $fullLabels[] = $date->format('F d, Y');
             }
 
             foreach ($topMedicines as $medicine) {
@@ -513,6 +559,7 @@ class InventoryReport extends Component
 
         return [
             'labels' => $labels,
+            'fullLabels' => $fullLabels,
             'datasets' => $datasets
         ];
     }
