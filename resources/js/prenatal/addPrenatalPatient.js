@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .filter(Boolean) // removes empty strings
             .join(" ");
 
-        console.log(fullNameCon);
+        // console.log(fullNameCon);
     });
 
     // for the signature

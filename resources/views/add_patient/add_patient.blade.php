@@ -481,7 +481,7 @@
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="date_of_vaccination">Date of Vaccination</label>
-                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required>
+                                        <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required min="1950-01-01" max="{{date('Y-m-d')}}">
                                         <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
                                 </div>
