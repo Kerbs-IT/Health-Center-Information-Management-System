@@ -1,12 +1,15 @@
 <div>
-    <div class="tables d-flex flex-column p-3">
+    <div class="tables d-flex flex-column p-md-3 p-1">
         <div class="add-btn mb-3 d-flex justify-content-between">
-            <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
-            <div class="add-buttons">
-                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
-                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
-                <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
-
+            <div>
+                <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
+            </div>
+            <div>
+                <div class="add-buttons d-flex justify-content-end gap-2 flex-wrap">
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
+                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
+                </div>
             </div>
 
         </div>
@@ -133,7 +136,8 @@
                 @endforeach
             </tbody>
 
-        </table>
+            </table>
+        </div>
         <div class="mt-3">
             {{ $allRecords->links() }}
         </div>
