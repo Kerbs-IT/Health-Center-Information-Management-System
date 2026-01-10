@@ -168,14 +168,7 @@
                                 </div>
                             </div>
                             <div class="mb-2 flex-wrap d-flex gap-1">
-                                <!-- username -->
-                                <div class="input-field flex-fill">
-                                    <label for="username" class="">Username</label>
-                                    <input type="text" placeholder="ex. yato" id="username" class="form-control" name="username" value="{{ optional(Auth::user()) -> username ?? null }}">
-                                    @error('username')
-                                    <small class="text-danger">{{$message}}</small>
-                                    @enderror
-                                </div>
+                                
                                 <!-- email -->
                                 <div class="input-field flex-fill">
                                     <label for="email" class="">Email</label>

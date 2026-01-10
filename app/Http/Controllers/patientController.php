@@ -267,7 +267,7 @@ class patientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'username' => 'required',
+                
                 'email' => ['required', 'email'],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
@@ -347,7 +347,7 @@ class patientController extends Controller
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['edit_suffix']
+                $data['edit_suffix']??null
             ];
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
@@ -393,7 +393,7 @@ class patientController extends Controller
 
                 // also update the account
                 $userUpdateData = [
-                    'username' => $data['username'] ?? $user->username,
+                    
                     'email' => $data['email'] ?? $user->email,
                     'first_name' => $data['first_name'] ?? $user->first_name,
                     'last_name' => $data['last_name'] ?? $user->last_name,
@@ -420,7 +420,7 @@ class patientController extends Controller
                 // No patient - update user table
 
                 $userUpdateData = [
-                    'username' => $data['username'] ?? $user->username,
+                    
                     'email' => $data['email'] ?? $user->email,
                     'first_name' => $data['first_name'] ?? $user->first_name,
                     'last_name' => $data['last_name'] ?? $user->last_name,

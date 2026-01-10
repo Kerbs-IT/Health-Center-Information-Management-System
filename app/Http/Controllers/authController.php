@@ -10,6 +10,7 @@ use App\Models\staff;
 use App\Models\User;
 use App\Models\users_address;
 use App\Services\VerificationService;
+use Carbon\Carbon;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,7 +65,7 @@ class authController extends Controller
         }
 
         $data = $request->validate([
-            'username' => 'required|unique:users,username',
+            
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'first_name' => [
@@ -103,7 +104,7 @@ class authController extends Controller
         // FOR PATIENT REGISTRATION: Create temporary user and require verification
         // Create MINIMAL temporary user for verification only
         $tempUser = User::create([
-            'username' => ucwords(strtolower($data['username'])),
+           
             'first_name' =>ucwords(strtolower($data['first_name'])) ,
             'middle_initial' => ucwords(strtolower($data['middle_initial'])),
             'last_name' => ucwords(strtolower($data['last_name'])),
@@ -146,16 +147,16 @@ class authController extends Controller
     {
         $user = Auth::user();
         $data = $request->validate([
-            'first_name' => 'sometimes|nullable|string',
-            'last_name' => 'sometimes|nullable|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'middle_initial' => 'sometimes|nullable|string',
             'age' => 'sometimes|nullable|numeric',
-            'date_of_birth' => 'sometimes|nullable|date',
+            'date_of_birth' => 'required|date',
             'sex' => 'sometimes|nullable|string',
             'civil_status' => 'sometimes|nullable|string',
             'contact_number' => 'sometimes|nullable|digits_between:7,12',
             'nationality' => 'sometimes|nullable|string',
-            'username' => 'required',
+            
             'email' => ['required', 'email'],
             'street' => 'sometimes|nullable|string',
             'region' => 'sometimes|nullable|string',
@@ -170,13 +171,13 @@ class authController extends Controller
 
         if (!empty($data['password'])) {
             $user->update([
-                'username' => $data['username'],
+                
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']) // hash the password
             ]);
         } else {
             $user->update([
-                'username' => $data['username'],
+                
                 'email' => $data['email'],
             ]);
         }
@@ -235,17 +236,36 @@ class authController extends Controller
 
         $staff = $user->staff;
         $nurse = $user->nurses;
+        $middle = substr($data['middle_initial'] ?? '', 0, 1);
+        $middle = $middle ? strtoupper($middle) . '.' : null;
+        $middleInitial = $data['middle_initial'] ? ucwords($data['middle_initial']) : '';
+        $parts = [
+            strtolower($data['first_name']),
+            $middle,
+            strtolower($data['last_name']),
+            $data['suffix'] ?? null,
+        ];
+
+        $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+        $ageInYears = Carbon::parse($data['date_of_birth'])->age;
 
         // dd($staff);
         switch (Auth::user()->role) {
             case 'staff':
+                $user->update([
+                    'first_name' => ucwords(strtolower($data['first_name'])),
+                    'middle_initial' => $middleInitial,
+                    'last_name' => ucwords(strtolower($data['last_name'])),
+                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'] ?? $user->contact_number,
+                ]);
                 $staff->update([
-                    'first_name' => $data['first_name'] ?? null,
-                    'middle_initial' => $data['middle_initial'] ?? null,
-                    'last_name' => $data['last_name'] ?? null,
-                    'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
-                    'age' => $data['age'],
-                    'date_of_birth' => $data['date_of_birth'] ?? null,
+                    'first_name' => ucwords(strtolower($data['first_name'])),
+                    'middle_initial' => $middleInitial,
+                    'last_name' => ucwords(strtolower($data['last_name'])),
+                    'full_name' => $fullName,
+                    'age' => $ageInYears??$staff->age,
+                    'date_of_birth' => $data['date_of_birth'] ?? $staff->date_of_birth,
                     'sex' => $data['sex'] ?? null,
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
@@ -256,6 +276,13 @@ class authController extends Controller
 
                 break;
             case 'nurse':
+                $user->update([
+                    'first_name' => ucwords(strtolower($data['first_name'])),
+                    'middle_initial' => $middleInitial,
+                    'last_name' => ucwords(strtolower($data['last_name'])),
+                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'] ?? $user->contact_number,
+                ]);
                 $nurse->update([
                     'first_name' => $data['first_name'] ?? null,
                     'middle_initial' => $data['middle_initial'] ?? null,
@@ -351,7 +378,7 @@ class authController extends Controller
     public function storeStaff(Request $request)
     {
         $data = $request->validate([
-            'username' => 'required|unique:users,username',
+            
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'first_name' => 'required',
@@ -378,7 +405,7 @@ class authController extends Controller
 
         // Create user directly (NO verification needed for staff/nurse)
         $newUser = User::create([
-            'username' => ucwords(strtolower($data['username'])),
+           
             'email' => $data['email'],
             'first_name' => ucwords(strtolower($data['first_name'])),
             'middle_initial' => ucwords(strtolower($data['middle_initial'] ?? '')),
