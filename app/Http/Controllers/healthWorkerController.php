@@ -253,7 +253,7 @@ class healthWorkerController extends Controller
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['edit_suffix']
+                $data['edit_suffix']??''
             ];
             
 

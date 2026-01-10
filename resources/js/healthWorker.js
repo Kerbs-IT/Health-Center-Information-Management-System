@@ -93,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const bday = document.getElementById("birthdate");
                     const contact = document.getElementById("contact_num");
                     const nationality = document.getElementById("nationality");
-                    const username = document.getElementById("username");
                     const email = document.getElementById("email");
                     const blkNstreet = document.getElementById("blk_n_street");
                     const postalCode = document.getElementById("postal_code");
@@ -143,9 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     bday.value = data.response.date_of_birth;
                     contact.value = data.response.contact_number;
                     nationality.value = data.response.nationality;
-                    username.value = data.response.username;
+                    
                     email.value = data.response.email;
-                    // console.log(username.value);
+                    
                     blkNstreet.value = data.response.street ?? "none";
                     postalCode.value = data.response.postal_code;
                     suffix.value = data.response.suffix ?? "";
@@ -261,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const contactError = document.getElementById("contact-error");
                 const nationalityError =
                     document.getElementById("nationality-error");
-                const usernameError = document.getElementById("username-error");
+                
                 const emailError = document.getElementById("email-error");
                 const streetError = document.getElementById("street-error");
                 const postalError = document.getElementById("postal-error");
@@ -309,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         data.errors?.contact_number?.[0] ?? "";
                     nationalityError.innerHTML =
                         data.errors?.nationality?.[0] ?? "";
-                    usernameError.innerHTML = data.errors?.username?.[0] ?? "";
+                    
                     emailError.innerHTML = data.errors?.email?.[0] ?? "";
                     streetError.innerHTML = data.errors?.street?.[0] ?? "";
                     postalError.innerHTML = data.errors?.postal_code?.[0] ?? "";
@@ -397,7 +396,7 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
 
     try {
         // errors container
-        const username_error = document.getElementById("add-username-error");
+        
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
             ".middle-initial-error"
@@ -461,7 +460,7 @@ addHealthWorkerBtn.addEventListener("click", () => {
     const modalForm = document.getElementById("add-health-worker-form");
     // reset first
     modalForm.reset();
-    const username_error = document.getElementById("add-username-error");
+    
     const fname_error = document.querySelector(".fname-error");
     const middle_initial_error = document.querySelector(
         ".middle-initial-error"
