@@ -1,11 +1,11 @@
 <div>
-    <main class="d-flex flex-column container-fluid bg-light ">
-        <div class="m-3 p-3 shadow min-vh-100">
+    <main class="category d-flex flex-column container-fluid bg-light ">
+        <div class="m-md-3 m-1 p-3 shadow min-vh-100">
             <h2 class="mb-5 fs-1 text-center">Medicine Inventory</h2>
             <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
                 <div class="flex-fill">
                     <label for="" class="form-label">Show</label>
-                    <select type="text" class="form-select w-50" name="show" wire:model.live="perPage">
+                    <select type="text" class="form-select w-[50%] sm:w-[75%] md:w-[50%]" name="show" wire:model.live="perPage">
                         <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
@@ -45,8 +45,8 @@
                     @endphp
                     <thead class="table-header">
                         <tr>
-                            <th scope="col" class="text-center" wire:click="sortBy('category_id')"><button>No. {!! sortIcon($sortField, 'category_id', $sortDirection) !!} </button></th>
-                            <th scope="col" class="text-center" wire:click="sortBy('category_name')"><button>Category Name {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
+                            <th scope="col" class="text-center" wire:click="sortBy('category_id')"><button class="text-nowrap">No. {!! sortIcon($sortField, 'category_id', $sortDirection) !!} </button></th>
+                            <th scope="col" class="text-center" wire:click="sortBy('category_name')"><button class="text-nowrap">Category Name {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
                             <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -57,7 +57,7 @@
                             <td>{{ $category->category_name }}</td>
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn bg-primary text-white" wire:click="editCategoryData({{ $category->category_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                    <button class="btn bg-primary text-white text-nowrap" wire:click="editCategoryData({{ $category->category_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
                                     <button class="btn p-0" wire:click="confirmDelete({{ $category->category_id }})"><i class="fa-solid fa-trash text-danger fs-3" ></i></button>
                                 </div>
                             </td>
