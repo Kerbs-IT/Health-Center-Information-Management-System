@@ -97,7 +97,7 @@
                                         <!-- age -->
                                         <div class="input-field w-50">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="Enter the age" disabled class="form-control">
+                                            <input type="text" id="age" placeholder="Enter the age" disabled class="form-control">
                                             <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>

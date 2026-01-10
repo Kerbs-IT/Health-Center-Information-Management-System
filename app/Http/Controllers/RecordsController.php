@@ -286,7 +286,7 @@ class RecordsController extends Controller
                 ],
                 'last_name' => 'sometimes|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
                 'sex' => 'required|string',

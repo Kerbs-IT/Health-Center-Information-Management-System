@@ -17,6 +17,7 @@ class patients extends Model
         'last_name',
         'full_name',
         'age',
+        'age_in_months',
         'date_of_birth',
         'sex',
         'address_id',
