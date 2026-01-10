@@ -125,6 +125,7 @@ window.addEventListener('show-delete-confirmation', () => {
     });
 });
 
+
 // Listen to success event
 window.addEventListener('success-medicine-delete', () => {
     Swal.fire({
@@ -143,4 +144,16 @@ window.addEventListener('delete-success', () => {
         timer: 1500,
         showConfirmButton: false
     });
+});
+
+window.addEventListener('close-walkin-modal', event => {
+    Swal.fire({
+        title: "Success!",
+        text: "Medicine Request has been added successfully.",
+        icon: "success",
+        showConfirmButton: false,
+        timer:1500
+    })
+    window.location.reload();
+
 });

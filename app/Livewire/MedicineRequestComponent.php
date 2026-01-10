@@ -29,7 +29,7 @@ class MedicineRequestComponent extends Component
         // Filter out expired medicines and out of stock medicines
         $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
-            ->where('expiry_status', '!=', 'Expired') // Add this line
+            ->where('expiry_status', '!=', 'Expired')
             ->where(function($query) {
                 $query->where('expiry_date', '>', now())
                       ->orWhereNull('expiry_date');
@@ -54,19 +54,25 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        $patientId = auth()->user()->patient;
-        if (!$patientId) {
-            $this->addError('error', 'Patient record not found. Please contact the administrator.');
-            return;
-        }
+        $user = auth()->user();
+        $patient = $user->patient; // This might be null
 
-        MedicineRequest::create([
-            'patients_id' => $patientId->id,
+        // Prepare request data
+        $requestData = [
             'medicine_id' => $this->selectedMedicineId,
             'quantity_requested' => $this->quantity,
             'reason' => $this->reason,
             'status' => 'pending',
-        ]);
+        ];
+
+        // Set either patient_id or user_id
+        if ($patient) {
+            $requestData['patients_id'] = $patient->id;
+        } else {
+            $requestData['user_id'] = $user->id;
+        }
+
+        MedicineRequest::create($requestData);
 
         $this->reset(['selectedMedicineId', 'quantity', 'reason']);
         $this->resetErrorBag();
@@ -85,8 +91,17 @@ class MedicineRequestComponent extends Component
         }
 
         // Verify this request belongs to the current user
-        $patient = auth()->user()->patient;
-        if ($request->patients_id !== $patient->id) {
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        $authorized = false;
+        if ($patient && $request->patients_id === $patient->id) {
+            $authorized = true;
+        } elseif ($request->user_id === $user->id) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
             session()->flash('error', 'Unauthorized action.');
             return;
         }
@@ -104,8 +119,17 @@ class MedicineRequestComponent extends Component
         $request = MedicineRequest::findOrFail($this->edit_id);
 
         // Authorization check
-        $patient = auth()->user()->patient;
-        if ($request->patients_id !== $patient->id) {
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        $authorized = false;
+        if ($patient && $request->patients_id === $patient->id) {
+            $authorized = true;
+        } elseif ($request->user_id === $user->id) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
             $this->dispatch('swal:error', [
                 'title' => 'Unauthorized',
                 'text' => 'You are not authorized to perform this action.',
@@ -156,10 +180,20 @@ class MedicineRequestComponent extends Component
 
     public function viewDetails($requestId)
     {
-        $request = MedicineRequest::with(['medicine', 'patients.user'])->findOrFail($requestId);
+        $request = MedicineRequest::with(['medicine', 'patients', 'user'])->findOrFail($requestId);
+
         // Verify this request belongs to the current user
-        $patient = Auth()->user()->patient;
-        if ($request->patients_id !== $patient->id) {
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        $authorized = false;
+        if ($patient && $request->patients_id === $patient->id) {
+            $authorized = true;
+        } elseif ($request->user_id === $user->id) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
             session()->flash('error', 'Unauthorized action.');
             return;
         }
@@ -174,8 +208,25 @@ class MedicineRequestComponent extends Component
 
     public function deleteRequest()
     {
-        MedicineRequest::findOrFail($this->deleteRequestMedicineId)->delete();
+        $request = MedicineRequest::findOrFail($this->deleteRequestMedicineId);
 
+        // Authorization check before delete
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        $authorized = false;
+        if ($patient && $request->patients_id === $patient->id) {
+            $authorized = true;
+        } elseif ($request->user_id === $user->id) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
+            session()->flash('error', 'Unauthorized action.');
+            return;
+        }
+
+        $request->delete();
         $this->dispatch('success-deleteMedicineRequestModal');
     }
 
@@ -203,9 +254,19 @@ class MedicineRequestComponent extends Component
 
     public function render()
     {
-        $patient = auth()->user()->patient;
+        $user = auth()->user();
+        $patient = $user->patient;
 
-        $myRequests = MedicineRequest::with('medicine')->where('patients_id', $patient->id)->latest()->paginate(10);
+        // Get requests for this user (either through patient or user_id)
+        $myRequests = MedicineRequest::with(['medicine', 'patients', 'user'])
+            ->where(function($query) use ($patient, $user) {
+                if ($patient) {
+                    $query->where('patients_id', $patient->id);
+                }
+                $query->orWhere('user_id', $user->id);
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('livewire.medicine-request', compact('myRequests'))->layout('livewire.layouts.requestMedicineLayout');
     }
