@@ -5,13 +5,13 @@
         <div class="mb-md-2 mb-1 input-field d-flex gap-3 w-100 first-row flex-wrap flex-lg-nowrap">
             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                 <label for="BP">Blood Pressure:</label>
-                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="edit_blood_pressure" id="edit_blood_pressure">
+                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="edit_blood_pressure" id="edit_blood_pressure">
                 <small class="text-danger error-text" id="edit_blood_pressure_error"></small>
             </div>
 
             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                 <label for="BP">Pulse Rate(Bpm):</label>
-                <input type="text" class="form-control w-100" placeholder=" 60-100" name="edit_pulse_rate" id="edit_pulse_rate">
+                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="edit_pulse_rate" id="edit_pulse_rate">
                 <small class="text-danger error-text" id="edit_pulse_rate_error"></small>
             </div>
         </div>
@@ -20,12 +20,12 @@
 
             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                 <label for="BP">Height(cm):</label>
-                <input type="number" class="form-control w-100" placeholder="00.00" name="edit_height" id="edit_height">
+                <input type="text" class="form-control w-100" placeholder="Enter the height" name="edit_height" id="edit_height">
                 <small class="text-danger error-text" id="edit_height_error"></small>
             </div>
             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                 <label for="BP">Weight(kg):</label>
-                <input type="number" class="form-control w-100" placeholder=" 00.00" name="edit_weight" id="edit_weight">
+                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="edit_weight" id="edit_weight">
                 <small class="text-danger error-text" id="edit_weight_error"></small>
             </div>
         </div>
@@ -318,7 +318,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date:</label>
-        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement">
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement" id="edit_date_of_acknowledgement" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
     <div class="mb-3 w-100">
         <p class="text-center">I hereby consent to the inclusion of my FP 1 in the Family Health Registry</p>
@@ -365,7 +365,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date</label>
-        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent">
+        <input type="date" class="form-control w-100 text-center" name="edit_date_of_acknowledgement_consent" id="edit_date_of_acknowledgement_consent" min="1950-01-01" max="{{date('Y-m-d')}}">
     </div>
 
 </div>

@@ -46,7 +46,7 @@
             </div>
         </div>
         <!-- table -->
-         <div class="table-responsive">
+        <div class="table-responsive">
             <table class="w-100 table">
                 <thead>
                     <tr class="table-header">
@@ -76,7 +76,7 @@
                     </tr> -->
                 </tbody>
             </table>
-         </div>
+        </div>
         <!-- prescribing  -->
         <div class="mb-3">
             <label for="">Prescribe by Nurse</label>
@@ -84,13 +84,13 @@
             <small class="text-danger error-text" id="prescribe_by_nurse_error"></small>
         </div>
         <div class="mb-3 border-bottom">
-            <label for="" class="text-nowrap">Remarks *</label>
+            <label for="" class="text-nowrap">Remarks</label>
             <input type="text" class="form-control p-3" name="medication_maintenance_remarks" id="medication_maintenance_remarks">
             <small class="text-danger error-text" id="remarks_error"></small>
         </div>
         <div class="mb-3 ">
-            <label for="senior_citizen_date_of_comeback">Date of Comeback</label>
-            <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback">
+            <label for="senior_citizen_date_of_comeback">Date of Comeback*</label>
+            <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback"  max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">

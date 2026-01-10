@@ -20,7 +20,8 @@ class wraMasterlistController extends Controller
                 'house_hold_number' => 'sometimes|nullable|string',
                 'wra_masterlist_fname' => 'required',
                 'wra_masterlist_lname' => 'required',
-                'wra_masterlist_MI' => 'sometimes|nullable|max:2',
+                'wra_masterlist_MI' => 'sometimes|nullable|string',
+                'wra_masterlist_suffix' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
                 'sex' => 'sometimes|nullable|string',
@@ -38,15 +39,26 @@ class wraMasterlistController extends Controller
                 'selected_modern_FP_method' => 'sometimes|required_if:wra_accept_any_modern_FP_method,yes|nullable|array',
             ]);
 
-            $fullName = trim(($data['wra_masterlist_fname'] . " " . $data['wra_masterlist_MI'] . " " . $data['wra_masterlist_lname']), " ");
+            $middle = substr($data['wra_masterlist_MI'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleInitial = $data['wra_masterlist_MI'] ? ucwords($data['wra_masterlist_MI']) : '';
+            $parts = [
+                strtolower($data['wra_masterlist_fname']),
+                $middle,
+                strtolower($data['wra_masterlist_lname']),
+                $data['wra_masterlist_suffix'] ?? null,
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             $wra_masterlistRecord->patient->update([
-                'first_name' => $data['wra_masterlist_fname'] ?? $wra_masterlistRecord->patient->first_name,
-                'middle_initial' => $data['wra_masterlist_MI'] ?? $wra_masterlistRecord->patient->middle_initial,
-                'last_name' => $data['wra_masterlist_lname'] ?? $wra_masterlistRecord->patient->last_name,
+                'first_name' => ucwords(strtolower($data['wra_masterlist_fname'] ?? $wra_masterlistRecord->patient->first_name)),
+                'middle_initial' => !empty($data['wra_masterlist_MI']) ? ucwords(strtolower($data['wra_masterlist_MI'])) : null,
+                'last_name' => ucwords(strtolower($data['wra_masterlist_lname'] ?? $wra_masterlistRecord->patient->last_name)),
                 'full_name' => $fullName ?? $wra_masterlistRecord->patient->full_name,
                 'sex' => $data['sex'] ?? $wra_masterlistRecord->patient->sex,
                 'age' => $data['age'] ?? $wra_masterlistRecord->patient->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $wra_masterlistRecord->patient->date_of_birth,
+                'suffix' => $data['wra_masterlist_suffix']??''
             ]);
             // update the address
             $address = patient_addresses::where('patient_id',  $wra_masterlistRecord->patient_id)->firstOrFail();

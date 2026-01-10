@@ -49,6 +49,18 @@
                                     <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
                                     <small class="text-danger error-text" id="side_A_add_client_lname_error"></small>
                                 </div>
+                                <div class="input-form flex-fill lg:w-[50%]">
+                                    <select name="side_A_add_client_suffix" id="side_A_add_client_suffix" class="form-select py-2 ">
+                                        <option value="" disabled>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="side_A_add_client_suffix_error"></small>
+                                </div>
 
                             </div>
                             <!-- HIDDEN INPUTS -->
@@ -59,7 +71,7 @@
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="side_A_add_client_date_of_birth">Date of Birth</label>
-                            <input type="date" id="side_A_add_client_date_of_birth" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
+                            <input type="date" id="side_A_add_client_date_of_birth" min="1950-01-01" max="{{date('Y-m-d')}}" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
 
                             <small class="text-danger error-text" id="side_A_add_client_date_of_birth_error"></small>
 
@@ -68,7 +80,8 @@
                         <!-- age -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="side_A_add_client_age">Age</label>
-                            <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" name="side_A_add_client_age">
+                            <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" disabled>
+                            <input type="hidden" id="hiddenAddAge" name="side_A_add_client_age">
                             <small class="text-danger error-text" id="side_A_add_client_age_error"></small>
                         </div>
                         <!-- place of birth -->
@@ -99,7 +112,7 @@
                         </div>
                     </div>
                     <div class="input-group mb-md-2 mb-1">
-                        <h5>Address</h5>
+                        <h5 class="w-100">Address</h5>
                         <div class="input-field d-flex gap-2 align-items-lg-center align-items-none w-100  flex-md-nowrap flex-lg-nowrap flex-wrap flex-lg-row flex-column">
                             <div class=" mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                 <label for="street">Street*</label>
@@ -139,6 +152,18 @@
                                 <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="side_A_add_spouse_lname_error"></small>
                             </div>
+                            <div class="input-form flex-fill">
+                                <select name="side_A_add_spouse_suffix" id="side_A_add_spouse_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="side_A_add_spouse_suffix_error"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,14 +177,14 @@
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Age</label>
-                        <input type="text" id="side_A_add_spouse_age" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_age">
+                        <input type="text" id="side_A_add_spouse_age" placeholder="Enter the age" class="form-control bg-light" name="side_A_add_spouse_age">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_age_error"></small>
 
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Occupation</label>
-                        <input type="text" id="side_A_add_spouse_occupation" placeholder="20" class="form-control bg-light" name="side_A_add_spouse_occupation">
+                        <input type="text" id="side_A_add_spouse_occupation" placeholder="Enter the occupation" class="form-control bg-light" name="side_A_add_spouse_occupation">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_occupation_error"></small>
 
@@ -237,7 +262,7 @@
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
-                        <div class="answers d-flex gap-2">
+                        <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="spacing" id="side_a_new_acceptor_spacing">
                             <label for="side_a_new_acceptor_spacing" class="side_a_new_acceptor_label">spacing</label>
                             <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="limiting" id="side_a_new_acceptor_limiting">
@@ -251,16 +276,16 @@
                 </div>
                 <!-- FP of current user -->
                 <div class="reason-con">
-                <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
+                    <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
-                        <div class="answers d-flex gap-2">
+                        <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" value="spacing" id="current_user_reason_for_fp_spacing">
                             <label for="current_user_reason_for_fp_spacing" class="side_a_current_user_label">spacing</label>
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" value="limiting" id="current_user_reason_for_fp_limiting">
                             <label for="current_user_reason_for_fp_limiting" class="side_a_current_user_label">limiting</label>
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_for_FP_others" value="others">
                             <label for="side_A_add_current_user_reason_for_FP_others" class="side_a_current_user_label">others</label>
-                            <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text">
+                            <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text" class="flex-grow-1">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_user_reason_for_FP_error"></small>
                     </div>
@@ -269,12 +294,12 @@
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-4 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap">Reason:</label>
-                        <div class="answers d-flex gap-2">
+                        <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_current_method_reason" value="medical condition" id="side_a_current_method_medical_condition">
                             <label for="side_a_current_method_medical_condition" class="side_a_current_method_label">medical condition</label>
                             <input type="radio" name="side_A_add_current_method_reason" id="side_A_add_current_method_reason_side_effect" value="side effects">
                             <label for="side_A_add_current_method_reason_side_effect" class="side_a_current_method_label">side effects</label>
-                            <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason">
+                            <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason" class="flex-grow-1">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_method_reason_error"></small>
                     </div>

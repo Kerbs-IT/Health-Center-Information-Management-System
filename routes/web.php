@@ -101,7 +101,7 @@ Route::middleware(['role:nurse'])->group(function(){
     Route::get('/Dashboard/Health-workers', [healthWorkerController::class, 'dashboard'])->name('health.worker');
 
     // ------------------------------------DELETE n Update HEALTH WORKER RECORD-----------------------------------------
-    Route::delete('/health-worker/{id}', [healthWorkerController::class, 'destroy'])->name('health-worker.destroy');
+    Route::post('/health-worker/{id}', [healthWorkerController::class, 'destroy'])->name('health-worker.destroy');
     Route::post('/health-worker/get-info/{id}', [healthWorkerController::class, 'getInfo'])->name('heath-worker.get-info');
     Route::put('/health-worker/update/{id}', [healthWorkerController::class, 'update'])->name('health-worker.update');
 
@@ -177,7 +177,7 @@ Route::middleware(['role:nurse,staff,patient'])->group(function (){
 
 
     Route::get('/profile', function () {
-        return view('pages.profile', ['isActive' => true, 'page' => 'RECORD']);
+        return view('pages.profile', ['isActive' => true, 'page' => 'PROFILE']);
     })->name('page.profile');
 });
 
@@ -396,7 +396,7 @@ Route::get('/patient-register', function () {
 
 // manager patient account
 Route::post('/add-patient-account', [manageUserController::class, 'store'])->name('manageUser.addPatientAccount');
-Route::delete('/delete-patient-account/{id}', [manageUserController::class, 'remove'])->name('manageUser.delete');
+Route::post('/delete-patient-account/{id}', [manageUserController::class, 'remove'])->name('manageUser.delete');
 Route::post('/patient-account/get-patient-info/{id}', [manageUserController::class, 'info'])->name('manageUser.info');
 Route::put('/update-patient-account-information/{id}', [manageUserController::class, 'updateInfo'])->name('manageUser.update');
 
@@ -561,7 +561,8 @@ Route::get('/download-expiring-soon-report', [InventoryController::class, 'downl
 
 // testing area
 Route::get('/pdf/generate/dashbord',[PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
-Route::get('/pdf/generate/graph',[PdfController::class, 'generateDashboardGraph'])->name("generate-dashboard-graph.pdf");
+Route::get('/pdf/generate/graph', [PdfController::class, 'generateDashboardGraph'])
+    ->name('generate-dashboard-graph.pdf');
 
 // NOTIFICATION SECTION
 Route::middleware(['auth'])->group(function () {
@@ -576,3 +577,4 @@ Route::middleware(['auth'])->group(function () {
    
 });
 
+Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);

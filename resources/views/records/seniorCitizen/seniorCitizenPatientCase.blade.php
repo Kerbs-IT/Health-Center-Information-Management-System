@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-2 shadow-lg min-h-[75vh]">
+                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-2  min-h-[75vh]">
 
                         <!---------------------------- LIVEWIRE HERE ----------------------------------->
                         <livewire:senior-citizen.patient-case-table :caseId="$medicalRecordId">
@@ -151,13 +151,13 @@
                                                             <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
-                                                            <label for="" class="text-nowrap">Remarks *</label>
+                                                            <label for="" class="text-nowrap">Remarks</label>
                                                             <input type="text" class="form-control p-2 border" name="add_medication_maintenance_remarks">
                                                             <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
-                                                            <label for="add_date_of_comeback">Date of Comeback</label>
-                                                            <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback">
+                                                            <label for="add_date_of_comeback">Date of Comeback*</label>
+                                                            <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         </div>
                                                     </div>
 
@@ -229,7 +229,7 @@
                                                             </div>
                                                         </div>
                                                         <!-- table -->
-                                                         <div class="table-responsive">
+                                                        <div class="table-responsive">
                                                             <table class="w-100 table">
                                                                 <thead>
                                                                     <tr class="table-header">
@@ -258,7 +258,7 @@
                                                                 </tr> -->
                                                                 </tbody>
                                                             </table>
-                                                         </div>
+                                                        </div>
                                                         <!-- prescribing  -->
                                                         <div class="mb-3">
                                                             <label for="">Prescribing Nurse</label>
@@ -273,8 +273,8 @@
 
                                                         <!-- date of comeback -->
                                                         <div class="mb-3 ">
-                                                            <label for="edit_date_of_comeback">Date of Comeback</label>
-                                                            <input type="date" class="form-control bg-light border" name="edit_date_of_comeback" id="edit_date_of_comeback">
+                                                            <label for="edit_date_of_comeback">Date of Comeback*</label>
+                                                            <input type="date" class="form-control bg-light border" name="edit_date_of_comeback" id="edit_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="edit_date_of_comeback_error"></small>
                                                         </div>
                                                     </div>

@@ -111,17 +111,21 @@
                                             }
                                         })
                                     ">
-                                Unbind
+                                <i class="fa-solid fa-link-slash"></i>
                             </button>
                             @else
                             <button
-                                class="btn btn-sm btn-success"
+                                class="btn btn-sm btn-success "
                                 wire:click="openBindModal({{ $user->id }})">
-                                Bind
+                                <i class="fa-solid fa-link"></i>
                             </button>
                             @endif
-                            <button type="button" class="btn btn-sm btn-info text-white edit-user-profile" data-bs-toggle="modal" data-bs-target="#edit-user-profile" data-id="{{$user->id}}">Edit</button>
-                            <button type="button" class="btn btn-sm btn-danger text-white delete-user"  data-id="{{$user->id}}">Delete</button>
+                            <button type="button" class="btn btn-sm btn-info text-white edit-user-profile" data-bs-toggle="modal" data-bs-target="#edit-user-profile" data-id="{{$user->id}}">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger text-white delete-user" data-id="{{$user->id}}">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                     @empty
@@ -237,6 +241,8 @@
         </div>
     </div>
     @endif
+
+   
 
 
 

@@ -63,17 +63,30 @@ class addPatientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy'=> 'required',
-                'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_height' => ['required', 'numeric', 'min:30', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:300', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination' => 'required|date',
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
                 'dose_number' => 'required|numeric',
                 'remarks' => 'sometimes|nullable|string',
-                'current_height' => 'sometimes|nullable|numeric',
-                'current_weight' => 'sometimes|nullable|numeric',
-                'current_temperature' => 'nullable|numeric',
-                'date_of_comeback' => 'required|date'
+                'current_height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+                'current_weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+                'current_temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
+                'date_of_comeback' => 'required|date',
+                'suffix' => 'sometimes|nullable|string'
 
             ]);
 
@@ -81,10 +94,12 @@ class addPatientController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleInitial = $data['middle_initial']? ucwords($data['middle_initial']):'';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null,
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -92,7 +107,7 @@ class addPatientController extends Controller
             $vaccinationPatient = patients::create([
                 'user_id' => null,
                 'first_name' => ucwords(strtolower($data['first_name'])),
-                'middle_initial' => ucwords(strtolower($data['middle_initial'])),
+                'middle_initial' => $middleInitial,
                 'last_name' => ucwords(strtolower($data['last_name'])),
                 'full_name' => $fullName,
                 'age' => $data['age']?? 0,
@@ -104,6 +119,7 @@ class addPatientController extends Controller
                 'nationality' => $data['nationality'] ?? null,
                 'date_of_registration' => $data['date_of_registration']??null,
                 'place_of_birth' => $data['place_of_birth']??null,
+                'suffix' => $data['suffix']??null
             ]);
 
 

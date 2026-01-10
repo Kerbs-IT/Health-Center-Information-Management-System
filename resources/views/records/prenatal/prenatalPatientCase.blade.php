@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-0 min-h-[75vh]">
+                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-0  min-h-[75vh]">
 
                         <livewire:prenatal.patient-case-table caseId="{{$caseId}}">
 
@@ -129,17 +129,17 @@
                                                         <div class="mb-md-2 mb-1 input-field d-flex gap-md-3 gap-1 w-100 first-row flex-lg-nowrap flex-wrap">
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Blood Pressure:</label>
-                                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="check_up_blood_pressure">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="check_up_blood_pressure">
                                                                 <small class="text-danger error-text" id="check_up_blood_pressure_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Temperature:</label>
-                                                                <input type="number" class="form-control w-100" placeholder="00 C" name="check_up_temperature">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="check_up_temperature">
                                                                 <small class="text-danger error-text" id="check_up_temperature_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="check_up_pulse_rate">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="check_up_pulse_rate">
                                                                 <small class="text-danger error-text" id="check_up_pulse_rate_error"></small>
                                                             </div>
 
@@ -148,17 +148,17 @@
                                                         <div class="mb-md-2 mb-1 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-lg-nowrap flex-wrap">
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP" class="text-nowrap">Respiratory Rate (breaths/min):</label>
-                                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="check_up_respiratory_rate">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="check_up_respiratory_rate">
                                                                 <small class="text-danger error-text" id="check_up_respiratory_rate_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Height(cm):</label>
-                                                                <input type="number" class="form-control w-100" placeholder="00.00" name="check_up_height">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="check_up_height">
                                                                 <small class="text-danger error-text" id="check_up_height_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Weight(kg):</label>
-                                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="check_up_weight">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the  weight" name="check_up_weight">
                                                                 <small class="text-danger error-text" id="check_up_weight_error"></small>
                                                             </div>
                                                         </div>
@@ -326,13 +326,13 @@
                                                         </div>
                                                         <!-- overall remarks -->
                                                         <div class="mb-2 w-100">
-                                                            <label for="remarks">Remarks*</label>
+                                                            <label for="remarks">Remarks</label>
                                                             <input type="text" class="form-control" name="overall_remarks">
                                                             <small class="text-danger error-text" id="overall_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="date_of_comeback">Date of comeback</label>
-                                                            <input type="date" class="form-control" name="date_of_comeback" id="date_of_comeback">
+                                                            <label for="date_of_comeback">Date of comeback*</label>
+                                                            <input type="date" class="form-control" name="date_of_comeback" id="date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                         </div>
                                                     </div>
@@ -474,12 +474,12 @@
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
                                                                 <label for="place_of_delivery">LMP</label>
-                                                                <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input">
+                                                                <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="expected_delivery">Expected Delivery</label>
-                                                                <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input">
+                                                                <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="expected_delivery_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
@@ -1050,12 +1050,12 @@
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
                                                                 <label for="add_LMP">LMP</label>
-                                                                <input type="date" name="add_LMP" class="form-control w-100" placeholder="trece" id="add_LMP_input">
+                                                                <input type="date" name="add_LMP" class="form-control w-100" placeholder="trece" id="add_LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="add_expected_delivery_input">Expected Delivery</label>
-                                                                <input type="date" name="add_expected_delivery" class="form-control w-100" placeholder="trece" id="add_expected_delivery_input">
+                                                                <input type="date" name="add_expected_delivery" class="form-control w-100" placeholder="trece" id="add_expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_expected_delivery_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">

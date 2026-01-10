@@ -59,20 +59,29 @@
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2 bg-light border-dark">
+                                                <option value="" disabled {{ !optional($prenatalRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ optional($prenatalRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ optional($prenatalRecord)->patient?->suffix== 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ optional($prenatalRecord)->patient?->suffix== 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ optional($prenatalRecord)->patient?->suffix== 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ optional($prenatalRecord)->patient?->suffix== 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ optional($prenatalRecord)->patient?->suffix== 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{ optional($prenatalRecord?->patient?->date_of_birth)->format('Y-m-d') ?? '' }}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{ optional($prenatalRecord?->patient?->date_of_birth)->format('Y-m-d') ?? '' }}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
 
@@ -89,8 +98,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
-
+                                            <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" disabled value="{{optional($prenatalRecord)->patient?->age??''}}">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -130,7 +139,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-full md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{optional($prenatalRecord)->patient?->date_of_registration->format('Y-m-d')??''}}">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{optional($prenatalRecord)->patient?->date_of_registration->format('Y-m-d')??''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
@@ -252,7 +261,7 @@
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap">
                                             <div class=" mb-2 w-full md:w-[50%]">
                                                 <label for="street">Street*</label>
-                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim($address->house_number . ' ' . optional($address->street)->name) }}">
+                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim(($address->house_number ?: '') . ', ' . ($address->street ?: '')) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 
@@ -274,17 +283,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="ex. 120/80" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="Enter the blood pressure" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> blood_pressure?? '' }}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="00 C" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="Enter the temperature" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> temperature?? '' }}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder=" 60-100" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder="Enter the pulse rate" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> pulse_rate?? '' }}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -293,17 +302,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="ex. 25" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="Enter the respiratory rate" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> respiratory_rate?? '' }}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder="00.00" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the height" name="height" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> height?? '' }}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100 bg-light border-dark" placeholder=" 00.00" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the weight" name="weight" value="{{ optional($prenatalRecord)->prenatal_case_record[0]-> weight?? '' }}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

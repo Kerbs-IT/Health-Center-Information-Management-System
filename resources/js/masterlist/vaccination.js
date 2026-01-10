@@ -1,4 +1,5 @@
 import { puroks } from "../patient/healthWorkerList.js";
+import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
 
 const editBtn = document.querySelectorAll(".vaccination-masterlist-edit-btn");
@@ -70,6 +71,13 @@ document.addEventListener("click", async (e) => {
                             .querySelector(`input[name="${key}"]`)
                             .classList.remove("bg-light");
                     }
+                } else if (key == 'age' && value !=null) {
+                    const age = document.getElementById("age");
+                    const hiddenAge = document.getElementById("hiddenAge");
+                    if (age && hiddenAge) {
+                        age.value = value;
+                        hiddenAge.value = value;
+                    }
                 } else if (key == "sex") {
                     const sex = document.querySelectorAll('input[name="sex"]');
                     sex.forEach((input) => {
@@ -123,6 +131,9 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+
+
+
 
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -200,6 +211,16 @@ saveBtn.addEventListener("click", async (e) => {
         });
     }
 });
+
+// handle the automation of age
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    console.log("checking if its working");
+    automateAge(dob, age, hiddenAge);
+}
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

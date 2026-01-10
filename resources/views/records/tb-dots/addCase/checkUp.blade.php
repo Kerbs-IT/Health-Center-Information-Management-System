@@ -3,7 +3,7 @@
         <!-- Date of Visit -->
         <div class="mb-3">
             <label for="visit_date" class="form-label">Date of Visit</label>
-            <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>">
+            <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="patient_name" value="{{$patient_name}}">
             <input type="hidden" name="handled_by" value="{{$healthWorkerId}}">
         </div>
@@ -14,17 +14,17 @@
             <div class="mb-2 input-field d-flex gap-3 w-100 first-row  flex-wrap flex-xl-nowrap flex-md-row flex-column">
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Blood Pressure:</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure">
+                    <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure">
                     <small class="text-danger error-text" id="blood_pressure_error"></small>
                 </div>
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Temperature:</label>
-                    <input type="number" class="form-control w-100" placeholder="00 C" name="temperature">
+                    <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature">
                     <small class="text-danger error-text" id="temperature_error"></small>
                 </div>
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Pulse Rate(Bpm):</label>
-                    <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate">
+                    <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate">
                     <small class="text-danger error-text" id="pulse_rate_error"></small>
                 </div>
 
@@ -33,17 +33,17 @@
             <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-wrap flex-xl-nowrap flex-md-row flex-column">
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Respiratory Rate (breaths/min):</label>
-                    <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate">
+                    <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate">
                     <small class="text-danger error-text" id="respiratory_rate_error"></small>
                 </div>
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Height(cm):</label>
-                    <input type="number" class="form-control w-100" placeholder="00.00" name="height">
+                    <input type="text" class="form-control w-100" placeholder="Enter the height" name="height">
                     <small class="text-danger error-text" id="height_error"></small>
                 </div>
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
                     <label for="BP">Weight(kg):</label>
-                    <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight">
+                    <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight">
                     <small class="text-danger error-text" id="weight_error"></small>
                 </div>
             </div>
@@ -113,8 +113,8 @@
             <small class="text-danger error-text" id="outcome_error"></small>
         </div>
         <div class="mb-3">
-            <label for="add_date_of_comeback">Date of Comeback</label>
-            <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback">
+            <label for="add_date_of_comeback">Date of Comeback*</label>
+            <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
 </div>

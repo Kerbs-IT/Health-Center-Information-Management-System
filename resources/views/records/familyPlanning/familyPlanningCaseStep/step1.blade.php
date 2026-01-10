@@ -48,13 +48,25 @@
                                 <input type="text" class="form-control" id="edit_client_lname" name="edit_client_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_client_lname_error"></small>
                             </div>
+                            <div class="input-form flex-fill lg:w-[50%]">
+                                <select name="edit_client_suffix" id="edit_client_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="edit_client_suffix_error"></small>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-md-2 mb-1 d-flex gap-1 flex-wrap flex-lg-nowrap">
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="edit_client_date_of_birth">Date of Birth</label>
-                            <input type="date" id="edit_client_date_of_birth" placeholder="01-02-25" class="form-control w-100 px-5" name="edit_client_date_of_birth">
+                            <input type="date" id="edit_client_date_of_birth" placeholder="01-02-25" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control w-100 px-5" name="edit_client_date_of_birth">
 
                             <small class="text-danger error-text" id="edit_client_date_of_birth_error"></small>
 
@@ -63,7 +75,8 @@
                         <!-- age -->
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="edit_client_age">Age</label>
-                            <input type="number" id="edit_client_age" placeholder="20" class="form-control" name="edit_client_age">
+                            <input type="number" id="edit_client_age" placeholder="20" class="form-control" disabled>
+                            <input type="hidden" id="hiddenEditAge" name="edit_client_age">
                             <small class="text-danger error-text" id="edit_client_age_error"></small>
                         </div>
                         <!-- place of birth -->
@@ -142,6 +155,18 @@
                             <div class="input-form flex-fill">
                                 <input type="text" class="form-control" id="edit_spouse_lname" name="edit_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_spouse_lname_error"></small>
+                            </div>
+                            <div class="input-form flex-fill">
+                                <select name="edit_spouse_suffix" id="edit_spouse_suffix" class="form-select py-2 ">
+                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="Jr.">Jr</option>
+                                    <option value="Sr.">Sr</option>
+                                    <option value="II.">II</option>
+                                    <option value="III.">III</option>
+                                    <option value="IV.">IV</option>
+                                    <option value="V.">V</option>
+                                </select>
+                                <small class="text-danger" id="edit_spouse_suffix_error"></small>
                             </div>
 
                         </div>

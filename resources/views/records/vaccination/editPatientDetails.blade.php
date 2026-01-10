@@ -63,14 +63,25 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{$info->last_name}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2">
+                                                <option value="" disabled {{ !$info->suffix ? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ $info->suffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ $info->suffix == 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ $info->suffix == 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ $info->suffix == 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ $info->suffix == 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ $info->suffix == 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($info)->date_of_birth?? ''}}">
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($info)->date_of_birth?->format('Y-m-d')?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
                                         <!-- place of birth -->
@@ -83,8 +94,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{optional($info)-> age ?? 'none'}}">
-
+                                            <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($info)-> age ?? 'none'}}">
+                                            <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
                                     </div>
@@ -104,7 +115,7 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($info)-> contact_number ?? 'none'}}">
+                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($info)-> contact_number ?? ''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
@@ -120,8 +131,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-[100%] md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}">
-
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
                                         </div>
@@ -181,12 +191,12 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 third-row flex-wrap flex-md-nowrap">
                                             <div class="mb-2 w-[100%] md:w-[50%]">
                                                 <label for="BP">Birth Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="vaccination_height" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="vaccination_height" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="mb-2 w-[100%] md:w-[50%]">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 00.00" name="vaccination_weight" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_weight ?? 'N/A'}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="vaccination_weight" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_weight ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>

@@ -63,9 +63,24 @@ class RecordsController extends Controller
                 'case_record_id' => 'required',
                 'dose' => 'required',
                 'remarks' => 'sometimes',
-                'height' => 'nullable|numeric',
-                'weight' => 'nullable|numeric',
-                'temperature'    => 'nullable|numeric',
+                'height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+
+                'weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+
+                'temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
+
                 'date_of_comeback' => 'required|date'
             ]);
 
@@ -284,7 +299,8 @@ class RecordsController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/']
+                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -292,7 +308,8 @@ class RecordsController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null,
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -308,6 +325,7 @@ class RecordsController extends Controller
                 'sex' => ucfirst($data['sex'])?? ucfirst($patient->sex),
                 'contact_number' => $data['contact_number'] ?? $patient->contact_number,
                 'nationality' => $data['nationality'] ?? $patient->nationality,
+                'suffix' => $data['suffix']??''
 
             ]);
             // update each record associate to patient vaccination case the vaccination case record
@@ -482,9 +500,21 @@ class RecordsController extends Controller
                 'selected_vaccine_type' => 'required',
                 'add_record_dose' => 'required',
                 'add_case_remarks' => 'sometimes|nullable|string',
-                'add_height' => 'nullable|numeric',
-                'add_weight' => 'nullable|numeric',
-                'add_temperature'    => 'nullable|numeric',
+                'add_height' => [
+                    'nullable',
+                    'numeric',
+                    'between:30,250'      // cm
+                ],
+                'add_weight' => [
+                    'nullable',
+                    'numeric',
+                    'between:1,300'       // kg
+                ],
+                'add_temperature' => [
+                    'nullable',
+                    'numeric',
+                    'between:35,42'       // °C
+                ],
                 'add_date_of_comeback' => 'required|date'
             ]);
 

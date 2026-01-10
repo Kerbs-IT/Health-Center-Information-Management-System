@@ -87,7 +87,7 @@
             <button
                 wire:click="resetFilters"
                 type="button"
-                class="btn btn-secondary w-100 text-nowrap"  style="font-size: 0.875rem;">
+                class="btn btn-secondary w-100 text-nowrap" style="font-size: 0.875rem;">
                 Reset Filters
             </button>
         </div>
@@ -122,9 +122,9 @@
         <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
         <h4 class="flex-fill text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
     </div>
-    <div class="table-con">
+    <div class="table-con" wire:key="table-container-{{ $refreshKey }}">
         <table>
-            <thead class="table-header ">
+            <thead class="table-header">
                 <tr>
                     <th class="need-space">Name of Child</th>
                     <th class="need-space">Address</th>
@@ -153,18 +153,17 @@
             </thead>
             <tbody>
                 @forelse($vaccinationMasterlist as $masterlist)
-                <tr>
-
+                <tr wire:key="vaccination-{{ $masterlist->id }}-{{ $refreshKey }}">
                     <td class="need-space">{{optional($masterlist)->name_of_child??''}}</td>
-                    <td class="need-space">{{optional($masterlist)-> Address ?? ''}}</td>
-                    <td>{{optional($masterlist)-> sex ?? ''}}</td>
-                    <td>{{optional($masterlist)-> age ?? ''}}</td>
-                    <td class="need-space">{{optional($masterlist)-> date_of_birth?->format('Y-m-d') ?? ''}}</td>
+                    <td class="need-space">{{optional($masterlist)->Address ?? ''}}</td>
+                    <td>{{optional($masterlist)->sex ?? ''}}</td>
+                    <td>{{optional($masterlist)->age ?? ''}}</td>
+                    <td class="need-space">{{optional($masterlist)->date_of_birth?->format('Y-m-d') ?? ''}}</td>
                     <td class="" style="font-size: 15px;">{{optional($masterlist)->SE_status??''}}</td>
                     <td>{{optional($masterlist)->BCG??''}}</td>
                     <td>{{optional($masterlist)->{'Hepatitis B'}??''}}</td>
-                    <td>{{optional($masterlist)-> PENTA_1??''}}</td>
-                    <td>{{optional($masterlist)-> PENTA_2??''}}</td>
+                    <td>{{optional($masterlist)->PENTA_1??''}}</td>
+                    <td>{{optional($masterlist)->PENTA_2??''}}</td>
                     <td>{{optional($masterlist)->PENTA_3??''}}</td>
                     <td>{{optional($masterlist)->OPV_1}}</td>
                     <td>{{optional($masterlist)->OPV_2}}</td>
@@ -178,13 +177,14 @@
                     <td>{{optional($masterlist)->MCV_2}}</td>
                     <td>{{optional($masterlist)->remarks}}</td>
                     <td>
-                        <button class="btn btn-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">Edit</button>
+                        <button class=" fs-2 text-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
                     </td>
-
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="24" class="text-center ">
+                <tr wire:key="empty-state-{{ $refreshKey }}">
+                    <td colspan="24" class="text-center">
                         <i class="fas fa-search mb-2" style="font-size: 3rem; color: #ccc;"></i>
                         <p class="text-muted mb-1">No records found</p>
                         @if($search || $selectedBrgy || $filterMonth || $filterYear)
@@ -195,41 +195,6 @@
                     </td>
                 </tr>
                 @endforelse
-                {{-- Fill remaining rows to maintain consistent table height --}}
-                @php
-                $currentCount = $vaccinationMasterlist->count();
-                $emptyRowsNeeded = $entries - $currentCount;
-                @endphp
-
-                @if($currentCount > 0 && $emptyRowsNeeded > 0)
-                @for($i = 0; $i < $emptyRowsNeeded; $i++)
-                    <tr>
-                    <td class="need-space">&nbsp;</td>
-                    <td class="need-space">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    </tr>
-                    @endfor
-                    @endif
             </tbody>
         </table>
     </div>

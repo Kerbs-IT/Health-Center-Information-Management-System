@@ -260,12 +260,12 @@ document.addEventListener("click", async (e) => {
         // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Family Planning Client Assessment Record - Side B will be Deleted.",
+            text: "The Family Planning Client Assessment Record - Side B will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
             cancelButtonText: "Cancel",
         });
 

@@ -400,14 +400,23 @@ document.addEventListener("click", async function(e) {
                         }
                     } 
                     else if (value === "Yes" || value === "No") {
-                        const element = document.getElementById(`edit_${key}_${value}`);
+                        const element = document.getElementById(
+                            `edit_${key}_${value}`
+                        );
                         if (element) {
                             element.checked = true;
                         } else {
-                            console.warn(`Element not found: edit_${key}_${value}`);
+                            console.warn(
+                                `Element not found: edit_${key}_${value}`
+                            );
                         }
-                    } 
-                    else {
+                    } else if (key == "date_of_comeback") {
+                        const element = document.getElementById(`edit_${key}`);
+                        if (element && value) {
+                            const date = value.split("T")[0]; // Gets "2025-12-24"
+                            element.value = date;
+                        }
+                    } else {
                         const element = document.getElementById(`edit_${key}`);
                         if (element) {
                             element.value = value ?? "";
@@ -548,12 +557,12 @@ document.addEventListener("click", async function(e) {
     try {
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Prenatal Check-up Record will be archived.",
+            text: "The Prenatal Check-up Record will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
         });
         
         if (!result.isConfirmed) return;

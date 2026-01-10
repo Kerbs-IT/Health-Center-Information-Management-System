@@ -12,7 +12,6 @@ document.addEventListener("click", async (e) => {
     const id = viewBtn.dataset.caseId;
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
-        alert("Unable to archive: Invalid ID");
         return;
     }
 
@@ -57,7 +56,7 @@ document.addEventListener("click", async (e) => {
         console.error("Error archiving case:", error);
         Swal.fire({
             title: "Error",
-            text: `Failed to archive record: ${error.message}`,
+            text: `Failed to view record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
@@ -74,7 +73,7 @@ document.addEventListener("click", async (e) => {
     const id = editBtn.dataset.caseId;
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
-        alert("Unable to archive: Invalid ID");
+       
         return;
     }
 
@@ -118,7 +117,7 @@ document.addEventListener("click", async (e) => {
         console.error("Error archiving case:", error);
         Swal.fire({
             title: "Error",
-            text: `Failed to archive record: ${error.message}`,
+            text: `Failed to edit record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
@@ -309,12 +308,12 @@ document.addEventListener('click', async (e) => {
             // ✅ Show confirmation dialog FIRST
             const result = await Swal.fire({
                 title: "Are you sure?",
-                text: "Tb dots Case Record will be Deleted.",
+                text: "Tb dots Case Record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Archive",
+                confirmButtonText: "Yes, archive it!",
                 cancelButtonText: "Cancel",
             });
     

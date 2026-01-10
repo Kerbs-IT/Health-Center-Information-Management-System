@@ -44,3 +44,5 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         console.error("Error")
     }
 })
+
+// Update your download button handle

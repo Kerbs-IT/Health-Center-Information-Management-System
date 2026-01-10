@@ -81,7 +81,7 @@
                         <!-- date of birth -->
                         <div class="mb-2">
                             <label for="date_of_birth" class="mb-1 h6 ">Date of Birth:</label>
-                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}">
+                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                             @error('date_of_birth')
                             <small class="text-danger">{{$message}}</small>
                             @enderror

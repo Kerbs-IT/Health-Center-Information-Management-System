@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
+import { automateAge } from "../automateAge.js";
 import { refreshToggleStates, initializeEditModal } from "./editFamilyPlanningRadioToggle.js";
 
 // Initialize the modal on page load
@@ -15,7 +16,7 @@ document.addEventListener("click", async (e) => {
     // Validate case ID
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
-        alert("Unable to archive: Invalid ID");
+       
         return;
     }
     // console.log("event delegation working!!!");
@@ -56,10 +57,19 @@ document.addEventListener("click", async (e) => {
                 if (key == "spouse_lname") {
                     if (document.getElementById("view_spouse_name")) {
                         // console.log("wording");
+                        // middle initial
+                        const mi = data.caseInfo.spouse_MI
+                            ?.trim()
+                            .charAt(0)
+                            .toUpperCase();
+
+                        const formattedMI = mi ? `${mi}.` : "";
                         document.getElementById("view_spouse_name").innerHTML =
                             `${data.caseInfo.spouse_fname ?? ""} ${
-                                data.caseInfo.spouse_MI ?? ""
-                            } ${data.caseInfo.spouse_lname ?? ""}`.trim();
+                                formattedMI ?? ""
+                            } ${data.caseInfo.spouse_lname ?? ""} ${
+                                data.caseInfo.spouse_suffix ?? ""
+                            }`.trim();
                     }
                 }
                 if (key == "signature_image") {
@@ -297,7 +307,7 @@ document.addEventListener("click", async (e) => {
     // Validate case ID
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
-        alert("Unable to archive: Invalid ID");
+        alert("Unable to edit: Invalid ID");
         return;
     }
 
@@ -903,7 +913,11 @@ add_side_A_BTN.addEventListener("click", () => {
     client_MI.value = patientInfo.patient.middle_initial;
     client_lname.value = patientInfo.patient.last_name;
     client_age.value = patientInfo.patient.age;
-    client_bday.value = patientInfo.patient.date_of_birth;
+    client_bday.value = patientInfo.patient.date_of_birth
+        ? new Date(patientInfo.patient.date_of_birth)
+              .toISOString()
+              .split("T")[0]
+        : "";
     client_occupation.value =
         patientInfo.family_planning_medical_record.occupation;
     client_civil_status.value = patientInfo.patient.civil_status;
@@ -1164,12 +1178,12 @@ document.addEventListener("click", async (e) => {
         // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Family Planning Client Assessment Record - Side A will be deleted.",
+            text: "The Family Planning Client Assessment Record - Side A will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
             cancelButtonText: "Cancel",
         });
 
@@ -1228,3 +1242,22 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+
+// handle the automation of age
+const dob = document.getElementById("edit_client_date_of_birth");
+const age = document.getElementById("edit_client_age");
+const hiddenAge = document.getElementById("hiddenEditAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
+
+// ADD
+const addDob = document.getElementById("side_A_add_client_date_of_birth");
+const addAge = document.getElementById("side_A_add_client_age");
+const addHiddenAge = document.getElementById("hiddenAddAge");
+
+if (addDob && addAge && addHiddenAge) {
+    automateAge(addDob, addAge, addHiddenAge);
+}
+

@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
+import { automateAge } from "../automateAge.js";
 import { refreshToggleStates,initializeEditModal } from "../family_planning/editFamilyPlanningRadioToggle.js";
 
 // Initialize the modal on page load
@@ -661,12 +662,12 @@ document.addEventListener("click", async (e) => {
         // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
-            text: "The Family Planning Client Assessment Record - Side A will be deleted.",
+            text: "The Family Planning Client Assessment Record - Side A will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Archive",
+            confirmButtonText: "Yes, archive it!",
             cancelButtonText: "Cancel",
         });
 
@@ -712,7 +713,7 @@ document.addEventListener("click", async (e) => {
         // Show success message
         Swal.fire({
             title: "Archived!",
-            text: "The Tb dots Check-up Record has been archived.",
+            text: "The Family Planning Client Assessment Record - Side A Record has been archived.",
             icon: "success",
             confirmButtonColor: "#3085d6",
         }).then((result) => {
@@ -737,6 +738,15 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+
+// handle the automation of age
+const dob = document.getElementById("edit_client_date_of_birth");
+const age = document.getElementById("edit_client_age");
+const hiddenAge = document.getElementById("hiddenEditAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
 
 // --------------------------------------------------------------- side B -------------------------------------------
 
