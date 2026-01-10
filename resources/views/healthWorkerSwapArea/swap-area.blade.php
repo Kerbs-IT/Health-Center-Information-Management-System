@@ -6,8 +6,8 @@
                 <h5 class="modal-title" id="swapAreaModalLabel">Swap Assigned Area</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="swapAreaForm">
+            <div class="modal-body p-3">
+                <form id="swapAreaForm" class="p-3">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" id="swap_health_worker_id" name="health_worker_id">
 

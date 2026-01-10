@@ -68,7 +68,7 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Username</th>
+                        
                         <th>Name</th>
                         <th>Email</th>
                         <th>DOB</th>
@@ -80,7 +80,7 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr>
-                        <td>{{ $user->username }}</td>
+                    
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->date_of_birth ? $user->date_of_birth->format('M d, Y') : 'N/A' }}</td>
