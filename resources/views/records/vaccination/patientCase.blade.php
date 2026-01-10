@@ -28,7 +28,7 @@
         <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <div class="flex flex-column flex-grow-1">
-                <main class="flex-column p-2 shadow-lg m-md-3 m-2">
+                <main class="flex-column p-2  m-md-3 m-2">
                     <div class="top-part d-flex justify-content-between px-2 align-items-center">
                         <h2>View Patient Details</h2>
                         <div class="sequence-links d-md-flex d-none justify-content-center align-items-center">

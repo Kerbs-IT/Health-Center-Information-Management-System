@@ -95,10 +95,13 @@ class PatientList extends Component
 
         // Apply search filter
         if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('first_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('contact_number', 'like', '%' . $this->search . '%');
+            $searchTerm = '%' . str_replace(' ', '%', $this->search) . '%';
+
+            $query->where(function ($q) use ($searchTerm) { // <-- THIS WAS THE BUG!
+                $q->where('full_name', 'like', $searchTerm)
+                    ->orWhere('first_name', 'like', $searchTerm)
+                    ->orWhere('last_name', 'like', $searchTerm)
+                    ->orWhere('contact_number', 'like', $searchTerm);
             });
         }
 

@@ -18,7 +18,7 @@ class manageUserController extends Controller
 
     public function viewUsers()
     {
-        $patients = User::where('role', 'patient')->orderBy('id', 'ASC')->get();
+        $patients = User::where('role', 'patient')->where('status','!=','archived')->orderBy('id', 'ASC')->get();
         return view('manageUsers.manageUsers', ['isActive' => true, 'page' => 'MANAGE USERS', 'patients' => $patients]);
     }
     public function store(Request $request)
@@ -229,7 +229,9 @@ class manageUserController extends Controller
     {
         $user = User::findorFail($id);
 
-        $user->delete();
+        $user->update([
+            'status' => 'archived'
+        ]);
 
         return response()->json(['message' => 'Health worker deleted successfully.']);
     }
