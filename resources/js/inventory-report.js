@@ -130,8 +130,12 @@ function initializeCharts() {
     // Function to update line chart
     function updateLineChart(chartType) {
         let newData;
+        let tooltipCallbacks = {};
 
         if (chartType === 'given') {
+            // Store fullLabels for tooltip use
+            const fullLabels = dateRangeGivenData.fullLabels || dateRangeGivenData.labels;
+
             newData = {
                 labels: dateRangeGivenData.labels,
                 datasets: [{
@@ -144,7 +148,16 @@ function initializeCharts() {
                     fill: true
                 }]
             };
+
+            // Custom tooltip title to show full labels
+            tooltipCallbacks = {
+                title: function(context) {
+                    return fullLabels[context[0].dataIndex];
+                }
+            };
         } else if (chartType === 'request_trend') {
+            const fullLabels = dateRangeRequestData.fullLabels || dateRangeRequestData.labels;
+
             newData = {
                 labels: dateRangeRequestData.labels,
                 datasets: [{
@@ -157,7 +170,15 @@ function initializeCharts() {
                     fill: true
                 }]
             };
+
+            tooltipCallbacks = {
+                title: function(context) {
+                    return fullLabels[context[0].dataIndex];
+                }
+            };
         } else if (chartType === 'top_medicines') {
+            const fullLabels = topMedicinesData.fullLabels || topMedicinesData.labels;
+
             if (!topMedicinesData.datasets || topMedicinesData.datasets.length === 0) {
                 newData = {
                     labels: topMedicinesData.labels,
@@ -187,9 +208,21 @@ function initializeCharts() {
                     datasets: datasets
                 };
             }
+
+            tooltipCallbacks = {
+                title: function(context) {
+                    return fullLabels[context[0].dataIndex];
+                }
+            };
         }
 
         lineChart.data = newData;
+
+        // Update tooltip options
+        lineChart.options.plugins.tooltip = {
+            callbacks: tooltipCallbacks
+        };
+
         lineChart.update();
     }
 
@@ -259,6 +292,14 @@ function initializeCharts() {
                 legend: {
                     display: true,
                     position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const fullLabels = dateRangeGivenData.fullLabels || dateRangeGivenData.labels;
+                            return fullLabels[context[0].dataIndex];
+                        }
+                    }
                 }
             },
             scales: {
