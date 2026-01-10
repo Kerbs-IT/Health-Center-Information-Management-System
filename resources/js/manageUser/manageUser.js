@@ -296,7 +296,7 @@ document.addEventListener('click', async (e) => {
      }).then((result) => {
          if (result.isConfirmed) {
              fetch(`/delete-patient-account/${id}`, {
-                 method: "DELETE",
+                 method: "POST",
                  headers: {
                      "X-CSRF-TOKEN": document.querySelector(
                          'meta[name="csrf-token"]'

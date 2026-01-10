@@ -13,6 +13,7 @@ use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str as SupportStr;
@@ -50,7 +51,7 @@ class addPatientController extends Controller
                 })],
                 'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
@@ -63,8 +64,8 @@ class addPatientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy'=> 'required',
-                'vaccination_height' => ['required', 'regex:/^\d+(\.\d{1,2})?$/', 'between:30,250'],
-                'vaccination_weight' => ['required', 'regex:/^\d+(\.\d{1,2})?$/', 'between:1,300'],
+                'vaccination_height' => ['required', 'numeric', 'min:30', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:300', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination' => 'required|date',
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
@@ -103,14 +104,15 @@ class addPatientController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
+            $ageInYears = Carbon::parse($data['date_of_birth'])->age;
             $vaccinationPatient = patients::create([
                 'user_id' => null,
                 'first_name' => ucwords(strtolower($data['first_name'])),
                 'middle_initial' => $middleInitial,
                 'last_name' => ucwords(strtolower($data['last_name'])),
                 'full_name' => $fullName,
-                'age' => $data['age']?? 0,
+                'age' => $ageInYears?? 0,
+                'age_in_months' => $this->calculateAgeInMonths($data['date_of_birth']),
                 'sex' => isset($data['sex']) ? ucfirst($data['sex']) : null,
                 'civil_status'=> $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
@@ -212,6 +214,10 @@ class addPatientController extends Controller
             $fullAddress = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
             // create the record
             // nurse
+            $ageInMonths = null;
+            if ($vaccinationPatient->age == 0 && $vaccinationPatient->date_of_birth) {
+                $ageInMonths = $this->calculateAgeInMonths($vaccinationPatient->date_of_birth);
+            }
             $nurse = User::where("role",'nurse')->first();
             $nurseInfo = nurses::where("user_id",$nurse->id)->first();
             $nurseFullname = ucwords($nurseInfo->full_name);
@@ -226,6 +232,7 @@ class addPatientController extends Controller
                 'Address' => trim($fullAddress," "),
                 'sex'=> $vaccinationPatient->sex,
                 'age'=> $vaccinationPatient->age,
+                'age_in_months' => $ageInMonths,
                 'date_of_birth' => $vaccinationPatient->date_of_birth
             ]);
 
@@ -258,5 +265,17 @@ class addPatientController extends Controller
             ], 422);
         }
 
+    }
+
+    private function calculateAgeInMonths($dateOfBirth)
+    {
+        if (!$dateOfBirth) {
+            return null;
+        }
+
+        $dob = Carbon::parse($dateOfBirth);
+        $now = Carbon::now();
+
+        return $dob->diffInMonths($now);
     }
 }

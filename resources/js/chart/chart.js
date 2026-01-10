@@ -1,59 +1,232 @@
 import Chart from "chart.js/auto";
+import jQuery from "jquery";
+import momentLib from "moment";
 
+// Set globals for daterangepicker
+if (typeof window !== "undefined") {
+    window.jQuery = jQuery;
+    window.$ = jQuery;
+    window.moment = momentLib;
+}
+
+const moment = momentLib;
+
+// Global state
 let patientData = {};
+let barChart = null;
+let pieChart = null;
 
-async function loadPatientData() {
-    const response = await fetch("/dashboard/monthly-stats", {
-        headers: { Accept: "application/json" },
-    });
+// Date range state
+let barChartDateRange = {
+    start: moment().startOf("year"),
+    end: moment().endOf("year"),
+};
 
-    if (!response.ok) {
-        console.error("Failed to load chart data");
+let pieChartDateRange = {
+    start: moment().startOf("year"),
+    end: moment().endOf("year"),
+};
+
+// Load daterangepicker dynamically
+let daterangepickerLoaded = false;
+async function loadDateRangePicker() {
+    if (!daterangepickerLoaded) {
+        try {
+            await import("daterangepicker");
+            await import("daterangepicker/daterangepicker.css");
+            daterangepickerLoaded = true;
+            // console.log("✓ Daterangepicker loaded");
+        } catch (error) {
+            console.error("Failed to load daterangepicker:", error);
+            throw error;
+        }
+    }
+}
+
+// Fetch patient data for charts
+async function loadPatientData(startDate, endDate) {
+    try {
+        const response = await fetch(
+            `/dashboard/monthly-stats?start_date=${startDate}&end_date=${endDate}`,
+            {
+                headers: { Accept: "application/json" },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        // console.log("✓ Patient data loaded:", data);
+
+        // Add colors to datasets
+        Object.keys(data).forEach((key) => {
+            data[key].backgroundColor = "rgba(40, 167, 69, 0.8)";
+            data[key].borderColor = "rgba(40, 167, 69, 1)";
+        });
+
+        patientData = data;
+        return data;
+    } catch (error) {
+        console.error("Failed to load patient data:", error);
+        throw error;
+    }
+}
+
+// Initialize date range pickers
+function initDateRangePickers() {
+    // console.log("Initializing date range pickers...");
+
+    const pickerConfig = {
+        opens: "left",
+        drops: "down",
+        showDropdowns: true,
+        autoApply: false,
+        showCustomRangeLabel: true,
+        alwaysShowCalendars: true,
+        locale: {
+            format: "MMM D, YYYY",
+            separator: " - ",
+            applyLabel: "Apply",
+            cancelLabel: "Cancel",
+            fromLabel: "From",
+            toLabel: "To",
+            customRangeLabel: "Custom Range",
+            weekLabel: "W",
+            daysOfWeek: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+            monthNames: [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ],
+            firstDay: 0,
+        },
+        ranges: {
+            Today: [moment(), moment()],
+            Yesterday: [
+                moment().subtract(1, "days"),
+                moment().subtract(1, "days"),
+            ],
+            "Last 7 Days": [moment().subtract(6, "days"), moment()],
+            "Last 30 Days": [moment().subtract(29, "days"), moment()],
+            "This Month": [moment().startOf("month"), moment().endOf("month")],
+            "Last Month": [
+                moment().subtract(1, "month").startOf("month"),
+                moment().subtract(1, "month").endOf("month"),
+            ],
+            "Last 3 Months": [
+                moment().subtract(3, "months").startOf("month"),
+                moment().endOf("month"),
+            ],
+            "Last 6 Months": [
+                moment().subtract(6, "months").startOf("month"),
+                moment().endOf("month"),
+            ],
+            "This Year": [moment().startOf("year"), moment().endOf("year")],
+            "Last Year": [
+                moment().subtract(1, "year").startOf("year"),
+                moment().subtract(1, "year").endOf("year"),
+            ],
+        },
+    };
+
+    // Bar Chart Date Range
+    const barRangeInput = $("#dateRange");
+    if (barRangeInput.length) {
+        barRangeInput.daterangepicker(
+            {
+                ...pickerConfig,
+                startDate: barChartDateRange.start,
+                endDate: barChartDateRange.end,
+            },
+            function (start, end, label) {
+                // console.log(
+                //     "Bar chart date range changed:",
+                //     start.format("YYYY-MM-DD"),
+                //     "to",
+                //     end.format("YYYY-MM-DD")
+                // );
+                barChartDateRange = { start, end };
+                reloadBarChart();
+            }
+        );
+        // console.log("✓ Bar chart date picker initialized");
+    } else {
+        console.warn("⚠ Bar chart date range input not found");
+    }
+
+    // Pie Chart Date Range
+    const pieRangeInput = $("#pieChartDateRange");
+    if (pieRangeInput.length) {
+        pieRangeInput.daterangepicker(
+            {
+                ...pickerConfig,
+                startDate: pieChartDateRange.start,
+                endDate: pieChartDateRange.end,
+            },
+            function (start, end, label) {
+                // console.log(
+                //     "Pie chart date range changed:",
+                //     start.format("YYYY-MM-DD"),
+                //     "to",
+                //     end.format("YYYY-MM-DD")
+                // );
+                pieChartDateRange = { start, end };
+                reloadPieChart();
+            }
+        );
+        // console.log("✓ Pie chart date picker initialized");
+    } else {
+        console.warn("⚠ Pie chart date range input not found");
+    }
+}
+
+// Initialize bar chart
+async function initBarChart() {
+    // console.log("Initializing bar chart...");
+
+    const canvas = document.getElementById("patientChart");
+    if (!canvas) {
+        console.error("✗ Canvas element 'patientChart' not found!");
         return;
     }
 
-    const data = await response.json();
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        console.error("✗ Could not get 2D context for patientChart");
+        return;
+    }
 
-    // Add colors (since backend only sends data + label)
-    Object.keys(data).forEach((key) => {
-        data[key].backgroundColor = "rgba(40, 167, 69, 0.8)";
-        data[key].borderColor = "rgba(40, 167, 69, 1)";
-    });
+    try {
+        const startDate = barChartDateRange.start.format("YYYY-MM-DD");
+        const endDate = barChartDateRange.end.format("YYYY-MM-DD");
 
-    patientData = data;
-}
-// get the current year
-const year = new Date().getFullYear();
+        await loadPatientData(startDate, endDate);
 
-document.addEventListener("DOMContentLoaded", function (e) {
+        if (!patientData.all) {
+            console.error("✗ No patient data available");
+            return;
+        }
 
+        // Destroy existing chart if it exists
+        if (barChart) {
+            barChart.destroy();
+        }
 
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ];
-
-    let chart;
-
-    // Initialize chart
-   async function initChart() {
-        await loadPatientData();
-        const ctx = document.getElementById("patientChart").getContext("2d");
-
-        chart = new Chart(ctx, {
+        barChart = new Chart(ctx, {
             type: "bar",
             data: {
-                labels: months,
+                labels: patientData.all.months || [],
                 datasets: [
                     {
                         label: patientData.all.label,
@@ -91,9 +264,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
                         cornerRadius: 8,
                         displayColors: true,
                         callbacks: {
-                            title: function (context) {
-                                return `${context[0].label} ${year}`;
-                            },
                             label: function (context) {
                                 return `${context.dataset.label}: ${context.parsed.y} patients`;
                             },
@@ -123,7 +293,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
                             },
                             color: "#333",
                         },
-                        max:100
                     },
                     x: {
                         grid: {
@@ -154,75 +323,117 @@ document.addEventListener("DOMContentLoaded", function (e) {
             },
         });
 
+        // console.log("✓ Bar chart initialized successfully");
         updateStats("all");
+    } catch (error) {
+        console.error("✗ Failed to initialize bar chart:", error);
+    }
+}
+
+// Update chart based on patient type selection
+function updateChart(patientType) {
+    if (!barChart || !patientData[patientType]) {
+        console.warn("Chart or data not available for:", patientType);
+        return;
     }
 
-    // Update chart based on selected patient type
-    function updateChart(patientType) {
-        const selectedData = patientData[patientType];
+    const selectedData = patientData[patientType];
 
-        chart.data.datasets[0] = {
-            label: selectedData.label,
-            data: selectedData.data,
-            backgroundColor: selectedData.backgroundColor,
-            borderColor: selectedData.borderColor,
-            borderWidth: 2,
-            borderRadius: 8,
-            borderSkipped: false,
-        };
+    barChart.data.datasets[0] = {
+        label: selectedData.label,
+        data: selectedData.data,
+        backgroundColor: selectedData.backgroundColor,
+        borderColor: selectedData.borderColor,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+    };
 
-        chart.update("active");
-        updateStats(patientType);
+    barChart.data.labels = selectedData.months || [];
+    barChart.update("active");
+    updateStats(patientType);
+
+    // console.log("✓ Chart updated to:", patientType);
+}
+
+// Update statistics summary
+function updateStats(patientType) {
+    if (!patientData[patientType]) return;
+
+    const data = patientData[patientType].data;
+    const months = patientData[patientType].months || [];
+
+    const total = data.reduce((a, b) => a + b, 0);
+    const average = data.length > 0 ? Math.round(total / data.length) : 0;
+    const maxValue = Math.max(...data);
+    const peakIndex = data.indexOf(maxValue);
+    const peakMonth = months[peakIndex] || "N/A";
+
+    const totalEl = document.getElementById("totalPatients");
+    const avgEl = document.getElementById("avgMonthly");
+    const peakEl = document.getElementById("peakMonth");
+
+    if (totalEl) totalEl.textContent = total.toLocaleString();
+    if (avgEl) avgEl.textContent = average.toLocaleString();
+    if (peakEl) peakEl.textContent = peakMonth;
+}
+
+// Reload bar chart with new date range
+async function reloadBarChart() {
+    // console.log("Reloading bar chart...");
+    await initBarChart();
+}
+
+// Initialize pie chart
+async function initPieChart() {
+    // console.log("Initializing pie chart...");
+
+    const canvas = document.getElementById("myPieChart");
+    if (!canvas) {
+        console.error("✗ Canvas element 'myPieChart' not found!");
+        return;
     }
 
-    // Update statistics summary
-    function updateStats(patientType) {
-        const data = patientData[patientType].data;
-        const total = data.reduce((a, b) => a + b, 0);
-        const average = Math.round(total / data.length);
-        const peakIndex = data.indexOf(Math.max(...data));
-        const peakMonth = months[peakIndex];
-
-        if (document.getElementById("totalPatients")) {
-            document.getElementById("totalPatients").textContent =
-                total.toLocaleString();
-            document.getElementById("avgMonthly").textContent =
-                average.toLocaleString();
-            document.getElementById("peakMonth").textContent = peakMonth;
-        }
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        console.error("✗ Could not get 2D context for myPieChart");
+        return;
     }
 
-    // Event listener for dropdown change
-    document
-        .getElementById("patientType")
-        .addEventListener("change", function (e) {
-            updateChart(e.target.value);
-        });
+    await reloadPieChart();
+}
 
-    // Initialize chart when page loads
-    window.addEventListener("load", initChart);
-    window.addEventListener("load", initPieChart);
-    window.addEventListener("load", initCountPerArea);
-    window.addEventListener("load", initPatientToday);
-});
+// Reload pie chart with new date range
+async function reloadPieChart() {
+    const startDate = pieChartDateRange.start.format("YYYY-MM-DD");
+    const endDate = pieChartDateRange.end.format("YYYY-MM-DD");
 
-async function initPieChart(params) {
     try {
-        const response = await fetch("/dashboard/info", {
-            headers: {
-                accept: "application/json",
-            },
-        });
+        const response = await fetch(
+            `/dashboard/pie-chart-data?start_date=${startDate}&end_date=${endDate}`,
+            {
+                headers: {
+                    Accept: "application/json",
+                },
+            }
+        );
 
         if (!response.ok) {
-            console.log("Errors:", response.status);
-            return;
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        // console.log("✓ Pie chart data loaded:", data);
 
-        const pieChart = document.getElementById("myPieChart").getContext("2d");
-        const myPieChart = new Chart(pieChart, {
+        const canvas = document.getElementById("myPieChart");
+        const ctx = canvas.getContext("2d");
+
+        // Destroy existing chart if it exists
+        if (pieChart) {
+            pieChart.destroy();
+        }
+
+        pieChart = new Chart(ctx, {
             type: "doughnut",
             data: {
                 labels: [
@@ -230,118 +441,252 @@ async function initPieChart(params) {
                     "Prenatal",
                     "Senior Citizen",
                     "TB Dots",
-                    "Family-planning",
+                    "Family Planning",
                 ],
                 datasets: [
                     {
                         label: "Patient Categories",
                         data: [
-                            data.vaccinationCount,
-                            data.prenatalCount,
-                            data.tbDotsCount,
-                            data.seniorCitizenCount,
-                            data.familyPlanningCount,
+                            data.vaccinationCount || 0,
+                            data.prenatalCount || 0,
+                            data.seniorCitizenCount || 0,
+                            data.tbDotsCount || 0,
+                            data.familyPlanningCount || 0,
                         ],
                         backgroundColor: [
-                            "yellow",
-                            "red",
-                            "blue",
-                            "rgba(46, 139, 87, 1)",
-                            "orange",
+                            "#FFC107",
+                            "#DC3545",
+                            "#007BFF",
+                            "#2E8B57",
+                            "#FF8C00",
                         ],
-                        borderWidth: 1,
+                        borderWidth: 2,
+                        borderColor: "#fff",
                     },
                 ],
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: "bottom",
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                            },
+                        },
                     },
                     title: {
                         display: true,
                         text: "Patient Distribution",
                         font: {
-                            size: 20,
+                            size: 18,
                             weight: "bold",
                         },
-                        color: "rgba(0,0,0)",
+                        color: "#333",
                         align: "start",
+                        padding: {
+                            top: 10,
+                            bottom: 20,
+                        },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || "";
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce(
+                                    (a, b) => a + b,
+                                    0
+                                );
+                                const percentage =
+                                    total > 0
+                                        ? ((value / total) * 100).toFixed(1)
+                                        : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            },
+                        },
                     },
                 },
-                maintainAspectRatio: false,
-            },
-        });
-    } catch (error) {
-        console.log("error:", error);
-    }
-}
-async function initCountPerArea() {
-    try {
-        const response = await fetch('/dashboard/patient-count-per-area', {
-            headers: {
-                accept: "application/json",
             },
         });
 
-        if (!response.ok) return;
+        // console.log("✓ Pie chart initialized successfully");
+    } catch (error) {
+        console.error("✗ Failed to load pie chart:", error);
+    }
+}
+
+// Initialize patient count per area
+async function initCountPerArea() {
+    // console.log("Loading patient count per area...");
+
+    try {
+        const response = await fetch("/dashboard/patient-count-per-area", {
+            headers: {
+                Accept: "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
+        // console.log("✓ Count per area data loaded:", data);
 
-        // console.log(data);
+        const container = document.querySelector(".patient-per-area-con");
+        if (!container) {
+            console.warn("⚠ Container '.patient-per-area-con' not found");
+            return;
+        }
 
-        const patientPerAreaCon = document.querySelector(
-            ".patient-per-area-con"
-        );
+        container.innerHTML = "";
+
         Object.entries(data.data).forEach(([key, value]) => {
-            patientPerAreaCon.innerHTML += `
-             <div class="service-item">
-                <div class="service-label">${key}</div>
-                <div class="service-count" style="background-color: #065A24;">${value??0}</div>
-            </div>
+            container.innerHTML += `
+                <div class="service-item">
+                    <div class="service-label">${key}</div>
+                    <div class="service-count" style="background-color: #065A24;">${
+                        value ?? 0
+                    }</div>
+                </div>
             `;
         });
+
+        // console.log("✓ Patient count per area rendered");
     } catch (error) {
-        
+        console.error("✗ Failed to load count per area:", error);
     }
 }
+
+// Initialize today's patient count
 async function initPatientToday() {
-     try {
-         const response = await fetch("/dashboard/today/added-patient", {
-             headers: {
-                 accept: "application/json",
-             },
-         });
+    // console.log("Loading today's patient count...");
 
-         if (!response.ok) return;
+    try {
+        const response = await fetch("/dashboard/today/added-patient", {
+            headers: {
+                Accept: "application/json",
+            },
+        });
 
-         const data = await response.json();
-         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-         //  get the id of element
-         const vaccinationElement = document.getElementById(
-             "vaccination-patient-today"
-         );
-         const prenatalElement = document.getElementById(
-             "prenatal-patient-today"
-         );
-         const seniorCitizenElement = document.getElementById(
-             "senior-citizen-patient-today"
-         );
-         const tbDotsElement = document.getElementById("tb-dots-patient-today");
-         const familyPlanningElement = document.getElementById(
-             "family-planning-patient-today"
-         );
+        const data = await response.json();
+        // console.log("✓ Today's patient data loaded:", data);
 
-         //  populate 
-         vaccinationElement.innerHTML = data.vaccinationCount;
-         prenatalElement.innerHTML = data.prenatalCount;
-         seniorCitizenElement.innerHTML = data.seniorCitizenCount;
-         tbDotsElement.innerHTML = data.tbDotsCount;
-         familyPlanningElement.innerHTML = data.familyPlanningCount;
+        const elements = {
+            vaccination: document.getElementById("vaccination-patient-today"),
+            prenatal: document.getElementById("prenatal-patient-today"),
+            seniorCitizen: document.getElementById(
+                "senior-citizen-patient-today"
+            ),
+            tbDots: document.getElementById("tb-dots-patient-today"),
+            familyPlanning: document.getElementById(
+                "family-planning-patient-today"
+            ),
+        };
 
-     } catch (error) {
-         console.log("error:", error);
-     }
+        if (elements.vaccination)
+            elements.vaccination.textContent = data.vaccinationCount || 0;
+        if (elements.prenatal)
+            elements.prenatal.textContent = data.prenatalCount || 0;
+        if (elements.seniorCitizen)
+            elements.seniorCitizen.textContent = data.seniorCitizenCount || 0;
+        if (elements.tbDots)
+            elements.tbDots.textContent = data.tbDotsCount || 0;
+        if (elements.familyPlanning)
+            elements.familyPlanning.textContent = data.familyPlanningCount || 0;
+
+        // console.log("✓ Today's patient count rendered");
+    } catch (error) {
+        console.error("✗ Failed to load today's patient count:", error);
+    }
 }
+
+// Main initialization
+// Replace your existing dashboardCharts event listener with this:
+
+document.addEventListener("DOMContentLoaded", async function () {
+    // console.log("=== Dashboard Initialization Started ===");
+
+    try {
+        // Load daterangepicker library
+        await loadDateRangePicker();
+
+        // Initialize date range pickers
+        initDateRangePickers();
+
+        // Initialize all dashboard components
+        await Promise.all([
+            initBarChart(),
+            initPieChart(),
+            initCountPerArea(),
+            initPatientToday(),
+        ]);
+
+        // Setup patient type dropdown listener
+        const patientTypeSelect = document.getElementById("patientType");
+        if (patientTypeSelect) {
+            patientTypeSelect.addEventListener("change", function (e) {
+                updateChart(e.target.value);
+            });
+            // console.log("✓ Patient type dropdown listener attached");
+        } else {
+            console.warn("⚠ Patient type dropdown not found");
+        }
+
+        // Setup PDF download button with BOTH date ranges
+        const dashboardChartsBtn = document.getElementById("dashboardCharts");
+        if (dashboardChartsBtn) {
+            dashboardChartsBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                // Get BAR CHART date range
+                const barStartDate = barChartDateRange.start.format("YYYY-MM-DD");
+                const barEndDate = barChartDateRange.end.format("YYYY-MM-DD");
+
+                // Get PIE CHART date range
+                const pieStartDate = pieChartDateRange.start.format("YYYY-MM-DD");
+                const pieEndDate = pieChartDateRange.end.format("YYYY-MM-DD");
+
+                // Get the selected patient type
+                const patientType = document.getElementById("patientType").value;
+
+                // Build the URL with BOTH date ranges
+                const params = new URLSearchParams({
+                    bar_start_date: barStartDate,
+                    bar_end_date: barEndDate,
+                    pie_start_date: pieStartDate,
+                    pie_end_date: pieEndDate,
+                    patient_type: patientType
+                });
+
+                const url = `/pdf/generate/graph?${params.toString()}`;
+
+                // console.log("📊 Generating PDF with parameters:", {
+                //     barChart: `${barStartDate} to ${barEndDate}`,
+                //     pieChart: `${pieStartDate} to ${pieEndDate}`,
+                //     patientType: patientType
+                // });
+
+                // Open in new tab
+                window.open(url, "_blank");
+            });
+            // console.log("✓ Dashboard charts PDF button listener attached");
+        } else {
+            console.warn("⚠ Dashboard charts button not found");
+        }
+
+        // console.log("=== Dashboard Initialization Complete ===");
+    } catch (error) {
+        console.error("=== Dashboard Initialization Failed ===");
+        console.error(error);
+    }
+});

@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\MedicineRequest;
+use App\Models\User;
+use App\Models\Medicine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MedicineRequestLog;
@@ -22,6 +24,142 @@ class ManageMedicineRequests extends Component
     // Property for view details
     public $viewRequest;
 
+    // Walk-in properties
+    public $walkInUserId;
+    public $walkInMedicineId;
+    public $walkInQuantity = 1;
+    public $walkInReason = '';
+    public $userSearch = '';
+    public $users;
+    public $medicines;
+
+    protected $rules = [
+        'walkInUserId' => 'required|exists:users,id',
+        'walkInMedicineId' => 'required|exists:medicines,medicine_id',
+        'walkInQuantity' => 'required|integer|min:1',
+        'walkInReason' => 'required|string|max:500',
+    ];
+
+    public function mount()
+    {
+        $this->loadUsers();
+        $this->loadMedicines();
+    }
+
+    public function loadUsers()
+    {
+        // Load all users (system will auto-detect if they have patient records)
+        $this->users = User::when($this->userSearch, function ($query) {
+                $query->where(function($q) {
+                    $q->where('first_name', 'like', "%{$this->userSearch}%")
+                      ->orWhere('last_name', 'like', "%{$this->userSearch}%")
+                      ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?", ["%{$this->userSearch}%"]);
+                });
+            })
+            ->whereIn('role', ['user', 'patient']) // Only load user/patient roles, not staff
+            ->orderBy('first_name')
+            ->limit(50)
+            ->get();
+    }
+
+    public function updatedUserSearch()
+    {
+        $this->loadUsers();
+    }
+
+    public function loadMedicines()
+    {
+        $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
+            ->where('stock', '>', 0)
+            ->where('expiry_status', '!=', 'Expired')
+            ->where(function($query) {
+                $query->where('expiry_date', '>', now())
+                      ->orWhereNull('expiry_date');
+            })
+            ->get();
+    }
+
+    public function createWalkIn(){
+        $this->validate();
+
+        DB::transaction(function () {
+            $medicine = Medicine::lockForUpdate()->findOrFail($this->walkInMedicineId);
+
+            // Check if sufficient stock
+            if ($medicine->stock < $this->walkInQuantity) {
+                session()->flash('error', 'Insufficient medicine stock.');
+                return;
+            }
+
+            // Get the user
+            $user = User::findOrFail($this->walkInUserId);
+            $patient = $user->patient; // This might be null
+
+            // Deduct stock
+            $medicine->decrement('stock', $this->walkInQuantity);
+
+            // Recalculate and update stock status
+            $newStock = $medicine->fresh()->stock;
+            $newStockStatus = $this->determineStockStatus($newStock);
+
+            $medicine->update([
+                'stock_status' => $newStockStatus
+            ]);
+
+            // Prepare request data
+            $requestData = [
+                'medicine_id' => $this->walkInMedicineId,
+                'quantity_requested' => $this->walkInQuantity,
+                'reason' => $this->walkInReason,
+                'status' => 'completed',
+                'approved_by_id' => auth()->id(),
+                'approved_by_type' => get_class(auth()->user()),
+                'approved_at' => now(),
+            ];
+
+            // Automatically set patient_id if exists, otherwise use user_id
+            if ($patient) {
+                $requestData['patients_id'] = $patient->id;
+            } else {
+                $requestData['user_id'] = $user->id;
+            }
+
+            // Create the walk-in request with completed status
+            $request = MedicineRequest::create($requestData);
+
+            // Create log for walk-in
+            MedicineRequestLog::create([
+                'medicine_request_id' => $request->id,
+                'patient_name'        => $user->full_name,
+                'medicine_name'       => $medicine->medicine_name,
+                'dosage'              => $medicine->dosage,
+                'quantity'            => $this->walkInQuantity,
+                'action'              => 'approved',
+                'performed_by_id'     => auth()->id(),
+                'performed_by_name'   => auth()->user()->username,
+                'performed_at'        => now(),
+            ]);
+        });
+
+        $this->resetWalkInForm();
+        $this->dispatch('close-walkin-modal');
+        session()->flash('message', 'Walk-in medicine dispensed successfully.');
+    }
+
+    public function resetWalkInForm()
+    {
+        $this->reset([
+            'walkInUserId',
+            'walkInMedicineId',
+            'walkInQuantity',
+            'walkInReason',
+            'userSearch'
+        ]);
+        $this->resetErrorBag();
+        $this->loadUsers();
+        $this->loadMedicines();
+    }
+
     private function determineStockStatus($stock)
     {
         if ($stock <= 0) {
@@ -37,7 +175,7 @@ class ManageMedicineRequests extends Component
     {
         DB::transaction(function () use ($requestId) {
 
-            $request = MedicineRequest::with(['medicine', 'patients'])
+            $request = MedicineRequest::with(['medicine', 'patients', 'user'])
                 ->lockForUpdate()
                 ->findOrFail($requestId);
 
@@ -67,10 +205,13 @@ class ManageMedicineRequests extends Component
                 'status' => 'completed',
             ]);
 
+            // Get requester name (from patient or user)
+            $requesterName = $request->requester_name;
+
             // create log for APPROVAL
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
-                'patient_name'        => $request->patients->full_name,
+                'patient_name'        => $requesterName,
                 'medicine_name'       => $request->medicine->medicine_name,
                 'dosage'              => $request->medicine->dosage,
                 'quantity'            => $request->quantity_requested,
@@ -87,7 +228,7 @@ class ManageMedicineRequests extends Component
     public function reject($requestId)
     {
         DB::transaction(function () use ($requestId) {
-            $request = MedicineRequest::with(['medicine', 'patients'])
+            $request = MedicineRequest::with(['medicine', 'patients', 'user'])
                 ->lockForUpdate()
                 ->findOrFail($requestId);
 
@@ -101,10 +242,13 @@ class ManageMedicineRequests extends Component
                 'status' => 'rejected',
             ]);
 
+            // Get requester name (from patient or user)
+            $requesterName = $request->requester_name;
+
             // create log for REJECTION
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
-                'patient_name'        => $request->patients->full_name,
+                'patient_name'        => $requesterName,
                 'medicine_name'       => $request->medicine->medicine_name,
                 'dosage'              => $request->medicine->dosage,
                 'quantity'            => $request->quantity_requested,
@@ -120,7 +264,7 @@ class ManageMedicineRequests extends Component
 
     public function viewDetails($requestId)
     {
-        $this->viewRequest = MedicineRequest::with(['medicine', 'patients'])
+        $this->viewRequest = MedicineRequest::with(['medicine', 'patients', 'user'])
             ->findOrFail($requestId);
     }
 
@@ -142,14 +286,19 @@ class ManageMedicineRequests extends Component
 
     public function render()
     {
-        $requests = MedicineRequest::with(['medicine', 'patients'])
+        $requests = MedicineRequest::with(['medicine', 'patients', 'user'])
             ->when($this->search, function ($q) {
-                $q->whereHas('patients', fn ($p) =>
-                        $p->where('full_name', 'like', "%{$this->search}%")
-                    )
-                  ->orWhereHas('medicine', fn ($m) =>
-                        $m->where('medicine_name', 'like', "%{$this->search}%")
-                    );
+                $q->where(function($query) {
+                    $query->whereHas('patients', fn ($p) =>
+                            $p->where('full_name', 'like', "%{$this->search}%")
+                        )
+                        ->orWhereHas('user', fn ($u) =>
+                            $u->whereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?", ["%{$this->search}%"])
+                        )
+                        ->orWhereHas('medicine', fn ($m) =>
+                            $m->where('medicine_name', 'like', "%{$this->search}%")
+                        );
+                });
             })
             ->when($this->filterStatus, fn ($q) =>
                 $q->where('status', $this->filterStatus)

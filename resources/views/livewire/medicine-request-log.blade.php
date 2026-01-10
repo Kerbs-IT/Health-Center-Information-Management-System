@@ -30,7 +30,7 @@
             <table class="table table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center">#</th>
+                        <!-- <th class="text-center">#</th> -->
                         <th class="text-center">Patient</th>
                         <th class="text-center">Medicine</th>
                         <th class="text-center">Dosage</th>
@@ -43,9 +43,9 @@
                 <tbody>
                     @forelse ($logs as $index => $log)
                         <tr>
-                            <td class="text-center">
+                            <!-- <td class="text-center">
                                 {{ $logs->firstItem() + $index }}
-                            </td>
+                            </td> -->
                             <td class="text-center">
                                 {{ $log->patient_name }}
                             </td>

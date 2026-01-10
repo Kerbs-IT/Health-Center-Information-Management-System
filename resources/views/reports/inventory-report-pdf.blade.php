@@ -35,6 +35,24 @@
             color: #666;
         }
 
+        .date-range-info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+        }
+
+        .date-range-info p {
+            font-size: 11px;
+            color: #000;
+            margin: 3px 0;
+        }
+
+        .date-range-info strong {
+            color: #10b981;
+        }
+
         .summary {
             display: table;
             width: 100%;
@@ -86,6 +104,15 @@
             text-align: center;
         }
 
+        .section-subtitle {
+            font-size: 10px;
+            text-align: center;
+            color: #666;
+            margin-top: -8px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -126,6 +153,13 @@
             color: #666;
         }
 
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+
         @media print {
             body { padding: 10px; }
             .section { page-break-inside: avoid; }
@@ -138,6 +172,14 @@
     <div class="header">
         <h1>INVENTORY REPORT</h1>
         <p>Generated: {{ $generatedDate }}</p>
+    </div>
+
+    <!-- DATE RANGE INFORMATION -->
+    <div class="date-range-info">
+        <p><strong>Report Period:</strong> {{ $startDate }} - {{ $endDate }}</p>
+        <p style="font-size: 9px; color: #666; margin-top: 5px;">
+            Medicine Given & Request Trend data filtered by this period
+        </p>
     </div>
 
     <!-- SUMMARY CARDS -->
@@ -168,27 +210,32 @@
 
     <!-- MONTHLY MEDICINE GIVEN - Page 1 -->
     <div class="section">
-        <div class="section-title">Monthly Medicine Given ({{ date('Y') }})</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Month</th>
-                    <th style="width: 50%;" class="text-center">Quantity Dispensed</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($monthlyGivenData['fullLabels'] as $index => $month)
-                <tr>
-                    <td>{{ $month }}</td>
-                    <td class="text-center font-bold">{{ $monthlyGivenData['data'][$index] }}</td>
-                </tr>
-                @endforeach
-                <tr style="background: #e6f7f0;">
-                    <td class="font-bold">TOTAL</td>
-                    <td class="text-center font-bold">{{ array_sum($monthlyGivenData['data']) }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="section-title">Medicine Distribution Trend</div>
+        <div class="section-subtitle">Period: {{ $startDate }} - {{ $endDate }}</div>
+        @if(isset($monthlyGivenData['data']) && array_sum($monthlyGivenData['data']) > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Period</th>
+                        <th style="width: 50%;" class="text-center">Quantity Dispensed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($monthlyGivenData['fullLabels'] as $index => $period)
+                    <tr>
+                        <td>{{ $period }}</td>
+                        <td class="text-center font-bold">{{ $monthlyGivenData['data'][$index] }}</td>
+                    </tr>
+                    @endforeach
+                    <tr style="background: #e6f7f0;">
+                        <td class="font-bold">TOTAL</td>
+                        <td class="text-center font-bold">{{ array_sum($monthlyGivenData['data']) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @else
+            <p class="no-data">No medicine distribution data available for this period.</p>
+        @endif
     </div>
 
     <!-- PAGE BREAK -->
@@ -196,32 +243,38 @@
 
     <!-- MONTHLY REQUEST TREND - Page 2 -->
     <div class="section">
-        <div class="section-title">Monthly Request Trend ({{ date('Y') }})</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Month</th>
-                    <th style="width: 50%;" class="text-center">Total Requests</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($requestTrendData['fullLabels'] as $index => $month)
-                <tr>
-                    <td>{{ $month }}</td>
-                    <td class="text-center font-bold">{{ $requestTrendData['data'][$index] }}</td>
-                </tr>
-                @endforeach
-                <tr style="background: #e6f7f0;">
-                    <td class="font-bold">TOTAL</td>
-                    <td class="text-center font-bold">{{ array_sum($requestTrendData['data']) }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="section-title">Medicine Request Trend</div>
+        <div class="section-subtitle">Period: {{ $startDate }} - {{ $endDate }}</div>
+        @if(isset($requestTrendData['data']) && array_sum($requestTrendData['data']) > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Period</th>
+                        <th style="width: 50%;" class="text-center">Total Requests</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($requestTrendData['fullLabels'] as $index => $period)
+                    <tr>
+                        <td>{{ $period }}</td>
+                        <td class="text-center font-bold">{{ $requestTrendData['data'][$index] }}</td>
+                    </tr>
+                    @endforeach
+                    <tr style="background: #e6f7f0;">
+                        <td class="font-bold">TOTAL</td>
+                        <td class="text-center font-bold">{{ array_sum($requestTrendData['data']) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        @else
+            <p class="no-data">No medicine request data available for this period.</p>
+        @endif
     </div>
 
     <!-- TOP 5 MOST DISPENSED MEDICINES -->
     <div class="section">
-        <div class="section-title">Top 5 Most Dispensed Medicines</div>
+        <div class="section-title">Top Dispensed Medicines</div>
+        <div class="section-subtitle">Period: {{ $startDate }} - {{ $endDate }}</div>
         @if($topDispensedTable && $topDispensedTable->count() > 0)
             <table>
                 <thead>
@@ -242,56 +295,62 @@
                 </tbody>
             </table>
         @else
-            <p style="text-align: center; padding: 20px; color: #999;">No dispensing data available.</p>
+            <p class="no-data">No dispensing data available for this period.</p>
         @endif
     </div>
 
     <!-- STOCK LEVEL DISTRIBUTION -->
     <div class="section">
         <div class="section-title">Stock Level Distribution</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Stock Status</th>
-                    <th style="width: 25%;" class="text-center">Count</th>
-                    <th style="width: 25%;" class="text-center">Percentage</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $total = array_sum($pieChartData['data']);
-                @endphp
-                @foreach($pieChartData['labels'] as $index => $label)
-                <tr>
-                    <td class="font-bold">{{ $label }}</td>
-                    <td class="text-center font-bold">{{ $pieChartData['data'][$index] }}</td>
-                    <td class="text-center">{{ $total > 0 ? round(($pieChartData['data'][$index] / $total) * 100, 1) : 0 }}%</td>
-                </tr>
-                @endforeach
-                <tr style="background: #e6f7f0;">
-                    <td class="font-bold">TOTAL</td>
-                    <td class="text-center font-bold">{{ $total }}</td>
-                    <td class="text-center font-bold">100%</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="section-subtitle">Based on medicines dispensed: {{ $pieChartStartDate }} - {{ $pieChartEndDate }}</div>
+        @if(isset($pieChartData['data']) && array_sum($pieChartData['data']) > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Stock Status</th>
+                        <th style="width: 25%;" class="text-center">Count</th>
+                        <th style="width: 25%;" class="text-center">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $total = array_sum($pieChartData['data']);
+                    @endphp
+                    @foreach($pieChartData['labels'] as $index => $label)
+                    <tr>
+                        <td class="font-bold">{{ $label }}</td>
+                        <td class="text-center font-bold">{{ $pieChartData['data'][$index] }}</td>
+                        <td class="text-center">{{ $total > 0 ? round(($pieChartData['data'][$index] / $total) * 100, 1) : 0 }}%</td>
+                    </tr>
+                    @endforeach
+                    <tr style="background: #e6f7f0;">
+                        <td class="font-bold">TOTAL</td>
+                        <td class="text-center font-bold">{{ $total }}</td>
+                        <td class="text-center font-bold">100%</td>
+                    </tr>
+                </tbody>
+            </table>
+        @else
+            <p class="no-data">No stock data available for medicines dispensed in this period.</p>
+        @endif
     </div>
 
     <!-- MEDICINE COUNT BY CATEGORY -->
     <div class="section">
-        <div class="section-title">Medicine Count by Category</div>
+        <div class="section-title">Medicine Distribution by Category</div>
+        <div class="section-subtitle">Based on medicines dispensed: {{ $barChartStartDate }} - {{ $barChartEndDate }}</div>
         @if(isset($categoriesData) && count($categoriesData['labels']) > 0)
             <table>
                 <thead>
                     <tr>
                         <th style="width: 10%;" class="text-center">No.</th>
                         <th style="width: 60%;">Category Name</th>
-                        <th style="width: 30%;" class="text-center">Medicine Count</th>
+                        <th style="width: 30%;" class="text-center">Quantity Dispensed</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
-                        $totalMedicines = array_sum($categoriesData['data']);
+                        $totalQuantity = array_sum($categoriesData['data']);
                     @endphp
                     @foreach($categoriesData['labels'] as $index => $category)
                     <tr>
@@ -302,12 +361,12 @@
                     @endforeach
                     <tr style="background: #e6f7f0;">
                         <td colspan="2" class="font-bold">TOTAL</td>
-                        <td class="text-center font-bold">{{ $totalMedicines }}</td>
+                        <td class="text-center font-bold">{{ $totalQuantity }}</td>
                     </tr>
                 </tbody>
             </table>
         @else
-            <p style="text-align: center; padding: 20px; color: #999;">No category data available.</p>
+            <p class="no-data">No category data available for this period.</p>
         @endif
     </div>
 
