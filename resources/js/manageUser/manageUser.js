@@ -15,6 +15,20 @@ fetch("/showBrgyUnit")
         });
     });
 
+    fetch("/showBrgyUnit")
+        .then((response) => response.json())
+        .then((data) => {
+            let dropdown = document.getElementById("patient_purok_dropdown");
+
+            // console.log(data);
+            data.forEach((item) => {
+                let option = document.createElement("option");
+                option.value = item.brgy_unit;
+                option.text = item.brgy_unit;
+                dropdown.appendChild(option);
+            });
+        });
+
 // add the patient account
 const addPatientSubmitBtn = document.getElementById("add-patient-submit-btn");
 
@@ -273,16 +287,16 @@ document.addEventListener('click', async (e) => {
     }
      Swal.fire({
          title: "Are you sure?",
-         text: "This will permanently remove the user.",
+         text: "This user account will be moved to archived status.",
          icon: "warning",
          showCancelButton: true,
          confirmButtonColor: "#d33",
          cancelButtonColor: "#3085d6",
-         confirmButtonText: "Yes, delete it!",
+         confirmButtonText: "Yes, archived it!",
      }).then((result) => {
          if (result.isConfirmed) {
              fetch(`/delete-patient-account/${id}`, {
-                 method: "DELETE",
+                 method: "POST",
                  headers: {
                      "X-CSRF-TOKEN": document.querySelector(
                          'meta[name="csrf-token"]'

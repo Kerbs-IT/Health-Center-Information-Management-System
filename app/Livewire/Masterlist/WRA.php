@@ -24,64 +24,62 @@ class WRA extends Component
     public $selectedBrgy = '';
     public $selectedMonth = '';
     public $selectedYear = '2025';
-    // with unmet need, those who active that needs family planning
     public $withUnmetNeed = '';
+
+    // ADDED: Force re-render on filter changes
+    public $refreshKey = 0;
 
     // Query string parameters
     protected $queryString = [
         'entries' => ['except' => 10],
         'sortField' => ['except' => 'created_at'],
-        'sortDirection' => ['except' => 'desc'],
+        'sortDirection' => ['except' => 'asc'],
         'search' => ['except' => ''],
         'selectedBrgy' => ['except' => ''],
         'selectedMonth' => ['except' => ''],
-        'selectedYear' => ['except' => ''],
+        'selectedYear' => ['except' => '2025'],
         'withUnmetNeed' => ['except' => '']
     ];
 
     protected $listeners = ['wraMasterlistRefreshTable' => '$refresh'];
 
-    /**
-     * Reset pagination when entries changes
-     */
-    public function updatingEntries()
+    // CHANGED: From updatingXXX to updatedXXX
+    public function updatedEntries()
     {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    /**
-     * Reset pagination when search changes
-     */
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    /**
-     * Reset pagination when filters change
-     */
-    public function updatingSelectedBrgy()
+    public function updatedSelectedBrgy()
     {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    public function updatingSelectedMonth()
+    public function updatedSelectedMonth()
     {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    public function updatingSelectedYear()
+    public function updatedSelectedYear()
     {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    public function updatingWithUnmetNeed(){
+    public function updatedWithUnmetNeed()
+    {
         $this->resetPage();
+        $this->refreshKey++;
     }
 
-    /**
-     * Sort by field
-     */
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -90,74 +88,61 @@ class WRA extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
+        $this->refreshKey++;
     }
 
-    /**
-     * Clear all filters
-     */
     public function clearFilters()
     {
         $this->reset(['search', 'selectedBrgy', 'selectedMonth', 'selectedYear', 'withUnmetNeed']);
         $this->resetPage();
+        $this->refreshKey++;
     }
 
     public function monthName($monthNumber)
     {
-        // Ensure it's always between 1–12
         $monthNumber = intval($monthNumber);
 
         if ($monthNumber < 1 || $monthNumber > 12) {
-            return null; // or return "Invalid month"
+            return null;
         }
 
         return date("F", mktime(0, 0, 0, $monthNumber, 1));
     }
 
-
     public function render()
     {
-        // Build query
         $query = wra_masterlists::where('status', '!=', 'Archived');
 
-        // Search by name
         if (!empty($this->search)) {
             $query->where('name_of_wra', 'like', '%' . $this->search . '%');
         }
 
-        // Filter by barangay
         if (!empty($this->selectedBrgy)) {
             $query->where('brgy_name', $this->selectedBrgy);
         }
 
-        // Filter by month
         if (!empty($this->selectedMonth)) {
             $query->whereMonth('created_at', $this->selectedMonth);
         }
 
-        // Filter by year
         if (!empty($this->selectedYear)) {
             $query->whereYear('created_at', $this->selectedYear);
         }
-        if(!empty($this->withUnmetNeed)){
-            $query->where('wra_with_MFP_unmet_need',$this->withUnmetNeed);
+
+        if (!empty($this->withUnmetNeed)) {
+            $query->where('wra_with_MFP_unmet_need', $this->withUnmetNeed);
         }
 
         if (Auth::user()->role == 'staff') {
             $query->where('health_worker_id', Auth::id());
         }
 
-        // Apply sorting
         $query->orderBy($this->sortField, $this->sortDirection);
 
-        // Paginate
-        $wra_masterList = $query
-        ->latest()
-        ->paginate($this->entries);
+        $wra_masterList = $query->latest()->paginate($this->entries);
 
-        // Get barangay list for dropdown
         $brgyList = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
 
-        // Get available years from data
         $availableYears = wra_masterlists::selectRaw('YEAR(created_at) as year')
             ->where('status', '!=', 'Archived')
             ->distinct()
@@ -173,7 +158,9 @@ class WRA extends Component
             'availableYears' => $availableYears,
         ]);
     }
-    public function exportPdf(){
+
+    public function exportPdf()
+    {
         $params = [
             'search' => $this->search,
             'selectedBrgy' => $this->selectedBrgy,
@@ -186,10 +173,7 @@ class WRA extends Component
             'withUnmetNeed' => $this->withUnmetNeed
         ];
 
-        // Generate URL with query parameters
         $url = route('wra-masterlist.pdf', $params);
-
-        // Redirect to PDF generation route
         return redirect($url);
     }
 }

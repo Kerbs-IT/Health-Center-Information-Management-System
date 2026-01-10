@@ -82,12 +82,12 @@ document.addEventListener("click", async (e) => {
 
     const result = await Swal.fire({
         title: "Are you sure?",
-        text: "Are you sure to delete the notification?",
+        text: "Are you sure to move the notification to archived status?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it",
+        confirmButtonText: "Yes, archived it",
         cancelButtonText: "Cancel",
         reverseButtons: true,
     });

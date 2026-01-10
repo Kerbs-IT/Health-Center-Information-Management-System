@@ -51,30 +51,34 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="{{optional($seniorCitizenRecord -> patient)->first_name??''}}">
-
                                             <small class="text-danger error-text" id="first_name_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{optional($seniorCitizenRecord -> patient)->middle_initial??''}}">
-
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
-
-
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{optional($seniorCitizenRecord -> patient)->last_name??''}}">
-
                                             <small class="text-danger error-text" id="last_name_error"></small>
-
+                                        </div>
+                                        <div class="input-field flex-fill xl:w-[50%]">
+                                            <select name="suffix" id="suffix" class="form-select py-2 ">
+                                                <option value="" disabled {{ !optional($seniorCitizenRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
+                                                <option value="Jr." {{ optional($seniorCitizenRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
+                                                <option value="Sr." {{ optional($seniorCitizenRecord)->patient?->suffix== 'Sr.' ? 'selected' : '' }}>Sr</option>
+                                                <option value="II." {{ optional($seniorCitizenRecord)->patient?->suffix== 'II.' ? 'selected' : '' }}>II</option>
+                                                <option value="III." {{ optional($seniorCitizenRecord)->patient?->suffix== 'III.' ? 'selected' : '' }}>III</option>
+                                                <option value="IV." {{ optional($seniorCitizenRecord)->patient?->suffix== 'IV.' ? 'selected' : '' }}>IV</option>
+                                                <option value="V." {{ optional($seniorCitizenRecord)->patient?->suffix== 'V.' ? 'selected' : '' }}>V</option>
+                                            </select>
+                                            <small class="text-danger" id="suffix_error"></small>
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="birthdate">Date of Birth</label>
-                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($seniorCitizenRecord -> patient)->date_of_birth?->format('Y-m-d')??''}}">
+                                            <label for="birthdate">Date of Birth*</label>
+                                            <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" min="1950-01-01" max="{{date('Y-m-d',strtotime('-60 years'))}}" name="date_of_birth" value="{{optional($seniorCitizenRecord -> patient)->date_of_birth?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
 
@@ -91,8 +95,8 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age</label>
-                                            <input type="number" id="age" placeholder="20" class="form-control" name="age" value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
-
+                                            <input type="number" id="age" placeholder="20" class="form-control" disabled value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
+                                            <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -130,7 +134,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-full md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($seniorCitizenRecord -> patient)->date_of_registration?-> format('Y-m-d')??''}}">
+                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" min="1950-01-01" max="{{date('Y-m-d')}}" value="{{optional($seniorCitizenRecord -> patient)->date_of_registration?-> format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
@@ -214,17 +218,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row flex-xl-nowrap flex-wrap flex-md-row flex-column">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 120/80" name="blood_pressure" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->blood_pressure??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->blood_pressure??''}}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature:</label>
-                                                <input type="number" class="form-control w-100" placeholder="00 C" name="temperature" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->temperature??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder=" 60-100" name="pulse_rate" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->pulse_rate??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the  pulse rate" name="pulse_rate" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->pulse_rate??''}}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -233,17 +237,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-xl-nowrap flex-wrap flex-md-row flex-column">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="ex. 25" name="respiratory_rate" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->respiratory_rate??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->respiratory_rate??''}}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="00.00" name="height" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->height??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->height??''}}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="number" class="form-control w-100" placeholder=" 00.00" name="weight" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->weight??''}}">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the  weight" name="weight" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->weight??''}}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

@@ -2,7 +2,7 @@
     <div class="assessment border-bottom">
         <div class="input-field">
             <label for="edit_side_b_date_of_visit" class="w-100 fs-5">Date of Visit:</label>
-            <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_visit" id="edit_date_of_visit">
+            <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_visit" id="edit_date_of_visit" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="edit_side_b_medical_record_case_id" id="edit_side_b_medical_record_case_id">
             <input type="hidden" name="edit_side_b_health_worker_id" id="edit_side_b_health_worker_id">
         </div>
@@ -55,8 +55,8 @@
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
-            <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit:</label>
-            <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_follow_up_visit" id="edit_date_of_follow_up_visit">
+            <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit*</label>
+            <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_follow_up_visit" id="edit_date_of_follow_up_visit" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
     <!-- follow up questions -->

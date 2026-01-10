@@ -41,7 +41,9 @@ class family_planning_case_records extends Model
         'date_of_acknowledgement_consent',
         'type_of_record',
         'status',
-        'current_user_type'
+        'current_user_type',
+        'client_suffix',
+        'spouse_suffix',
     ];
 
     public function medical_record_case()

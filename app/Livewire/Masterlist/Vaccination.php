@@ -28,42 +28,81 @@ class Vaccination extends Component
     public $filterYear = '';
     public $selectedRange = '0-59 Months';
 
+    // ADDED: Force component re-render on filter changes
+    public $refreshKey = 0;
+
     protected $queryString = [
         'entries' => ['except' => 10],
         'search' => ['except' => ''],
-        'ageRange' => ['except' => ''],
+        'ageRange' => ['except' => '0-4'],
         'selectedBrgy' => ['except' => ''],
         'filterMonth' => ['except' => ''],
         'filterYear' => ['except' => '']
     ];
 
     protected $listeners = ['vaccinationMasterlistRefreshTable' => '$refresh'];
-    // for wra masterlist
-       
 
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
     }
 
-    public function updatingAgeRange()
+    public function updatedAgeRange()
     {
+        $this->updateSelectedRange();
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
     }
 
-    public function updatingSelectedBrgy()
+    public function updatedSelectedBrgy()
     {
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
     }
 
-    public function updatingFilterMonth()
+    public function updatedFilterMonth()
     {
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
     }
 
-    public function updatingFilterYear()
+    public function updatedFilterYear()
     {
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
+    }
+
+    public function updatedEntries()
+    {
+        $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
+    }
+
+    public function mount()
+    {
+        $this->updateSelectedRange();
+    }
+
+    private function updateSelectedRange()
+    {
+        switch ($this->ageRange) {
+            case '0-4':
+                $this->selectedRange = '0-59 Months';
+                break;
+            case '5-9':
+                $this->selectedRange = '5-9 years old';
+                break;
+            case '10-14':
+                $this->selectedRange = '10-14 years old';
+                break;
+            case '15-49':
+                $this->selectedRange = '15-49 years old';
+                break;
+            default:
+                $this->selectedRange = 'All Ages';
+                break;
+        }
     }
 
     public function resetFilters()
@@ -73,7 +112,9 @@ class Vaccination extends Component
         $this->selectedBrgy = '';
         $this->filterMonth = '';
         $this->filterYear = '';
+        $this->updateSelectedRange();
         $this->resetPage();
+        $this->refreshKey++; // ADDED: Force re-render
     }
 
     public function render()
@@ -99,42 +140,34 @@ class Vaccination extends Component
         if (!empty($this->filterYear)) {
             $query->whereYear('created_at', $this->filterYear);
         }
+
         // if the user is health worker
-        if(Auth::user()-> role == 'staff'){
-            $query->where('health_worker_id',Auth::id());
+        if (Auth::user()->role == 'staff') {
+            $query->where('health_worker_id', Auth::id());
         }
+
         // Age range filter
         if (!empty($this->ageRange)) {
-
-
             switch ($this->ageRange) {
-                case '0-4': // 0-59 months (0-4 years)
+                case '0-4':
                     $query->whereBetween('age', [0, 4]);
-                    $this->selectedRange = '0-59 Months';
                     break;
-
-                case '5-9': // 5-9 years old
+                case '5-9':
                     $query->whereBetween('age', [5, 9]);
-                    $this->selectedRange= '5-9 years old';
                     break;
-
-                case '10-14': // 10-14 years old
+                case '10-14':
                     $query->whereBetween('age', [10, 14]);
-                    $this->selectedRange= '10-14 years old';
                     break;
-
-                case '15-49': // 15-49 years old
+                case '15-49':
                     $query->whereBetween('age', [15, 49]);
-                    $this->selectedRange = '15-49 years old';
                     break;
             }
         }
+
         $vaccination_masterlist = $query->orderBy('name_of_child', 'ASC')
             ->paginate($this->entries);
 
-        $brgys = brgy_unit::orderBy('brgy_unit','ASC')->get();
-
-        // Generate year options (last 10 years)
+        $brgys = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
         $years = range(date('Y'), date('Y') - 10);
 
         return view('livewire.masterlist.vaccination', [
@@ -144,10 +177,11 @@ class Vaccination extends Component
             'vaccinationMasterlist' => $vaccination_masterlist,
             'brgys' => $brgys,
             'years' => $years,
-            'selectedRange' => $this->selectedRange
         ]);
     }
-    public function exportPdf(){
+
+    public function exportPdf()
+    {
         $params = [
             'search' => $this->search,
             'selectedBrgy' => $this->selectedBrgy,
@@ -157,13 +191,10 @@ class Vaccination extends Component
             'selectedRange' => $this->selectedRange,
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'entries'=> $this->entries
+            'entries' => $this->entries
         ];
 
-        // Generate URL with query parameters
         $url = route('vaccination-masterlist.pdf', $params);
-
-        // Redirect to PDF generation route
         return redirect($url);
     }
 }

@@ -11,7 +11,7 @@ function confirmArchive(patientId) {
             confirmButtonText: 'Yes, archive it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                @this.archivePatient(patientId);
+                this.archivePatient(patientId);
             }
         });
     }
@@ -27,7 +27,7 @@ function confirmArchive(patientId) {
             confirmButtonText: 'Yes, activate it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                @this.activatePatient(patientId);
+                this.activatePatient(patientId);
             }
         });
     }

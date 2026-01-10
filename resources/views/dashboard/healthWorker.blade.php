@@ -37,17 +37,7 @@
                             <button type="button" class="btn btn-success text-nowrap" id="add-health-worker-modal" data-bs-toggle="modal" data-bs-target="#addModal">
                                 Add Health Worker
                             </button>
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#pendingAccounts" class="btn btn-success position-relative text-nowrap">
-                                Pending Requests
-                                @if($pendingAccountsCount !=0)
 
-                                <span class="position-absolute top-start-100 translate-middle badge rounded-pill bg-danger" style="z-index: 1050;">
-                                    {{ $pendingAccountsCount }}
-
-                                    <span class="visually-hidden">unread messages</span>
-                                </span>
-                                @endif
-                            </button>
                         </div>
 
                     </div>
@@ -152,6 +142,18 @@
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                     <small class="text-danger" id="lname-error"></small>
                                 </div>
+                                <div class="input-field flex-fill">
+                                    <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
+                                        <option value="" disabled selected>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="edit-suffix-error"></small>
+                                </div>
                             </div>
                             <!-- age -->
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-xl-nowrap flex-md-row flex-column">
@@ -162,7 +164,7 @@
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="birthdate">Date of Birth</label>
-                                    <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                    <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                                     <small class="text-danger" id="birthdate-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
@@ -219,16 +221,7 @@
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                     <small class="text-danger" id="email-error"></small>
                                 </div>
-                                <!-- password -->
-                                <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="password" class="">Password</label>
-                                    <div class="flex">
-                                        <input type="password" id="password" class="form-control" name="password">
-                                        <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg cursor-pointer" id="edit-eye-icon"></i>
-                                    </div>
-                                    <small class="text-muted">Leave blank if you don't want to change it.</small>
-                                    <small class="text-danger"></small>
-                                </div>
+
                             </div>
                             <div class="mb-3 w-100 staff-fields " id="staff-fields">
                                 <div class="mb-3 w-100 d-block gap-2">
@@ -251,7 +244,7 @@
                                     <small class="text-danger" id="street-error"></small>
                                     <div class="postal xl:w-[50%] flex-fill">
                                         <label for="postal">Postal Code</label>
-                                        <input type="number" placeholder="0123" name="postal_code" id="postal_code" class="form-control" value="">
+                                        <input type="number" placeholder="Enter postal code" name="postal_code" id="postal_code" class="form-control" value="">
                                         <small class="text-danger" id="postal-error"></small>
                                     </div>
 
@@ -316,86 +309,8 @@
             </div>
         </div>
     </div>
-    <!-- staff -->
-    <div class="modal fade " id="pendingAccounts" tabindex="-1" aria-labelledby="simpleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-xl">
-            <div class="modal-content h-[500px]">
+    <!-- add health worker -->
 
-                <!-- Modal Header -->
-                <div class="modal-header d-flex justify-content-between">
-                    <h5 class="modal-title" id="simpleModalLabel">Pending Health Worker Accounts</h5>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fa-solid fs-5 fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table px-3">
-                            <thead class="table-header text-nowrap">
-                                <th>No</th>
-                                <th>Name</th>
-                                <th class="text-center">Contact Info</th>
-                                <th class="text-center">Designated Area</th>
-                                <th class="text-center">Action</th>
-                            </thead>
-                            <tbody>
-                                <?php $count = 1; ?>
-                                @foreach($pendingAccounts as $account)
-                                <tr class="align-middle">
-
-                                    <td>{{$count}}</td>
-                                    <td>
-                                        <?php $image = $account->staff->profile_image; ?>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <img src="{{asset($image)}}" alt="health worker img" class="health-worker-img">
-                                            <h5>{{$account-> staff -> full_name}}</h5>
-                                        </div>
-                                    </td>
-                                    <td class="h-100">
-                                        <div class="d-flex align-items-center h-100 justify-content-center">
-                                            <p class=" d-block mb-0">{{ optional($account) -> contact_number ?? 'none'}}</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center w-100 h-100 justify-content-center">
-                                            <p class="mb-0 "> {{ \App\Models\brgy_unit::find($account->staff->assigned_area_id)?->brgy_unit ?? 'Unknown' }} </p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <a href="#" class="remove-icon-con d-flex align-items-center justify-content-center status-btn" data-id='{{ $account -> id}}' data-decision="reject">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="action-icon remove-icon" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" fill="red" />
-                                                </svg>
-
-                                            </a>
-                                            <a href="#" class="edit-icon-con d-flex align-items-center justify-content-center  status-btn" data-id='{{ $account -> id}}' data-decision="accept">
-
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="action-icon " viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                                                    <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" fill="#53c082" />
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php $count++; ?>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save</button>
-                </div> -->
-
-            </div>
-        </div>
-    </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -416,7 +331,7 @@
                         <div class="mb-2 w-100">
                             <label for="username" class="mb-1 responsive-label">Username:</label>
                             <input type="text" placeholder="Enter your username" name="username" class="py-2 px-2 w-100 responsive-input rounded  form-control" autocomplete="off" value="{{old('username')}}">
-                            <small class="text-danger" id="add-username-error"></small>
+                            <small class="text-danger add-healthworker-error" id="username_error"></small>
                         </div>
                         <!-- full name -->
                         <div class="mb-2 w-100">
@@ -425,16 +340,40 @@
                                 <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
                                 <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
                                 <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
+                                <div class="input-field flex-fill">
+                                    <select name="add_suffix" id="add_suffix" class="form-select responsive-input py-2">
+                                        <option value="" disabled selected>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="add_suffix_error"></small>
+                                </div>
                             </div>
-                            <small class="text-danger fname-error"></small>
-                            <small class="text-danger middle-initial-error"></small>
-                            <small class="text-danger lname-error"></small>
+                            <small class="text-danger add-healthworker-error" id="first_name_error"></small>
+                            <small class="text-danger middle-initial-error add-healthworker-error" id="middle_initial_error"></small>
+                            <small class="text-danger lname-error add-healthworker-error" id="last_name_error"></small>
                         </div>
                         <!-- email -->
                         <div class="mb-2 w-100">
                             <label for="email" class="mb-1 responsive-label">Email:</label>
                             <input type="email" placeholder="Enter your email" name="email" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('email')}}">
-                            <small class="text-danger email-error"></small>
+                            <small class="text-danger email-error add-healthworker-error" id="email_error"></small>
+                        </div>
+                        <!-- date of birth -->
+                        <div class="mb-2 w-100">
+                            <label for="add_date_of_birth" class="mb-1 responsive-label">Date of Birth:</label>
+                            <input type="date" placeholder="Enter your date_of_birth" id="add_date_of_birth" name="add_date_of_birth" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
+                            <small class="text-danger add_date_of_birth-error add-healthworker-error" id="add_date_of_birth_error"></small>
+                        </div>
+                        <!-- contact number -->
+                        <div class="mb-2 w-100">
+                            <label for="add_contact_number" class="mb-1 responsive-label">Contact Number</label>
+                            <input type="text" placeholder="Enter your contact_number" id="add_contact_number" name="add_contact_number" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('contact_number')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
+                            <small class="text-danger add_contact_number-error add-healthworker-error" id="add_contact_number_error"></small>
                         </div>
                         <!-- Password -->
                         <div class="mb-3 w-100">
@@ -443,7 +382,7 @@
                                 <input type="password" placeholder="Enter your password" name="password" class="py-2 px-2 w-100 fs-5 bg-light" id="add_password" autocomplete="off" value="{{old('password')}}">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg" id="eye-icon"></i>
                             </div>
-                            <small class="text-danger password-error"></small>
+                            <small class="text-danger password-error add-healthworker-error" id="password_error"></small>
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3 w-100">
@@ -452,7 +391,7 @@
                                 <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="add_re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg" id="Retype-eye-icon"></i>
                             </div>
-                            <small class="text-danger" class="password-confirmation-error"></small>
+                            <small class="text-danger add-healthworker-error" class="password-confirmation-error" id="password-confirmation-error"></small>
                         </div>
                         <input type="hidden" name="role" value="staff">
                         <!-- STAFF -->
@@ -463,25 +402,11 @@
                                     <select name="assigned_area" id="assigned_area" class="border py-2 px-3 form-select w-100" data-occupied-areas='@json($occupied_assigned_areas)'>
                                         <option value="">Select an Area</option>
                                     </select>
-                                    <small class="text-danger assigned-area-error"></small>
+                                    <small class="text-danger assigned-area-error add-healthworker-error" id="assigned_area_error"></small>
                                 </div>
                             </div>
                         </div>
                         <!-- RECOVERY QUESTION -->
-                        <div class="mb-3 w-100">
-                            <div class="input-group w-100">
-                                <label for="recovery_question" class="fs-4 fw-bold w-100">Recovery Question:</label>
-                                <select name="recovery_question" id="recovery_question" class="form-select w-100 mb-2" required>
-                                    <option value="">Select a question</option>
-                                    <option value="1">What is your nickname? </option>
-                                    <option value="2">What is the ame of your mother?</option>
-                                    <option value="3">What is the name of your pet? </option>
-                                </select>
-                                <small class="text-danger recovery-question-error"></small>
-                                <input type="text" name="recovery_answer" placeholder="Enter your answer" class="form-control w-100" required>
-                                <small class="text-danger recovery-answer-error"></small>
-                            </div>
-                        </div>
 
 
                         <div class="mb-3 w-95">
@@ -523,7 +448,6 @@
             const retypeInput = document.getElementById("add_re-type-pass");
             const eyeIcon = document.getElementById("eye-icon");
             const retypeEyeIcon = document.getElementById("Retype-eye-icon");
-            const editEyeIcon = document.getElementById('edit-eye-icon');
             const passwordEditInput = document.getElementById('password');
 
             function togglePassword(input, icon) {
@@ -546,9 +470,7 @@
                 togglePassword(retypeInput, retypeEyeIcon);
             });
 
-            editEyeIcon.addEventListener('click', function() {
-                togglePassword(passwordEditInput, editEyeIcon);
-            });
+
         });
     </script>
 </body>

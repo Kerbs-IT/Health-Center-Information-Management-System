@@ -41,17 +41,22 @@ class TbDotsController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
             ]);
 
             // validate for medical
             $patientMedicalRecord = $request->validate([
                 'philhealth_id' => 'sometimes|nullable|string',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
             ]);
 
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
@@ -59,7 +64,8 @@ class TbDotsController extends Controller
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
-                strtolower($patientData['last_name'])
+                strtolower($patientData['last_name']),
+                $patientData['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -79,6 +85,7 @@ class TbDotsController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                'suffix' => $patientData['suffix']??'',
             ]);
 
             // use the id of the created patient for medical case record
@@ -218,13 +225,18 @@ class TbDotsController extends Controller
                 'handled_by' => 'required',
                 'street' => 'required',
                 'brgy' => 'required',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
-                'philheath_id' => 'sometimes|nullable|string'
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'philheath_id' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string'
 
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -232,7 +244,8 @@ class TbDotsController extends Controller
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
-                strtolower($data['last_name'])
+                strtolower($data['last_name']),
+                $data['suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -251,6 +264,7 @@ class TbDotsController extends Controller
                 'nationality' => $data['nationality'] ?? $tbDotsRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $tbDotsRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $tbDotsRecord->patient->place_of_birth,
+                'suffix' => $data['suffix']??''
                 
             ]);
             // update the address
@@ -380,12 +394,16 @@ class TbDotsController extends Controller
             $data = $request->validate([
                 'patient_name' => 'required|string',
                 'date_of_visit' =>'required|date',
-                'blood_pressure' => 'sometimes|nullable|numeric',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'weight'            => 'nullable|numeric|between:1,300',  // kg range
                 'adherence_of_treatment' => 'required|string',
                 'side_effect' => 'sometimes|nullable|string',
                 'progress_note' => 'sometimes|nullable|string',
@@ -448,12 +466,16 @@ class TbDotsController extends Controller
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
             $data = $request->validate([
                 'edit_checkup_date_of_visit' => 'required|date',
-                'edit_checkup_blood_pressure' => 'sometimes|nullable|numeric',
+                'edit_checkup_blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
                 'edit_checkup_temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'edit_checkup_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'edit_checkup_respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'edit_checkup_height'            => 'nullable|numeric|between:30,300', // cm range
-                'edit_checkup_weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'edit_checkup_weight'            => 'nullable|numeric|between:1,300',  // kg range
                 'edit_checkup_adherence_of_treatment' => 'required|string',
                 'edit_checkup_side_effect' => 'sometimes|nullable|string',
                 'edit_checkup_progress_note' => 'sometimes|nullable|string',

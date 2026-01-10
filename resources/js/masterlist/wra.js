@@ -1,4 +1,5 @@
 import { puroks } from "../patient/healthWorkerList.js";
+import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
 
 const plan_to_have_more_children_yes = document.getElementById("plan_yes");
@@ -125,14 +126,23 @@ document.addEventListener("click", async (e) => {
                         break;
 
                     case "date_of_birth":
-                        const formatted = new Date(value)
-                            .toISOString()
-                            .split("T")[0];
+
+                        const date_of_birth = value ?? '';
                         // console.log("Formatted: ", formatted);
 
                         document.querySelector(`input[name="${key}"]`).value =
-                            formatted;
+                            date_of_birth;
 
+                        break;
+                    case 'age':
+                        if (key == 'age' && value != null) {
+                            const age = document.getElementById("age");
+                            const hiddenAge = document.getElementById("hiddenAge");
+                            if (age && hiddenAge) {
+                                age.value = value;
+                                hiddenAge.value = value;
+                            }
+                        }
                         break;
 
                     case "sex":
@@ -213,14 +223,14 @@ document.addEventListener("click", async (e) => {
                             checkboxLabel,
                             true
                         );
-                        const methods = value.split(",");
+                        const methods = value ? value.split(",") : [];
                         methodCheckBoxes.forEach((box) => {
                             box.checked = methods.includes(box.value);
                         });
                         break;
 
                     case "selected_modern_FP_method":
-                        const modernSelected = value.split(",");
+                        const modernSelected = value ? value.split(",") : [];
                         modernFPmethods.forEach((box) => {
                             box.checked = modernSelected.includes(box.value);
                         });
@@ -352,6 +362,14 @@ wra_update_btn.addEventListener("click", async (e) => {
         });
     }
 });
+
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

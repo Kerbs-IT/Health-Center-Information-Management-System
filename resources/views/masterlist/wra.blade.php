@@ -29,7 +29,7 @@
             <div class="d-flex flex-column flex-grow-1 p-3 overflow-y-auto">
                 <!-- LIVEWIRE HERE -->
                 <livewire:masterlist.w-r-a>
-                <!-- LIVEWIRE END HERE -->
+                    <!-- LIVEWIRE END HERE -->
             </div>
         </div>
         <!-- edit modal -->
@@ -55,6 +55,18 @@
                                     <input type="text" name="wra_masterlist_fname" id="wra_masterlist_fname" placeholder="Enter First Name" class="form-control border">
                                     <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
                                     <input type="text" name="wra_masterlist_lname" id="wra_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
+                                    <div class="input-form flex-fill lg:w-[50%]">
+                                        <select name="wra_masterlist_suffix" id="wra_masterlist_suffix" class="form-control  border flex-fill py-2">
+                                            <option value="" disabled selected>Select Suffix</option>
+                                            <option value="Jr.">Jr</option>
+                                            <option value="Sr.">Sr</option>
+                                            <option value="II.">II</option>
+                                            <option value="III.">III</option>
+                                            <option value="IV.">IV</option>
+                                            <option value="V.">V</option>
+                                        </select>
+                                        <small class="text-danger" id="wra_masterlist_suffix_error"></small>
+                                    </div>
                                 </div>
 
                             </div>
@@ -82,16 +94,16 @@
                                 </div>
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
-
-                                <div class="input-field flex-grow-1 ">
-                                    <label for="age">Age</label>
-                                    <input type="number" id="age" placeholder="20" class="form-control" name="age" value="">
-                                    <small class="text-danger error-text" id="age_error"></small>
-                                </div>
                                 <div class="input-field flex-grow-1 ">
                                     <label for="birthdate">Date of Birth</label>
-                                    <input type="date" id="birthdate" placeholder="" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="" class="form-control w-100 px-5" name="date_of_birth" value="">
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
+                                </div>
+                                <div class="input-field flex-grow-1 ">
+                                    <label for="age">Age</label>
+                                    <input type="number" id="age" placeholder="Enter the age" class="form-control" disabled value="">
+                                    <input type="hidden" id="hiddenAge" name="age">
+                                    <small class="text-danger error-text" id="age_error"></small>
                                 </div>
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 flex-wrap flex-lg-nowrap">
@@ -256,7 +268,7 @@
                                 </div>
                                 <!-- if the wra accept any modern method -->
                                 <label for="date_when_FP_method_accepted" class="w-100 fw-bold">Date when FP method accepted:</label>
-                                <input type="date" name="date_when_FP_method_accepted" class="form-control w-100 bg-light modern-FP-inputs" id="date_when_FP_method_accepted">
+                                <input type="date" name="date_when_FP_method_accepted" class="form-control w-100 bg-light modern-FP-inputs" id="date_when_FP_method_accepted" min="1950-01-01" max="{{date('Y-m-d')}}">
                                 <label for="" class="w-100 ">Moden FP methods:</label>
                                 <div class="methods row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 ps-4">
 

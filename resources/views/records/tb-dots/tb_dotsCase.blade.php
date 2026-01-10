@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <!-- main content -->
-                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-2 shadow-lg min-h-[75vh]">
+                    <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-2  min-h-[75vh]">
                         <!-- livewire here -->
                         <livewire:tb-dots.patient-case-table :medicalRecordCaseId="$medicalRecordId">
                             <!-- livewire end here -->

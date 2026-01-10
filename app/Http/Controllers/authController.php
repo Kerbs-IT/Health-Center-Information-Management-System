@@ -164,7 +164,8 @@ class authController extends Controller
             'brgy' => 'sometimes|nullable|numeric',
             'postal_code' => 'sometimes|nullable|numeric',
             'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048']
+            'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'suffix' => 'sometimes|nullable|string'
         ]);
 
         if (!empty($data['password'])) {
@@ -249,6 +250,7 @@ class authController extends Controller
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality' => $data['nationality'] ?? null,
+                    'suffix' => $data['suffix']??''
                 ]);
 
 
@@ -265,6 +267,7 @@ class authController extends Controller
                     'civil_status' => $data['civil_status'] ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality' => $data['nationality'] ?? null,
+                    'suffix' => $data['suffix']??''
                 ]);
         }
 
@@ -354,8 +357,6 @@ class authController extends Controller
             'first_name' => 'required',
             'middle_initial' => ['required', 'string'],
             'last_name' => ['required'],
-            'recovery_question' => ['required'],
-            'recovery_answer' => ['required'],
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|digits_between:7,12',
             'blk_n_street' => 'required',
@@ -365,9 +366,6 @@ class authController extends Controller
             'assigned_area' => 'required_if:role,staff',
         ]);
 
-        // Hash sensitive data
-        $data['recovery_answer'] = Hash::make($data['recovery_answer']);
-        $data['password'] = Hash::make($data['password']);
 
         // Build full address
         $fullAddress = implode(' ', array_filter([
@@ -391,8 +389,6 @@ class authController extends Controller
             'role' => $data['role'],
             'status' => 'Active', // Immediately active
             'password' => $data['password'],
-            'recovery_question' => $data['recovery_question'],
-            'recovery_answer' => $data['recovery_answer'],
             'is_verified' => true, // Auto-verified
             'email_verified_at' => now(),
         ]);
@@ -497,7 +493,13 @@ class authController extends Controller
         try{
 
             $user = User::findOrFail($id);
-            $address = users_address::where('user_id',$user->id)->first();
+            $connectedToPatient = $user->patient;
+            if(!$connectedToPatient){
+                $address = users_address::where('user_id', $user->id)->first();
+            }else{
+                $address = patient_addresses::where("patient_id", $connectedToPatient->id)->first();
+            }
+            
 
             return response()->json(['info'=>$user,'address'=>$address]);
 

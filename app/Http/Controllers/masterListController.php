@@ -70,11 +70,12 @@ class masterListController extends Controller
             $data = $request->validate([
                 'vaccination_masterlist_fname' => 'required',
                 'vaccination_masterlist_lname' => 'required',
-                'vaccination_masterlist_MI' => 'sometimes|nullable|max:2',
+                'vaccination_masterlist_MI' => 'sometimes|nullable|string',
+                'vaccination_masterlist_suffix' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
                 'sex' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric|max:50',
+                'age' => 'sometimes|nullable|numeric|max:100',
                 'date_of_birth' => 'sometimes|nullable|date',
                 'SE_status' => 'sometimes|nullable|string',
                 'remarks' => 'sometimes|nullable|string'
@@ -118,15 +119,27 @@ class masterListController extends Controller
                     'patient_name' => trim(($data['vaccination_masterlist_fname'] . " " . $data['vaccination_masterlist_MI'] . "." . $data['vaccination_masterlist_lname']), " ")
                 ]);
             }
+            $middle = substr($data['vaccination_masterlist_MI'] ?? '', 0, 1);
+            $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleInitial = $data['vaccination_masterlist_MI'] ? ucwords($data['vaccination_masterlist_MI']) : '';
+            $parts = [
+                strtolower($data['vaccination_masterlist_fname']),
+                $middle,
+                strtolower($data['vaccination_masterlist_lname']),
+                $data['vaccination_masterlist_suffix'] ?? null,
+            ];
+
+            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             // update the patient name
             $vaccination_masterlist->patient->update([
-                'first_name' => $data['vaccination_masterlist_fname'] ?? $vaccination_masterlist->patient->first_name,
-                'middle_initial' => $data['vaccination_masterlist_MI'] ?? $vaccination_masterlist->patient->middle_initial,
-                'last_name' => $data['vaccination_masterlist_lname'] ?? $vaccination_masterlist->patient->last_name,
-                'full_name'=> trim(($data['vaccination_masterlist_fname'] . " " . $data['vaccination_masterlist_MI'] . "." . $data['vaccination_masterlist_lname']), " "),
+                'first_name' => ucwords(strtolower($data['vaccination_masterlist_fname'] ?? $vaccination_masterlist->patient->first_name)),
+                'middle_initial' => !empty($data['vaccination_masterlist_MI']) ? ucwords(strtolower($data['vaccination_masterlist_MI'])) : null,
+                'last_name' => ucwords(strtolower($data['vaccination_masterlist_lname'] ?? $vaccination_masterlist->patient->last_name)),
+                'full_name'=>  $fullName,
                 'sex' => $data['sex'] ?? $vaccination_masterlist->patient->sex,
                 'age' => $data['age'] ?? $vaccination_masterlist->patient->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $vaccination_masterlist->patient->date_of_birth,
+                'suffix' => $data['vaccination_masterlist_suffix']??''
             ]);
 
             // update the address
@@ -291,7 +304,7 @@ class masterListController extends Controller
             $address->refresh();
             $newAddress = $address->house_number . ", " . $address->street . "," . $address->purok . "," . $address->barangay . "," . $address->city . "," . $address->province;
             $vaccination_masterlist->update([
-                'name_of_child' => trim(($data['vaccination_masterlist_fname'] . " " . $data['vaccination_masterlist_MI'] . " " . $data['vaccination_masterlist_lname']), " "),
+                'name_of_child' => $fullName,
                 'Address' => $newAddress,
                 'sex' => $data['sex'] ?? $vaccination_masterlist->sex,
                 'age' => $data['age'] ?? $vaccination_masterlist->age,

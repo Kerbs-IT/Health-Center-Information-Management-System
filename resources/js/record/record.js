@@ -13,12 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
-                text: "This will permanently remove the user.",
+                text: "This patient record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, archive it!",
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const response = await fetch(
@@ -70,12 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
-                text: "This will permanently remove the user.",
+                text: "This patient record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, archive it!",
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const response = await fetch(
@@ -127,12 +127,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
-                text: "This will permanently remove the user.",
+                text: "This patient record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, archive it!",
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const response = await fetch(
@@ -184,12 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
-                text: "This will permanently remove the user.",
+                text: "This patient record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, archived it!",
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const response = await fetch(
@@ -241,12 +241,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(patientId);
             Swal.fire({
                 title: "Are you sure?",
-                text: "This will permanently remove the user.",
+                text: "This patient record will be moved to archived status.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, archive it!",
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const response = await fetch(

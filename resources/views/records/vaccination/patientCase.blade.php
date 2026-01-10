@@ -28,7 +28,7 @@
         <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
             <div class="flex flex-column flex-grow-1">
-                <main class="flex-column p-2 shadow-lg m-md-3 m-2">
+                <main class="flex-column p-2  m-md-3 m-2">
                     <div class="top-part d-flex justify-content-between px-2 align-items-center">
                         <h2>View Patient Details</h2>
                         <div class="sequence-links d-md-flex d-none justify-content-center align-items-center">
@@ -115,7 +115,7 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
-                                                    <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination">
+                                                    <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger w-100" id="add-date-error"></small>
                                                 </div>
 
@@ -127,17 +127,17 @@
                                                 <div class="mb-2 w-100 d-flex gap-2 flex-md-nowrap">
                                                     <div class="mb-2  w-[100%] md:w-[50%]">
                                                         <label for="add_weight">Weight</label>
-                                                        <input type="number" class="form-control" name="add_weight" id="add_weight" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_weight" id="add_weight" required placeholder="Enter the weight">
                                                         <small class="text-danger error-text" id="add_weight_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="time">Height</label>
-                                                        <input type="number" class="form-control" name="add_height" id="add_height" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_height" id="add_height" required placeholder="Enter the height">
                                                         <small class="text-danger error-text" id="add_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="add_temperature">Temperature</label>
-                                                        <input type="number" class="form-control" name="add_temperature" id="add_temperature" required placeholder="00.0">
+                                                        <input type="text" class="form-control" name="add_temperature" id="add_temperature" required placeholder="Enter the temperature">
                                                         <small class="text-danger error-text" id="add_temperature_error"></small>
                                                     </div>
                                                 </div>
@@ -170,14 +170,14 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="add_date_of_vaccination">Date of Comeback</label>
-                                                        <input type="date" placeholder="20" class="form-control w-100 " name="add_date_of_comeback" required>
+                                                        <label for="add_date_of_comeback">Date of Comeback*</label>
+                                                        <input type="date" placeholder="20" id="add_date_of_comeback" class="form-control w-100 " name="add_date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="add-date-of-comeback-error"></small>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="remarks">Remarks*</label>
+                                                    <label for="remarks">Remarks</label>
                                                     <input type="text" class="form-control" id="remarks" name="add_case_remarks" id="add_case_remarks">
                                                 </div>
                                             </div>
@@ -232,7 +232,7 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination</label>
-                                                    <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination">
+                                                    <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                                 </div>
 
@@ -292,14 +292,14 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="date_of_vaccination">Date of Comeback</label>
-                                                        <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required>
+                                                        <label for="edit-date-of-comeback">Date of Comeback*</label>
+                                                        <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="remarks">Remarks*</label>
+                                                    <label for="remarks">Remarks</label>
                                                     <input type="text" class="form-control" id="edit-remarks" name="remarks">
                                                     <small class="text-danger error-text" id="remarks_error"></small>
                                                 </div>

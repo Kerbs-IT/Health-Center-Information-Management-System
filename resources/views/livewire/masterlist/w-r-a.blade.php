@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="main-content card shadow d-flex flex-column p-3 w-100  ">
-         <!-- Filters Section -->
+        <!-- Filters Section -->
         <div class="mb-3">
             <div class="row g-2">
                 {{-- Show Entries --}}
@@ -121,7 +121,7 @@
                             <h5 class="w-50 ">Name of BHS Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h5>
                             <h5 class="w-50 text-center">Date Prepared: <span class="fw-light text-decoration-underline">06 - 01 - 2025</span></h5>
                         </div> -->
-        <div class="table-con">
+        <div class="table-con" wire:key="table-container-{{ $refreshKey }}">
             <table>
                 <thead class="bg-light">
                     <tr>
@@ -259,7 +259,7 @@
                 </thead>
                 <tbody>
                     @forelse($masterlistRecords as $record)
-                    <tr>
+                    <tr wire:key="wra-{{ $record->id }}-{{ $refreshKey }}">
                         <td>{{$loop->iteration}}</td>
                         <td>{{optional($record)->house_hold_number??''}}</td>
                         <td>{{optional($record)->name_of_wra??''}}</td>
@@ -282,11 +282,13 @@
                         <td>{{optional($record)->selected_modern_FP_method ?? ''}}</td>
                         <td>{{optional($record)->date_when_FP_method_accepted ?? ''}}</td>
                         <td class="">
-                            <button class="btn btn-success wra-masterlist-edit-btn" data-wra-masterlist-id="{{$record->id}}" data-bs-toggle="modal" data-bs-target="#wraMasterListModal">Edit</button>
+                            <button class="text-success fs-2 wra-masterlist-edit-btn" data-wra-masterlist-id="{{$record->id}}" data-bs-toggle="modal" data-bs-target="#wraMasterListModal">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                         </td>
                     </tr>
                     @empty
-                    <tr>
+                    <tr wire:key="empty-state-{{ $refreshKey }}">
                         <td colspan="24" class="text-center ">
                             <i class="fas fa-search mb-2" style="font-size: 3rem; color: #ccc;"></i>
                             <p class="text-muted mb-1">No records found</p>
@@ -298,42 +300,7 @@
                         </td>
                     </tr>
                     @endforelse
-                    {{-- Fill remaining rows to maintain consistent table height --}}
-                    @php
-                    $currentCount = $masterlistRecords->count();
-                    $emptyRowsNeeded = $entries - $currentCount;
-                    @endphp
-
-                    @if($currentCount > 0 && $emptyRowsNeeded > 0)
-                    @for($i = 0; $i < $emptyRowsNeeded; $i++)
-                        <tr>
-                        <td class="need-space">&nbsp;</td>
-                        <td class="need-space">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        </tr>
-                        @endfor
-                        @endif
-
+                    {{-- REMOVED: Empty rows logic that was causing the issue --}}
                 </tbody>
             </table>
 

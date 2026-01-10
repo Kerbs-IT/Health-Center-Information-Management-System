@@ -110,17 +110,29 @@
 
                                 <!-- Name Fields -->
                                 <div class="row g-2 mb-3">
-                                    <div class="col-12 col-md-4">
+                                    <div class="col-12 col-md-3">
                                         <input type="text" id="edit_first_name" placeholder="First Name" class="form-control" name="first_name" value="">
                                         <small class="text-danger" id="fname-error"></small>
                                     </div>
-                                    <div class="col-12 col-md-4">
+                                    <div class="col-12 col-md-3">
                                         <input type="text" id="edit_middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
                                         <small class="text-danger" id="middle-initial-error"></small>
                                     </div>
-                                    <div class="col-12 col-md-4">
+                                    <div class="col-12 col-md-3">
                                         <input type="text" id="edit_last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                         <small class="text-danger" id="lname-error"></small>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
+                                            <option value="" selected>Select Suffix</option>
+                                            <option value="Jr.">Jr</option>
+                                            <option value="Sr.">Sr</option>
+                                            <option value="II.">II</option>
+                                            <option value="III.">III</option>
+                                            <option value="IV.">IV</option>
+                                            <option value="V.">V</option>
+                                        </select>
+                                        <small class="text-danger" id="edit-suffix-error"></small>
                                     </div>
                                 </div>
 
@@ -128,7 +140,7 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-12 col-md-12">
                                         <label for="birthdate" class="form-label">Date of Birth</label>
-                                        <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="">
+                                        <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="" max="{{date('Y-m-d')}}">
                                         <small class="text-danger" id="birthdate-error"></small>
                                     </div>
 
@@ -191,7 +203,7 @@
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end gap-2 mt-4">
                                     <button type="button" class="btn btn-secondary px-4" id="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn" >Save</button>
+                                    <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn">Save</button>
                                 </div>
                             </div>
                         </div>
@@ -227,6 +239,18 @@
                                 <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
                                 <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
                                 <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
+                                <div class="col-12 col-md-3">
+                                    <select name="add_suffix" id="add_suffix" class="form-select responsive-input py-2">
+                                        <option value="" selected>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="add-suffix-error"></small>
+                                </div>
                             </div>
                             <small class="text-danger fname-error"></small>
                             <small class="text-danger middle-initial-error"></small>
@@ -323,6 +347,12 @@
 
                     </form>
                 </div>
+                @if(session('debug'))
+                <div class="alert alert-info">
+                    <strong>Debug:</strong>
+                    <pre>{{ json_encode(session('debug'), JSON_PRETTY_PRINT) }}</pre>
+                </div>
+                @endif
 
                 <!-- Modal Footer -->
                 <!-- <div class="modal-footer">

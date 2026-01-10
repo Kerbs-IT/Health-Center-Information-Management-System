@@ -26,7 +26,7 @@
                 <table class="table table-bordered table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <!-- <th>ID</th> -->
                             <th>Name</th>
                             <th>sex</th>
                             <th>Contact Number</th>
@@ -37,7 +37,7 @@
                     <tbody>
                         @forelse($patients as $patient)
                         <tr>
-                            <td>{{ $patient->id }}</td>
+                            <!-- <td>{{ $patient->id }}</td> -->
                             <td>{{ $patient->first_name }} {{ $patient->last_name }}</td>
                             <td>{{ $patient->sex }}</td>
                             <td>{{ $patient->contact_number }}</td>
