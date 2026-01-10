@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Medicine extends Model
 {
-    use HasFactory;
-    protected $primaryKey ='medicine_id';
+    use SoftDeletes;
+
+    protected $primaryKey = 'medicine_id';
+
     protected $fillable = [
         'medicine_name',
         'category_id',
@@ -21,15 +22,19 @@ class Medicine extends Model
         'min_age_months',
         'max_age_months'
     ];
-    public function category(){
+
+    protected $dates = ['deleted_at', 'expiry_date'];
+
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'category_id', 'category_id');
     }
 
-    public function scopeSearch($query, $value){
-        $query->where('medicine_id', 'like', "%{$value}%")->orWhere('medicine_name', 'like', "%{$value}%")->orWhere('dosage', 'like', "%{$value}%")
-        ->orWhere('stock', 'like',"%{$value}%")->orWhere('expiry_date', 'like', "%{$value}%")
-        ->orWhereHas('category', function($cat) use ($value){
-            $cat->where('category_name', 'like', "%{$value}%");
-        });
+    public function scopeSearch($query, $value)
+    {
+        return $query->where('medicine_name', 'like', "%{$value}%")
+            ->orWhereHas('category', function ($q) use ($value) {
+                $q->where('category_name', 'like', "%{$value}%");
+            });
     }
 }
