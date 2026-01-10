@@ -47,6 +47,10 @@
                         <option value="adult">Adult (18+ years)</option>
                     </select>
                 </div>
+                <button class="btn btn-secondary" wire:click="toggleArchived">
+                    <i class="fa-solid fa-{{ $showArchived ? 'list' : 'archive' }} pe-1"></i>
+                    {{ $showArchived ? 'Show Active' : 'Show Archived' }}
+                </button>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMedicineModal"><i class="fa-solid fa-plus pe-1"></i>Add Medicine</button>
             </div>
             @php
@@ -166,8 +170,18 @@
                             <!-- <td>{{ $medicine->created_at->format('M d, Y') }}</td> -->
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn bg-primary text-white" wire:click="editMedicineData({{ $medicine->medicine_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
-                                    <button class="btn p-0" wire:click="confirmMedicineDelete({{ $medicine->medicine_id }})"><i class="fa-solid fa-trash text-danger fs-3"></i></button>
+                                    @if($showArchived)
+                                        <button class="btn btn-info text-white" wire:click="restoreMedicine({{ $medicine->medicine_id }})">
+                                            <i class="fa-solid fa-rotate-left me-1"></i>Restore
+                                        </button>
+                                    @else
+                                        <button class="btn bg-primary text-white" wire:click="editMedicineData({{ $medicine->medicine_id }})">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                                        </button>
+                                        <button class="btn p-0" wire:click="confirmMedicineArchive({{ $medicine->medicine_id }})">
+                                             <i class="fa-solid fa-trash text-danger fs-3"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

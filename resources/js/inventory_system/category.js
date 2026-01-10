@@ -1,5 +1,3 @@
-
-
 // sweetalert
 window.addEventListener('category-added', event => {
     Swal.fire({
@@ -7,17 +5,12 @@ window.addEventListener('category-added', event => {
         text: "Category has been added successfully.",
         icon: "success",
         showConfirmButton: false,
-        timer:1500
+        timer: 1500
     });
-    // .then(() => {
-    //     var myModalEl = document.querySelector('#addCategoryModal');
-    //     var modal = bootstrap.Modal.getInstance(myModalEl);
-    //     modal.hide();
-    // });
 });
-// Edit
-document.addEventListener('DOMContentLoaded', function () {
 
+// Edit Modal Handlers
+document.addEventListener('DOMContentLoaded', function () {
     // Show Edit Modal
     window.addEventListener('show-edit-category-modal', event => {
         let modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
@@ -26,15 +19,113 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Hide Edit Modal
     window.addEventListener('hide-edit-category-modal', event => {
-
         let modalEl = document.getElementById('editCategoryModal');
         let modal = bootstrap.Modal.getInstance(modalEl);
         modal.hide();
     });
-
-
 });
 
+// Archive Confirmation Dialog
+window.addEventListener('show-archive-confirmation', () => {
+    Swal.fire({
+        title: "Archive this category?",
+        text: "You can restore it later from the archived items.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#f39c12",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, archive it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Call Livewire method to archive
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).archiveCategory();
+        }
+    });
+});
+
+// Archive Success
+window.addEventListener('archive-success', () => {
+    Swal.fire({
+        title: "Archived!",
+        text: "Category has been archived successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+// Restore Success
+window.addEventListener('restore-success', () => {
+    Swal.fire({
+        title: "Restored!",
+        text: "Category has been restored successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+// Category Updated
+window.addEventListener('category-updated', () => {
+    Swal.fire({
+        title: "Updated!",
+        text: "Category has been updated successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+// Medicine/Vaccine Modals (keep your existing code)
+// Medicine Archive Confirmation
+window.addEventListener('show-medicine-archive-confirmation', () => {
+    Swal.fire({
+        title: "Archive this medicine?",
+        text: "You can restore it later from the archived items.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#f00606",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, archive it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).archiveMedicine();
+        }
+    });
+});
+
+// Medicine Archive Success
+window.addEventListener('medicine-archive-success', () => {
+    Swal.fire({
+        title: "Archived!",
+        text: "Medicine has been archived successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+// Medicine Restore Success
+window.addEventListener('medicine-restore-success', () => {
+    Swal.fire({
+        title: "Restored!",
+        text: "Medicine has been restored successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+    });
+});
+
+// Medicine Added
+window.addEventListener('medicine-addedModal', () => {
+    Swal.fire({
+        title: "Success!",
+        text: "Medicine has been added successfully.",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500
+    });
+});
 
 document.addEventListener('livewire:init', function () {
     Livewire.on('show-editMedicine-modal', () => {
@@ -45,25 +136,25 @@ document.addEventListener('livewire:init', function () {
     Livewire.on('close-editMedicine-modal', () => {
         setTimeout(() => {
             bootstrap.Modal.getInstance(
-            document.getElementById('editMedicineModal')
-        )?.hide();
+                document.getElementById('editMedicineModal')
+            )?.hide();
         }, 1500);
-            Swal.fire({
+        Swal.fire({
             title: "Success!",
-            text: "Category has been added successfully.",
+            text: "Medicine has been updated successfully.",
             icon: "success",
             showConfirmButton: false,
-            timer:1500
+            timer: 1500
         });
     });
 });
 
-// SHOW EDIT VACCINA MOPAL AND CLOSED
 document.addEventListener('livewire:init', function(){
     Livewire.on('show-editVaccine-modal',() => {
         const modal = new bootstrap.Modal(document.getElementById('EditVaccineModal'));
         modal.show();
     });
+
     Livewire.on('close-editVaccine-modal', () => {
         setTimeout(() => {
             bootstrap.Modal.getInstance(
@@ -71,76 +162,11 @@ document.addEventListener('livewire:init', function(){
             )?.hide();
         }, 1500);
         Swal.fire({
-        title: "Success!",
-        text: "Category has been added successfully.",
-        icon: "success",
-        showConfirmButton: false,
-        timer:1500
-    });
-    });
-
-});
-
-
-// Medicine
-
-// sweetalert
-window.addEventListener('medicine-addedModal', event => {
-    Swal.fire({
-        title: "Success!",
-        text: "Category has been added successfully.",
-        icon: "success",
-        showConfirmButton: false,
-        timer:1500
-    });
-});
-
-
-// show medicine delete modal
-window.addEventListener('show-deleteMedicineModal', () => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This Medicine will be permanently deleted!",
-        // show medicine delete modal
-    });
-});
-
-// Listen to Livewire v3 browser events
-window.addEventListener('show-delete-confirmation', () => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This category will be permanently deleted!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-        if (result.isConfirmed) {
-
-            // 🔥 Correct way to call Livewire method in v3
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).deleteMedicine().deleteCategory();
-
-        }
-    });
-});
-
-// Listen to success event
-window.addEventListener('success-medicine-delete', () => {
-    Swal.fire({
-        title: "Deleted!",
-        text: "Medicine has been deleted.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false
-    })
-});
-window.addEventListener('delete-success', () => {
-    Swal.fire({
-        title: "Deleted!",
-        text: "Category has been deleted.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false
+            title: "Success!",
+            text: "Vaccine has been updated successfully.",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+        });
     });
 });

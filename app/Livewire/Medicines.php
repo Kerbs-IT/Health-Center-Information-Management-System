@@ -5,27 +5,24 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\Category;
-
 use Livewire\WithPagination;
 
 class Medicines extends Component
 {
     use WithPagination;
-    public $medicine_name, $category_id, $dosage, $stock, $stock_status,$expiry_status , $expiry_date, $edit_id ;
 
-    // Age fields - separate for months and years
+    public $medicine_name, $category_id, $dosage, $stock, $stock_status, $expiry_status, $expiry_date, $edit_id;
     public $min_age_value, $min_age_unit = 'months';
     public $max_age_value, $max_age_unit = 'months';
-
-    // Internal storage in months
     public $min_age_months, $max_age_months;
-
     public $sortField = null;
     public $sortDirection = null;
     public $search = '';
     public $perPage = 10;
-    public $ageFilter = ''; // For filtering by age range
-    public $deleteMedicineId;
+    public $ageFilter = '';
+    public $categoryFilter = '';
+    public $archiveMedicineId;
+    public $showArchived = false; // Toggle to show/hide archived items
 
     protected $rules = [
         'medicine_name' => 'required|string|max:255',
@@ -41,10 +38,6 @@ class Medicines extends Component
         'category_id.required' => 'Please select a category.',
     ];
 
-
-
-
-    // Convert age value and unit to months
     private function convertToMonths($value, $unit)
     {
         if (is_null($value) || $value === '') {
@@ -53,23 +46,19 @@ class Medicines extends Component
         return $unit === 'years' ? $value * 12 : $value;
     }
 
-    // Convert months back to value and unit
     private function convertFromMonths($months)
     {
         if (is_null($months)) {
             return ['value' => null, 'unit' => 'months'];
         }
 
-        // If less than 24 months, keep as months
         if ($months < 24) {
             return ['value' => $months, 'unit' => 'months'];
         }
 
-        // Otherwise convert to years
         return ['value' => $months / 12, 'unit' => 'years'];
     }
 
-    // Validate that max age is greater than min age
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['min_age_value', 'min_age_unit', 'max_age_value', 'max_age_unit'])) {
@@ -91,25 +80,26 @@ class Medicines extends Component
         return true;
     }
 
-
-    private function  determineStockStatus($stock){
-        if($stock <=0){
+    private function determineStockStatus($stock)
+    {
+        if ($stock <= 0) {
             return 'Out of Stock';
         }
-        if($stock <= 10){
+        if ($stock <= 10) {
             return 'Low Stock';
         }
         return 'In Stock';
     }
-    private function determineExpiryStatus($expiry_date){
+
+    private function determineExpiryStatus($expiry_date)
+    {
         $daysUntilExpry = now()->diffInDays($expiry_date, false);
-        if($daysUntilExpry < 0){
+        if ($daysUntilExpry < 0) {
             return 'Expired';
         }
-        if($daysUntilExpry <= 30){
+        if ($daysUntilExpry <= 30) {
             return 'Expiring Soon';
         }
-
         return 'Valid';
     }
 
@@ -121,7 +111,9 @@ class Medicines extends Component
             return;
         }
 
-        $exists = Medicine::where('medicine_name', $this->medicine_name)->where('dosage', $this->dosage)->exists();
+        $exists = Medicine::where('medicine_name', $this->medicine_name)
+            ->where('dosage', $this->dosage)
+            ->exists();
 
         if ($exists) {
             $this->addError('medicine_name', 'This medicine with the same dosage already exists');
@@ -129,10 +121,8 @@ class Medicines extends Component
             return;
         }
 
-        // Convert age values to months before saving
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
-
         $stockStatus = $this->determineStockStatus($this->stock);
         $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
 
@@ -142,28 +132,26 @@ class Medicines extends Component
             'dosage'        => $this->dosage,
             'stock'         => $this->stock,
             'expiry_date'   => $this->expiry_date,
-            'stock_status'   => $stockStatus,
-            'expiry_status' =>  $expiryStatus,
+            'stock_status'  => $stockStatus,
+            'expiry_status' => $expiryStatus,
             'min_age_months' => $min_age_months,
             'max_age_months' => $max_age_months
         ]);
 
         $this->dispatch('medicine-addedModal');
         $this->reset();
-        // session()->flash('message', 'Medicine added successfully');
     }
 
     public function editMedicineData($id)
     {
         $medicine = Medicine::findOrFail($id);
-        $this->edit_id  = $id;
+        $this->edit_id = $id;
         $this->medicine_name = $medicine->medicine_name;
-        $this->category_id   = $medicine->category_id;
-        $this->dosage        = $medicine->dosage;
-        $this->stock         = $medicine->stock;
-        $this->expiry_date   = $medicine->expiry_date;
+        $this->category_id = $medicine->category_id;
+        $this->dosage = $medicine->dosage;
+        $this->stock = $medicine->stock;
+        $this->expiry_date = $medicine->expiry_date;
 
-        // Convert stored months back to value and unit
         $minAge = $this->convertFromMonths($medicine->min_age_months);
         $maxAge = $this->convertFromMonths($medicine->max_age_months);
 
@@ -187,9 +175,6 @@ class Medicines extends Component
         $stockStatus = $this->determineStockStatus($this->stock);
         $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
 
-
-
-
         $exists = Medicine::where('medicine_name', $this->medicine_name)
             ->where('dosage', $this->dosage)
             ->where('medicine_id', '!=', $this->edit_id)
@@ -201,7 +186,6 @@ class Medicines extends Component
             return;
         }
 
-        // Convert age values to months before updating
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
 
@@ -211,8 +195,8 @@ class Medicines extends Component
             'dosage'         => $this->dosage,
             'stock'          => $this->stock,
             'expiry_date'    => $this->expiry_date,
-            'stock_status'  => $stockStatus,
-            'expiry_status' => $expiryStatus,
+            'stock_status'   => $stockStatus,
+            'expiry_status'  => $expiryStatus,
             'min_age_months' => $min_age_months,
             'max_age_months' => $max_age_months
         ]);
@@ -235,14 +219,35 @@ class Medicines extends Component
         $this->edit_id = '';
     }
 
-    public function confirmMedicineDelete($id){
-        $this->deleteMedicineId = $id;
-        $this->dispatch('show-deleteMedicineModal');
+    // Archive confirmation
+    public function confirmMedicineArchive($id)
+    {
+        $this->archiveMedicineId = $id;
+        $this->dispatch('show-medicine-archive-confirmation');
     }
-    public function deleteMedicine(){
-        Medicine::findOrFail($this->deleteMedicineId)->delete();
-        $this->dispatch('success-medicine-delete');
 
+    // Archive the medicine (soft delete)
+    public function archiveMedicine()
+    {
+        $medicine = Medicine::findOrFail($this->archiveMedicineId);
+        $medicine->delete(); // Uses soft delete if SoftDeletes trait is enabled
+        $this->dispatch('medicine-archive-success');
+        $this->resetPage();
+    }
+
+    // Restore archived medicine
+    public function restoreMedicine($id)
+    {
+        Medicine::withTrashed()->findOrFail($id)->restore();
+        $this->dispatch('medicine-restore-success');
+        $this->resetPage();
+    }
+
+    // Toggle archived view
+    public function toggleArchived()
+    {
+        $this->showArchived = !$this->showArchived;
+        $this->resetPage();
     }
 
     public function sortBy($field)
@@ -257,45 +262,48 @@ class Medicines extends Component
         $this->resetPage();
     }
 
-
     private function getAgeRangeFilter($range)
     {
         return match ($range) {
             '0-9months' => ['min' => 0, 'max' => 9],
             '10-24months' => ['min' => 10, 'max' => 24],
-            '2-5years' => ['min' => 24, 'max' => 60],     // 2-5 years = 24-60 months
-            '6-12years' => ['min' => 72, 'max' => 144],   // 6-12 years = 72-144 months
-            '13-17years' => ['min' => 156, 'max' => 204], // 13-17 years = 156-204 months
-            'adult' => ['min' => 216, 'max' => null],     // 18+ years = 216+ months
+            '2-5years' => ['min' => 24, 'max' => 60],
+            '6-12years' => ['min' => 72, 'max' => 144],
+            '13-17years' => ['min' => 156, 'max' => 204],
+            'adult' => ['min' => 216, 'max' => null],
             default => null,
         };
     }
 
     public function render()
     {
-        $medicines = Medicine::with('category')
-            ->search($this->search)
+        $query = Medicine::with('category')->search($this->search);
+
+        // Show archived or active medicines
+        if ($this->showArchived) {
+            $query = $query->onlyTrashed();
+        }
+
+        $medicines = $query
+            ->when($this->categoryFilter, function ($q) {
+                $q->where('category_id', $this->categoryFilter);
+            })
             ->when($this->ageFilter, function ($query) {
                 $range = $this->getAgeRangeFilter($this->ageFilter);
 
                 if ($range) {
                     $query->where(function ($q) use ($range) {
-
-                        // min_age must be <= selected max
                         if (!is_null($range['max'])) {
                             $q->where('min_age_months', '<=', $range['max']);
                         }
 
-                        // max_age must be >= selected min OR NULL (open-ended)
                         $q->where(function ($sub) use ($range) {
                             $sub->whereNull('max_age_months')
                                 ->orWhere('max_age_months', '>=', $range['min']);
                         });
-
                     });
                 }
             })
-
             ->when($this->sortField === 'category_name', function ($query) {
                 $query->orderBy(
                     Category::select('category_name')->whereColumn('categories.category_id', 'medicines.category_id'),
@@ -309,7 +317,7 @@ class Medicines extends Component
 
         return view('livewire.medicines', [
             'categories' => Category::orderBy('category_name')->get(),
-            'medicines' =>  $medicines
+            'medicines' => $medicines
         ])->layout('livewire.layouts.base');
     }
 }
