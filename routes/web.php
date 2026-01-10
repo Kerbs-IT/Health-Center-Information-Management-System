@@ -33,6 +33,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\wraMasterlistController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SwapHealthWorkerController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -376,6 +377,23 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/api/heatmap-data', [HeatMapController::class, 'getHeatmapData'])->name('health-map.data');
 
     // patient profile
+
+
+    // SWAP AREA
+    // Health Worker Swap Routes
+    Route::prefix('health-workers')->group(function () {
+        // Get swap data for a specific health worker
+        Route::get('/swap/{id}/data', [SwapHealthWorkerController::class, 'getSwapData'])
+            ->name('health-workers.swap.data');
+
+        // Preview the swap impact
+        Route::post('/swap/preview', [SwapHealthWorkerController::class, 'previewSwap'])
+            ->name('health-workers.swap.preview');
+
+        // Perform the actual swap
+        Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
+            ->name('health-workers.swap');
+    });
 
 
 });
