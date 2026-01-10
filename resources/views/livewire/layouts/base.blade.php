@@ -14,7 +14,8 @@
         'resources/js/record/record.js',
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
-        'resources/css/inventory_system/inventory-report.css'
+        'resources/css/inventory_system/inventory-report.css',
+        'resources/css/inventory_system/inventory.css'
     ])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -40,7 +41,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1">
+        <div class="flex-grow-1 overflow-x-auto">
             <header class="d-flex align-items-center pe-3">
                 <button class="btn d-lg-block fs-6 mx-1" id="toggleSidebar" style="z-index: 100;">
                     <i class="fa-solid fa-bars fs-2"></i>
