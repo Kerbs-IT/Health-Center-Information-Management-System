@@ -5,29 +5,21 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use Livewire\WithPagination;
+
 class CategoriesTable extends Component
 {
     use WithPagination;
-    public $category_name, $edit_id;
 
+    public $category_name, $edit_id;
     public $sortField = null;
     public $sortDirection = null;
-
     public $search;
     public $perPage = 10;
-
-    public $deleteCategoryId;
-    // Input Fields Validation
-
-    // public function updated($fields){
-    //     $this->validateOnly($fields,[
-    //         'category_name' => 'required|unique:categories,category_name'
-    //     ]);
-    // }
+    public $archiveCategoryId;
+    public $showArchived = false; // Toggle to show/hide archived items
 
     // Create Category
     public function storeCategoryData(){
-        //
         $validated = $this->validate([
             'category_name' => 'required|unique:categories,category_name'
         ]);
@@ -44,7 +36,6 @@ class CategoriesTable extends Component
 
         $this->edit_id = $id;
         $this->category_name = $category->category_name;
-
     }
 
     // UPDATE
@@ -59,34 +50,57 @@ class CategoriesTable extends Component
         ]);
 
         $this->reset(['category_name', 'edit_id']);
-
         $this->dispatch('hide-edit-category-modal');
         $this->dispatch('category-updated');
     }
 
     public function sortBy($field){
         if($this->sortField === $field){
-        $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-
-        }else{
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
             $this->sortField = $field;
             $this->sortDirection = 'desc';
         }
         $this->resetPage();
     }
 
-    public function confirmDelete($id){
-        $this->deleteCategoryId = $id;
-        $this->dispatch('show-delete-confirmation');
+    // Archive confirmation
+    public function confirmArchive($id){
+        $this->archiveCategoryId = $id;
+        $this->dispatch('show-archive-confirmation');
     }
-    public function deleteCategory(){
-        Category::findOrFail($this->deleteCategoryId)->delete();
-        $this->dispatch('delete-success');
+
+    // Archive the category (soft delete)
+    public function archiveCategory(){
+        $category = Category::findOrFail($this->archiveCategoryId);
+        $category->delete(); // This uses soft delete if you have SoftDeletes trait
+        $this->dispatch('archive-success');
+        $this->resetPage();
+    }
+
+    // Restore archived category
+    public function restoreCategory($id){
+        Category::withTrashed()->findOrFail($id)->restore();
+        $this->dispatch('restore-success');
+        $this->resetPage();
+    }
+
+    // Toggle archived view
+    public function toggleArchived(){
+        $this->showArchived = !$this->showArchived;
+        $this->resetPage();
     }
 
     public function render()
     {
-        $categories = Category::search($this->search)->when($this->sortField, function($query){
+        $query = Category::search($this->search);
+
+        // Show archived or active categories
+        if ($this->showArchived) {
+            $query = $query->onlyTrashed();
+        }
+
+        $categories = $query->when($this->sortField, function($query){
             $query->orderBy($this->sortField, $this->sortDirection);
         })->paginate($this->perPage);
 
@@ -94,5 +108,4 @@ class CategoriesTable extends Component
             'categories' => $categories
         ])->layout('livewire.layouts.base');
     }
-
 }

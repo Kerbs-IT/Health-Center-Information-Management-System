@@ -19,6 +19,10 @@
                     <label for="search" class="form-label">Search</label>
                     <input type="search" class="form-control" wire:model.live.debounce.300="search" placeholder="Search medicine or category...">
                 </div>
+                <button class="btn btn-secondary" wire:click="toggleArchived">
+                    <i class="fa-solid fa-{{ $showArchived ? 'list' : 'archive' }} pe-1"></i>
+                    {{ $showArchived ? 'Show Active' : 'Show Archived' }}
+                </button>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fa-solid fa-plus pe-1"></i>Add Category</button>
             </div>
             <div class="table-responsive mt-5">
@@ -57,8 +61,18 @@
                             <td>{{ $category->category_name }}</td>
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn bg-primary text-white text-nowrap" wire:click="editCategoryData({{ $category->category_id }})"><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
-                                    <button class="btn p-0" wire:click="confirmDelete({{ $category->category_id }})"><i class="fa-solid fa-trash text-danger fs-3" ></i></button>
+                                    @if($showArchived)
+                                        <button class="btn btn-danger text-white" wire:click="restoreCategory({{ $category->category_id }})">
+                                            <i class="fa-solid fa-rotate-left me-1"></i>Restore
+                                        </button>
+                                    @else
+                                        <button class="btn bg-primary text-white" wire:click="editCategoryData({{ $category->category_id }})">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                                        </button>
+                                        <button class="btn p-0" wire:click="confirmArchive({{ $category->category_id }})">
+                                            <i class="fa-solid fa-trash text-danger fs-3"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
