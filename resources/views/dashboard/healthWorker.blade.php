@@ -209,12 +209,7 @@
                                 </div>
                             </div>
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-nowrap">
-                                <!-- username -->
-                                <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="username" class="">Username</label>
-                                    <input type="text" placeholder="ex. yato" id="username" class="form-control" name="username" value="">
-                                    <small class="text-danger" id="username-error"></small>
-                                </div>
+                               
                                 <!-- email -->
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="email" class="">Email</label>
@@ -327,12 +322,8 @@
                 <div class="modal-body">
                     <form action="" method="POST" id="add-health-worker-form" class="rounded shadow-none shadow-md-flex d-flex flex-column flex-wrap align-items-start align-items-md-center  p-0 p-md-4  w-sm-25 w-md-50 w-lg-25 bg-white card">
                         @csrf
-                        <!-- username -->
-                        <div class="mb-2 w-100">
-                            <label for="username" class="mb-1 responsive-label">Username:</label>
-                            <input type="text" placeholder="Enter your username" name="username" class="py-2 px-2 w-100 responsive-input rounded  form-control" autocomplete="off" value="{{old('username')}}">
-                            <small class="text-danger add-healthworker-error" id="username_error"></small>
-                        </div>
+                       
+                      
                         <!-- full name -->
                         <div class="mb-2 w-100">
                             <label for="" class="mb-1 responsive-label">Personal Info:</label>
