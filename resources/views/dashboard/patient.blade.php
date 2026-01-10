@@ -43,7 +43,7 @@
     )
 }}"
                                 alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
-                           
+
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
@@ -306,7 +306,7 @@
                                     @endif
                                 </div>
                                 <!-- civil status, contact number, nationality -->
-                                <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
+                                <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap flex-md-row flex-column">
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="civil_status" class="">Civil Status</label>
@@ -336,14 +336,14 @@
                                 </div>
                                 <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                     <!-- username -->
-                                    
+
                                     <!-- email -->
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="email" class="">Email</label>
                                         <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                         <small class="text-danger" id="email-error"></small>
                                     </div>
-                                    
+
                                 </div>
                                 <!-- address -->
                                 <div class="mb-3 w-100" id="patient_type_con">
@@ -375,26 +375,26 @@
                                     <h4 class="fw-bold">{{ucwords($typeOfPatient)}} Medical Record Information</h4>
                                     @endif
                                     @if(($typeOfPatient ?? null) === 'vaccination')
-                                    <div class="d-flex gap-2">
-                                        <div class="input-field flex-1">
-                                            <label for="motherName">Mother Name</label>
+                                    <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="input-field w-[100%] xl:[50%]">
+                                            <label for="motherName">Mother's Name</label>
                                             <input type="text" id="mother_name" placeholder="mother name" class="form-control" name="mother_name" value="">
                                             <!-- ERROR HANDLING -->
                                             <small class="text-danger error-text" id="mother_name_error"></small>
                                         </div>
-                                        <div class="input-field flex-1">
-                                            <label for="fatherName">Father Name</label>
+                                        <div class="input-field w-[100%] xl:[50%]">
+                                            <label for="fatherName">Father's Name</label>
                                             <input type="text" id="father_name" placeholder="Father Name" class="form-control" name="father_name" value="">
                                             <small class="text-danger error-text" id="father_name_error"></small>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <div class="mb-2 flex-1">
+                                    <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="mb-2 w-[100%] xl:[50%]">
                                             <label for="BP">Birth Height(cm):</label>
                                             <input type="number" class="form-control w-100" id="vaccination_height" placeholder="00.00" name="vaccination_height">
                                             <small class="text-danger error-text" id="vaccination_height_error"></small>
                                         </div>
-                                        <div class="mb-2 flex-1">
+                                        <div class="mb-2 w-[100%] xl:[50%]">
                                             <label for="BP">Birth Weight(kg):</label>
                                             <input type="text" class="form-control w-100" id="vaccination_weight" placeholder=" 00.00" name="vaccination_weight">
                                             <small class="text-danger error-text" id="vaccination_weight_error"></small>
@@ -461,13 +461,13 @@
                                         <small class="text-danger error-text" id="philhealth_id_no_error"></small>
                                     </div>
                                     @elseif(($typeOfPatient ?? null) === 'senior-citizen')
-                                    <div class="mb-2 d-flex gap-2">
-                                        <div class="input-field flex-1">
+                                    <div class="mb-2 d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="input-field w-[100%] xl:[50%] ">
                                             <label for="blood_type">Occupation</label>
                                             <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             <small class="text-danger error-text" id="occupation_error"></small>
                                         </div>
-                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                        <div class="mb-3 w-[100%] xl:[50%] d-flex gap-2">
                                             <div class="input-field w-100">
                                                 <label for="senior_religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
@@ -488,20 +488,20 @@
                                         </div>
                                     </div>
                                     @elseif(($typeOfPatient ?? null) === 'family-planning')
-                                    <div class="mb-2 d-flex gap-2">
-                                        <div class="input-field flex-1">
+                                    <div class="mb-2 d-flex gap-2 flex-xl-nowrap flex-wrap">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="blood_type">Occupation</label>
                                             <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             <small class="text-danger error-text" id="occupation_error"></small>
                                         </div>
-                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                        <div class="mb-3 flex-fill xl:w-[50%] d-flex gap-2">
                                             <div class="input-field w-100">
                                                 <label for="senior_religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
                                                 <small class=" text-danger" id="religion_error"></small>
                                             </div>
                                         </div>
-                                        <div class="input-field flex-1">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="philhealth_no">Philhealth No:</label>
                                             <input type="text" id="philhealth_no" placeholder="Enter the philhealth no." class="form-control" name="philhealth_no">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>
