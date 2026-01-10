@@ -244,7 +244,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
     Route::get('/patient-record/prenatal/edit-details/{id}', [RecordsController::class, 'editPrenatalDetail'])->name('record.prenatal.edit');
     Route::get('/patient-record/prenatal/view-case/{id}', [RecordsController::class, 'prenatalCase'])->name('record.prenatal.case');
     Route::post('/add-prenatal-patient', [PrenatalController::class, 'addPatient']);
-    Route::put('/update/prenatal-patient-details/{id}', [PrenatalController::class, 'updateDetails']); 
+    Route::put('/update/prenatal-patient-details/{id}', [PrenatalController::class, 'updateDetails']);
     Route::put('/update/pregnancy-plan-record/{id}', [PrenatalController::class, 'updatePregnancyPlan']); // route for updating the pregnancy plan record of the patient
     Route::get('/patient-record/view-details/{id}', [PrenatalController::class, 'viewPrenatalDetail']);
     // update the case information
@@ -377,7 +377,7 @@ Route::middleware(['role:nurse,staff'])->group(function(){
 
     // patient profile
 
- 
+
 });
 // ---------------------------- home page
 // Route to homepage
@@ -574,7 +574,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::delete('/notifications/delete-all-read', [NotificationController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-   
+
 });
 
 Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);

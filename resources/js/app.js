@@ -1,6 +1,3 @@
-import $ from "jquery";
-window.$ = $;
-window.jQuery = $;
 
 // import styles bundle
 import 'swiper/css/bundle';
@@ -11,6 +8,23 @@ window.bootstrap = bootstrap;
 
 import Swal from "sweetalert2";
 window.Swal = Swal;
+
+import $ from 'jquery';
+window.$ = window.jQuery = $;
+
+// Moment.js (required for daterangepicker)
+import moment from 'moment';
+window.moment = moment;
+
+// Daterangepicker
+import 'daterangepicker';
+import 'daterangepicker/daterangepicker.css';
+
+// Chart.js
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
+import './inventory-report.js';
 
 const root = document.querySelector(":root");
 const logoutBtn = document.getElementById('logout-btn');
@@ -152,3 +166,4 @@ if (overlay) {
         overlay.classList.remove("active");
     });
 }
+
