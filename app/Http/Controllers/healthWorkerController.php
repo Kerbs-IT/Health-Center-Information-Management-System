@@ -62,7 +62,7 @@ class healthWorkerController extends Controller
 
         try{
             $data = $request->validate([
-                'username' => 'required',
+                
                 'email' => 'required|email|unique:users,email',
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'role' => 'required|in:staff,patient',
@@ -88,7 +88,7 @@ class healthWorkerController extends Controller
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
             $newUser = User::create([
-                'username' => ucwords(strtolower($data['username'])),
+            
                 'first_name' => ucwords(strtolower($data['first_name'])),
                 'middle_initial' => $middleInitial,
                 'last_name' => ucwords(strtolower($data['last_name'])),
@@ -169,7 +169,7 @@ class healthWorkerController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'username' => 'required',
+                
                 'email' => ['required','email'],
                 'street' => 'sometimes|nullable|string',
                 'region' => 'sometimes|nullable|string',
@@ -185,13 +185,13 @@ class healthWorkerController extends Controller
 
             if(!empty($data['password'])){
                 $user -> update([
-                    'username' => $data['username'],
+                    
                     'email' => $data['email'],
                     'password' => Hash::make($data['password']) // hash the password
                 ]);
             }else{
                 $user -> update([
-                    'username' => $data['username'],
+                    
                     'email' => $data['email'],
                 ]);
             }
@@ -253,7 +253,7 @@ class healthWorkerController extends Controller
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['edit_suffix']
+                $data['edit_suffix']??''
             ];
             
 

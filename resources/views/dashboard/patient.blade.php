@@ -43,7 +43,7 @@
     )
 }}"
                                 alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
-                            <h4 class="mb-3">{{ optional(Auth::user())->username ?? 'none' }}</h4>
+                           
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
@@ -336,24 +336,14 @@
                                 </div>
                                 <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                     <!-- username -->
-                                    <div class="input-field flex-fill xl: w-[50%]">
-                                        <label for="username" class="">Username</label>
-                                        <input type="text" placeholder="ex. yato" id="username" class="form-control" name="username" value="">
-                                        <small class="text-danger" id="username-error"></small>
-                                    </div>
+                                    
                                     <!-- email -->
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="email" class="">Email</label>
                                         <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                         <small class="text-danger" id="email-error"></small>
                                     </div>
-                                    <!-- password -->
-                                    <div class="input-field flex-fill xl: w-[50%]">
-                                        <label for="password" class="">Password</label>
-                                        <input type="password" id="edit_password" class="form-control" name="password">
-                                        <small class="text-muted">Leave blank if you don't want to change it.</small>
-                                        <small class="text-danger"></small>
-                                    </div>
+                                    
                                 </div>
                                 <!-- address -->
                                 <div class="mb-3 w-100" id="patient_type_con">
