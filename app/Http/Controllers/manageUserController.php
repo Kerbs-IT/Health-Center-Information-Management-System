@@ -25,7 +25,7 @@ class manageUserController extends Controller
     {
         try {
             $data = $request->validate([
-                'username' => 'required|unique:users,username',
+                
                 'email' => ['required', 'email'],
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'first_name' => [
@@ -75,7 +75,7 @@ class manageUserController extends Controller
             $data['full_address'] = $fullAddress;
 
             $newUser = User::create([
-                'username'=> $data['username'],
+                
                 'email' => $data['email'],
                 'patient_type' => $data['patient_type'],
                 'first_name' => $data['first_name'],
@@ -140,7 +140,7 @@ class manageUserController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'username' => 'required',
+                
                 'email' => ['required', 'email'],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
@@ -151,13 +151,13 @@ class manageUserController extends Controller
             // check if there is new password
             if (!empty($data['password'])) {
                 $user->update([
-                    'username' => $data['username'],
+                    
                     'email' => $data['email'],
                     'password' => Hash::make($data['password']) // hash the password
                 ]);
             } else {
                 $user->update([
-                    'username' => $data['username'],
+                    
                     'email' => $data['email'],
                 ]);
             }

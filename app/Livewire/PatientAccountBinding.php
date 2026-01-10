@@ -30,8 +30,8 @@ class PatientAccountBinding extends Component
             ->where(function ($query) {
                 $query->where('first_name', 'like', '%' . $this->search . '%')
                     ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%')
-                    ->orWhere('username', 'like', '%' . $this->search . '%');
+                    ->orWhere('email', 'like', '%' . $this->search . '%');
+                   
             })
             ->when($this->filterStatus === 'bound', function ($query) {
                 $query->whereNotNull('patient_record_id');

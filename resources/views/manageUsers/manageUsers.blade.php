@@ -159,11 +159,7 @@
 
                                 <!-- Username, Email, Password -->
                                 <div class="row g-2 mb-3">
-                                    <div class="col-12 col-md-4">
-                                        <label for="username" class="form-label">Username</label>
-                                        <input type="text" placeholder="ex. yato" id="edit_username" class="form-control" name="username" value="">
-                                        <small class="text-danger" id="username-error"></small>
-                                    </div>
+                                   
                                     <div class="col-12 col-md-4">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" placeholder="ex. yato@example.com" id="edit_email" class="form-control" name="email" value="">
@@ -227,11 +223,7 @@
                     <form action="" method="POST" class="rounded shadow d-flex flex-column align-items-center p-md-4 p-2  w-sm-25 w-md-50 w-lg-25 bg-white" id="add-patient-form">
                         @csrf
                         <!-- username -->
-                        <div class="mb-2 w-100">
-                            <label for="username" class="mb-1 h4 fs-4">Username:</label>
-                            <input type="text" placeholder="Enter your username" name="username" class="py-2 px-2 w-100 fs-5 bg-light" autocomplete="off" value="{{old('username')}}">
-                            <small class="text-danger username-error"></small>
-                        </div>
+                       
                         <!-- full name -->
                         <div class="mb-2 w-100">
                             <label for="" class="mb-1 h4 fs-4">Personal Info:</label>
