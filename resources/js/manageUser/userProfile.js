@@ -36,7 +36,7 @@ editIcon.addEventListener("click", (e) => {
             const bday = document.getElementById("birthdate") ?? null;
             const contact = document.getElementById("contact_num")??null;
             const nationality = document.getElementById("nationality") ?? null;
-            const username = document.getElementById("username") ?? null;
+            
             const email = document.getElementById("email") ?? null;
             const blkNstreet =
                 document.getElementById("update_blk_n_street") ?? null;
@@ -123,7 +123,7 @@ editIcon.addEventListener("click", (e) => {
             if (nationality) nationality.value = data.response.patient?.nationality ?? "";
             if (civil_status) civil_status.value = data.response.patient?.civil_status ?? '';
 
-            username.value = data.response.user.username;
+            
             email.value = data.response.user.email;
 
             // console.log(username.value);
@@ -295,7 +295,6 @@ const errorFieldMap = {
     civil_status: "civil-status-error",
     contact_number: "contact-error",
     nationality: "nationality-error",
-    username: "username-error",
     email: "email-error",
     street: "street-error",
     postal_code: "postal-error",

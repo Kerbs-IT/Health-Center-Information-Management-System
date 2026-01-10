@@ -36,15 +36,6 @@
                     <form action="{{ route('user.store') }}" method="POST" class="rounded d-flex flex-column bg-white">
                         @csrf
                         <h1 class="text-center fs-2 fw-bold">Register</h1>
-
-                        <!-- username -->
-                        <div class="mb-3">
-                            <label for="username" class="mb-1 h6 ">Username:</label>
-                            <input type="text" placeholder="Enter your username" name="username" class="form-control bg-light" autocomplete="off" value="{{old('username')}}">
-                            @error('username')
-                            <small class="text-danger">{{$message}}</small>
-                            @enderror
-                        </div>
                         <!-- full name -->
                         <div class="mb-3">
                             <label for="" class="mb-1 h6 ">Personal Info:</label>
