@@ -157,7 +157,7 @@
                     <td class="need-space">{{optional($masterlist)->name_of_child??''}}</td>
                     <td class="need-space">{{optional($masterlist)->Address ?? ''}}</td>
                     <td>{{optional($masterlist)->sex ?? ''}}</td>
-                    <td>{{optional($masterlist)->age ?? ''}}</td>
+                    <td>{{ $masterlist->age_display }}</td>
                     <td class="need-space">{{optional($masterlist)->date_of_birth?->format('Y-m-d') ?? ''}}</td>
                     <td class="" style="font-size: 15px;">{{optional($masterlist)->SE_status??''}}</td>
                     <td>{{optional($masterlist)->BCG??''}}</td>
@@ -177,7 +177,7 @@
                     <td>{{optional($masterlist)->MCV_2}}</td>
                     <td>{{optional($masterlist)->remarks}}</td>
                     <td>
-                        <button class=" fs-2 text-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">
+                        <button class=" fs-2text-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                     </td>
