@@ -1,6 +1,6 @@
 <div>
     <main class="d-flex flex-column container-fluid bg-light ">
-        <div class="m-3 p-3 shadow min-vh-100">
+        <div class="m-md-3 m-1 p-md-3 p-2 shadow min-vh-100">
             <h2 class="mb-5 fs-1 text-center">Medicine Inventory</h2>
 
             @if (session()->has('message'))
@@ -125,15 +125,15 @@
                 <table class="table table-hover" id="medicineTable">
                     <thead class="table-header">
                         <tr>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('medicine_id')" class="sort-btn">No. {!! sortIcon($sortField, 'medicine_id', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('medicine_name')">Medicine Name {!! sortIcon($sortField, 'medicine_name', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('category_name')">Category {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('dosage')">Dosage {!! sortIcon($sortField, 'dosage', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col">Age Range</th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('stock')"> Stock  {!! sortIcon($sortField, 'stock', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('stock_status')"> Stock Status {!! sortIcon($sortField, 'stock_status', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('expiry_status')">Expiry Status {!! sortIcon($sortField, 'expiry_status', $sortDirection) !!}</button></th>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('expiry_date')">Expiry Date {!! sortIcon($sortField, 'expiry_date', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('medicine_id')" class="sort-btn text-nowrap">No. {!! sortIcon($sortField, 'medicine_id', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('medicine_name')" class="text-nowrap">Medicine Name {!! sortIcon($sortField, 'medicine_name', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('category_name')" class="text-nowrap">Category {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('dosage')" class="text-nowrap">Dosage {!! sortIcon($sortField, 'dosage', $sortDirection) !!}</button></th>
+                            <th class="text-center text-nowrap" scope="col">Age Range</th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('stock')" class="text-nowrap"> Stock  {!! sortIcon($sortField, 'stock', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('stock_status')" class="text-nowrap"> Stock Status {!! sortIcon($sortField, 'stock_status', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('expiry_status')" class="text-nowrap">Expiry Status {!! sortIcon($sortField, 'expiry_status', $sortDirection) !!}</button></th>
+                            <th class="text-center" scope="col"><button wire:click="sortBy('expiry_date')" class="text-nowrap">Expiry Date {!! sortIcon($sortField, 'expiry_date', $sortDirection) !!}</button></th>
                             <!-- <th class="text-center" scope="col"><button wire:click="sortBy('created_at')">Date {!! sortIcon($sortField, 'created_at', $sortDirection) !!}</button></th> -->
                             <th class="text-center" scope="col">Actions</th>
                         </tr>
@@ -178,7 +178,7 @@
                                             <i class="fa-solid fa-rotate-left me-1"></i>Restore
                                         </button>
                                     @else
-                                        <button class="btn bg-primary text-white" wire:click="editMedicineData({{ $medicine->medicine_id }})">
+                                        <button class="btn bg-primary text-white text-nowrap" wire:click="editMedicineData({{ $medicine->medicine_id }})">
                                             <i class="fa-solid fa-pen-to-square me-1"></i>Edit
                                         </button>
                                         <button class="btn p-0" wire:click="confirmMedicineArchive({{ $medicine->medicine_id }})">
