@@ -84,6 +84,15 @@ class CategoriesTable extends Component
         ]);
     }
 
+    protected $listeners = [
+        'resetFormOnModalClose' => 'resetFields'
+    ];
+    // Add this method
+    public function resetFields()
+    {
+        $this->reset(['category_name', 'edit_id']);
+        $this->resetErrorBag();
+    }
     // Create Category
     public function storeCategoryData()
     {
