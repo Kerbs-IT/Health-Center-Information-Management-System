@@ -40,9 +40,16 @@
                     <div class="step d-flex flex-column w-100 rounded  px-2" id="step1">
                         <div class="info card shadow  p-3">
                             <div class="mb-2 border-bottom">
+                                <div class="bg-light border-start  border-primary px-3 py-2 mb-2 rounded">
+                                    <span class="fs-6">
+                                        <strong>Note:</strong>
+                                        <span class="text-danger">*</span>
+                                        <span class="fw-light"> indicates a required field.</span>
+                                    </span>
+                                </div>
                                 <div class="user-info w-100">
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
-                                        <label for="type-of-patient" class="">Type of Patient</label>
+                                        <label for="type-of-patient" class="">Type of Patient<span class="text-danger">*</span></label>
                                         <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
                                             <option value="" disabled selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
@@ -54,20 +61,24 @@
                                     </div>
                                     <h4>Personal Info</h4>
                                     <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-50">
-                                            <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
+                                        <div class="input-field w-25">
+                                            <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
+                                            <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
-                                        <div class="input-field w-50">
-                                            <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
+                                        <div class="input-field w-25">
+                                            <label for="middle_initial" class="">Middle Name</label>
+                                            <input type="text" id="middle_initial" placeholder="Enter Middle Name" class="form-control" name="middle_initial" value="">
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
-                                        <div class="input-field w-50">
+                                        <div class="input-field w-25">
+                                            <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
-                                        <div class="input-field w-50">
-                                            <select name="suffix" id="edit_suffix" class="form-select py-2">
+                                        <div class="input-field w-25">
+                                            <label for="add_suffix" class="">Suffix</label>
+                                            <select name="suffix" id="add_suffix" class="form-select py-2">
                                                 <option value="" disabled selected>Select Suffix</option>
                                                 <option value="Jr.">Jr</option>
                                                 <option value="Sr.">Sr</option>
@@ -76,14 +87,14 @@
                                                 <option value="IV.">IV</option>
                                                 <option value="V.">V</option>
                                             </select>
-                                            <small class="text-danger" id="edit-suffix-error"></small>
+                                            <small class="text-danger" id="add-suffix-error"></small>
                                         </div>
                                     </div>
                                     <!-- age -->
                                     <div class="mb-2 d-flex gap-md-1 gap-0">
                                         <!-- date of birth -->
                                         <div class="input-field w-50">
-                                            <label for="birthdate">Date of Birth*</label>
+                                            <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                             <input type="date" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
@@ -96,7 +107,7 @@
 
                                         <!-- age -->
                                         <div class="input-field w-50">
-                                            <label for="age">Age</label>
+                                            <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="text" id="age" placeholder="Enter the age" disabled class="form-control">
                                             <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -135,14 +146,14 @@
                                     <!-- data of registration -->
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-md-row flex-column">
                                         <div class="input-field flex-grow-1 flex-fill xl:w-[50%]">
-                                            <label for="dateOfRegistration">Date of Registration</label>
+                                            <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <!-- administered by -->
                                         @if(Auth::user()->role == 'nurse')
                                         <div class="mb-2 flex-fill xl:w-[50%] ">
-                                            <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span>*</label>
+                                            <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
                                             <select name="handled_by" id="handled_by" class="form-select ">
                                                 <option value="" disabled selected>Select a person</option>
                                                 @foreach($healthworkers as $worker)
@@ -362,12 +373,12 @@
                                         <h4>Address</h4>
                                         <div class="input-field d-flex gap-2 align-items-center flex-md-row flex-column">
                                             <div class=" mb-2 w-100 w-md-50">
-                                                <label for="street">Street*</label>
+                                                <label for="street">Street<span class="text-danger">*</span></label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="">
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
                                             <div class="mb-2 w-100 w-md-50">
-                                                <label for="brgy">Barangay*</label>
+                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                                 @php
                                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit')->get();
                                                 $user = auth()->user();
@@ -462,25 +473,25 @@
                             <div class="vaccination-content">
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">Patient Name</label>
+                                        <label for="patient_name">Patient Name<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">Administered By:</label>
+                                        <label for="patient_name">Administered By<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="Nurse">
                                     </div>
                                 </div>
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">handled By:</label>
+                                        <label for="patient_name">handled By<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
                                     </div>
                                 </div>
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="date_of_vaccination">Date of Vaccination</label>
+                                        <label for="date_of_vaccination">Date of Vaccination<span class="text-danger">*</span></label>
                                         <input type="date" placeholder="20" class="form-control w-100 " name="date_of_vaccination" required min="1950-01-01" max="{{date('Y-m-d')}}">
                                         <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                     </div>
@@ -510,7 +521,7 @@
                                     </div>
                                 </div>
                                 <div class="mb-md-2 mb-1">
-                                    <label for="vaccine_type">Vaccine Type:</label>
+                                    <label for="vaccine_type">Vaccine Type<span class="text-danger">*</span></label>
                                     <div class="mb-md-2 mb-1 d-flex gap-2">
                                         <select name="vaccine_type" id="vaccine_input" class="form-select w-100" required>
                                             <option value="" selected disabled>Select Vaccine</option>
@@ -533,7 +544,7 @@
                                 </div>
                                 <input type="text" name="selected_vaccines" id="selected_vaccines" hidden>
                                 <div class="mb-2 w-100">
-                                    <label for="dose" class="w-100">Vaccine Dose Number:</label>
+                                    <label for="dose" class="w-100">Vaccine Dose Number<span class="text-danger">*</span></label>
                                     <select id="dose" name="dose_number" required class="form-select" required>
                                         <option value="" disabled selected>Select Dose</option>
                                         <option value="1">1st Dose</option>
@@ -545,7 +556,7 @@
                                 </div>
                                 <div class="mb-2 w-100 ">
                                     <div class="mb-2 w-100">
-                                        <label for="date_of_comeback">Date of Comeback*</label>
+                                        <label for="date_of_comeback">Date of Comeback<span class="text-danger">*</span></label>
                                         <input type="date" class="form-control w-100 " name="date_of_comeback" id="date_of_comeback" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                     </div>

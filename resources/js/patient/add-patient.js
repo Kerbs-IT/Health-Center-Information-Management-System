@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import { addVaccineInteraction } from "../patient/healthWorkerList";
 import { automateAge } from "../automateAge";
+import changeLmp from "../LMP/lmp";
 window.currentStep = 1;
 document.addEventListener("DOMContentLoaded", () => {
     const typeSelect = document.getElementById("type-of-patient");
@@ -511,16 +512,28 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-
 });
- // ================================= HANDLE THE DATE OF BIRTH ========================================
-    const date_of_birth = document.getElementById("birthdate");
-    const age = document.getElementById("age");
-    const hiddenAge = document.getElementById("hiddenAge");
+// ================================= HANDLE THE DATE OF BIRTH ========================================
+const date_of_birth = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
 
-    if (date_of_birth && age) {
-        automateAge(date_of_birth, age, hiddenAge);
-    }
+if (date_of_birth && age) {
+    automateAge(date_of_birth, age, hiddenAge);
+}
+
+// ====================== LMP ====================
+const LMP = document.getElementById("LMP") ?? null;
+
+if (LMP) {
+    const expectedDelivery = document.getElementById(
+        "add_patient_expected_delivery"
+    );
+
+    LMP.addEventListener("change", () => {
+        changeLmp(LMP, expectedDelivery);
+    });
+}
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

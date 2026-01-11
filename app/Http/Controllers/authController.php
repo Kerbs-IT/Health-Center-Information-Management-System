@@ -81,7 +81,8 @@ class authController extends Controller
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|digits_between:7,12',
             'blk_n_street' => 'required',
-            'brgy' => 'required'
+            'brgy' => 'required',
+            'suffix' => 'sometimes|nullable|string'
         ]);
 
         // Hash sensitive data
@@ -114,6 +115,7 @@ class authController extends Controller
             'role' => 'patient',
             'status' => 'Pending', // Mark as pending until verified
             'is_verified' => false,
+            'suffix' => $data['suffix']??''
         ]);
 
         // Store complete registration data in session (will be used after verification)
@@ -130,6 +132,7 @@ class authController extends Controller
                 'brgy' => $data['brgy'],
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
                 'street' => $blk_n_street[1] ?? null,
+                'suffix' => $data['suffix']
             ],
             'verification_user_id' => $tempUser->id
         ]);
@@ -154,7 +157,7 @@ class authController extends Controller
             'date_of_birth' => 'required|date',
             'sex' => 'sometimes|nullable|string',
             'civil_status' => 'sometimes|nullable|string',
-            'contact_number' => 'sometimes|nullable|digits_between:7,12',
+            'contact_number' => 'required|digits_between:7,12',
             'nationality' => 'sometimes|nullable|string',
             
             'email' => ['required', 'email'],

@@ -38,18 +38,22 @@
                             <label for="name_of_spouse" class="text-nowrap">Name of Client:</label>
                             <div class="group d-flex align-items-center justify-content-center gap-2 w-100 flex-wrap flex-lg-nowrap">
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
+                                    <label for="side_A_add_client_fname" class="">First Name<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="side_A_add_client_fname" name="side_A_add_client_fname" placeholder="FirstName">
                                     <small class="text-danger error-text" id="side_A_add_client_fname_error"></small>
                                 </div>
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
-                                    <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Middle Initial">
+                                    <label for="side_A_add_client_MI" class="">Middle Name</label>
+                                    <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Middle Name">
                                     <small class="text-danger error-text" id="side_A_add_client_MI_error"></small>
                                 </div>
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
+                                    <label for="side_A_add_client_lname" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
                                     <small class="text-danger error-text" id="side_A_add_client_lname_error"></small>
                                 </div>
                                 <div class="input-form flex-fill lg:w-[50%]">
+                                    <label for="side_A_add_client_suffix" class="">Suffix<span class="text-danger">*</span></label>
                                     <select name="side_A_add_client_suffix" id="side_A_add_client_suffix" class="form-select py-2 ">
                                         <option value="" disabled>Select Suffix</option>
                                         <option value="Jr.">Jr</option>
@@ -70,7 +74,7 @@
                     <div class="mb-md-2 mb-1 d-flex gap-1  flex-wrap flex-lg-nowrap">
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="side_A_add_client_date_of_birth">Date of Birth</label>
+                            <label for="side_A_add_client_date_of_birth">Date of Birth<span class="text-danger">*</span></label>
                             <input type="date" id="side_A_add_client_date_of_birth" min="1950-01-01" max="{{date('Y-m-d')}}" placeholder="01-02-25" class="form-control w-100 px-5" name="side_A_add_client_date_of_birth">
 
                             <small class="text-danger error-text" id="side_A_add_client_date_of_birth_error"></small>
@@ -79,7 +83,7 @@
 
                         <!-- age -->
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="side_A_add_client_age">Age</label>
+                            <label for="side_A_add_client_age">Age<span class="text-danger">*</span></label>
                             <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" disabled>
                             <input type="hidden" id="hiddenAddAge" name="side_A_add_client_age">
                             <small class="text-danger error-text" id="side_A_add_client_age_error"></small>
@@ -115,12 +119,12 @@
                         <h5 class="w-100">Address</h5>
                         <div class="input-field d-flex gap-2 align-items-lg-center align-items-none w-100  flex-md-nowrap flex-lg-nowrap flex-wrap flex-lg-row flex-column">
                             <div class=" mb-md-2 mb-1 flex-fill lg:w-[50%]">
-                                <label for="street">Street*</label>
+                                <label for="street">Street<span class="text-danger">*</span></label>
                                 <input type="text" id="add_street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="add_street" value="">
                                 <small class="text-danger error-text" id="street_error"></small>
                             </div>
                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
-                                <label for="brgy">Barangay*</label>
+                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                 @php
                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
                                 @endphp
@@ -138,21 +142,24 @@
                 <h5>Spouse Information</h5>
                 <div class="mb-md-2 mb-1">
                     <div class=" w-100 ">
-                        <label for="name_of_spouse" class="text-nowrap">Name of Spouse:</label>
                         <div class="group d-flex align-items-center justify-content-center gap-2 flex-wrap flex-lg-nowrap">
                             <div class="input-form flex-fill">
+                                <label for="side_A_add_spouse_fname" class="">First Name</label>
                                 <input type="text" class="form-control" id="side_A_add_spouse_fname" name="side_A_add_spouse_fname" placeholder="FirstName">
                                 <small class="text-danger error-text" id="side_A_add_spouse_fname_error"></small>
                             </div>
                             <div class="input-form flex-fill">
+                                <label for="side_A_add_spouse_MI" class="">Middle Initial</label>
                                 <input type="text" class="form-control" id="side_A_add_spouse_MI" name="side_A_add_spouse_MI" placeholder="Middle Initial">
                                 <small class="text-danger error-text" id="side_A_add_spouse_MI_error"></small>
                             </div>
                             <div class="input-form flex-fill">
+                                <label for="side_A_add_spouse_lname" class="">Last Name</label>
                                 <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="side_A_add_spouse_lname_error"></small>
                             </div>
                             <div class="input-form flex-fill">
+                                <label for="side_A_add_spouse_lname" class="">Suffix</label>
                                 <select name="side_A_add_spouse_suffix" id="side_A_add_spouse_suffix" class="form-select py-2 ">
                                     <option value="" disabled>Select Suffix</option>
                                     <option value="Jr.">Jr</option>

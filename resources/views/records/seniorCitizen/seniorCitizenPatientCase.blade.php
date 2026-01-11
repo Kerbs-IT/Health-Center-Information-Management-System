@@ -70,8 +70,15 @@
                                             <div class="modal-body">
                                                 <div class="d-flex p-md-4 px-2 flex-column">
                                                     <div class="contents bottom-border">
+                                                        <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                            <span class="fs-6">
+                                                                <strong>Note:</strong>
+                                                                <span class="text-danger">*</span>
+                                                                <span class="fw-light"> indicates a required field.</span>
+                                                            </span>
+                                                        </div>
                                                         <div class="mb-md-3 mb-0">
-                                                            <label for="">Patient Name:</label>
+                                                            <label for="">Patient Name <span class="text-danger">*</span></label>
                                                             <input type="text" disabled class="form-control" id="dissabled_patient_name" value="{{$patient_name}}">
                                                             <input type="hidden" name="new_patient_name" id="new_patient_name" value="{{$patient_name}}">
                                                             <input type="hidden" name="add_health_worker_id" value="{{$healthWorkerId}}">
@@ -156,7 +163,7 @@
                                                             <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
-                                                            <label for="add_date_of_comeback">Date of Comeback*</label>
+                                                            <label for="add_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
                                                             <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         </div>
                                                     </div>
@@ -187,8 +194,15 @@
                                             <div class="modal-body">
                                                 <div class="d-flex p-md-4 p-2 flex-column">
                                                     <div class="contents bottom-border">
+                                                        <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                            <span class="fs-6">
+                                                                <strong>Note:</strong>
+                                                                <span class="text-danger">*</span>
+                                                                <span class="fw-light"> indicates a required field.</span>
+                                                            </span>
+                                                        </div>
                                                         <div class="mb-3">
-                                                            <label for="">Patient Name:</label>
+                                                            <label for="">Patient Name <span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control" disabled id="edit_patient_name">
                                                         </div>
                                                         <h5>MEDICAL INFORMATION</h5>
@@ -266,14 +280,14 @@
                                                             <small class="text-danger error-text" id="edit_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-3 ">
-                                                            <label for="" class="text-nowrap">Remarks*</label>
+                                                            <label for="" class="text-nowrap">Remarks</label>
                                                             <input type="text" class="form-control p-2 border" name="edit_medication_maintenance_remarks" id="edit_remarks">
                                                             <small class="text-danger error-text" id="edit_medication_maintenance_remarks_error"></small>
                                                         </div>
 
                                                         <!-- date of comeback -->
                                                         <div class="mb-3 ">
-                                                            <label for="edit_date_of_comeback">Date of Comeback*</label>
+                                                            <label for="edit_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
                                                             <input type="date" class="form-control bg-light border" name="edit_date_of_comeback" id="edit_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="edit_date_of_comeback_error"></small>
                                                         </div>

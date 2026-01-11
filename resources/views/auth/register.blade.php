@@ -38,18 +38,43 @@
                         <h1 class="text-center fs-2 fw-bold">Register</h1>
                         <!-- full name -->
                         <div class="mb-3">
-                            <label for="" class="mb-1 h6 ">Personal Info:</label>
-                            <div class="row g-2">
-                                <div class="col-lg-4 col-md-6">
-                                    <input type="text" placeholder="First Name" name="first_name" class=" form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
-                                </div>
-                                <div class="col-lg-4 col-md-6">
-                                    <input type="text" placeholder="Middle Initial" name="middle_initial" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('middle_initial')}}">
-                                </div>
-                                <div class="col-lg-4 col-md-6">
-                                    <input type=" text" placeholder="Last Name" name="last_name" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('last_name')}}">
-                                </div>
+                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                <span class="fs-6">
+                                    <strong>Note:</strong>
+                                    <span class="text-danger">*</span>
+                                    <span class="fw-light"> indicates a required field.</span>
+                                </span>
+                            </div>
 
+                            <div class="row g-2">
+                                <div class="col-lg-6 col-md-6">
+                                    <label for="" class="">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter First Name" name="first_name" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <label for="" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter Middle Name" name="middle_initial" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('middle_initial')}}">
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mt-2">
+                                <div class="col-lg-6 col-md-6">
+                                    <label for="" class="">Last Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter Last Name" name="last_name" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('last_name')}}">
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <label for="suffix" class="">Suffix</label>
+                                    <select name="suffix" id="suffix" class="form-select responsive-input py-2">
+                                        <option value="" disabled selected>Select Suffix</option>
+                                        <option value="Jr.">Jr</option>
+                                        <option value="Sr.">Sr</option>
+                                        <option value="II.">II</option>
+                                        <option value="III.">III</option>
+                                        <option value="IV.">IV</option>
+                                        <option value="V.">V</option>
+                                    </select>
+                                    <small class="text-danger" id="edit-suffix-error"></small>
+                                </div>
                             </div>
                             @error('first_name')
                             <small class=" text-danger">{{$message}}</small>
@@ -63,7 +88,7 @@
                         </div>
                         <!-- email -->
                         <div class="mb-2">
-                            <label for="email" class="mb-1 h6 ">Email:</label>
+                            <label for="email" class="mb-1 h6 ">Email<span class="text-danger">*</span></label>
                             <input type="email" placeholder="Enter your email" name="email" class=" form-control py-1 px-2 bg-light" value="{{old('email')}}">
                             @error('email')
                             <small class="text-danger">{{$message}}</small>
@@ -71,14 +96,14 @@
                         </div>
                         <!-- date of birth -->
                         <div class="mb-2">
-                            <label for="date_of_birth" class="mb-1 h6 ">Date of Birth:</label>
+                            <label for="date_of_birth" class="mb-1 h6 ">Date of Birth<span class="text-danger">*</span></label>
                             <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                             @error('date_of_birth')
                             <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
                         <div class="mb-2">
-                            <label for="contact_number" class="mb-1 h6 ">Contact Number:</label>
+                            <label for="contact_number" class="mb-1 h6 ">Contact Number<span class="text-danger">*</span></label>
                             <input type="text" placeholder="Enter your email" name="contact_number" class=" form-control py-1 px-2 bg-light" value="{{old('contact_number')}}">
                             @error('contact_number')
                             <small class="text-danger">{{$message}}</small>
@@ -86,11 +111,13 @@
                         </div>
                         <!-- Password -->
                         <div class="mb-3">
-                            <label for="password" class="mb-1 h6">Password:</label>
+                            <label for="password" class="mb-1 h6">Password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Enter your password" name="password" class="form-control py-1 px-2 bg-light" id="password" autocomplete="off" value="{{old('password')}}">
 
-                                 <svg class="fa-solid fa-eye p-2 bg-primary text-white h-10 w-10" fill="white" id="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z"/></svg>
+                                <svg class="fa-solid fa-eye p-2 bg-primary text-white h-10 w-10" fill="white" id="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                                    <path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z" />
+                                </svg>
                             </div>
                             @error('password')
                             <small class="text-danger">{{$message}}</small>
@@ -98,10 +125,12 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3">
-                            <label for="re-type-pass" class="mb-1  h6">Retype password:</label>
+                            <label for="re-type-pass" class="mb-1  h6">Retype password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="form-control py-1 px-2 bg-light" id="re-type-pass">
-                                <svg class="fa-solid fa-eye p-2 bg-primary text-white h-10 w-10" id="Retype-eye-icon" fill="white"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z"/></svg>
+                                <svg class="fa-solid fa-eye p-2 bg-primary text-white h-10 w-10" id="Retype-eye-icon" fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+                                    <path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z" />
+                                </svg>
                             </div>
 
                             @error('password_confirmation')
@@ -110,7 +139,7 @@
                         </div>
                         <!-- Roles -->
                         <div class="mb-3 roles">
-                            <label for="patient_type" class="">Type of User</label>
+                            <label for="patient_type" class="">Type of User<span class="text-danger">*</span></label>
                             <select name="patient_type" id="patient_type" class="form-select text-center">
                                 <option value="" selected disabled>Select the type of patient</option>
                                 <option value="vaccination">Vaccination</option>
@@ -126,7 +155,7 @@
                             <div class="row d-flex">
                                 <div class="col-lg-6">
                                     <div class="items">
-                                        <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
+                                        <label for="patient_street" class="w-100 text-muted">Blk & lot,Street<span class="text-danger">*</span></label>
                                         <input type="text" id="blk_n_street" name="blk_n_street" placeholder="Enter the blk & lot" class="form-control">
                                         @error('blk_n_street')
                                         <small class="text-danger">{{$message}}</small>
@@ -135,7 +164,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="items">
-                                        <label for="brgy" class="text-muted">Puroks*</label>
+                                        <label for="brgy" class="text-muted">Puroks<span class="text-danger">*</span></label>
                                         <select id="brgy" class="form-select" name="brgy" required>
                                             <option value="" selected disabled>Select a purok</option>
                                         </select>

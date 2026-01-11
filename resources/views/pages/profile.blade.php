@@ -52,18 +52,27 @@
                         </div>
                         <!-- USER INFORMATION -->
                         <div class="user-info flex-grow-1  card p-2 ">
+                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                <span class="fs-6">
+                                    <strong>Note:</strong>
+                                    <span class="text-danger">*</span>
+                                    <span class="fw-light"> indicates a required field.</span>
+                                </span>
+                            </div>
                             <h4>Personal Info</h4>
                             <div class="mb-2 flex-wrap d-flex  flex-column flex-md-row gap-1">
                                 <div class="input-field flex-fill">
-                                    <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="{{ optional(Auth::user() -> staff) -> first_name ??
+                                    <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="{{ optional(Auth::user() -> staff) -> first_name ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> first_name ?? null }}">
                                     @error('first_name')
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
 
                                 </div>
-                                <div class="input-field flex-fill" styl>
-                                    <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{ optional(Auth::user() -> staff) -> middle_initial ??
+                                <div class="input-field flex-fill">
+                                    <label for="middle_initial" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <input type="text" id="middle_initial" placeholder="Enter Middle Name" class="form-control" name="middle_initial" value="{{ optional(Auth::user() -> staff) -> middle_initial ??
                                                                                                                                                  optional(Auth::user() -> nurses) -> middle_initial ?? null }}">
                                     @error('middle_initial')
                                     <small class="text-danger">{{$message}}</small>
@@ -71,6 +80,7 @@
 
                                 </div>
                                 <div class="input-field flex-fill">
+                                    <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{ optional(Auth::user() -> staff) -> last_name ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> last_name ?? null }}">
                                     @error('last_name')
@@ -81,6 +91,7 @@
                                     @php
                                     $currentSuffix = optional(Auth::user()->staff)->suffix ?? optional(Auth::user()->nurses)->suffix ?? null;
                                     @endphp
+                                    <label for="edit_suffix" class="">Suffix</label>
                                     <select name="suffix" id="edit_suffix" class="form-select responsive-input py-2">
                                         <option value="" disabled {{ !$currentSuffix ? 'selected' : '' }}>Select Suffix</option>
                                         <option value="Jr." {{ $currentSuffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
@@ -98,7 +109,7 @@
                             <!-- age -->
                             <div class="mb-2 flex-wrap d-flex gap-1">
                                 <div class="input-field flex-fill">
-                                    <label for="age">Age</label>
+                                    <label for="age">Age<span class="text-danger">*</span></label>
                                     <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{ optional(Auth::user() -> staff) -> age ??
                                                                                                                           optional(Auth::user() -> nurses) -> age ?? null }}">
                                     @error('age')
@@ -106,7 +117,7 @@
                                     @enderror
                                 </div>
                                 <div class="input-field flex-fill">
-                                    <label for="birthdate">Date of Birth</label>
+                                    <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                     <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{ optional(Auth::user() -> staff) -> date_of_birth ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> date_of_birth ?? null }}">
                                     @error('date_of_birth')
@@ -151,7 +162,7 @@
                                 </div>
                                 <!-- contact -->
                                 <div class="input-field flex-fill">
-                                    <label for="contact_number" class="">Contact Number</label>
+                                    <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
                                     <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> contact_number ?? null }}">
                                     @error('contact_number')
@@ -168,10 +179,10 @@
                                 </div>
                             </div>
                             <div class="mb-2 flex-wrap d-flex gap-1">
-                                
+
                                 <!-- email -->
                                 <div class="input-field flex-fill">
-                                    <label for="email" class="">Email</label>
+                                    <label for="email" class="">Email<span class="text-danger">*</span></label>
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="{{ optional(Auth::user()) -> email  ?? null }}">
                                     @error('email')
                                     <small class="text-danger">{{$message}}</small>
@@ -189,7 +200,7 @@
                             </div>
                             @if(Auth::user()-> staff)
                             <div class="mb-2 flex-wrap d-flex align-items-center w-25 gap-2">
-                                <label for="assigned_area" class="text-nowrap">Assigned Area:</label>
+                                <label for="assigned_area" class="text-nowrap">Assigned Area<span class="text-danger">*</span></label>
                                 @php
                                 $brgy_area = \App\Models\brgy_unit::OrderBy('brgy_unit')-> get();
                                 @endphp
@@ -203,7 +214,7 @@
                             @endif
                             <!-- address -->
                             <div class="mb-2 flex-wrap d-flex gap-1 flex-column border-bottom">
-                                <h4>Address</h4>
+                                <h5 class="w-100 border-bottom">Address</h5>
                                 <div class="input-field d-flex flex-wrap gap-2">
                                     <div class="address flex-fill">
                                         <label for="" class="">Street & Lot</label>
@@ -225,7 +236,7 @@
                                 <div class="input-field d-flex flex-column flex-md-row gap-2 flex-wrap">
                                     <!-- region -->
                                     <div class="mb-2 flex-fill flex-wrap">
-                                        <label for="region">Region <span style="color: red;">*</span></label>
+                                        <label for="region">Region </label>
                                         <select name="region" id="region" class="form-select bg-light" data-selected="{{ optional(Auth::user())-> addresses-> region_id }}">
                                             @php
                                             $region_id = optional(Auth::user()) -> addresses -> region_id;
@@ -241,7 +252,7 @@
                                     </div>
                                     <!-- province -->
                                     <div class="mb-2 flex-fill">
-                                        <label for="province">Province*</label>
+                                        <label for="province">Province</label>
                                         <select name="province" id="province" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> province_id }}">
                                             <option value="">Select a province</option>
                                         </select>
@@ -255,7 +266,7 @@
                                 <div class="input-field d-flex  gap-2 flex-wrap">
                                     <!-- city -->
                                     <div class="mb-2 flex-wrap flex-fill">
-                                        <label for="city">City*</label>
+                                        <label for="city">City</label>
                                         <select name="city" id="city" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> city_id }}">
                                             <option value="">Select a city</option>
                                         </select>
@@ -265,7 +276,7 @@
                                     </div>
                                     <!-- brgy -->
                                     <div class="mb-2 flex-wrap flex-fill">
-                                        <label for="brgy">Barangay*</label>
+                                        <label for="brgy">Barangay</label>
                                         <select name="brgy" id="brgy" class="form-select bg-light" disabled data-selected="{{ optional(Auth::user())-> addresses-> brgy_id }}">
                                             <option value="">Select a brgy</option>
                                         </select>

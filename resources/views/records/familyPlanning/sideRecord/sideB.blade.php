@@ -5,7 +5,7 @@
     </div> -->
     <div class="assessment border-bottom">
         <div class="input-field">
-            <label for="side_b_date_of_visit" class="w-100 fs-5">Date of Visit:</label>
+            <label for="side_b_date_of_visit" class="w-100 fs-5">Date of Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="side_b_date_of_visit" id="side_b_date_of_visit" max="{{date('Y-m-d')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
             <small class="text-danger" id="side_b_date_of_visit_error"></small>
             <input type="hidden" name="side_b_medical_record_case_id" id="side_b_medical_record_case_id">
@@ -18,7 +18,7 @@
             <small class="text-danger" id="side_b_medical_findings_error"></small>
         </div>
         <div class="input-field">
-            <label for="side_b_method_accepted" class="fs-5">Method Accepted: </label>
+            <label for="side_b_method_accepted" class="fs-5">Method Accepted<span class="text-danger">*</span></label>
             <input type="text" class="form-control w-100" name="side_b_method_accepted" id="side_b_method_accepted">
             <small class="text-danger" id="side_b_method_accepted_error"></small>
         </div>
@@ -62,7 +62,7 @@
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
-            <label for="side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit:</label>
+            <label for="side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="side_b_date_of_follow_up_visit" id="side_b_date_of_follow_up_visit" max="{{date('Y-m-d',strtotime('+5 years'))}}">
             <small class="text-danger" id="side_b_date_of_follow_up_visit_error"></small>
         </div>

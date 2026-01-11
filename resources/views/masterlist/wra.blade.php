@@ -45,17 +45,34 @@
                         </div>
 
                         <div class="modal-body w-100">
+                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                <span class="fs-6">
+                                    <strong>Note:</strong>
+                                    <span class="text-danger">*</span>
+                                    <span class="fw-light"> indicates a required field.</span>
+                                </span>
+                            </div>
                             <div class="mb-2">
                                 <label for="house_hold_number" class="fw-bold">House Hold Number:</label>
                                 <input type="text" class="form-control border-1" name="house_hold_number">
                             </div>
                             <div class="input-group mb-2">
-                                <label for="" class="w-100">Name of Child</label>
                                 <div class="full-name d-flex gap-2 w-100 flex-grow-1 flex-wrap flex-lg-nowrap">
-                                    <input type="text" name="wra_masterlist_fname" id="wra_masterlist_fname" placeholder="Enter First Name" class="form-control border">
-                                    <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
-                                    <input type="text" name="wra_masterlist_lname" id="wra_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
+                                    <div class="input-group">
+                                        <label for="wra_masterlist_fname" class="w-100">First Name<span class=" text-danger">*</span></label>
+                                        <input type="text" name="wra_masterlist_fname" id="wra_masterlist_fname" placeholder="Enter First Name" class="form-control border">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="wra_masterlist_MI" class="w-100">Middle Name</label>
+                                        <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="wra_masterlist_lname" class="w-100">Last Name<span class=" text-danger">*</span></label>
+                                        <input type="text" name="wra_masterlist_lname" id="wra_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
+                                    </div>
+
                                     <div class="input-form flex-fill lg:w-[50%]">
+                                        <label for="wra_masterlist_suffix" class="w-100">Suffix</label>
                                         <select name="wra_masterlist_suffix" id="wra_masterlist_suffix" class="form-control  border flex-fill py-2">
                                             <option value="" disabled selected>Select Suffix</option>
                                             <option value="Jr.">Jr</option>
@@ -74,12 +91,12 @@
                                 <h4>Address</h4>
                                 <div class="input-field d-flex gap-2 align-items-center w-100 flex-wrap flex-lg-nowrap">
                                     <div class=" mb-2 w-full lg:w-[50%]">
-                                        <label for="street">Street*</label>
+                                        <label for="street">Street<span class=" text-danger">*</span></label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
                                         <small class="text-danger error-text" id="street_error"></small>
                                     </div>
                                     <div class="mb-2 w-full lg:w-[50%]">
-                                        <label for="brgy">Barangay*</label>
+                                        <label for="brgy">Barangay<span class=" text-danger">*</span></label>
                                         @php
                                         $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
                                         @endphp
@@ -95,12 +112,12 @@
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
                                 <div class="input-field flex-grow-1 ">
-                                    <label for="birthdate">Date of Birth</label>
+                                    <label for="birthdate">Date of Birth<span class=" text-danger">*</span></label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="" class="form-control w-100 px-5" name="date_of_birth" value="">
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
                                 </div>
                                 <div class="input-field flex-grow-1 ">
-                                    <label for="age">Age</label>
+                                    <label for="age">Age<span class=" text-danger">*</span></label>
                                     <input type="number" id="age" placeholder="Enter the age" class="form-control" disabled value="">
                                     <input type="hidden" id="hiddenAge" name="age">
                                     <small class="text-danger error-text" id="age_error"></small>

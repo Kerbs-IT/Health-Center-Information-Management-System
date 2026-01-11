@@ -95,7 +95,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1">
+        <div class="flex-grow-1 overflow-x-auto">
             <header class="d-flex align-items-center pe-3">
                 <button class="btn d-lg-block fs-6 mx-1" id="toggleSidebar" style="z-index: 100;">
                     <i class="fa-solid fa-bars fs-2"></i>
