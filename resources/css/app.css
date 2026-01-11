@@ -119,6 +119,10 @@ body{
     min-height: 100vh !important;
     height: auto;
 }
+body.no-scroll{
+    overflow: hidden;
+    height: 100vh;
+}
 
 /* icons */
 
@@ -342,7 +346,7 @@ main h3,
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: none;
-    z-index: 9998;
+    z-index: 9997;
 }
 
 .sidebar-overlay.active {
@@ -406,6 +410,9 @@ main h3,
     transition: opacity 0.2s ease;
 }
 
+.swal2-container {
+    z-index: 99999 !important;
+}
 /* Medium to small devices - override collapsed behavior */
 @media (max-width: 991px) {
     .menu-bar {
@@ -414,7 +421,7 @@ main h3,
         left: -280px;
         top: 0;
         transition: left 0.5s ease;
-        z-index: 9999;
+        z-index: 9998;
     }
 
     /* Don't allow collapsed state on mobile */
