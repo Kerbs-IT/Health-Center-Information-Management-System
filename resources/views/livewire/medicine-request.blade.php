@@ -1,7 +1,7 @@
 
 <div>
     <main class="d-flex flex-column container-fluid bg-light">
-        <h2 class="mb-5 fs-1 text-center">Request Medicine</h2>
+        <h2 class="mb-2 fs-1 text-center">Request Medicine</h2>
 
         {{-- Success/Error Messages --}}
         @if (session()->has('message'))
@@ -18,7 +18,7 @@
             </div>
         @endif
 
-        <div class="m-3 p-5 shadow min-h-[70vh]">
+        <div class="m-nd-3 m-1 p-lg-5 p-md-3 p-2 shadow min-h-[70vh]">
             {{-- Filters and Actions --}}
             <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
                 <div class="flex-fill">
@@ -55,7 +55,7 @@
             <div class="table-responsive mt-5">
                 <table class="table table-hover" id="medicineTable">
                     <thead class="table-header">
-                        <tr>
+                        <tr class="text-nowrap">
                             <th class="text-center" scope="col"><button class="sort-btn">No.</button></th>
                             <th class="text-center" scope="col"><button>Medicine Name</button></th>
                             <th class="text-center" scope="col"><button>Quantity</button></th>
@@ -95,7 +95,7 @@
                                             </button>
                                         @else
                                             <button wire:click="viewDetails({{ $request->id }})"
-                                                    class="btn btn-sm btn-success text-white"
+                                                    class="btn btn-sm btn-success text-white text-nowrap"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#viewDetailsModal">
                                                 <i class="fa-solid fa-eye me-1"></i>View Details
@@ -114,8 +114,8 @@
                         @endforelse
                     </tbody>
                 </table>
-                                     {{ $myRequests->links() }}
             </div>
+            {{ $myRequests->links() }}
 
         </div>
     </main>
