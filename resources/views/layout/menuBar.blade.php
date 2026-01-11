@@ -182,34 +182,27 @@
                     <h4 class="mb-0 fs-5">Inventory</h4>
                 </div>
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
-
-
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
-                <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_vaccination">
+                <a href="{{ route('categories') }}" class="menu-items d-flex  gap-3 text-decoration-none align-items-center  w-100 px-3 py-2" id="inventory_category">
                     <i class="fa-solid fa-layer-group"></i>
                     <h5 class="mb-0">Category</h5>
                 </a>
                 <!-- senior citizen -->
-                <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2">
+                <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center   w-100 px-3 py-2" id="inventory_medicine">
                     <i class="fa-solid fa-plus"></i>
                     <h5 class="mb-0">Medicine</h5>
                 </a>
-                <!-- family planning
-                <a href=" {{ route('masterlist.wra')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="masterlist_wra">
-                    <i class="fa-solid fa-people-roof"></i>
-                    <h5 class="mb-0">WRA</h5>
-                </a> -->
-                <a href="{{ route('manageMedicineRequests') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
-                    <i class="bi bi-capsule"></i>
+                <a href="{{ route('manageMedicineRequests') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center  w-100 px-3 py-2" id="inventory_requests">
+                    <i class="fa-solid fa-file-medical"></i>
                     <h5 class="mb-0">Manage Requests</h5>
                 </a>
                 <!-- TB dots -->
-                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
-                    <i class="bi bi-bar-chart-fill"></i>
+                <a href="{{ route('inventory-report') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center  w-100 px-3 py-2" id="inventory_report">
+                    <i class="fa-solid fa-chart-column"></i>
                     <h5 class="mb-0">Report</h5>
                 </a>
-                <a href="{{ route('medicineRequestLog') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2">
+                <a href="{{ route('medicineRequestLog') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center  w-100 px-3 py-2" id="inventory_logs">
                     <i class="fa-solid fa-clipboard-list"></i>
                     <h5 class="mb-0">Logs</h5>
                 </a>

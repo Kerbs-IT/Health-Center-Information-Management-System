@@ -32,7 +32,7 @@ const closeBtn = document.getElementById("closeSidebar");
 toggleBtn.addEventListener("click", () => {
     if (window.innerWidth >= 992) {
         // Desktop: Toggle collapsed state
-          
+
 
         // Save state AFTER toggle
         if (sidebar.classList.contains("collapsed")) {
@@ -46,15 +46,25 @@ toggleBtn.addEventListener("click", () => {
         overlay.classList.add("active");
     }
 });
+toggleBtn.addEventListener('click', () => {
+    if(window.innerWidth < 992){
+        sidebar.classList.add('show');
+        overlay.classList.add('active');
+        document.body.classList.add('no-scroll');
+    }
+});
 
 // Close Button
 closeBtn.addEventListener("click", () => {
     sidebar.classList.remove("show");
     overlay.classList.remove("active");
+    document.body.classList.remove('no-scroll');
 });
 
 // Close outside the sidebar
 overlay.addEventListener("click", () => {
     sidebar.classList.remove("show");
     overlay.classList.remove("active");
+    document.body.classList.remove('no-scroll');
 });
+
