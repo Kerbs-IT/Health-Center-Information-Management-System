@@ -24,6 +24,10 @@ class Medicines extends Component
     public $archiveMedicineId;
     public $showArchived = false; // Toggle to show/hide archived items
 
+    // For reset
+    protected $listeners = [
+        'resetFormOnModalClose' => 'resetFields'
+    ];
     protected $rules = [
         'medicine_name' => 'required|string|max:255',
         'category_id'   => 'required|integer|exists:categories,category_id',
@@ -274,7 +278,6 @@ class Medicines extends Component
             default => null,
         };
     }
-
     public function render()
     {
         $query = Medicine::with('category')->search($this->search);

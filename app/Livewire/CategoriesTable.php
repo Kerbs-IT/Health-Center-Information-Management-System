@@ -18,6 +18,15 @@ class CategoriesTable extends Component
     public $archiveCategoryId;
     public $showArchived = false; // Toggle to show/hide archived items
 
+    protected $listeners = [
+        'resetFormOnModalClose' => 'resetFields'
+    ];
+    // Add this method
+    public function resetFields()
+    {
+        $this->reset(['category_name', 'edit_id']);
+        $this->resetErrorBag();
+    }
     // Create Category
     public function storeCategoryData(){
         $validated = $this->validate([
