@@ -101,7 +101,7 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Category Name</label>
+                            <label class="form-label">Category Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="category_name" wire:model.defer="category_name">
                             @error('category_name')
                                 <span class="text-danger" style="font-size: 11.5px">{{ $message }}</span>
@@ -133,7 +133,7 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Category Name</label>
+                            <label class="form-label">Category Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="category_name" wire:model.defer="category_name">
                             @error('category_name')
                                 <span class="text-danger" style="font-size: 11.5px">{{ $message }}</span>
