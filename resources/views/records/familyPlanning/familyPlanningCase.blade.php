@@ -71,6 +71,13 @@
 
                                             <div class="modal-body">
                                                 <!-- Add side a content here -->
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 <!-- STEP 1 -->
                                                 @include('records.familyPlanning.sideRecord.sideAtemplate.sideAstep1')
                                                 <!-- STEP 2 -->
@@ -105,6 +112,13 @@
 
                                             <div class="modal-body">
                                                 <!-- Add side b content here -->
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 @include('records.familyPlanning.sideRecord.sideB')
                                             </div>
 
@@ -160,6 +174,13 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
+                                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                <span class="fs-6">
+                                                    <strong>Note:</strong>
+                                                    <span class="text-danger">*</span>
+                                                    <span class="fw-light"> indicates a required field.</span>
+                                                </span>
+                                            </div>
                                             @include('records.familyPlanning.sideRecord.viewSideBrecord')
                                         </div>
                                     </div>
@@ -178,6 +199,13 @@
                                             </div>
 
                                             <div class="modal-body">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 @include('records.familyPlanning.sideRecord.editSideB')
                                             </div>
                                             <div class="modal-footer d-flex justify-content-between">

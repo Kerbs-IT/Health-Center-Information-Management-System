@@ -38,12 +38,12 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column">
+        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
             @include('layout.header')
-            <main class="flex-column p-3 overflow-y-auto">
+            <main class="flex-column p-md-3 p-2 overflow-y-auto">
                 <h1>PATIENT CASES</h1>
                 <!-- body part -->
-                <div class="mb-3 w-100 px-5 h-[700px] record-con">
+                <div class="mb-3 w-100 px-lg-5 px-md-3 px-2 min-h-[700px] record-con">
                     <!-- <a href="{{route('all.record')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a> -->
                     <div class="filters d-flex justify-content-between w-100">
                         @if(($typeOfPatient ?? null) === 'vaccination')

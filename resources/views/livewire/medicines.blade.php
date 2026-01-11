@@ -141,7 +141,7 @@
                     <tbody>
                         @forelse($medicines as $medicine)
                         <tr>
-                            <td>{{ $medicine->medicine_id }}</td>
+                            <!-- <td>{{ $medicine->medicine_id }}</td> -->
                             <td>{{ $medicine->medicine_name }}</td>
                             <td>{{ $medicine->category->category_name }}</td>
                             <td>{{ $medicine->dosage }}</td>

@@ -89,16 +89,22 @@
 
                                         <div class="modal-body">
                                             <div class="inner w-100 rounded">
-
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-2 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 <div class="mb-2 w-100">
-                                                    <label for="patient_name">Patient Name</label>
+                                                    <label for="patient_name">Patient Name<span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control bg-light" disabled placeholder="Enter the name" id="add-patient-name-vaccination-case" value="{{$medical_record_case->patient->full_name}}">
                                                     <input type="text" name="add_patient_full_name" value="{{$medical_record_case->patient->full_name}}" hidden>
                                                 </div>
 
                                                 @if(Auth::user()-> role == 'nurse')
                                                 <div class="mb-2 w-100">
-                                                    <label for="update_handled_by" class="w-100 form-label">Handled By:</label>
+                                                    <label for="update_handled_by" class="w-100 form-label">Handled By<span class="text-danger">*</span></label>
                                                     <select name="dissabled_add_handled_by" id="dissabled_add_handled_by" class="form-select w-100" required>
                                                         <option value="" selected disabled>Select the Health Worker</option>
                                                     </select>
@@ -114,7 +120,7 @@
                                                 @endif
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="date_of_vaccination">Date of Vaccination</label>
+                                                    <label for="date_of_vaccination">Date of Vaccination<span class="text-danger">*</span></label>
                                                     <input type="date" class="form-control" name="add_date_of_vaccination" id="add-date-of-vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger w-100" id="add-date-error"></small>
                                                 </div>
@@ -142,7 +148,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <label for="vaccine_type">Vaccine Type:</label>
+                                                    <label for="vaccine_type">Vaccine Type<span class="text-danger">*</span></label>
                                                     <div class="d-flex gap-2">
                                                         <select id="add_vaccine_type" class="form-select w-100">
                                                             <option value="" selected disabled>Select Vaccine</option>
@@ -170,7 +176,7 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="add_date_of_comeback">Date of Comeback*</label>
+                                                        <label for="add_date_of_comeback">Date of Comeback<span class="text-danger">*</span></label>
                                                         <input type="date" placeholder="20" id="add_date_of_comeback" class="form-control w-100 " name="add_date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="add-date-of-comeback-error"></small>
                                                     </div>
@@ -205,19 +211,20 @@
 
                                         <div class="modal-body">
                                             <div class="inner w-100 rounded">
-
-                                                <div class="mb-2 w-100">
-                                                    <label for="patient_name">Patient Name</label>
-                                                    <input type="text" class="form-control bg-light" disabled placeholder="Jan Louie Salimbago" id="edit-patient-name">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-2 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
                                                 </div>
-
                                                 <div class="mb-2 w-100">
-                                                    <label for="administered_by">Administered By</label>
-                                                    <input type="text" class="form-control bg-light" disabled placeholder="Nurse" value="Nurse Joy">
+                                                    <label for="patient_name">Patient Name <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control bg-light" disabled placeholder="Jan Louie Salimbago" id="edit-patient-name">
                                                 </div>
                                                 @if(Auth::user()-> role == 'nurse')
                                                 <div class="mb-2 w-100">
-                                                    <label for="update_handled_by" class="w-100 form-label">Handled By:</label>
+                                                    <label for="update_handled_by" class="w-100 form-label">Handled By <span class="text-danger">*</span></label>
                                                     <select name="update_handled_by" id="update_handled_by" class="form-select w-100">
                                                         <option value="" selected disabled>Select the Health Worker</option>
                                                     </select>
@@ -225,13 +232,13 @@
                                                 </div>
                                                 @elseif(Auth::user()-> role == 'staff')
                                                 <div class="mb-2 w-100">
-                                                    <label for="administered_by">Handled By:</label>
+                                                    <label for="administered_by">Handled By <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control bg-light" disabled placeholder="Nurse" value="Nurse Joy">
                                                 </div>
                                                 @endif
 
                                                 <div class="mb-2 w-100">
-                                                    <label for="date_of_vaccination">Date of Vaccination</label>
+                                                    <label for="date_of_vaccination">Date of Vaccination <span class="text-danger">*</span></label>
                                                     <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                     <small class="text-danger error-text" id="date_of_vaccination_error"></small>
                                                 </div>
@@ -262,7 +269,7 @@
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <label for="vaccine_type">Vaccine Type:</label>
+                                                    <label for="vaccine_type">Vaccine Type <span class="text-danger">*</span></label>
                                                     <div class="d-flex gap-2">
                                                         <select name="vaccine_type" id="update_vaccine_type" class="form-select w-100">
                                                             <option value="">Select Vaccine</option>
@@ -292,7 +299,7 @@
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
-                                                        <label for="edit-date-of-comeback">Date of Comeback*</label>
+                                                        <label for="edit-date-of-comeback">Date of Comeback <span class="text-danger">*</span></label>
                                                         <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                         <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                     </div>

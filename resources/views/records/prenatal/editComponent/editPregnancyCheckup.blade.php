@@ -1,13 +1,13 @@
 <div class="inner w-100 rounded">
 
     <div class="mb-2 w-100">
-        <label for="patient_name">Patient Name</label>
+        <label for="patient_name">Patient Name<span class="text-danger">*</span></label>
         <input type="text" class="form-control bg-light" disabled placeholder="Enter the name" id="edit_patient_name">
         <input type="hidden" class="form-control bg-light" name="edit_check_up_full_name" id="edit_check_up_full_name">
     </div>
 
     <div class="mb-2 w-100">
-        <label for="administered_by">Administered By</label>
+        <label for="administered_by">Administered By<span class="text-danger">*</span></label>
         <input type="text" class="form-control bg-light" name="check_up_handled_by" disabled placeholder="Nurse" id="edit_check_up_handled_by">
         <input type="hidden" class="form-control bg-light" name="edit_health_worker_id" placeholder="Nurse" id="edit_health_worker_id">
     </div>
@@ -222,7 +222,7 @@
             <input type="text" class="form-control" name="edit_overall_remarks" id="edit_overall_remarks">
         </div>
         <div class="mb-2 w-100">
-            <label for="">Date of comeback*</label>
+            <label for="">Date of comeback<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="edit_date_of_comeback" id="edit_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
             <small class="text-danger" id="edit_date_of_comeback_error"></small>
         </div>

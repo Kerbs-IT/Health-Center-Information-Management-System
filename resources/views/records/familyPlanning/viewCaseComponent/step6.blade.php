@@ -1,28 +1,29 @@
-<table class="table table-bordered table-striped mb-0">
-    <thead class="seperator">
-        <tr>
-            <th colspan="12" class="text-start">
-                V. PHYSICAL EXAMINATION
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th>Weight (cm)</th>
-            <td id="view_weight"></td>
-            <th>Blood Pressure</th>
-            <td id="view_blood_pressure"></td>
-        </tr>
-        <tr>
-            <th>Height (cm)</th>
-            <td id="view_height"></td>
-            <th>Pulse Rate (Bpm)</th>
-            <td id="view_pulse_rate"></td>
-        </tr>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped mb-0">
+        <thead class="seperator">
+            <tr>
+                <th colspan="12" class="text-start">
+                    V. PHYSICAL EXAMINATION
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Weight (cm)</th>
+                <td id="view_weight"></td>
+                <th>Blood Pressure</th>
+                <td id="view_blood_pressure"></td>
+            </tr>
+            <tr>
+                <th>Height (cm)</th>
+                <td id="view_height"></td>
+                <th>Pulse Rate (Bpm)</th>
+                <td id="view_pulse_rate"></td>
+            </tr>
 
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
+</div>
         </tbody>
     </table>
 </div>

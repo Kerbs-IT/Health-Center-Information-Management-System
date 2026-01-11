@@ -1,7 +1,7 @@
 <div class="side-b-content">
     <div class="assessment border-bottom">
         <div class="input-field">
-            <label for="edit_side_b_date_of_visit" class="w-100 fs-5">Date of Visit:</label>
+            <label for="edit_side_b_date_of_visit" class="w-100 fs-5">Date of Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_visit" id="edit_date_of_visit" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="edit_side_b_medical_record_case_id" id="edit_side_b_medical_record_case_id">
             <input type="hidden" name="edit_side_b_health_worker_id" id="edit_side_b_health_worker_id">
@@ -12,7 +12,7 @@
             <textarea name="edit_side_b_medical_findings" id="edit_medical_findings" class="bg-light border-1 w-100 h-[150px]"></textarea>
         </div>
         <div class="input-field">
-            <label for="edit_side_b_method_accepted" class="fs-5">Method Accepted: </label>
+            <label for="edit_side_b_method_accepted" class="fs-5">Method Accepted<span class="text-danger">*</span></label>
             <input type="text" class="form-control w-100" name="edit_side_b_method_accepted" id="edit_method_accepted">
         </div>
         <div class="input-field">
@@ -55,7 +55,7 @@
         </div>
         <!-- date of follow up visit -->
         <div class="input-field mb-3">
-            <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit*</label>
+            <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_follow_up_visit" id="edit_date_of_follow_up_visit" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>

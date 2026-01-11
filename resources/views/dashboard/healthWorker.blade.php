@@ -7,6 +7,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
+    <style>
+        .swap-icon-con {
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .swap-icon-con:hover {
+            background-color: rgba(23, 162, 184, 0.1);
+        }
+
+        .action-icon {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
 </head>
 
 <body>
@@ -110,24 +127,6 @@
                     </div>
                 </main>
 
-                <style>
-                    .swap-icon-con {
-                        padding: 8px;
-                        border-radius: 4px;
-                        transition: background-color 0.2s;
-                        cursor: pointer;
-                    }
-
-                    .swap-icon-con:hover {
-                        background-color: rgba(23, 162, 184, 0.1);
-                    }
-
-                    .action-icon {
-                        width: 18px;
-                        height: 18px;
-                    }
-                </style>
-
             </div>
         </div>
     </div>
@@ -143,9 +142,17 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                        <span class="fs-6">
+                            <strong>Note:</strong>
+                            <span class="text-danger">*</span>
+                            <span class="fw-light"> indicates a required field.</span>
+                        </span>
+                    </div>
                     <form action="" method="post" class="d-flex gap-3 p-3 flex-wrap" enctype="multipart/form-data" id="profile-form">
                         @method('PUT')
                         @csrf
+
                         <!-- profile image section -->
                         <div class="d-flex flex-column align-items-center border-end p-2 flex-fill">
                             <img src="" alt="profile picture" class="profile-section-image rounded-circle" id="profile-image" data-base-url="{{ asset('') }}">
@@ -160,21 +167,25 @@
                         </div>
                         <!-- USER INFORMATION -->
                         <div class="flex-fill">
-                            <h4>Personal Info</h4>
+                            <h6>Personal Info</h6>
                             <div class="mb-2 d-flex gap-1 flex-wrap">
                                 <div class="input-field flex-fill">
-                                    <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
+                                    <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="">
                                     <small class="text-danger" id="fname-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
+                                    <label for="middle_initial" class="">Middle Name<span class="text-danger">*</span></label>
                                     <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
                                     <small class="text-danger" id="middle-initial-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
+                                    <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                     <small class="text-danger" id="lname-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
+                                    <label for="edit_suffix" class="">Suffix</label>
                                     <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
                                         <option value="" disabled selected>Select Suffix</option>
                                         <option value="Jr.">Jr</option>
@@ -191,11 +202,12 @@
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-xl-nowrap flex-md-row flex-column">
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="age">Age</label>
-                                    <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
+                                    <input type="text" id="age" placeholder="20" class="form-control"  disabled  value="">
+                                    <input type="hidden" id="hiddenAge" name="age">
                                     <small class="text-danger" id="age-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="birthdate">Date of Birth</label>
+                                    <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                     <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                                     <small class="text-danger" id="birthdate-error"></small>
                                 </div>
@@ -244,28 +256,16 @@
 
                                 <!-- email -->
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="email" class="">Email</label>
+                                    <label for="email" class="">Email<span class="text-danger">*</span></label>
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                     <small class="text-danger" id="email-error"></small>
                                 </div>
 
                             </div>
-                            <div class="mb-3 w-100 staff-fields " id="staff-fields">
-                                <div class="mb-3 w-100 d-block gap-2">
-                                    <div class="input-group w-100 d-block gap-2 align-items-center">
-                                        <label for="role" class="h6 fw-bold m-0">Assigned Area:</label>
-                                        <select name="update_assigned_area" id="update_assigned_area" class="border py-2 px-3 form-select w-100" data-occupied-areas='@json($occupied_assigned_areas)'>
-                                            <option value="">Select an Area</option>
-                                        </select>
-                                        @error('assigned_area')
-                                        <small class="text-danger">{{$message}}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
+                           
                             <!-- address -->
                             <div class="mb-2 d-flex gap-1 flex-column flex-wrap w-100">
-                                <h4>Address</h4>
+                                <label>Address</label>
                                 <div class="input-field d-flex gap-2 flex-column flex-md-row">
                                     <input type="text" placeholder="Blk & Lot n Street" class="form-control py-0" name="street" id="blk_n_street" value="">
                                     <small class="text-danger" id="street-error"></small>
@@ -279,7 +279,7 @@
                                 <div class="input-field d-flex gap-2 flex-wrap flex-column flex-md-row">
                                     <!-- region -->
                                     <div class="mb-2 xl:w-[50%] flex-fill">
-                                        <label for="region">Region*</label>
+                                        <label for="region">Region</label>
                                         <select name="region" id="region" class="form-select" data-selected="">
                                             <option value="" dissabled hidden>Select a region</option>
                                         </select>
@@ -287,7 +287,7 @@
                                     </div>
                                     <!-- province -->
                                     <div class="mb-2 xl:w-[50%] flex-fill">
-                                        <label for="province">Province*</label>
+                                        <label for="province">Province</label>
                                         <select name="province" id="province" class="form-select" disabled data-selected="">
                                             <option value="">Select a province</option>
                                         </select>
@@ -299,7 +299,7 @@
                                 <div class="input-field d-flex gap-2 flex-wrap flex-column flex-md-row">
                                     <!-- city -->
                                     <div class="mb-2 flex-fill">
-                                        <label for="city">City*</label>
+                                        <label for="city">City</label>
                                         <select name="city" id="city" class="form-select" disabled data-selected="">
                                             <option value="">Select a city</option>
                                         </select>
@@ -307,7 +307,7 @@
                                     </div>
                                     <!-- brgy -->
                                     <div class="mb-2 flex-fill">
-                                        <label for="brgy">Barangay*</label>
+                                        <label for="brgy">Barangay</label>
                                         <select name="brgy" id="brgy" class="form-select" disabled data-selected="">
                                             <option value="">Select a brgy</option>
                                         </select>
@@ -341,7 +341,6 @@
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-
                 <!-- Modal Header -->
                 <div class="modal-header bg-success text-white d-flex justify-content-between">
                     <h5 class="modal-title" id="addModalLabel">Add New Health Worker</h5>
@@ -352,18 +351,32 @@
 
                 <!-- Modal Body -->
                 <div class="modal-body">
-                    <form action="" method="POST" id="add-health-worker-form" class="rounded shadow-none shadow-md-flex d-flex flex-column flex-wrap align-items-start align-items-md-center  p-0 p-md-4  w-sm-25 w-md-50 w-lg-25 bg-white card">
+                    <form action="" method="POST" id="add-health-worker-form" class="rounded shadow-none shadow-md-flex d-flex flex-column flex-wrap align-items-start align-items-md-center  p-0 p-md-4  w-sm-25 w-md-50 w-lg-25 bg-white">
                         @csrf
-
-
                         <!-- full name -->
                         <div class="mb-2 w-100">
-                            <label for="" class="mb-1 responsive-label">Personal Info:</label>
-                            <div class="gap-2 d-flex flex-wrap flex-grow-1 justify-content-center">
-                                <input type="text" placeholder="First Name" name="first_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
-                                <input type="text" placeholder="Middle Initial" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
-                                <input type=" text" placeholder="Last Name" name="last_name" class="py-2 px-2 responsive-input rounded form-control flex-fill" autocomplete="off" style="width:200px;" value="{{old('last_name')}}">
-                                <div class="input-field flex-fill">
+                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                <span class="fs-6">
+                                    <strong>Note:</strong>
+                                    <span class="text-danger">*</span>
+                                    <span class="fw-light"> indicates a required field.</span>
+                                </span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="add_first_name_healthworker" class="">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter First Name" id="add_first_name_healthworker" name="first_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('first_name')}}">
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="add_middle_name_healthworker" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter Middle Name" id="add_middle_name_healthworker" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('middle_initial')}}">
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="add_last_name_healthworker" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Enter Last Name" id="add_last_name_healthworker" name="last_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('last_name')}}">
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <label for="add_suffix" class="">Suffix</label>
                                     <select name="add_suffix" id="add_suffix" class="form-select responsive-input py-2">
                                         <option value="" disabled selected>Select Suffix</option>
                                         <option value="Jr.">Jr</option>
@@ -382,25 +395,25 @@
                         </div>
                         <!-- email -->
                         <div class="mb-2 w-100">
-                            <label for="email" class="mb-1 responsive-label">Email:</label>
+                            <label for="email" class="mb-1 responsive-label">Email<span class="text-danger">*</span></label>
                             <input type="email" placeholder="Enter your email" name="email" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('email')}}">
                             <small class="text-danger email-error add-healthworker-error" id="email_error"></small>
                         </div>
                         <!-- date of birth -->
                         <div class="mb-2 w-100">
-                            <label for="add_date_of_birth" class="mb-1 responsive-label">Date of Birth:</label>
+                            <label for="add_date_of_birth" class="mb-1 responsive-label">Date of Birth<span class="text-danger">*</span></label>
                             <input type="date" placeholder="Enter your date_of_birth" id="add_date_of_birth" name="add_date_of_birth" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                             <small class="text-danger add_date_of_birth-error add-healthworker-error" id="add_date_of_birth_error"></small>
                         </div>
                         <!-- contact number -->
                         <div class="mb-2 w-100">
-                            <label for="add_contact_number" class="mb-1 responsive-label">Contact Number</label>
-                            <input type="text" placeholder="Enter your contact_number" id="add_contact_number" name="add_contact_number" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('contact_number')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
+                            <label for="add_contact_number" class="mb-1 responsive-label">Contact Number<span class="text-danger">*</span></label>
+                            <input type="text" placeholder="Enter your contact number" id="add_contact_number" name="add_contact_number" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('contact_number')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                             <small class="text-danger add_contact_number-error add-healthworker-error" id="add_contact_number_error"></small>
                         </div>
                         <!-- Password -->
                         <div class="mb-3 w-100">
-                            <label for="password" class="mb-1 h4 fs-4 w-100">Password:</label>
+                            <label for="password" class="mb-1  w-100">Password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Enter your password" name="password" class="py-2 px-2 w-100 fs-5 bg-light" id="add_password" autocomplete="off" value="{{old('password')}}">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg" id="eye-icon"></i>
@@ -409,9 +422,9 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3 w-100">
-                            <label for="re-type-pass" class="mb-1 font-weight-normal h4">Retype password:</label>
+                            <label for="re-type-pass" class="mb-1 font-weight-normal">Retype password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
-                                <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="add_re-type-pass">
+                                <input type="password" placeholder="Re-type the password" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="add_re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg" id="Retype-eye-icon"></i>
                             </div>
                             <small class="text-danger add-healthworker-error" class="password-confirmation-error" id="password-confirmation-error"></small>
@@ -421,7 +434,7 @@
                         <div class="mb-3 w-100 staff-fields " id="staff-fields">
                             <div class="mb-3 w-100 d-block gap-2">
                                 <div class="input-group w-100 d-block gap-2 align-items-center">
-                                    <label for="role" class="responsive-label m-0">Assigned Area:</label>
+                                    <label for="role" class="responsive-label m-0">Assigned Area<span class="text-danger">*</span></label>
                                     <select name="assigned_area" id="assigned_area" class="border py-2 px-3 form-select w-100" data-occupied-areas='@json($occupied_assigned_areas)'>
                                         <option value="">Select an Area</option>
                                     </select>

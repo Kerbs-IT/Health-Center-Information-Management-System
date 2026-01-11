@@ -47,21 +47,32 @@
                             @csrf
                             <div class="step d-flex flex-column w-100 rounded px-2">
                                 <div class="info">
+                                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                        <span class="fs-6">
+                                            <strong>Note:</strong>
+                                            <span class="text-danger">*</span>
+                                            <span class="fw-light"> indicates a required field.</span>
+                                        </span>
+                                    </div>
                                     <h4>Personal Info</h4>
                                     <div class="mb-md-2 mb-0 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light" name="first_name" value="{{optional($familyPlanningRecord->patient)->first_name??''}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="middle_initial" class="">Middle Name</label>
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light" name="middle_initial" value="{{optional($familyPlanningRecord->patient)->middle_initial??''}}">
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light" name="last_name" value="{{optional($familyPlanningRecord->patient)->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="suffix" class="">Suffix</label>
                                             <select name="suffix" id="suffix" class="form-select py-2 ">
                                                 <option value="" disabled {{ !optional($familyPlanningRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
                                                 <option value="Jr." {{ optional($familyPlanningRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
@@ -77,7 +88,7 @@
                                     <div class="mb-md-2 mb-0 d-flex gap-1  flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="birthdate">Date of Birth</label>
+                                            <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control bg-light w-100 px-5" min="1950-01-01" max="{{date('Y-m-d')}}" name="date_of_birth" value="{{optional($familyPlanningRecord->patient)->date_of_birth?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="data_of_birth_error"></small>
@@ -93,7 +104,7 @@
 
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="age">Age</label>
+                                            <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="number" id="age" placeholder="20" class="form-control bg-light" disabled value="{{optional($familyPlanningRecord->patient)->age??''}}">
                                             <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -131,7 +142,7 @@
                                     </div>
                                     <div class="mb-md-2 mb-0 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="dateOfRegistration">Date of Registration</label>
+                                            <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control bg-light text-center w-100 px-5 " min="1950-01-01" max="{{date('Y-m-d')}}" name="date_of_registration" value="{{optional($familyPlanningRecord->patient)->date_of_registration?->format('Y-m-d')??''}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
@@ -139,7 +150,7 @@
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
-                                            <label for="brgy">Administered by*</label>
+                                            <label for="brgy">Administered by<span class="text-danger">*</span></label>
                                             <select name="handled_by" id="handled_by" class="form-select bg-light " data-bs-health-worker-id="{{optional($familyPlanningRecord->family_planning_medical_record)->health_worker_id??''}}">
                                                 <option value="">Select a person</option>
                                             </select>
@@ -215,14 +226,14 @@
                                         <h4>Address</h4>
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap flex-md-row flex-column">
                                             <div class=" mb-md-2 mb-0  w-full md:w-[50%]">
-                                                <label for="street">Street*</label>
+                                                <label for="street">Street<span class="text-danger">*</span></label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control bg-light py-2" name="street" value="{{ trim(($address->house_number ?: '') . ', ' . ($address->street ?: '')) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 
                                             </div>
                                             <div class="mb-md-2 mb-0  w-full md:w-[50%]">
-                                                <label for="brgy">Barangay*</label>
+                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select bg-light py-2" data-bs-selected-brgy="{{$address->purok}}">
                                                     <option value="">Select a brgy</option>
                                                 </select>

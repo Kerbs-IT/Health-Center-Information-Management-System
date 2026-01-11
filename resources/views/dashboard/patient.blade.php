@@ -43,7 +43,7 @@
     )
 }}"
                                 alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
-                           
+
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
@@ -56,7 +56,7 @@
                                     <h4 class="mb-0 pb-2 border-bottom fw-bold no-wrap flex-1">Personal Information</h4>
                                     <div class="change-pass-button w-100 d-flex justify-content-end px-4 flex-1 mt-md-0 mt-1">
                                         <div>
-                                          <a href="{{ route('change-pass') }}" class="btn btn-success text-nowrap">Change Password</a>
+                                            <a href="{{ route('change-pass') }}" class="btn btn-success text-nowrap">Change Password</a>
                                         </div>
                                     </div>
                                 </div>
@@ -258,32 +258,55 @@
                             </div>
                             <!-- USER INFORMATION -->
                             <div class="user-info flex-grow-1 ">
+                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                    <span class="fs-6">
+                                        <strong>Note:</strong>
+                                        <span class="text-danger">*</span>
+                                        <span class="fw-light"> indicates a required field.</span>
+                                    </span>
+                                </div>
                                 <h4 class="fw-bold">Personal Info</h4>
                                 <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                     <div class="input-field flex-fill xl: w-[50%]">
+                                        <label for="first_name" class="w-100">First Name<span class="text-danger">*</span></label>
                                         <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
                                         <small class="text-danger" id="fname-error"></small>
                                     </div>
                                     <div class="input-field flex-fill xl: w-[50%]">
-                                        <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
+                                        <label for="middle_initial" class="w-100">Middle Name</label>
+                                        <input type="text" id="middle_initial" placeholder="Middle Name" class="form-control" name="middle_initial" value="">
                                         <small class="text-danger" id="middle-initial-error"></small>
                                     </div>
                                     <div class="input-field flex-fill xl: w-[50%]">
+                                        <label for="last_name" class="w-100">Last Name<span class="text-danger">*</span></label>
                                         <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                         <small class="text-danger" id="lname-error"></small>
+                                    </div>
+                                    <div class="input-field flex-fill xl: w-[50%]">
+                                        <label for="edit_suffix" class="">Suffix</label>
+                                        <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
+                                            <option value="" disabled selected>Select Suffix</option>
+                                            <option value="Jr.">Jr</option>
+                                            <option value="Sr.">Sr</option>
+                                            <option value="II.">II</option>
+                                            <option value="III.">III</option>
+                                            <option value="IV.">IV</option>
+                                            <option value="V.">V</option>
+                                        </select>
+                                        <small class="text-danger" id="edit-suffix-error"></small>
                                     </div>
                                 </div>
                                 <!-- age -->
                                 <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap ">
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
-                                        <label for="age">Age</label>
+                                        <label for="age">Age <span class="text-danger">*</span></label>
                                         <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
                                         <small class="text-danger" id="age-error"></small>
                                     </div>
                                     @endif
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
-                                        <label for="birthdate">Date of Birth</label>
+                                        <label for="birthdate">Date of Birth <span class="text-danger">*</span></label>
                                         <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
                                         <small class="text-danger" id="birthdate-error"></small>
                                     </div>
@@ -306,7 +329,7 @@
                                     @endif
                                 </div>
                                 <!-- civil status, contact number, nationality -->
-                                <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
+                                <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap flex-md-row flex-column">
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="civil_status" class="">Civil Status</label>
@@ -336,14 +359,14 @@
                                 </div>
                                 <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                     <!-- username -->
-                                    
+
                                     <!-- email -->
                                     <div class="input-field flex-fill xl: w-[50%]">
-                                        <label for="email" class="">Email</label>
+                                        <label for="email" class="">Email <span class="text-danger">*</span></label>
                                         <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                         <small class="text-danger" id="email-error"></small>
                                     </div>
-                                    
+
                                 </div>
                                 <!-- address -->
                                 <div class="mb-3 w-100" id="patient_type_con">
@@ -351,14 +374,14 @@
 
                                     <div class=" w-100 d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
                                         <div class="items w-[100%] xl:[50%]">
-                                            <label for="patient_street" class="w-100 text-muted">Blk & lot,Street*</label>
+                                            <label for="patient_street" class="w-100 text-muted">Blk & lot,Street <span class="text-danger">*</span></label>
                                             <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
                                             @error('blk_n_street')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
                                         </div>
                                         <div class="items w-[100%] xl:[50%]">
-                                            <label for="patient_purok_dropdown">Puroks*</label>
+                                            <label for="patient_purok_dropdown">Puroks <span class="text-danger">*</span></label>
                                             <select id="update_patient_purok_dropdown" class="form-select w-100" name="patient_purok_dropdown" required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
@@ -375,26 +398,26 @@
                                     <h4 class="fw-bold">{{ucwords($typeOfPatient)}} Medical Record Information</h4>
                                     @endif
                                     @if(($typeOfPatient ?? null) === 'vaccination')
-                                    <div class="d-flex gap-2">
-                                        <div class="input-field flex-1">
-                                            <label for="motherName">Mother Name</label>
+                                    <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="input-field w-[100%] xl:[50%]">
+                                            <label for="motherName">Mother's Name</label>
                                             <input type="text" id="mother_name" placeholder="mother name" class="form-control" name="mother_name" value="">
                                             <!-- ERROR HANDLING -->
                                             <small class="text-danger error-text" id="mother_name_error"></small>
                                         </div>
-                                        <div class="input-field flex-1">
-                                            <label for="fatherName">Father Name</label>
+                                        <div class="input-field w-[100%] xl:[50%]">
+                                            <label for="fatherName">Father's Name</label>
                                             <input type="text" id="father_name" placeholder="Father Name" class="form-control" name="father_name" value="">
                                             <small class="text-danger error-text" id="father_name_error"></small>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <div class="mb-2 flex-1">
+                                    <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="mb-2 w-[100%] xl:[50%]">
                                             <label for="BP">Birth Height(cm):</label>
                                             <input type="number" class="form-control w-100" id="vaccination_height" placeholder="00.00" name="vaccination_height">
                                             <small class="text-danger error-text" id="vaccination_height_error"></small>
                                         </div>
-                                        <div class="mb-2 flex-1">
+                                        <div class="mb-2 w-[100%] xl:[50%]">
                                             <label for="BP">Birth Weight(kg):</label>
                                             <input type="text" class="form-control w-100" id="vaccination_weight" placeholder=" 00.00" name="vaccination_weight">
                                             <small class="text-danger error-text" id="vaccination_weight_error"></small>
@@ -461,13 +484,13 @@
                                         <small class="text-danger error-text" id="philhealth_id_no_error"></small>
                                     </div>
                                     @elseif(($typeOfPatient ?? null) === 'senior-citizen')
-                                    <div class="mb-2 d-flex gap-2">
-                                        <div class="input-field flex-1">
+                                    <div class="mb-2 d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
+                                        <div class="input-field w-[100%] xl:[50%] ">
                                             <label for="blood_type">Occupation</label>
                                             <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             <small class="text-danger error-text" id="occupation_error"></small>
                                         </div>
-                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                        <div class="mb-3 w-[100%] xl:[50%] d-flex gap-2">
                                             <div class="input-field w-100">
                                                 <label for="senior_religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
@@ -488,20 +511,20 @@
                                         </div>
                                     </div>
                                     @elseif(($typeOfPatient ?? null) === 'family-planning')
-                                    <div class="mb-2 d-flex gap-2">
-                                        <div class="input-field flex-1">
+                                    <div class="mb-2 d-flex gap-2 flex-xl-nowrap flex-wrap">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="blood_type">Occupation</label>
                                             <input type="text" id="occupation" placeholder="Enter the Occupation" class="form-control" name="occupation">
                                             <small class="text-danger error-text" id="occupation_error"></small>
                                         </div>
-                                        <div class="mb-3 flex-1 d-flex gap-2">
+                                        <div class="mb-3 flex-fill xl:w-[50%] d-flex gap-2">
                                             <div class="input-field w-100">
                                                 <label for="senior_religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
                                                 <small class=" text-danger" id="religion_error"></small>
                                             </div>
                                         </div>
-                                        <div class="input-field flex-1">
+                                        <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="philhealth_no">Philhealth No:</label>
                                             <input type="text" id="philhealth_no" placeholder="Enter the philhealth no." class="form-control" name="philhealth_no">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>

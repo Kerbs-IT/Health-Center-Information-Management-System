@@ -55,7 +55,7 @@ class addPatientController extends Controller
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
                 'handled_by' => 'required',

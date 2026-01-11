@@ -106,15 +106,21 @@
 
                                             <div class="modal-body">
                                                 <div class="inner w-100 rounded">
-
+                                                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                        <span class="fs-6">
+                                                            <strong>Note:</strong>
+                                                            <span class="text-danger">*</span>
+                                                            <span class="fw-light"> indicates a required field.</span>
+                                                        </span>
+                                                    </div>
                                                     <div class="mb-md-2 mb-1 w-100">
-                                                        <label for="patient_name">Patient Name</label>
+                                                        <label for="patient_name">Patient Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control bg-light" disabled placeholder="Enter the name" id="check_up_patient_name">
                                                         <input type="hidden" class="form-control bg-light" name="check_up_full_name" id="hidden_check_up_patient_name">
                                                     </div>
 
                                                     <div class="mb-md-2 mb-1 w-100">
-                                                        <label for="administered_by">Administered By</label>
+                                                        <label for="administered_by">Administered By <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control bg-light" name="check_up_handled_by" disabled placeholder="Nurse" id="check_up_handled_by">
                                                         <input type="hidden" class="form-control bg-light" name="health_worker_id" placeholder="Nurse" id="health_worker_id">
                                                     </div>
@@ -331,7 +337,7 @@
                                                             <small class="text-danger error-text" id="overall_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="date_of_comeback">Date of comeback*</label>
+                                                            <label for="date_of_comeback">Date of comeback<span class="text-danger">*</span></label>
                                                             <input type="date" class="form-control" name="date_of_comeback" id="date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                         </div>
@@ -361,6 +367,13 @@
                                             <div class="modal-body">
                                                 <div class="mb-2 w-100">
                                                     <div class="ob-history mb-2">
+                                                        <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                            <span class="fs-6">
+                                                                <strong>Note:</strong>
+                                                                <span class="text-danger">*</span>
+                                                                <span class="fw-light"> indicates a required field.</span>
+                                                            </span>
+                                                        </div>
                                                         <h3>OB HISTORY</h3>
                                                         <div class="type-of-pregnancy d-flex w-100 gap-1 flex-wrap flex-lg-nowrap">
                                                             <div class="item flex-fill">
@@ -473,12 +486,12 @@
                                                     <div class="subjective-info mb-3 border-bottom">
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
-                                                                <label for="place_of_delivery">LMP</label>
+                                                                <label for="place_of_delivery">LMP<span class="text-danger">*</span></label>
                                                                 <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
-                                                                <label for="expected_delivery">Expected Delivery</label>
+                                                                <label for="expected_delivery">Expected Delivery<span class="text-danger">*</span></label>
                                                                 <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece" id="expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="expected_delivery_error"></small>
                                                             </div>
@@ -588,8 +601,15 @@
                                             </div>
 
                                             <div class="modal-body">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 <div class="prenatal-planning d-flex flex-column align-items-center">
-                                                    <h1 class="text-center mb-2 planning-header">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
+                                                    <h1 class="text-center mb-2 planning-header text-black">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
 
                                                     <div class="prenatal-planning-body d-flex flex-column w-100 p-4 shadow card">
                                                         <h4>Mahahalagang Impormasyon:</h4>
@@ -743,7 +763,7 @@
                                                         <!-- patient name -->
                                                         <div class="mb-3">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan ng pasyente: </label>
+                                                                <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan ng pasyente <span class="text-danger">*</span></label>
                                                                 <input type="text" class="flex-grow-1 form-control" name="patient_name" id="patient_name" placeholder="Ilagay ang pangalan" disabled>
                                                             </div>
 
@@ -830,6 +850,13 @@
                                             </div>
 
                                             <div class="modal-body">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 @include('records.prenatal.editComponent.editPregnancyCheckup')
                                             </div>
 
@@ -848,7 +875,7 @@
                                     @include('records.familyPlanning.viewCase')
                                 </div>
                             </div>
-                            <!-- EDIT CASE INFO -->
+                            <!-- EDIT family plan CASE INFO -->
                             <div class="modal fade" id="editfamilyPlanningCaseModal" tabindex="-1" aria-labelledby="editfamilyPlanningCaseModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered" tabindex="-1">
                                     <div class="modal-content">
@@ -861,6 +888,13 @@
                                             </div>
 
                                             <div class="modal-body">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 @include('records.familyPlanning.familyPlanningCaseStep.step1')
                                                 <!-- step 2 -->
                                                 @include('records.familyPlanning.familyPlanningCaseStep.step2')
@@ -908,6 +942,13 @@
                                             </div>
 
                                             <div class="modal-body">
+                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <span class="fs-6">
+                                                        <strong>Note:</strong>
+                                                        <span class="text-danger">*</span>
+                                                        <span class="fw-light"> indicates a required field.</span>
+                                                    </span>
+                                                </div>
                                                 @include('records.familyPlanning.sideRecord.editSideB')
                                             </div>
                                             <div class="modal-footer d-flex justify-content-between">
@@ -937,6 +978,13 @@
                                                         <input type="hidden" name="add_prenatal_case_medical_record_case_id" id="add_prenatal_case_medical_record_case_id">
                                                         <input type="hidden" name="add_prenatal_case_health_worker_id" id="add_prenatal_case_health_worker_id">
                                                         <input type="hidden" name="add_prenatal_case_patient_name" id="add_prenatal_case_patient_name">
+                                                        <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                            <span class="fs-6">
+                                                                <strong>Note:</strong>
+                                                                <span class="text-danger">*</span>
+                                                                <span class="fw-light"> indicates a required field.</span>
+                                                            </span>
+                                                        </div>
                                                         <h3>OB HISTORY</h3>
                                                         <div class="type-of-pregnancy d-flex w-100 gap-1 flex-wrap flex-lg-nowrap">
                                                             <div class="item flex-fill">
@@ -1049,12 +1097,12 @@
                                                     <div class="subjective-info mb-3 border-bottom">
                                                         <div class="mb-2 d-flex w-100 gap-2">
                                                             <div class="mb-2 w-100 ">
-                                                                <label for="add_LMP">LMP</label>
+                                                                <label for="add_LMP">LMP <span class="text-danger">*</span></label>
                                                                 <input type="date" name="add_LMP" class="form-control w-100" placeholder="trece" id="add_LMP_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_LMP_error"></small>
                                                             </div>
                                                             <div class="mb-2 w-100">
-                                                                <label for="add_expected_delivery_input">Expected Delivery</label>
+                                                                <label for="add_expected_delivery_input">Expected Delivery <span class="text-danger">*</span></label>
                                                                 <input type="date" name="add_expected_delivery" class="form-control w-100" placeholder="trece" id="add_expected_delivery_input" min="1950-01-01" max="{{date('Y-m-d')}}">
                                                                 <small class="text-danger error-text error-text" id="add_expected_delivery_error"></small>
                                                             </div>
@@ -1164,9 +1212,15 @@
 
                                             <div class="modal-body">
                                                 <div class="prenatal-planning d-flex flex-column align-items-center">
-                                                    <h1 class="text-center mb-2 planning-header">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
+                                                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                        <span class="fs-6">
+                                                            <strong>Note:</strong>
+                                                            <span class="text-danger">*</span>
+                                                            <span class="fw-light"> indicates a required field.</span>
+                                                        </span>
+                                                    </div>
+                                                    <h1 class="text-center mb-2 planning-header text-black">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
                                                     <!-- HIDDEN INPUTS -->
-
 
                                                     <input type="hidden" name="add_pregnancy_plan_patient_name" id="add_pregnancy_plan_patient_name">
 
@@ -1322,7 +1376,7 @@
                                                         <!-- patient name -->
                                                         <div class="mb-md-3 mb-1">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="add_patient_name" class="fs-5 whitespace-normal xl:whitespace-nowrap">Pangalan ng pasyente: </label>
+                                                                <label for="add_patient_name" class="fs-5 whitespace-normal xl:whitespace-nowrap">Pangalan ng pasyente <span class="text-danger">*</span> </label>
                                                                 <input type="text" class="flex-grow-1 form-control" name="add_patient_name" id="add_patient_name" placeholder="Ilagay ang pangalan" disabled>
                                                             </div>
 
