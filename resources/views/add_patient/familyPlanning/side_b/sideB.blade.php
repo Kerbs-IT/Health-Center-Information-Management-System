@@ -71,7 +71,7 @@
         <div class="side-follow-up-questions">
             <h5>How to Reasonable sure a Client is Not Pregnant</h5>
             <!-- q1 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">1. Did you have a baby less than six (6) months ago, are you fully or nearly-fully breastfeeding, and have you had no menstrual period since then?</p>
@@ -85,7 +85,7 @@
                 <small class="text-danger" id="baby_Less_than_six_months_question_error"></small>
             </div>
             <!-- q2 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">2. Have you abstained from sexual intercourse since your last menstrual period or delivery?</p>
@@ -99,7 +99,7 @@
                 <small class="text-danger" id="sexual_intercouse_or_mesntrual_period_question_error"></small>
             </div>
             <!-- q3 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">3. Have you had a baby in the last four (4) weeks</p>
@@ -113,7 +113,7 @@
                 <small class="text-danger" id="baby_last_4_weeks_question_error"></small>
             </div>
             <!-- q4 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">4. Did your last menstrual period start within the past seven (7) days</p>
@@ -127,7 +127,7 @@
                 <small class="text-danger" id="menstrual_period_in_seven_days_question_error"></small>
             </div>
             <!-- q5 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">5. Have you had a miscarriage or abortion in the last seven (7) days? </p>
@@ -141,7 +141,7 @@
                 <small class="text-danger" id="miscarriage_or_abortion_question_error"></small>
             </div>
             <!-- q6 -->
-            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex   -nowrap">
+            <div class="mb-2 d-flex align-items-center justify-content-between gap-2 flex-nowrap">
                 <div class="question d-flex align-items-center gap-3 w-[80%]">
 
                     <p class="mb-0 fs-5 fw-light">6. Have you been using reliable contraceptive method consistenly and correctly?</p>
