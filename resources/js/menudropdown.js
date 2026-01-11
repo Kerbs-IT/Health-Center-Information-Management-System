@@ -1,12 +1,12 @@
-
 import $ from 'jquery';
 
 window.$ = window.jQuery = $;
 
 $(function () {
     const openSubmenus = JSON.parse(localStorage.getItem('openSubmenus') || '[]');
+    const activeMenuItem = localStorage.getItem('activeMenuItem');
 
-    // Only restore for menu options that actually have a sub-menu
+    // Restore open submenus
     $('.menu-option').each(function (index) {
         const $submenu = $(this).next('.sub-menu');
         if ($submenu.length && openSubmenus.includes(index)) {
@@ -15,72 +15,92 @@ $(function () {
         }
     });
 
-    // Handle menu option clicks
+    // Restore active menu item
+    if (activeMenuItem) {
+        $(activeMenuItem).addClass('active');
+    }
+
+    // Handle menu option clicks (for items with submenus)
     $('.menu-option').on('click', function (e) {
         const $submenu = $(this).next('.sub-menu');
-        
+
         // If this menu option has a submenu, prevent navigation and toggle submenu
         if ($submenu.length) {
-            e.preventDefault(); // Prevent Laravel route navigation
-            
+            e.preventDefault();
+
             const index = $('.menu-option').index(this);
-            
-            // Close all other open submenus first
+            const isCurrentlyOpen = $submenu.is(':visible');
+
+            // Close ALL submenus first
             $('.menu-option').each(function(i) {
                 const $otherSubmenu = $(this).next('.sub-menu');
-                if ($otherSubmenu.length && i !== index && $otherSubmenu.is(':visible')) {
+                if ($otherSubmenu.length && $otherSubmenu.is(':visible')) {
                     $otherSubmenu.slideUp();
                     $(this).find('.dropdown-arrow').removeClass('rotate');
-                    
-                    // Update localStorage
-                    const openSubmenus = JSON.parse(localStorage.getItem('openSubmenus') || '[]');
-                    const idx = openSubmenus.indexOf(i);
-                    if (idx !== -1) {
-                        openSubmenus.splice(idx, 1);
-                        localStorage.setItem('openSubmenus', JSON.stringify(openSubmenus));
-                    }
                 }
             });
 
-            // Toggle the clicked submenu
-            $submenu.slideToggle();
-            $(this).find('.dropdown-arrow').toggleClass('rotate');
-
-            const openSubmenus = JSON.parse(localStorage.getItem('openSubmenus') || '[]');
-            const i = openSubmenus.indexOf(index);
-
-            if ($submenu.is(':visible') && i === -1) {
-                openSubmenus.push(index);
-            } else if (!$submenu.is(':visible') && i !== -1) {
-                openSubmenus.splice(i, 1);
-            }
-
-            localStorage.setItem('openSubmenus', JSON.stringify(openSubmenus));
-        } else {
-            // If no submenu, clear all submenu states before navigation
+            // Clear all open submenus from storage
             localStorage.setItem('openSubmenus', JSON.stringify([]));
-            // Allow normal Laravel route navigation
+
+            // If the clicked submenu was closed, open it
+            if (!isCurrentlyOpen) {
+                $submenu.slideDown();
+                $(this).find('.dropdown-arrow').addClass('rotate');
+
+                // Save only this one to storage
+                localStorage.setItem('openSubmenus', JSON.stringify([index]));
+            }
+        } else {
+            // If no submenu, clear all submenu states and set this as active
+            localStorage.setItem('openSubmenus', JSON.stringify([]));
+
+            // Close all submenus
+            $('.sub-menu').slideUp();
+            $('.dropdown-arrow').removeClass('rotate');
+
+            // Remove active from all and add to this item
+            $('.menu-items').removeClass('active');
+            $(this).addClass('active');
+
+            // Store active menu item
+            const selector = this.id ? `#${this.id}` : null;
+            if (selector) {
+                localStorage.setItem('activeMenuItem', selector);
+            }
         }
     });
 
-    // Highlight active menu-items (optional persistence can be added)
-    const menuItem = document.querySelectorAll('.menu-items');
-    menuItem.forEach(e => {
-        e.addEventListener('click', () => {
-            menuItem.forEach(item => item.classList.remove('active'));
-            e.classList.add('active');
-        });
+    // Handle submenu item clicks (items inside .sub-menu)
+    $('.sub-menu .menu-items').on('click', function (e) {
+        // Remove active from all menu items
+        $('.menu-items').removeClass('active');
+
+        // Add active to clicked item
+        $(this).addClass('active');
+
+        // Store active menu item
+        const selector = this.id ? `#${this.id}` : null;
+        if (selector) {
+            localStorage.setItem('activeMenuItem', selector);
+        }
+    });
+
+    // Handle direct menu items (non-submenu, non-menu-option items)
+    $('.menu-items:not(.menu-option):not(.sub-menu .menu-items)').on('click', function () {
+        // Remove active from all menu items
+        $('.menu-items').removeClass('active');
+
+        // Add active to clicked item
+        $(this).addClass('active');
+
+        // Store active menu item
+        const selector = this.id ? `#${this.id}` : null;
+        if (selector) {
+            localStorage.setItem('activeMenuItem', selector);
+        }
+
+        // Clear submenu states
+        localStorage.setItem('openSubmenus', JSON.stringify([]));
     });
 });
-
-
-// $('.menu-option').on('click', function (e) {
-//     const next = $(this).next('.sub-menu');
-
-//     // Only toggle if this menu-option has a submenu immediately following it
-//     if (next.length > 0) {
-//         e.preventDefault(); // Optional: prevent navigation if it's an <a>
-//         next.slideToggle();
-//         $(this).find('.dropdown-arrow').toggleClass('rotate');
-//     }
-// });
