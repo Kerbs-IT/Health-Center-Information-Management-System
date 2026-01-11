@@ -133,7 +133,7 @@
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="contact_number" class="">Contact Number</label>
+                                            <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>

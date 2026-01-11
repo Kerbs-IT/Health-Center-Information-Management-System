@@ -243,12 +243,12 @@
                                 <!-- contact -->
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="contact_number" class="">Contact Number</label>
-                                    <input type="number" placeholder="+63-936-627-8671" class="form-control" id="contact_num" name="contact_number" value="">
+                                    <input type="number" placeholder="Enter your contact number" class="form-control" id="contact_num" name="contact_number" value="">
                                     <small class="text-danger" id="contact-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="nationality" class="">Nationality</label>
-                                    <input type="text" placeholder="ex. Filipino" class="form-control" id="nationality" name="nationality" value="">
+                                    <input type="text" placeholder="Enter your nationality" class="form-control" id="nationality" name="nationality" value="">
                                     <small class="text-danger" id="nationality-error"></small>
                                 </div>
                             </div>

@@ -163,7 +163,7 @@
                                 <!-- contact -->
                                 <div class="input-field flex-fill">
                                     <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
-                                    <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
+                                    <input type="number" placeholder="Enter your contact number" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> contact_number ?? null }}">
                                     @error('contact_number')
                                     <small class="text-danger">{{$message}}</small>
@@ -171,7 +171,7 @@
                                 </div>
                                 <div class="input-field flex-fill">
                                     <label for="nationality" class="">Nationality</label>
-                                    <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="{{ optional(Auth::user() -> staff) -> nationality ??
+                                    <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="{{ optional(Auth::user() -> staff) -> nationality ??
                                                                                                                                     optional(Auth::user() -> nurses) -> nationality ?? null }}">
                                     @error('nationality')
                                     <small class="text-danger">{{$message}}</small>

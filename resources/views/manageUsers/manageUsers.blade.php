@@ -162,7 +162,7 @@
 
                                     <div class="col-12 col-md-12">
                                         <label for="contact_num" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                                        <input type="number" placeholder="+63-936-627-8671" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
+                                        <input type="number" placeholder="Enter your contact number" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
                                         <small class="text-danger" id="contact-error"></small>
                                     </div>
 
@@ -284,7 +284,7 @@
                         </div>
                         <div class="mb-2 w-100">
                             <label for="contact_number" class="mb-1 ">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" placeholder="Enter your email" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
+                            <input type="text" placeholder="Enter your contact number" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
 
                             <small class="text-danger error-element contact_number_error"></small>
 
