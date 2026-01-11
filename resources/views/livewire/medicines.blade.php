@@ -13,7 +13,7 @@
             <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
                 <div class="flex-fill">
                     <label for="" class="form-label">Show</label>
-                    <select type="text" class="form-select w-50" name="show" wire:model.live="perPage">
+                    <select type="text" class="form-select w-[80%]" name="show" wire:model.live="perPage">
                         <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
@@ -51,6 +51,9 @@
                     <i class="fa-solid fa-{{ $showArchived ? 'list' : 'archive' }} pe-1"></i>
                     {{ $showArchived ? 'Show Active' : 'Show Archived' }}
                 </button>
+                <a href="{{ route('medicines.download-pdf') }}" class="btn btn-danger" target="_blank">
+                    <i class="fa-solid fa-file-pdf pe-1"></i>Download PDF
+                </a>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMedicineModal"><i class="fa-solid fa-plus pe-1"></i>Add Medicine</button>
             </div>
             @php
@@ -196,8 +199,8 @@
                         <!-- Dynamic td -->
                     </tbody>
                 </table>
-                {{ $medicines->links() }}
             </div>
+               {{ $medicines->links() }}
         </div>
     </main>
 
