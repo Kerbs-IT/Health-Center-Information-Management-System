@@ -23,6 +23,35 @@ document.addEventListener('DOMContentLoaded', function () {
         let modal = bootstrap.Modal.getInstance(modalEl);
         modal.hide();
     });
+
+    // Reset form on Medicine Modal
+    const addMedicineModal = document.getElementById('adMedicineModal');
+    const editMedicineModal = document.getElementById('editMedicineModal');
+    const addCategoryModal = document.getElementById('addCategoryModal');
+    const editCategoryModal = document.getElementById('editCategoryModal');
+
+    if(addMedicineModal){
+        addMedicineModal.addEventListener('hidden.bs.modal', function(){
+            Livewire.dispatch('resetFormOnModalClose');
+        });
+    }
+    if(editMedicineModal){
+        editMedicineModal.addEventListener('hidden.bs.modal', function(){
+            Livewire.dispatch('resetFormOnModalClose');
+        });
+    }
+    if(addCategoryModal){
+        addCategoryModal.addEventListener('hidden.bs.modal', function(){
+            Livewire.dispatch('resetFormOnModalClose');
+        });
+    }
+    if(editCategoryModal){
+        editCategoryModal.addEventListener('hidden.bs.modal', function(){
+            Livewire.dispatch('resetFormOnModalClose');
+        });
+    }
+
+
 });
 
 // Archive Confirmation Dialog

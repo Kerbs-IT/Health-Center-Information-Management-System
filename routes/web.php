@@ -34,6 +34,7 @@ use App\Http\Controllers\wraMasterlistController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SwapHealthWorkerController;
+use App\Http\Controllers\MedicinePdfController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -596,3 +597,5 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);
+
+Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
