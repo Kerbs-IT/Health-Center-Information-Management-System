@@ -1,6 +1,6 @@
 
-<div class="min-vh-100 p-5">
-    <div class="shadow p-2">
+<div class="min-vh-100 p-lg-5 p-md-3 p-1">
+    <div class="shadow p-md-2 p-0">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-8 mx-2 mt-2 p-1">
             <!-- Total Medicines Card -->
             <button data-bs-toggle="modal" data-bs-target="#medicineModal">
