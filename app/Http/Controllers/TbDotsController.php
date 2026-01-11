@@ -249,7 +249,7 @@ class TbDotsController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ??  $tbDotsRecord->patient->sex;
+            $sex = isset($data['sex']) ??  $tbDotsRecord->patient->sex;
             // update the patient data first
             $tbDotsRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),

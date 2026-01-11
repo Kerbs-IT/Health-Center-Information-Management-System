@@ -601,7 +601,7 @@ class FamilyPlanningController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ?? $familyPlanningRecord->patient->sex;
+            $sex = isset($data['sex']) ?? $familyPlanningRecord->patient->sex;
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
