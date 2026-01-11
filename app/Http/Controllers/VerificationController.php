@@ -105,6 +105,7 @@ class VerificationController extends Controller
                 'verification_code_expires_at' => null,
                 'verification_attempts' => 0,
                 'verification_locked_until' => null,
+                'suffix' => $registrationData['suffix']
             ]);
 
             // Create users_address record

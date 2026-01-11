@@ -32,6 +32,22 @@ fetch("/showBrgyUnit")
 // add the patient account
 const addPatientSubmitBtn = document.getElementById("add-patient-submit-btn");
 
+// add new account btn
+const addModalBtn = document.getElementById("add-patient-account-modal-btn");
+
+if (addModalBtn) {
+    addModalBtn.addEventListener("click", () => {
+        const errorsMessages = document.querySelectorAll(".error-element");
+        const form = document.getElementById("add-patient-form");
+        if (form) {
+            form.reset();
+        }
+        if(errorsMessages){
+            errorsMessages.forEach(element => element.innerHTML = '');
+        }
+    })
+}
+
 addPatientSubmitBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const formDataElement = document.getElementById("add-patient-form");
@@ -39,7 +55,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
 
     try {
         // errors container
-        const username_error = document.querySelector(".username-error");
+       
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
             ".middle-initial-error"
@@ -60,7 +76,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
             ".date_of_birth_error"
         );
         const patient_type_error = document.querySelector(
-            ".patient_type_error"
+            ".patient-type-error"
         );
 
         const response = await fetch("/add-patient-account", {
@@ -77,7 +93,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
         const result = await response.json();
         if (!response.ok) {
             // set the errors
-            username_error.innerHTML = result.errors?.username?.[0] ?? "";
+            
             fname_error.innerHTML = result.errors?.first_name?.[0] ?? "";
             middle_initial_error.innerHTML =
                 result.errors?.middle_initial?.[0] ?? "";
@@ -106,7 +122,6 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
         } else {
             formDataElement.reset();
             // make the errors gone
-            username_error.innerHTML = "";
             fname_error.innerHTML = "";
             middle_initial_error.innerHTML = "";
             lname_error.innerHTML = "";
@@ -331,7 +346,6 @@ const errorFieldMap = {
     civil_status: "civil-status-error",
     contact_number: "contact-error",
     nationality: "nationality-error",
-    username: "username-error",
     email: "email-error",
     street: "street-error",
     postal_code: "postal-error",

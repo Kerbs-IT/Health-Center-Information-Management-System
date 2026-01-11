@@ -49,22 +49,33 @@
                             @csrf
                             <div class="step d-flex flex-column w-100 rounded  px-2">
                                 <div class="info">
+                                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                        <span class="fs-6">
+                                            <strong>Note:</strong>
+                                            <span class="text-danger">*</span>
+                                            <span class="fw-light"> indicates a required field.</span>
+                                        </span>
+                                    </div>
                                     <h4>Personal Info</h4>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
                                             <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light border-dark" name="first_name" value="{{optional($prenatalRecord)->patient?->first_name??''}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="middle_initial" class="">Middle Name</label>
                                             <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="suffix" class="">Suffix</label>
                                             <select name="suffix" id="suffix" class="form-select py-2 bg-light border-dark">
                                                 <option value="" disabled {{ !optional($prenatalRecord)->patient?->suffix? 'selected' : '' }}>Select Suffix</option>
                                                 <option value="Jr." {{ optional($prenatalRecord)->patient?->suffix== 'Jr.' ? 'selected' : '' }}>Jr</option>
@@ -80,7 +91,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="birthdate">Date of Birth</label>
+                                            <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5 bg-light border-dark" name="date_of_birth" value="{{ optional($prenatalRecord?->patient?->date_of_birth)->format('Y-m-d') ?? '' }}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
@@ -97,7 +108,7 @@
 
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="age">Age</label>
+                                            <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" disabled value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <input type="hidden" id="hiddenAge" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -138,7 +149,7 @@
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-full md:w-[50%]">
-                                            <label for="dateOfRegistration">Date of Registration</label>
+                                            <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{optional($prenatalRecord)->patient?->date_of_registration->format('Y-m-d')??''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
@@ -146,7 +157,7 @@
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 w-full md:w-[50%]">
-                                            <label for="edit_handled_by">Administered by*</label>
+                                            <label for="edit_handled_by">Administered by<span class="text-danger">*</span></label>
                                             <select name="handled_by" id="edit_handled_by" class="form-select bg-light border-dark " data-bs-health-worker-id="{{optional($prenatalRecord)->prenatal_case_record[0]->health_worker_id??''}}">
                                                 <option value="" disabled>Select a person</option>
                                             </select>
@@ -260,14 +271,14 @@
                                         <h4>Address</h4>
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap">
                                             <div class=" mb-2 w-full md:w-[50%]">
-                                                <label for="street">Street*</label>
+                                                <label for="street">Street<span class="text-danger">*</span></label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 bg-light border-dark" name="street" value="{{ trim(($address->house_number ?: '') . ', ' . ($address->street ?: '')) }}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
-                                                <label for="brgy">Barangay*</label>
+                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select py-2 bg-light border-dark" data-bs-selected-brgy="{{$address-> purok}}">
                                                     <option value="">Select a brgy</option>
                                                 </select>

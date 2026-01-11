@@ -43,6 +43,7 @@ editIcon.addEventListener("click", (e) => {
             const patient_purok_address = document.getElementById(
                 "update_patient_purok_dropdown"
             );
+            const suffix = document.getElementById("edit_suffix");
 
             // address
             const region = document.getElementById("region");
@@ -88,8 +89,9 @@ editIcon.addEventListener("click", (e) => {
                 const firstName = user?.first_name || "";
                 const middleInitial = user?.middle_initial || "";
                 const lastName = user?.last_name || "";
+                const suffix = user?.suffix || "";
                 fullname.innerHTML =
-                    `${firstName} ${middleInitial} ${lastName}`.trim();
+                    `${firstName} ${middleInitial} ${lastName} ${suffix}`.trim();
             }
 
             // input values
@@ -105,6 +107,7 @@ editIcon.addEventListener("click", (e) => {
             mInitial.value =
                 patient?.middle_initial || user?.middle_initial || "";
             if (age) age.value = data.response.patient?.age ?? "";
+            if(suffix) suffix.value = patient?.suffix|| user?.suffix|| "";
             
             // slice date
             function dateFormat(date) {

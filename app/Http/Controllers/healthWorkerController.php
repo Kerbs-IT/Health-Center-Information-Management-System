@@ -74,7 +74,7 @@ class healthWorkerController extends Controller
                 'last_name' => ['required'],
                 'assigned_area' => 'required',
                 'add_date_of_birth' => 'required|date',
-                'add_contact_number' => 'sometimes|nullable|numeric|digits_between:7,12',
+                'add_contact_number' => 'required|numeric|digits_between:7,12',
                 'add_suffix' => 'sometimes|nullable|string',
                
             ]);
@@ -167,7 +167,7 @@ class healthWorkerController extends Controller
                 'date_of_birth' => 'sometimes|nullable|date',
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 
                 'email' => ['required','email'],
@@ -179,7 +179,7 @@ class healthWorkerController extends Controller
                 'postal_code' => 'sometimes|nullable|numeric',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-                'update_assigned_area' => 'required',
+                
                 'edit_suffix' => 'sometimes|nullable|string'
             ]);
 
@@ -280,7 +280,6 @@ class healthWorkerController extends Controller
                 'civil_status' => $data['civil_status']?? null,
                 'contact_number' => $data['contact_number']?? null,
                 'nationality' => $data['nationality']?? null,
-                'assigned_area_id' => $data['update_assigned_area']
             ]);
 
             return response() -> json(['success' => 'Staff information has been updated']);
