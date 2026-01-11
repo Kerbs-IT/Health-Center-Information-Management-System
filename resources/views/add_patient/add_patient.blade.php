@@ -101,7 +101,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field w-50">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="trece martires city" class="form-control" name="place_of_birth" value="">
+                                            <input type="text" id="place_of_birth" placeholder="Enter place of birth" class="form-control" name="place_of_birth" value="">
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
                                         </div>
 
@@ -132,13 +132,13 @@
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="contact_number" class="">Contact Number</label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="">
+                                            <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
+                                            <input type="number" placeholder="Enter your phone number" class="form-control" name="contact_number" value="">
                                             <small class="text-danger error-text" id="contact_number_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="">
                                             <small class="text-danger error-text" id="nationality_error"></small>
                                         </div>
 
