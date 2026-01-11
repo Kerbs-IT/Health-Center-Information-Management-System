@@ -177,7 +177,7 @@ class FamilyPlanningController extends Controller
 
             // side b info
             $sideBdata = $request->validate([
-                'side_b_date_of_visit' => 'sometimes|nullable|date',
+                'side_b_date_of_visit' => 'required|date',
                 'side_b_medical_findings' => 'sometimes|nullable|string',
                 'side_b_method_accepted' => 'sometimes|nullable|string',
                 'add_side_b_name_n_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
@@ -1597,9 +1597,9 @@ class FamilyPlanningController extends Controller
             $data = $request->validate([
                 'side_b_medical_record_case_id' => 'required',
                 'side_b_health_worker_id' => 'required',
-                'side_b_date_of_visit' => 'sometimes|nullable|date',
+                'side_b_date_of_visit' => 'required|date',
                 'side_b_medical_findings' => 'sometimes|nullable|string',
-                'side_b_method_accepted' => 'sometimes|nullable|string',
+                'side_b_method_accepted' => 'required|string',
                 'add_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_signature_data' => 'sometimes|nullable|string',
                 'side_b_date_of_follow_up_visit' => 'required|date',
@@ -1670,9 +1670,9 @@ class FamilyPlanningController extends Controller
             $data = $request->validate([
                 'edit_side_b_medical_record_case_id' => 'required',
                 'edit_side_b_health_worker_id' => 'required',
-                'edit_side_b_date_of_visit' => 'sometimes|nullable|date',
+                'edit_side_b_date_of_visit' => 'required|date',
                 'edit_side_b_medical_findings' => 'sometimes|nullable|string',
-                'edit_side_b_method_accepted' => 'sometimes|nullable|string',
+                'edit_side_b_method_accepted' => 'required|string',
                 'edit_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'edit_side_b_signature_data' => 'sometimes|nullable|string',
                 'edit_side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',

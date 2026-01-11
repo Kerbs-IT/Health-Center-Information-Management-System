@@ -13,7 +13,7 @@
 
         <div class="right-side-con ms-auto mt-ms-0 mt-2">
 
-            <button type="button" class="btn btn-success text-nowrap" data-bs-toggle="modal" data-bs-target="#addModal">
+            <button type="button" class="btn btn-success text-nowrap" data-bs-toggle="modal" id="add-patient-account-modal-btn" data-bs-target="#addModal">
                 Add an Account
             </button>
         </div>
@@ -54,7 +54,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-secondary w-100" wire:click="$refresh">
+                    <button class="btn btn-success w-100" wire:click="$refresh">
                         <i class="bi bi-arrow-clockwise"></i> Refresh
                     </button>
                 </div>

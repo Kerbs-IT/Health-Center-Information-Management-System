@@ -2,7 +2,7 @@
     <div class="card-body">
         <!-- Date of Visit -->
         <div class="mb-3">
-            <label for="visit_date" class="form-label">Date of Visit</label>
+            <label for="visit_date" class="form-label">Date of Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="visit_date" name="date_of_visit" value="<?= date('Y-m-d') ?>" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="patient_name" value="{{$patient_name}}">
             <input type="hidden" name="handled_by" value="{{$healthWorkerId}}">
@@ -51,7 +51,7 @@
 
         <!-- Adherence -->
         <div class="mb-3">
-            <label for="adherence" class="form-label">Adherence to Treatment</label>
+            <label for="adherence" class="form-label">Adherence to Treatment <span class="text-danger">*</span></label>
             <select class="form-select" id="adherence" name="adherence_of_treatment">
                 <option value="">-- Select Option --</option>
                 <option value="No Missed">No missed doses</option>
@@ -113,8 +113,9 @@
             <small class="text-danger error-text" id="outcome_error"></small>
         </div>
         <div class="mb-3">
-            <label for="add_date_of_comeback">Date of Comeback*</label>
+            <label for="add_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
             <input type="date" name="add_date_of_comeback" class="form-control" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
+            <small class="text-danger error-text" id="add_date_of_comeback_error"></small>
         </div>
     </div>
 </div>

@@ -1,6 +1,7 @@
 import { error } from "jquery";
 import Swal from "sweetalert2";
 import { loadAddress } from "./address/address";
+import { automateAge } from "./automateAge";
 // import the address function
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -150,55 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     suffix.value = data.response.suffix ?? "";
                     
 
-                    // assigned area
-                    const puroks = async function () {
-                        const dropdown = document.getElementById(
-                            "update_assigned_area"
-                        );
-
-                        const occupiedAreas = JSON.parse(
-                            dropdown.dataset.occupiedAreas
-                        );
-
-                        try {
-                            const response = await fetch("/showBrgyUnit");
-                            const brgyData = await response.json();
-
-                            brgyData.forEach((element) => {
-                                let inUse = "";
-                                let inUseText = "";
-
-                                const selected =
-                                    element.id == data.response.assigned_area_id
-                                        ? "selected"
-                                        : "";
-                                // add other option
-                                const currentlyUse =
-                                    element.id == data.response.assigned_area_id
-                                        ? "(currently)"
-                                        : "";
-                                if (
-                                    element.id != data.response.assigned_area_id
-                                ) {
-                                    inUse = occupiedAreas.includes(
-                                        Number(element.id)
-                                    )
-                                        ? "disabled"
-                                        : "";
-                                    inUseText = occupiedAreas.includes(
-                                        Number(element.id)
-                                    )
-                                        ? "(assigned to other)"
-                                        : "";
-                                }
-                                dropdown.innerHTML += `<option value="${element.id}" ${selected} ${inUse}>${element.brgy_unit} ${currentlyUse} ${inUseText}</option>`;
-                            });
-                        } catch (error) {
-                            console.log("Errors", error);
-                        }
-                    };
-
-                    puroks();
+                   
                 })
                 .catch((error) => {
                     console.error("Fetch error: ", error);
@@ -480,3 +433,12 @@ addHealthWorkerBtn.addEventListener("click", () => {
         });
     }
 });
+
+// age
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
+
+if (dob && age && hiddenAge) {
+    automateAge(dob, age, hiddenAge);
+}

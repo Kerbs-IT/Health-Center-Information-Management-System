@@ -138,7 +138,7 @@ class manageUserController extends Controller
                 'date_of_birth' => 'sometimes|nullable|date',
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 
                 'email' => ['required', 'email'],

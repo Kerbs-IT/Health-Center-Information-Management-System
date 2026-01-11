@@ -48,23 +48,34 @@
                         <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="update-form">
                             @method('PUT')
                             @csrf
+                            <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                <span class="fs-6">
+                                    <strong>Note:</strong>
+                                    <span class="text-danger">*</span>
+                                    <span class="fw-light"> indicates a required field.</span>
+                                </span>
+                            </div>
                             <div class="step d-flex flex-column w-100 rounded  px-2">
                                 <div class="info">
                                     <h4>Personal Info</h4>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap ">
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="{{$info->first_name}}">
+                                            <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
+                                            <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="{{$info->first_name}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{$info->middle_initial}}">
+                                            <label for="middle_initial" class="">Middle Name</label>
+                                            <input type="text" id="middle_initial" placeholder="Middle Name" class="form-control" name="middle_initial" value="{{$info->middle_initial}}">
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{$info->last_name}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
+                                            <label for="suffix" class="">Suffix</label>
                                             <select name="suffix" id="suffix" class="form-select py-2">
                                                 <option value="" disabled {{ !$info->suffix ? 'selected' : '' }}>Select Suffix</option>
                                                 <option value="Jr." {{ $info->suffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
@@ -80,7 +91,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <!-- date of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="birthdate">Date of Birth</label>
+                                            <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                             <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{optional($info)->date_of_birth?->format('Y-m-d')?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_birth_error"></small>
                                         </div>
@@ -93,7 +104,7 @@
 
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="age">Age</label>
+                                            <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($info)-> age ?? 'none'}}">
                                             <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -130,14 +141,14 @@
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-[100%] md:w-[50%]">
-                                            <label for="dateOfRegistration">Date of Registration</label>
+                                            <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
                                             <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 w-[100%] md:w-[50%] ">
-                                            <label for="healthWorkersDropDown">Handled by*</label>
+                                            <label for="healthWorkersDropDown">Handled by<span class="text-danger">*</span></label>
                                             <select name="handled_by" id="healthWorkersDropDown" class="form-select" data-bs-selected-Health-Worker="{{optional($info->medical_record_case[0]->vaccination_medical_record)->health_worker_id ?? 'N/A'}}">
                                                 <option value="" selected disabled>Select a person</option>
                                             </select>
@@ -169,14 +180,14 @@
                                         <h4>Address</h4>
                                         <div class="input-field d-flex gap-2 align-items-center flex-wrap flex-md-nowrap">
                                             <div class=" mb-2  w-[100%] md:w-[50%]">
-                                                <label for="street">Street*</label>
+                                                <label for="street">Street<span class="text-danger">*</span></label>
                                                 <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="{{$street??'none'}}">
 
                                                 <small class="text-danger error-text" id="street_error"></small>
 
                                             </div>
                                             <div class="mb-2  w-[100%] md:w-[50%]">
-                                                <label for="brgy">Barangay*</label>
+                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select py-2" data-bs-purok="{{optional($address)->purok??'none'}}">
                                                     <option value="" selected disabled>Select a brgy</option>
                                                 </select>
@@ -190,12 +201,12 @@
                                     <div class="vital-sign w-100 flex-wrap flex-md-nowrap">
                                         <div class="mb-2 input-field d-flex gap-3 w-100 third-row flex-wrap flex-md-nowrap">
                                             <div class="mb-2 w-[100%] md:w-[50%]">
-                                                <label for="BP">Birth Height(cm):</label>
+                                                <label for="BP">Birth Height(cm)<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control w-100" placeholder="Enter the height" name="vaccination_height" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_height ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="mb-2 w-[100%] md:w-[50%]">
-                                                <label for="BP">Birth Weight(kg):</label>
+                                                <label for="BP">Birth Weight(kg)<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control w-100" placeholder="Enter the weight" name="vaccination_weight" value="{{optional($info->medical_record_case[0]->vaccination_medical_record)->birth_weight ?? 'N/A'}}">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>

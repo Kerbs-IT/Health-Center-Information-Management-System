@@ -125,12 +125,12 @@
         <div class="subjective-info mb-3 border-bottom">
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
-                    <label for="LMP">LMP</label>
+                    <label for="LMP">LMP<span class="text-danger">*</span></label>
                     <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP">
                 </div>
                 <div class="mb-2 w-100">
-                    <label for="expected_delivery">Expected Delivery</label>
-                    <input type="date" name="expected_delivery" class="form-control w-100" placeholder="trece">
+                    <label for="expected_delivery">Expected Delivery<span class="text-danger">*</span></label>
+                    <input type="date" name="expected_delivery" class="form-control w-100" id="add_patient_expected_delivery" placeholder="trece">
                 </div>
                 <div class="mb-2 w-100">
                     <label for="menarche">Menarche</label>
@@ -323,15 +323,15 @@
                 <label for="" class="fw-bold fs-5">Decision</label>
                 <div class="options px-5 py-2">
                     <div class="mb-2 d-flex flex-row">
-                        <input type="radio" name="nurse_decision" id="nurse_f1_option"  value="1">
+                        <input type="radio" name="nurse_decision" id="nurse_f1_option" value="1">
                         <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
                     </div>
                     <div class="mb-2 d-flex">
-                        <input type="radio" name="nurse_decision" id="nurse_f2_option"  value="2">
+                        <input type="radio" name="nurse_decision" id="nurse_f2_option" value="2">
                         <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
                     </div>
                     <div class="mb-2 d-flex">
-                        <input type="radio" name="nurse_decision" id="nurse_f3_option"  value="3">
+                        <input type="radio" name="nurse_decision" id="nurse_f3_option" value="3">
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>
                 </div>

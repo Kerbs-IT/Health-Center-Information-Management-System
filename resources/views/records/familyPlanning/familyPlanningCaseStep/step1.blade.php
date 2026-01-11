@@ -5,6 +5,13 @@
             <!-- spouse info-->
             <div class="family-inputs mb-md-2 mb-1 d-flex flex-column gap-1 w-100">
                 <div class="client-info mb-2">
+                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                        <span class="fs-6">
+                            <strong>Note:</strong>
+                            <span class="text-danger">*</span>
+                            <span class="fw-light"> indicates a required field.</span>
+                        </span>
+                    </div>
                     <h5>Client Information</h5>
                     <div class="family-planning-inputs d-flex gap-1 flex-wrap flex-lg-nowrap">
                         <div class="input-field flex-fill lg:w-[50%]">
@@ -34,21 +41,24 @@
                     </div>
 
                     <div class="mb-md-2 mb-1">
-                        <label for="name_of_spouse" class="text-nowrap">Name of Client:</label>
                         <div class="group d-flex align-items-center justify-content-center gap-2 w-100 flex-wrap flex-lg-nowrap">
                             <div class="input-form flex-fill lg:w-[50%]">
-                                <input type="text" class="form-control" id="edit_client_fname" name="edit_client_fname" placeholder="FirstName">
+                                <label for="edit_client_fname" class="">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_client_fname" name="edit_client_fname" placeholder="Enter First Name">
                                 <small class="text-danger error-text" id="edit_client_fname_error"></small>
                             </div>
                             <div class="input-form flex-fill lg:w-[50%]">
-                                <input type="text" class="form-control" id="edit_client_MI" name="edit_client_MI" placeholder="Middle Initial">
+                                <label for="edit_client_MI" class="">Middle Name</label>
+                                <input type="text" class="form-control" id="edit_client_MI" name="edit_client_MI" placeholder="Enter Middle Name">
                                 <small class="text-danger error-text" id="edit_client_MI_error"></small>
                             </div>
                             <div class="input-form flex-fill lg:w-[50%]">
+                                <label for="edit_client_lname" class="">Last Name<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="edit_client_lname" name="edit_client_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_client_lname_error"></small>
                             </div>
                             <div class="input-form flex-fill lg:w-[50%]">
+                                <label for="edit_client_suffix" class="">Suffix</label>
                                 <select name="edit_client_suffix" id="edit_client_suffix" class="form-select py-2 ">
                                     <option value="" disabled>Select Suffix</option>
                                     <option value="Jr.">Jr</option>
@@ -65,7 +75,7 @@
                     <div class="mb-md-2 mb-1 d-flex gap-1 flex-wrap flex-lg-nowrap">
                         <!-- date of birth -->
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="edit_client_date_of_birth">Date of Birth</label>
+                            <label for="edit_client_date_of_birth">Date of Birth<span class="text-danger">*</span></label>
                             <input type="date" id="edit_client_date_of_birth" placeholder="01-02-25" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control w-100 px-5" name="edit_client_date_of_birth">
 
                             <small class="text-danger error-text" id="edit_client_date_of_birth_error"></small>
@@ -74,7 +84,7 @@
 
                         <!-- age -->
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="edit_client_age">Age</label>
+                            <label for="edit_client_age">Age<span class="text-danger">*</span></label>
                             <input type="number" id="edit_client_age" placeholder="20" class="form-control" disabled>
                             <input type="hidden" id="hiddenEditAge" name="edit_client_age">
                             <small class="text-danger error-text" id="edit_client_age_error"></small>
@@ -114,15 +124,15 @@
                         </div>
                     </div>
                     <div class="input-group mb-md-2 mb-1">
-                        <h5>Address</h5>
+                        <h5 class="w-100">Address</h5>
                         <div class="input-field d-flex gap-2 align-items-lg-center align-items-none w-100  flex-md-nowrap flex-lg-nowrap flex-wrap flex-lg-row flex-column w-100">
                             <div class=" mb-md-2 mb-1 flex-fill lg:w-[50%]">
-                                <label for="street">Street*</label>
+                                <label for="street">Street<span class="text-danger">*</span></label>
                                 <input type="text" id="edit_street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="edit_street" value="">
                                 <small class="text-danger error-text" id="street_error"></small>
                             </div>
                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
-                                <label for="brgy">Barangay*</label>
+                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                 @php
                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
                                 @endphp
@@ -140,23 +150,27 @@
                 <h5>Spouse Information</h5>
                 <div class="mb-md-2 mb-1">
                     <div class=" w-100 ">
-                        <label for="name_of_spouse" class="text-nowrap">Name of Spouse:</label>
+                        
                         <div class="group d-flex  justify-content-center gap-2 flex-wrap flex-lg-nowrap">
                             <div class="input-form flex-fill">
+                                <label for="edit_spouse_fname" class="">First Name</label>
                                 <input type="text" class="form-control" id="edit_spouse_fname" name="edit_spouse_fname" placeholder="FirstName">
                                 <small class="text-danger error-text" id="edit_spouse_fname_error"></small>
                             </div>
 
                             <div class="input-form flex-fill">
+                                <label for="edit_spouse_MI" class="">Middle Initial</label>
                                 <input type="text" class="form-control" id="edit_spouse_MI" name="edit_spouse_MI" placeholder="Middle Initial">
                                 <small class="text-danger error-text" id="edit_spouse_MI_error"></small>
                             </div>
 
                             <div class="input-form flex-fill">
+                                <label for="edit_spouse_lname" class="">Last Name</label>
                                 <input type="text" class="form-control" id="edit_spouse_lname" name="edit_spouse_lname" placeholder="LastName">
                                 <small class="text-danger error-text" id="edit_spouse_lname_error"></small>
                             </div>
                             <div class="input-form flex-fill">
+                                <label for="edit_spouse_lname" class="">Suffix</label>
                                 <select name="edit_spouse_suffix" id="edit_spouse_suffix" class="form-select py-2 ">
                                     <option value="" disabled>Select Suffix</option>
                                     <option value="Jr.">Jr</option>
