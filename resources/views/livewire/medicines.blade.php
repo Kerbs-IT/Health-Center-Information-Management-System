@@ -260,7 +260,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Expiry Date</label>
-                                <input type="date" class="form-control" name="expiry_date" wire:model="expiry_date">
+                                <input type="date" class="form-control" name="expiry_date" min="{{ now()->toDateString() }}" wire:model="expiry_date">
                                 @error('expiry_date')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -369,7 +369,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Expiry Date</label>
-                                <input type="date" class="form-control" name="expiry_date" wire:model="expiry_date">
+                                <input type="date" class="form-control" name="expiry_date" min="{{ now()->toDateString() }}" wire:model="expiry_date">
                                 @error('expiry_date')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
