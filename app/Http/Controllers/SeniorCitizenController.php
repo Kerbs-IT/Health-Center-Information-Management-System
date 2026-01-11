@@ -79,6 +79,7 @@ class SeniorCitizenController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+            $age = $patientData['sex']? ucfirst($patientData['sex']):null;
 
             $seniorCitizenPatient = patients::create([
                 'user_id' => null,
@@ -87,7 +88,7 @@ class SeniorCitizenController extends Controller
                 'last_name' => ucwords($patientData['last_name']),
                 'full_name' =>  $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => ucfirst($patientData['sex'])?? null,
+                'sex' => $age,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
