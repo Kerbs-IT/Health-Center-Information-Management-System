@@ -106,9 +106,12 @@ class ManageMedicineRequests extends Component
                 'stock_status' => $newStockStatus
             ]);
 
-            // Prepare request data
+            // Prepare request data - STORE MEDICINE DETAILS
             $requestData = [
                 'medicine_id' => $this->walkInMedicineId,
+                'medicine_name' => $medicine->medicine_name,        // Store medicine name
+                'medicine_dosage' => $medicine->dosage,             // Store dosage
+                'medicine_type' => $medicine->type,                 // Store type
                 'quantity_requested' => $this->walkInQuantity,
                 'reason' => $this->walkInReason,
                 'status' => 'completed',
@@ -136,14 +139,14 @@ class ManageMedicineRequests extends Component
                 'quantity'            => $this->walkInQuantity,
                 'action'              => 'approved',
                 'performed_by_id'     => auth()->id(),
-                'performed_by_name'   => auth()->user()->username,
+                'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
                 'performed_at'        => now(),
             ]);
         });
 
         $this->resetWalkInForm();
         $this->dispatch('close-walkin-modal');
-        session()->flash('message', 'Walk-in medicine dispensed successfully.');
+        // session()->flash('message', 'Walk-in medicine dispensed successfully.');
     }
 
     public function resetWalkInForm()
@@ -184,6 +187,12 @@ class ManageMedicineRequests extends Component
                 return;
             }
 
+            // Check if medicine exists
+            if (!$request->medicine) {
+                session()->flash('error', 'Medicine not found. It may have been deleted.');
+                return;
+            }
+
             if ($request->medicine->stock < $request->quantity_requested) {
                 session()->flash('error', 'Insufficient medicine stock.');
                 return;
@@ -217,7 +226,7 @@ class ManageMedicineRequests extends Component
                 'quantity'            => $request->quantity_requested,
                 'action'              => 'approved',
                 'performed_by_id'     => auth()->id(),
-                'performed_by_name'   => auth()->user()->username,
+                'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
                 'performed_at'        => now(),
             ]);
         });
@@ -245,16 +254,20 @@ class ManageMedicineRequests extends Component
             // Get requester name (from patient or user)
             $requesterName = $request->requester_name;
 
+            // Get medicine info (use stored values if medicine is deleted)
+            $medicineName = $request->medicine_name;
+            $medicineDosage = $request->medicine_dosage;
+
             // create log for REJECTION
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $requesterName,
-                'medicine_name'       => $request->medicine->medicine_name,
-                'dosage'              => $request->medicine->dosage,
+                'medicine_name'       => $medicineName,
+                'dosage'              => $medicineDosage,
                 'quantity'            => $request->quantity_requested,
                 'action'              => 'rejected',
                 'performed_by_id'     => auth()->id(),
-                'performed_by_name'   => auth()->user()->username,
+                'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
                 'performed_at'        => now(),
             ]);
         });
@@ -297,7 +310,8 @@ class ManageMedicineRequests extends Component
                         )
                         ->orWhereHas('medicine', fn ($m) =>
                             $m->where('medicine_name', 'like', "%{$this->search}%")
-                        );
+                        )
+                        ->orWhere('medicine_name', 'like', "%{$this->search}%"); // Search stored medicine name too
                 });
             })
             ->when($this->filterStatus, fn ($q) =>
