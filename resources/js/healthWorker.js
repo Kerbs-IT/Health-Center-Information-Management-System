@@ -53,13 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// for the pop-up
+const submitBtn = document.getElementById("submit-btn");
+// EDIT PROFILE the pop-up
 document.addEventListener("DOMContentLoaded", () => {
     const editIcon = document.querySelectorAll(".edit-icon");
     const popUp = document.getElementById("pop-up");
     const cancelBtn = document.getElementById("cancel-btn");
-    const submitBtn = document.getElementById("submit-btn");
+    
+    const editErrors = document.querySelectorAll(".edit-healthworker-info");
 
+    if (editErrors) {
+        editErrors.forEach(error => error.innerHTML = '');
+    }
     editIcon.forEach((icon) => {
         icon.addEventListener("click", (e) => {
             e.preventDefault();
@@ -169,7 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
         popUp.classList.add("d-none");
         popUp.classList.remove("d-flex");
     });
+});
 
+if (submitBtn) {
     submitBtn.addEventListener("click", (e) => {
         e.preventDefault();
         const userId = submitBtn.dataset.user;
@@ -213,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const contactError = document.getElementById("contact-error");
                 const nationalityError =
                     document.getElementById("nationality-error");
-                
+
                 const emailError = document.getElementById("email-error");
                 const streetError = document.getElementById("street-error");
                 const postalError = document.getElementById("postal-error");
@@ -222,8 +229,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cityError = document.getElementById("city-error");
                 const brgyError = document.getElementById("brgy-error");
                 const imageFile = document.getElementById("fileInput");
+                const editErrors = document.querySelectorAll(
+                    ".edit-healthworker-info"
+                );
 
                 if (ok) {
+                    
+
+                     if (editErrors) {
+                         editErrors.forEach((error) => (error.innerHTML = ""));
+                     }
                     Swal.fire({
                         title: "Update",
                         text: "Health Worker Information is successfully updated",
@@ -237,6 +252,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     middleError.innerHTML = "";
                     // clear others as needed...
                 } else {
+                      if (editErrors) {
+                          editErrors.forEach((error) => (error.innerHTML = ""));
+                      }
                     Swal.fire({
                         title: "Update",
                         text: "Invalid input value",
@@ -261,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         data.errors?.contact_number?.[0] ?? "";
                     nationalityError.innerHTML =
                         data.errors?.nationality?.[0] ?? "";
-                    
+
                     emailError.innerHTML = data.errors?.email?.[0] ?? "";
                     streetError.innerHTML = data.errors?.street?.[0] ?? "";
                     postalError.innerHTML = data.errors?.postal_code?.[0] ?? "";
@@ -280,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // console.error('Fetch error:', err);
             });
     });
-});
+}
 
 // for update and delete
 document.querySelectorAll(".status-btn").forEach((button) => {
@@ -378,6 +396,11 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
         const data = await response.json();
 
         if (response.ok) {
+            const errorMessages = document.querySelectorAll(
+                ".add-healthworker-error"
+            );
+            // remove all error messages after submission
+            errorMessages.forEach(error => error.innerHTML = '');
             Swal.fire({
                 title: "Add New Health Worker",
                 text: "Health Worker Account is successfully added",
@@ -387,6 +410,12 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
             });
             document.getElementById("add-health-worker-form").reset();
         } else {
+            // reset the error first
+            const errorMessages = document.querySelectorAll(
+                ".add-healthworker-error"
+            );
+            // remove all error messages after submission
+            errorMessages.forEach((error) => (error.innerHTML = ""));
             // set the errors
             Object.entries(data.errors).forEach(([key, value]) => {
                 if (document.getElementById(`${key}_error`)) {

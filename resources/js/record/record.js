@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const response = await fetch(
                         `/patient-record/vaccination/delete/${patientId}`,
                         {
-                            method: "DELETE",
+                            method: "POST",
                             headers: {
                                 "Content-type": "Application/json",
                                 "X-CSRF-TOKEN": document.querySelector(
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const response = await fetch(
                         `/patient-record/prenatal/delete/${patientId}`,
                         {
-                            method: "DELETE",
+                            method: "POST",
                             headers: {
                                 "Content-type": "Application/json",
                                 "X-CSRF-TOKEN": document.querySelector(
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const response = await fetch(
                         `/patient-record/seniorCitizen/delete/${patientId}`,
                         {
-                            method: "DELETE",
+                            method: "POST",
                             headers: {
                                 "Content-type": "Application/json",
                                 "X-CSRF-TOKEN": document.querySelector(
@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const response = await fetch(
                         `/patient-record/tbDots/delete/${patientId}`,
                         {
-                            method: "DELETE",
+                            method: "POST",
                             headers: {
                                 "Content-type": "Application/json",
                                 "X-CSRF-TOKEN": document.querySelector(

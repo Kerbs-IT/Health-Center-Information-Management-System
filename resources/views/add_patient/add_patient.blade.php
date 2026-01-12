@@ -578,7 +578,7 @@
                             @include('add_patient.prenatal')
                             <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
                                 <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
-                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()" id="prenatal_2_next">Next</button>
                             </div>
 
                         </div>

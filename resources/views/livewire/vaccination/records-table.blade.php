@@ -14,13 +14,7 @@
             <small>Search</small>
             <input type="text" class="form-control bg-light" placeholder="Search here..." wire:model.live.debounce.1000ms="search">
         </div>
-        <div class="mb-md-3 mb-0  flex-fill xl:w-[25%]">
-            <small>Filter</small>
-            <select name="filter_option" id="" class="form-select bg-light">
-                <option value="" disabled selected>Filter by Age</option>
-                <option value="">0-10 weeks</option>
-            </select>
-        </div>
+       
         <div class="button-con d-flex align-items-center mt-1 justify-content-end">
             <button wire:click="exportPdf" type="button" class="btn btn-success d-flex  justify-content-center align-items-center gap-2 px-3 py-2" style="height: auto;">
                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height:20px" viewBox="0 0 512 512">

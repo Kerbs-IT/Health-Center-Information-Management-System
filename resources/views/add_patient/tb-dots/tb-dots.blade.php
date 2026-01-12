@@ -1,6 +1,6 @@
 <div class="tb-dots card shadow p-md-4 p-1 mx-1">
     <div class="mb-2">
-        <label for="patient_name">Patient Name</label>
+        <label for="patient_name">Patient Name<span class="text-danger">*</span></label>
         <input type="text" class="form-control w-100 w-md-50 " id="tb_patient_name" name="patient_name" disabled placeholder="Enter the name">
     </div>
     <h4>MEDICAL INFORMATION</h4>

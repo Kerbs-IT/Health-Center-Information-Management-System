@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const brgy = document.getElementById("brgy");
         const handled_by = document.getElementById("handled_by");
         const errors = { fname, lname, street, brgy, handled_by };
+        const suffix = document.getElementById("add_suffix");
 
         Object.values(errors).forEach((element) => {
             element.style.border = "";
@@ -148,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         const MI = document.getElementById("middle_initial");
         if (patient_name_view) {
-            insertNameValue(fname, MI, lname, patient_name_view);
+            insertNameValue(fname, MI, lname, patient_name_view, suffix);
         }
         // give all the patient name id
         const senior_patient_name = document.getElementById(
@@ -156,20 +157,20 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (senior_patient_name) {
-            insertNameValue(fname, MI, lname, senior_patient_name);
+            insertNameValue(fname, MI, lname, senior_patient_name, suffix);
         }
         const tb_dots_patient_name = document.getElementById("tb_patient_name");
 
         if (tb_dots_patient_name) {
-            insertNameValue(fname, MI, lname, tb_dots_patient_name);
+            insertNameValue(fname, MI, lname, tb_dots_patient_name, suffix);
         }
 
         window.currentStep++;
         window.showStep(window.currentStep);
     };
 
-    function insertNameValue(fname, MI, lname, element) {
-        const fullname = fname.value + " " + MI.value + " " + lname.value;
+    function insertNameValue(fname, MI, lname, element,suffix) {
+        const fullname = fname.value + " " + MI.value + " " + lname.value + " " + suffix.value;
 
         element.value = fullname.trim();
     }

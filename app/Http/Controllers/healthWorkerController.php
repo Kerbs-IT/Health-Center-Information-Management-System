@@ -122,7 +122,7 @@ class healthWorkerController extends Controller
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['add_suffix']
+                $data['add_suffix']??null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
