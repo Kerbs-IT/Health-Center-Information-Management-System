@@ -459,7 +459,7 @@ class RecordsController extends Controller
             ]);
 
             if($typeOfPatient === 'vaccination'){
-                $vaccinationMasterlistRecord = vaccination_masterlists::where("patiend_id", $id)->first();
+                $vaccinationMasterlistRecord = vaccination_masterlists::where("patient_id", $id)->first();
                 $vaccinationMasterlistRecord->update([
                     'status' => 'Archived'
                 ]);

@@ -66,15 +66,14 @@ class PatientList extends Component
         // update masterlist
         $medicalRecord = medical_record_cases::where("patient_id", $patientId)->get();
 
-        if($medicalRecord){
+        if ($medicalRecord) {
             foreach ($medicalRecord as $record) {
-                if($record->type_of_case == 'prenatal' || $record->type_of_case == 'family-planning'){
-                    $wra_masterlist = wra_masterlists::where('medical_record_case_id',$record->id)->first();
+                if ($record->type_of_case == 'prenatal' || $record->type_of_case == 'family-planning') {
+                    $wra_masterlist = wra_masterlists::where('medical_record_case_id', $record->id)->first();
 
                     $wra_masterlist->update([
                         'status' => 'Active'
                     ]);
-
                 } else {
                     if ($record->type_of_case == 'vaccination') {
                         $vaccination_masterlist = vaccination_masterlists::where('medical_record_case_id', $record->id)->first();

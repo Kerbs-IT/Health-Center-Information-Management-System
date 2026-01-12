@@ -1,4 +1,4 @@
-<div class="prenatal-planning d-flex flex-column justify-content-center align-items-center w-100" >
+<div class="prenatal-planning d-flex flex-column justify-content-center align-items-center w-100">
     <h1 class="text-center mb-2 planning-header">Plano SA ORAS NG PANGANGANAK AT KAGIPITAN</h1>
 
     <div class="prenatal-planning-body d-flex flex-column p-2 p-md-4 shadow card flex-wrap w-100 max-w-[1500px]">
@@ -139,8 +139,9 @@
         <!-- patient name -->
         <div class="mb-3 w-100 flex-wrap">
             <div class="upper-box d-flex gap-1 flex-md-row flex-column">
-                <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan ng pasyente: </label>
-                <input type="text" class="flex-grow-1 form-control" name="name_of_patient" placeholder="Ilagay ang pangalan">
+                <label for="place_of_birth" class="fs-5 text-nowrap">Pangalan ng pasyente<span class="text-danger">*</span></label>
+                <input type="text" class="flex-grow-1 form-control"  placeholder="Ilagay ang pangalan" id="add_patient_pregnancy_plan_full_name" disabled>
+                <input type="hidden" class="flex-grow-1 form-control" name="name_of_patient" placeholder="Ilagay ang pangalan" id="hidden_add_patient_pregnancy_plan_full_name">
             </div>
         </div>
         <!-- signature -->
