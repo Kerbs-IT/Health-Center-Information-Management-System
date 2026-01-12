@@ -143,7 +143,7 @@
                         <tr>
                             <!-- <td>{{ $medicine->medicine_id }}</td> -->
                             <td>{{ $medicine->medicine_name??'' }}</td>
-                            <td>{{ $medicine->category->category_name??'' }}</td>
+                            <td>{{ $medicine->category_name??'' }}</td>
                             <td>{{ $medicine->dosage??'' }}</td>
                             <td class="text-center">
                                 <span class=" px-3 py-1 rounded-full text-xs font-semibold bg-primary bg-opacity-25 text-blue-800">

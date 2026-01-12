@@ -179,6 +179,9 @@ class Medicines extends Component
             return;
         }
 
+        // Get category name
+        $category = Category::findOrFail($this->category_id);
+
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
         $stockStatus = $this->determineStockStatus($this->stock);
@@ -187,6 +190,7 @@ class Medicines extends Component
         Medicine::create([
             'medicine_name' => trim($this->medicine_name),
             'category_id'   => $this->category_id,
+            'category_name' => $category->category_name,
             'dosage'        => $this->dosage,
             'stock'         => $this->stock,
             'expiry_date'   => $this->expiry_date,
@@ -235,6 +239,9 @@ class Medicines extends Component
             return;
         }
 
+        // Get category name
+        $category = Category::findOrFail($this->category_id);
+
         $stockStatus = $this->determineStockStatus($this->stock);
         $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
 
@@ -244,6 +251,7 @@ class Medicines extends Component
         Medicine::where('medicine_id', $this->edit_id)->update([
             'medicine_name'  => trim($this->medicine_name),
             'category_id'    => $this->category_id,
+            'category_name'  => $category->category_name,  // UPDATE CATEGORY NAME
             'dosage'         => $this->dosage,
             'stock'          => $this->stock,
             'expiry_date'    => $this->expiry_date,
@@ -351,10 +359,8 @@ class Medicines extends Component
                 }
             })
             ->when($this->sortField === 'category_name', function ($query) {
-                $query->orderBy(
-                    Category::select('category_name')->whereColumn('categories.category_id', 'medicines.category_id'),
-                    $this->sortDirection
-                );
+                // Sort by stored category_name column directly
+                $query->orderBy('category_name', $this->sortDirection);
             })
             ->when($this->sortField && $this->sortField !== 'category_name', function ($query) {
                 $query->orderBy($this->sortField, $this->sortDirection);

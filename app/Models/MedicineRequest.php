@@ -12,6 +12,9 @@ class MedicineRequest extends Model
         'patients_id',      // Nullable - for patients with full records
         'user_id',          // Nullable - for users without patient records
         'medicine_id',
+        'medicine_name',
+        'medicine_dosage',
+        'medicine_type',
         'quantity_requested',
         'reason',
         'status',

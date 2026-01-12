@@ -97,7 +97,6 @@
                 <table class="table table-hover" id="requestsTable">
                     <thead class="table-header">
                         <tr>
-                            <!-- <th class="text-center" scope="col">No.</th> -->
                             <th class="text-center" scope="col">Patient Name</th>
                             <th class="text-center" scope="col">Medicine</th>
                             <th class="text-center" scope="col">Quantity</th>
@@ -110,11 +109,14 @@
                     <tbody>
                     @forelse($requests as $index => $request)
                             <tr>
-                                <!-- <td class="text-center">{{ $request->id }}</td> -->
                                 <td class="text-center">{{ $request->requester_name }}</td>
                                 <td class="text-center">
-                                    <strong>{{$request->medicine->medicine_name}}</strong><br>
-                                    <small class="text-muted">{{ $request->medicine->dosage }}</small>
+                                    {{-- Use accessor which prioritizes stored values --}}
+                                    <strong> {{$request->medicine_name ??''}}</strong><br>
+                                    <small class="text-muted">{{ $request->medicine_dosage }}</small>
+                                    @if(!$request->medicine)
+                                        <br><span class="badge bg-warning text-dark"><i class="fa-solid fa-archive me-1"></i>Archived</span>
+                                    @endif
                                 </td>
                                 <td class="text-center">{{ $request->quantity_requested }}</td>
                                 <td class="text-center">
@@ -134,15 +136,22 @@
                                 <td>
                                     <div class="d-flex gap-1 justify-content-center">
                                         @if ($request->status === 'pending')
-                                            <button wire:click="approve({{ $request->id }})"
-                                                    class="btn btn-sm btn-success">
-                                                <i class="fa-solid fa-check me-1"></i>Approve
-                                            </button>
+                                            @if($request->medicine)
+                                                <button wire:click="approve({{ $request->id }})"
+                                                        class="btn btn-sm btn-success">
+                                                    <i class="fa-solid fa-check me-1"></i>Approve
+                                                </button>
 
-                                            <button wire:click="reject({{ $request->id }})"
-                                                    class="btn btn-sm btn-danger">
-                                                <i class="fa-solid fa-times me-1"></i>Reject
-                                            </button>
+                                                <button wire:click="reject({{ $request->id }})"
+                                                        class="btn btn-sm btn-danger">
+                                                    <i class="fa-solid fa-times me-1"></i>Reject
+                                                </button>
+                                            @else
+                                                <button wire:click="reject({{ $request->id }})"
+                                                        class="btn btn-sm btn-danger">
+                                                    <i class="fa-solid fa-times me-1"></i>Reject (Medicine Archived)
+                                                </button>
+                                            @endif
                                         @endif
 
                                         <button wire:click="viewDetails({{ $request->id }})"
@@ -199,12 +208,6 @@
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}">
                                         {{ $user->full_name }}
-                                        @if($user->patient)
-                                            <span class="text-success">✓ Has Patient Record</span>
-                                        @endif
-                                        @if($user->patient_type)
-                                            - {{ $user->patient_type }}
-                                        @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -329,28 +332,40 @@
                             <div class="col-12 mt-4">
                                 <h6 class="border-bottom pb-2 mb-3 text-success">
                                     <i class="fa-solid fa-pills me-2"></i>Medicine Details
+                                    @if(!$viewRequest->medicine)
+                                        <span class="badge bg-warning text-dark ms-2">
+                                            <i class="fa-solid fa-archive me-1"></i>Medicine Archived
+                                        </span>
+                                    @endif
                                 </h6>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Medicine Name</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine->medicine_name ?? 'N/A' }}</p>
+                                <p class="fw-bold">{{ $viewRequest->medicine_name }}</p>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Dosage</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine->dosage ?? 'N/A' }}</p>
+                                <p class="fw-bold">{{ $viewRequest->medicine_dosage }}</p>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Type</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine->type ?? 'N/A' }}</p>
+                                <p class="fw-bold">{{ $viewRequest->medicine_type }}</p>
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small">Current Stock</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine->stock ?? 'N/A' }}</p>
-                            </div>
+                            @if($viewRequest->medicine)
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Current Stock</label>
+                                    <p class="fw-bold">{{ $viewRequest->medicine->stock }}</p>
+                                </div>
+                            @else
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Current Stock</label>
+                                    <p class="text-muted"><em>Medicine archived - stock unavailable</em></p>
+                                </div>
+                            @endif
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Quantity Requested</label>
@@ -416,12 +431,14 @@
                 {{-- Modal Footer --}}
                 <div class="modal-footer">
                     @if($viewRequest && $viewRequest->status === 'pending')
-                        <button type="button"
-                                wire:click="approve({{ $viewRequest->id }})"
-                                class="btn btn-success"
-                                data-bs-dismiss="modal">
-                            <i class="fa-solid fa-check me-1"></i>Approve
-                        </button>
+                        @if($viewRequest->medicine)
+                            <button type="button"
+                                    wire:click="approve({{ $viewRequest->id }})"
+                                    class="btn btn-success"
+                                    data-bs-dismiss="modal">
+                                <i class="fa-solid fa-check me-1"></i>Approve
+                            </button>
+                        @endif
                         <button type="button"
                                 wire:click="reject({{ $viewRequest->id }})"
                                 class="btn btn-danger"
