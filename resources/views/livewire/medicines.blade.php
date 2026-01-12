@@ -125,7 +125,7 @@
                 <table class="table table-hover" id="medicineTable">
                     <thead class="table-header">
                         <tr>
-                            <th class="text-center" scope="col"><button wire:click="sortBy('medicine_id')" class="sort-btn text-nowrap">No. {!! sortIcon($sortField, 'medicine_id', $sortDirection) !!}</button></th>
+                            <!-- <th class="text-center" scope="col"><button wire:click="sortBy('medicine_id')" class="sort-btn text-nowrap">No. {!! sortIcon($sortField, 'medicine_id', $sortDirection) !!}</button></th> -->
                             <th class="text-center" scope="col"><button wire:click="sortBy('medicine_name')" class="text-nowrap">Medicine Name {!! sortIcon($sortField, 'medicine_name', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('category_name')" class="text-nowrap">Category {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('dosage')" class="text-nowrap">Dosage {!! sortIcon($sortField, 'dosage', $sortDirection) !!}</button></th>
@@ -143,7 +143,7 @@
                         <tr>
                             <!-- <td>{{ $medicine->medicine_id }}</td> -->
                             <td>{{ $medicine->medicine_name??'' }}</td>
-                            <td>{{ $medicine->category->category_name??'' }}</td>
+                            <td>{{ $medicine->category_name??'' }}</td>
                             <td>{{ $medicine->dosage??'' }}</td>
                             <td class="text-center">
                                 <span class=" px-3 py-1 rounded-full text-xs font-semibold bg-primary bg-opacity-25 text-blue-800">
@@ -220,14 +220,14 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Medicine Name</label>
+                                <label class="form-label">Medicine Name<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="medicine_name" wire:model="medicine_name">
                                 @error('medicine_name')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Category</label>
+                                <label class="form-label">Category<span class="text-danger">*</span></label>
                                 <select class="form-select" name="category_id" id="category_id" wire:model="category_id">
                                     <option value="">-- Select Category --</option>
                                     @foreach($categories as $category)
@@ -242,14 +242,14 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Dosage</label>
+                                <label class="form-label">Dosage<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="dosage" wire:model="dosage" placeholder="e.g., 500mg, 10ml">
                                 @error('dosage')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Stock</label>
+                                <label class="form-label">Stock<span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="stock" wire:model="stock">
                                 @error('stock')
                                 <small class="text-danger">{{ $message }}</small>
@@ -259,7 +259,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="form-label">Expiry Date</label>
+                                <label class="form-label">Expiry Date<span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="expiry_date" min="{{ now()->toDateString() }}" wire:model="expiry_date">
                                 @error('expiry_date')
                                 <small class="text-danger">{{ $message }}</small>
@@ -329,14 +329,14 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Medicine Name</label>
+                                <label class="form-label">Medicine Name<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="medicine_name" wire:model="medicine_name">
                                 @error('medicine_name')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Category</label>
+                                <label class="form-label">Category<span class="text-danger">*</span></label>
                                 <select class="form-select" name="category_id" id="category_id" wire:model="category_id">
                                     <option value="">-- Select Category --</option>
                                     @foreach($categories as $category)
@@ -351,14 +351,14 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Dosage</label>
+                                <label class="form-label">Dosage<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="dosage" wire:model="dosage">
                                 @error('dosage')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Stock</label>
+                                <label class="form-label">Stock<span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="stock" wire:model="stock">
                                 @error('stock')
                                 <small class="text-danger">{{ $message }}</small>
@@ -368,7 +368,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="form-label">Expiry Date</label>
+                                <label class="form-label">Expiry Date<span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="expiry_date" min="{{ now()->toDateString() }}" wire:model="expiry_date">
                                 @error('expiry_date')
                                 <small class="text-danger">{{ $message }}</small>

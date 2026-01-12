@@ -202,7 +202,7 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $medicine->medicine_name }}</td>
-                <td>{{ $medicine->category->category_name }}</td>
+                <td>{{ $medicine->category_name }}</td>
                 <td>{{ $medicine->dosage }}</td>
                 <td>{{ formatAgeRange($medicine->min_age_months, $medicine->max_age_months) }}</td>
                 <td>{{ $medicine->stock }}</td>
