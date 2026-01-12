@@ -199,3 +199,16 @@ document.addEventListener('livewire:init', function(){
         });
     });
 });
+
+// close for walk-in
+window.addEventListener('close-walkin-modal', event => {
+    Swal.fire({
+        title: "Success!",
+        text: "Medicine has been added successfully.",
+        icon: "success",
+        showConfirmButton: false,
+        timer:1500
+    })
+    window.location.reload();
+
+});

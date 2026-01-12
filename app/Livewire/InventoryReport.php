@@ -127,44 +127,36 @@ class InventoryReport extends Component
         ];
     }
 
-    public function getPieChartData(){
-        $start = Carbon::parse($this->pieChartStartDate);
-        $end = Carbon::parse($this->pieChartEndDate);
-        $daysDiff = $start->diffInDays($end);
+public function getPieChartData(){
+    $start = Carbon::parse($this->pieChartStartDate)->startOfDay();
+    $end = Carbon::parse($this->pieChartEndDate)->endOfDay();
+    $daysDiff = $start->diffInDays($end);
 
-        // Get medicines that were active/dispensed in this date range
-        if ($daysDiff == 0) {
-            // For single day, use whereDate to ensure we capture the entire day
-            $medicineIds = MedicineRequestLog::where('action', 'approved')
-                ->whereDate('performed_at', $start)
-                ->distinct()
-                ->pluck('medicine_name');
-        } else {
-            // For multiple days, use whereBetween
-            $medicineIds = MedicineRequestLog::where('action', 'approved')
-                ->whereBetween('performed_at', [$start, $end])
-                ->distinct()
-                ->pluck('medicine_name');
-        }
-
-        // Get current stock status for those medicines
-        $inStock = Medicine::whereIn('medicine_name', $medicineIds)
-            ->where('stock_status', 'In Stock')
-            ->count();
-
-        $lowStock = Medicine::whereIn('medicine_name', $medicineIds)
-            ->where('stock_status', 'Low Stock')
-            ->count();
-
-        $outOfStock = Medicine::whereIn('medicine_name', $medicineIds)
-            ->where('stock_status', 'Out of Stock')
-            ->count();
-
-        return [
-            'labels' => ['In Stock', 'Low Stock', 'Out of Stock'],
-            'data' => [$inStock, $lowStock, $outOfStock]
-        ];
+    // Get medicines that were created or updated within the date range
+    if ($daysDiff == 0) {
+        // For single day: medicines created or updated today
+        $medicines = Medicine::where(function($query) use ($start) {
+            $query->whereDate('created_at', $start)
+                  ->orWhereDate('updated_at', $start);
+        })->get();
+    } else {
+        // For date range: medicines created or updated in the range
+        $medicines = Medicine::where(function($query) use ($start, $end) {
+            $query->whereBetween('created_at', [$start, $end])
+                  ->orWhereBetween('updated_at', [$start, $end]);
+        })->get();
     }
+
+    // Count by stock status
+    $inStock = $medicines->where('stock_status', 'In Stock')->count();
+    $lowStock = $medicines->where('stock_status', 'Low Stock')->count();
+    $outOfStock = $medicines->where('stock_status', 'Out of Stock')->count();
+
+    return [
+        'labels' => ['In Stock', 'Low Stock', 'Out of Stock'],
+        'data' => [$inStock, $lowStock, $outOfStock]
+    ];
+}
 
     public function getDateRangeGivenData(){
         $start = Carbon::parse($this->startDate);
@@ -375,12 +367,25 @@ class InventoryReport extends Component
         ];
     }
 
-    public function getTopMedicinesDateRangeData(){
-        $start = Carbon::parse($this->startDate);
-        $end = Carbon::parse($this->endDate);
-        $daysDiff = $start->diffInDays($end);
+public function getTopMedicinesDateRangeData(){
+    $start = Carbon::parse($this->startDate)->startOfDay();
+    $end = Carbon::parse($this->endDate)->endOfDay();
+    $daysDiff = $start->diffInDays($end);
+    $isSingleDay = $start->toDateString() === $end->toDateString();
 
-        // Get top 5 medicines for the selected date range
+
+    // Get top 5 medicines for the selected date range
+    if ($isSingleDay) {
+        // For single day: use whereDate
+        $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
+            ->where('action', 'approved')
+            ->whereDate('performed_at', $start)
+            ->groupBy('medicine_name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+    } else {
+        // For date range: use whereBetween
         $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
             ->where('action', 'approved')
             ->whereBetween('performed_at', [$start, $end])
@@ -388,203 +393,202 @@ class InventoryReport extends Component
             ->orderByDesc('total')
             ->limit(5)
             ->get();
+    }
 
-        $datasets = [];
-        $labels = [];
-        $fullLabels = [];
+    $datasets = [];
+    $labels = [];
+    $fullLabels = [];
 
-        // If no medicines dispensed in this period, return empty data
-        if ($topMedicines->isEmpty()) {
-            // Still generate labels for the time period
-            if ($daysDiff == 0) {
-                $currentHour = $start->copy()->startOfDay();
-                for ($i = 0; $i < 24; $i++) {
-                    $labels[] = $currentHour->format('g A');
-                    $fullLabels[] = $currentHour->format('g:00 A');
-                    $currentHour->addHour();
-                }
-            } elseif ($daysDiff >= 364) {
-                $current = $start->copy()->startOfMonth();
-                while ($current <= $end) {
-                    $labels[] = $current->format('M Y');
-                    $fullLabels[] = $current->format('F Y');
-                    $current->addMonth();
-                }
-            } elseif ($daysDiff > 60) {
-                $current = $start->copy()->startOfWeek();
-                while ($current <= $end) {
-                    $labels[] = $current->format('M d');
-                    $fullLabels[] = 'Week of ' . $current->format('M d, Y');
-                    $current->addWeek();
-                }
-            } else {
-                $period = CarbonPeriod::create($start, $end);
-                foreach ($period as $date) {
-                    $labels[] = $date->format('M d');
-                    $fullLabels[] = $date->format('F d, Y');
-                }
-            }
-
-            return [
-                'labels' => $labels,
-                'fullLabels' => $fullLabels,
-                'datasets' => []
-            ];
-        }
-
-        // Handle single day selection
+    // If no medicines dispensed in this period, return empty data
+    if ($topMedicines->isEmpty()) {
+        // Still generate labels for the time period
         if ($daysDiff == 0) {
             $currentHour = $start->copy()->startOfDay();
-
             for ($i = 0; $i < 24; $i++) {
                 $labels[] = $currentHour->format('g A');
                 $fullLabels[] = $currentHour->format('g:00 A');
                 $currentHour->addHour();
             }
-
-            foreach ($topMedicines as $medicine) {
-                $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
-                    ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
-                    ->whereDate('performed_at', $start)
-                    ->groupBy('hour')
-                    ->orderBy('hour')
-                    ->pluck('total', 'hour')
-                    ->toArray();
-
-                $data = [];
-                for ($i = 0; $i < 24; $i++) {
-                    $data[] = $records[$i] ?? 0;
-                }
-
-                $datasets[] = [
-                    'label' => $medicine->medicine_name,
-                    'data' => $data
-                ];
-            }
         } elseif ($daysDiff >= 364) {
-            // Group by month for ranges over 1 year
             $current = $start->copy()->startOfMonth();
             while ($current <= $end) {
                 $labels[] = $current->format('M Y');
                 $fullLabels[] = $current->format('F Y');
                 $current->addMonth();
             }
-
-            foreach ($topMedicines as $medicine) {
-                $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
-                    ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
-                    ->whereBetween('performed_at', [$start, $end])
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->pluck('total', 'date')
-                    ->toArray();
-
-                $data = [];
-                $current = $start->copy()->startOfMonth();
-                while ($current <= $end) {
-                    $dateKey = $current->format('Y-m');
-                    $data[] = $records[$dateKey] ?? 0;
-                    $current->addMonth();
-                }
-
-                $datasets[] = [
-                    'label' => $medicine->medicine_name,
-                    'data' => $data
-                ];
-            }
         } elseif ($daysDiff > 60) {
-            // Group by week for ranges 2-12 months
             $current = $start->copy()->startOfWeek();
             while ($current <= $end) {
                 $labels[] = $current->format('M d');
                 $fullLabels[] = 'Week of ' . $current->format('M d, Y');
                 $current->addWeek();
             }
-
-            foreach ($topMedicines as $medicine) {
-                $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
-                    ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
-                    ->whereBetween('performed_at', [$start, $end])
-                    ->groupBy('week')
-                    ->orderBy('week')
-                    ->pluck('total', 'week')
-                    ->toArray();
-
-                $data = [];
-                $current = $start->copy()->startOfWeek();
-                while ($current <= $end) {
-                    $weekKey = $current->format('oW');
-                    $data[] = $records[$weekKey] ?? 0;
-                    $current->addWeek();
-                }
-
-                $datasets[] = [
-                    'label' => $medicine->medicine_name,
-                    'data' => $data
-                ];
-            }
         } else {
-            // Group by day for ranges under 2 months
             $period = CarbonPeriod::create($start, $end);
             foreach ($period as $date) {
                 $labels[] = $date->format('M d');
                 $fullLabels[] = $date->format('F d, Y');
-            }
-
-            foreach ($topMedicines as $medicine) {
-                $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
-                    ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
-                    ->whereBetween('performed_at', [$start, $end])
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->pluck('total', 'date')
-                    ->toArray();
-
-                $data = [];
-                foreach (CarbonPeriod::create($start, $end) as $date) {
-                    $dateKey = $date->format('Y-m-d');
-                    $data[] = $records[$dateKey] ?? 0;
-                }
-
-                $datasets[] = [
-                    'label' => $medicine->medicine_name,
-                    'data' => $data
-                ];
             }
         }
 
         return [
             'labels' => $labels,
             'fullLabels' => $fullLabels,
-            'datasets' => $datasets
+            'datasets' => []
         ];
     }
 
+    // Handle single day selection (Today/Yesterday)
+    if ($isSingleDay) {
+        // Generate 24-hour labels in 12-hour format
+        for ($i = 0; $i < 24; $i++) {
+            $hour = Carbon::createFromTime($i, 0, 0);
+            $labels[] = $hour->format('g A');  // "12 AM", "1 AM", "2 PM", etc.
+            $fullLabels[] = $start->copy()->setTime($i, 0)->format('M d, Y g:00 A');  // "Jan 12, 2026 1:00 AM"
+        }
+
+        foreach ($topMedicines as $medicine) {
+            $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
+                ->where('medicine_name', $medicine->medicine_name)
+                ->where('action', 'approved')
+                ->whereDate('performed_at', $start)
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->pluck('total', 'hour')
+                ->toArray();
+
+            $data = [];
+            for ($i = 0; $i < 24; $i++) {
+                $data[] = $records[$i] ?? 0;
+            }
+
+            $datasets[] = [
+                'label' => $medicine->medicine_name,
+                'data' => $data
+            ];
+        }
+    } elseif ($daysDiff >= 364) {
+        // Group by month for ranges over 1 year
+        $current = $start->copy()->startOfMonth();
+        while ($current <= $end) {
+            $labels[] = $current->format('M Y');
+            $fullLabels[] = $current->format('F Y');
+            $current->addMonth();
+        }
+
+        foreach ($topMedicines as $medicine) {
+            $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
+                ->where('medicine_name', $medicine->medicine_name)
+                ->where('action', 'approved')
+                ->whereBetween('performed_at', [$start, $end])
+                ->groupBy('date')
+                ->orderBy('date')
+                ->pluck('total', 'date')
+                ->toArray();
+
+            $data = [];
+            $current = $start->copy()->startOfMonth();
+            while ($current <= $end) {
+                $dateKey = $current->format('Y-m');
+                $data[] = $records[$dateKey] ?? 0;
+                $current->addMonth();
+            }
+
+            $datasets[] = [
+                'label' => $medicine->medicine_name,
+                'data' => $data
+            ];
+        }
+    } elseif ($daysDiff > 60) {
+        // Group by week for ranges 2-12 months
+        $current = $start->copy()->startOfWeek();
+        while ($current <= $end) {
+            $labels[] = $current->format('M d');
+            $fullLabels[] = 'Week of ' . $current->format('M d, Y');
+            $current->addWeek();
+        }
+
+        foreach ($topMedicines as $medicine) {
+            $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
+                ->where('medicine_name', $medicine->medicine_name)
+                ->where('action', 'approved')
+                ->whereBetween('performed_at', [$start, $end])
+                ->groupBy('week')
+                ->orderBy('week')
+                ->pluck('total', 'week')
+                ->toArray();
+
+            $data = [];
+            $current = $start->copy()->startOfWeek();
+            while ($current <= $end) {
+                $weekKey = $current->format('oW');
+                $data[] = $records[$weekKey] ?? 0;
+                $current->addWeek();
+            }
+
+            $datasets[] = [
+                'label' => $medicine->medicine_name,
+                'data' => $data
+            ];
+        }
+    } else {
+        // Group by day for ranges under 2 months
+        $period = CarbonPeriod::create($start, $end);
+        foreach ($period as $date) {
+            $labels[] = $date->format('M d');
+            $fullLabels[] = $date->format('F d, Y');
+        }
+
+        foreach ($topMedicines as $medicine) {
+            $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
+                ->where('medicine_name', $medicine->medicine_name)
+                ->where('action', 'approved')
+                ->whereBetween('performed_at', [$start, $end])
+                ->groupBy('date')
+                ->orderBy('date')
+                ->pluck('total', 'date')
+                ->toArray();
+
+            $data = [];
+            foreach (CarbonPeriod::create($start, $end) as $date) {
+                $dateKey = $date->format('Y-m-d');
+                $data[] = $records[$dateKey] ?? 0;
+            }
+
+            $datasets[] = [
+                'label' => $medicine->medicine_name,
+                'data' => $data
+            ];
+        }
+    }
+
+    return [
+        'labels' => $labels,
+        'fullLabels' => $fullLabels,
+        'datasets' => $datasets
+    ];
+}
     public function getAllMedicinesData(){
-        return Medicine::with('category')->select('medicine_name', 'category_id', 'dosage', 'stock', 'stock_status','expiry_date')
+        return Medicine::with('category')->select('medicine_name', 'category_id', 'category_name','dosage', 'stock', 'stock_status','expiry_date')
         ->orderBy('medicine_name')
-        ->get()
-        ->map(function($medicine){
-            $medicine->category_name = $medicine->category ? $medicine->category->category_name : 'N/A';
-            return $medicine;
-        });
+        ->get();
     }
 
     public function getAllRequestsData(){
         return MedicineRequest::with(['medicine', 'patients', 'user'])
-            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
+            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'medicine_name', 'medicine_dosage', 'quantity_requested', 'status', 'created_at')
             ->orderByDesc('created_at')
             ->get()
             ->map(function($request) {
                 $request->requester_name = $request->requester_name;
-                $request->medicine_name = $request->medicine
-                    ? $request->medicine->medicine_name
-                    : 'N/A';
-                $request->dosage = $request->medicine ? $request->medicine->dosage : 'N/A';
+                $request->medicine_name =
+                    $request->medicine_name
+                    ?? 'N/A';
+
+                $request->dosage =
+                    $request->medicine_dosage
+                    ?? optional($request->medicine)->dosage
+                    ?? 'N/A';
                 return $request;
             });
     }

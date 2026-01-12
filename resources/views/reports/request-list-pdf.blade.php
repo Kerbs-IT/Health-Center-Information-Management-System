@@ -2,58 +2,104 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Medicine List Report</title>
+    <title>Request List - {{ date('Y-m-d') }}</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 5px 0; color: #666; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #4CAF50; color: white; }
-        .total-box { margin-top: 20px; padding: 10px; background: #f0f0f0; font-weight: bold; }
-        .badge { padding: 3px 8px; border-radius: 3px; font-size: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #10b981;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: #10b981;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 11px;
+        }
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 11px;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Medicine List Report</h1>
-        <p>Generated on: {{ $generatedDate }}</p>
+        <h1>MEDICINE REQUESTS LIST</h1>
+        <p>Generated: {{ $generatedDate }}</p>
+        <p>Total Requests: {{ $total }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 5%">#</th>
-                <th style="width: 25%">Patient Name</th>
-                <th style="width: 15%">Medicine</th>
-                <th style="width: 15%">Dosage</th>
-                <th style="width: 10%">Quantity</th>
-                <th style="width: 15%">Status</th>
-                <th style="width: 15%">Date Requested</th>
+                <th style="width: 8%;">ID</th>
+                <th style="width: 22%;">Patient Name</th>
+                <th style="width: 25%;">Medicine</th>
+                <th style="width: 10%;">Dosage</th>
+                <th style="width: 10%;">Quantity</th>
+                <th style="width: 12%;">Status</th>
+                <th style="width: 13%;">Date</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($requests as $index => $request)
+            @forelse($requests as $request)
             <tr>
-                <td>{{ $index + 1 }}</td>
+                <td>#{{ $request->id }}</td>
                 <td>{{ $request->requester_name }}</td>
-                <td>{{ $request->medicine_name}}</td>
-                <td>{{ $request->dosage }}</td>
+                <td>{{ $request->medicine_display }}</td>
+                <td>{{ $request->dosage_display }}</td>
                 <td>{{ $request->quantity_requested }}</td>
                 <td>
-                    <span class="badge bg-{{ $request->status == 'completed' ? 'success' : ($request->status == 'pending' ? 'warning' : ($request->status == 'approved' ? 'info' : 'danger')) }}">
-                        {{ $request->status }}
+                    <span class="badge badge-{{
+                        $request->status === 'pending' ? 'warning' :
+                        ($request->status === 'completed' ? 'success' : 'danger')
+                    }}">
+                        {{ ucfirst($request->status) }}
                     </span>
                 </td>
-                <td>{{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y h:i A') }}</td>
+                <td>{{ $request->created_at->format('M d, Y') }}</td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 20px; color: #999;">
+                    No requests found
+                </td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
-
-    <div class="total-box">
-        Total Medicines: {{ $total }}
-    </div>
 </body>
 </html>
