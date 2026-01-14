@@ -113,7 +113,7 @@
                         </div>
                     </div>
                     <div class="map-legend cursor-pointer bg-success d-flex align-items-center justify-content-center" style="width:20px;height:20px;border-radius:50%;">
-                        <i class="fa-solid fa-question text-white"></i>
+                        <i class="fa-solid fa-info text-white"></i>
                     </div>
 
 
