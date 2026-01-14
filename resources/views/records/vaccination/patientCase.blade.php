@@ -206,7 +206,7 @@
                                         @csrf
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="vaccinationModalLabel">Vaccination Details</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
 
                                         <div class="modal-body">
@@ -314,7 +314,7 @@
                                         </div>
 
                                         <div class="modal-footer d-flex justify-content-between">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                             <button type="submit" class="btn btn-success" id="update-save-btn">Save Record</button>
                                         </div>
                                     </form>

@@ -221,6 +221,14 @@ if (editIcon) {
                             element.checked = element.value == value;
                         });
                     }
+                } else if (key == "client_age") {
+                    const hiddenAge = document.getElementById("hiddenEditAge");
+                    const clientAage =
+                        document.getElementById("edit_client_age");
+                    if (hiddenAge) {
+                        hiddenAge.value = value;
+                        clientAage.value = value;
+                    }
                 } else if (key == "type_of_patient") {
                     const plan = document.querySelectorAll(
                         'input[name="edit_type_of_patient"]'
@@ -355,7 +363,6 @@ if (editIcon) {
                     key == "signature_image" ||
                     key == "acknowledgement_consent_signature_image"
                 ) {
-                    
                 } else {
                     if (document.getElementById(`edit_${key}`)) {
                         // console.log("gumagana boy", key, "value: ", value);
