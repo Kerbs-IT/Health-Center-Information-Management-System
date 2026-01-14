@@ -442,18 +442,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// add interaction with the question mark icon
+// add interaction with the info mark icon
 document.addEventListener("click", (e) => {
     const mapElement = e.target.closest(".map-legend");
     const legendContent = document.querySelector(".map-legend-content");
     if (!mapElement) return;
     
     const iElement = document.querySelector(".map-legend i");
-    if (iElement.classList.contains("fa-question")) {
+    if (iElement.classList.contains("fa-info")) {
         legendContent.classList.add("show");
         iElement.classList.add("icon-rotate");
         
-        iElement.classList.remove("fa-question");
+        iElement.classList.remove("fa-info");
         iElement.classList.add("fa-x");
         
         legendContent.style.transform =' scale(1)';
@@ -461,7 +461,7 @@ document.addEventListener("click", (e) => {
         legendContent.classList.remove("show");
         iElement.classList.remove("icon-rotate");
         iElement.classList.remove("fa-x");
-        iElement.classList.add("fa-question");
+        iElement.classList.add("fa-info");
     
     }
 })
