@@ -336,6 +336,13 @@ document.addEventListener("click", async (e) => {
                             element.checked = element.value == value;
                         });
                     }
+                } else if (key == 'client_age') {
+                    const hiddenAge = document.getElementById("hiddenEditAge");
+                    const clientAage = document.getElementById("edit_client_age");
+                    if (hiddenAge) {
+                        hiddenAge.value = value;
+                        clientAage.value = value;
+                    }
                 } else if (key == "type_of_patient") {
                     const plan = document.querySelectorAll(
                         'input[name="edit_type_of_patient"]'

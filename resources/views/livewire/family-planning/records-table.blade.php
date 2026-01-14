@@ -81,7 +81,7 @@
                 <tr class="{{ isset($record->followup_status_info['class']) ? $record->followup_status_info['class'] : '' }}">
                     <td>{{ optional($record->patient)->id ?? 'N/A' }}</td>
                     <td>{{ optional($record->patient)->full_name ?? 'N/A' }}</td>
-                    <td>{{ optional($record->patient)->age ?? '0' }}</td>
+                    <td>{{ optional($record->patient)->age ?? 'N/A' }}</td>
                     <td>{{ optional($record->patient)->sex ?? 'N/A' }}</td>
                     <td>{{ optional($record->patient)->contact_number ?? 'N/A' }}</td>
 

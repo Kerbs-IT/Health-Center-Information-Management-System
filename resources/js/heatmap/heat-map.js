@@ -441,3 +441,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// add interaction with the question mark icon
+document.addEventListener("click", (e) => {
+    const mapElement = e.target.closest(".map-legend");
+    const legendContent = document.querySelector(".map-legend-content");
+    if (!mapElement) return;
+    
+    const iElement = document.querySelector(".map-legend i");
+    if (iElement.classList.contains("fa-question")) {
+        legendContent.classList.add("show");
+        iElement.classList.add("icon-rotate");
+        
+        iElement.classList.remove("fa-question");
+        iElement.classList.add("fa-x");
+        
+        legendContent.style.transform =' scale(1)';
+    } else if (iElement.classList.contains("fa-x")) {
+        legendContent.classList.remove("show");
+        iElement.classList.remove("icon-rotate");
+        iElement.classList.remove("fa-x");
+        iElement.classList.add("fa-question");
+    
+    }
+})

@@ -599,3 +599,11 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);
 
 Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
+
+Route::get('run-command', function () {
+    Artisan::call('staff:send-daily-schedule');
+
+    Artisan::call('staff:send-overdue-notifications');
+
+    Artisan::call('appointments:send-reminders');
+});
