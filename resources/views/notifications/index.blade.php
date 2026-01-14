@@ -32,7 +32,7 @@
                             <div class="col-12">
                                 <div class="nofication-header d-flex justify-content-between align-items-center mb-4 flex-wrap">
                                     <h2><strong>📬</strong>Notifications</h2>
-                                    <div class="d-flex flex-wrap ms-auto">
+                                    <div class="d-flex flex-wrap ms-auto gap-1">
                                         <button type="button" class="btn btn-outline-primary btn-sm mark-all-as-read-btn">
                                             ✓ Mark All as Read
                                         </button>
