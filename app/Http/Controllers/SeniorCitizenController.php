@@ -71,6 +71,7 @@ class SeniorCitizenController extends Controller
 
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
@@ -84,7 +85,7 @@ class SeniorCitizenController extends Controller
             $seniorCitizenPatient = patients::create([
                 'user_id' => null,
                 'first_name' =>ucwords($patientData['first_name']) ,
-                'middle_initial' => ucwords($patientData['middle_initial']),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords($patientData['last_name']),
                 'full_name' =>  $fullName,
                 'age' => $patientData['age'] ?? null,
@@ -241,6 +242,7 @@ class SeniorCitizenController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -253,7 +255,7 @@ class SeniorCitizenController extends Controller
             // update the patient data first
             $seniorCitizenRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
-                'middle_initial' => ucwords(strtolower($data['middle_initial']))?? ucwords($seniorCitizenRecord->patient->middle_initial),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
                 'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
                 'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,

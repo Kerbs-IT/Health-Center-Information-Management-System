@@ -73,16 +73,16 @@ class manageUserController extends Controller
             ]));
 
             $data['full_address'] = $fullAddress;
-
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $newUser = User::create([
                 
                 'email' => $data['email'],
                 'patient_type' => $data['patient_type'],
-                'first_name' => $data['first_name'],
-                'middle_initial' => $data['middle_initial'],
-                'last_name' => $data['last_name'],
-                'date_of_birth' => $data['date_of_birth'],
-                'contact_number' => $data['contact_number'],
+                'first_name' => ucwords($data['first_name']),
+                'middle_initial' => $middleName,
+                'last_name' => ucwords($data['last_name']),
+                'date_of_birth' => $data['date_of_birth']??null,
+                'contact_number' => $data['contact_number']??null,
                 'address' => $fullAddress,
                 'status' => 'active',
                 'password' => $data['password'],
@@ -191,12 +191,12 @@ class manageUserController extends Controller
                 $user->patient->profile_image = 'images/profile_images/' . $filename;
                 $user->patient->save();
             }
-
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             // update the patient
             $patient = $user->patient;
             $patient->update([
                 'first_name' => $data['first_name'] ?? null,
-                'middle_initial' => $data['middle_initial'] ?? null,
+                'middle_initial' => $middleName,
                 'last_name' => $data['last_name'] ?? null,
                 'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                 'age' => $data['age'],
