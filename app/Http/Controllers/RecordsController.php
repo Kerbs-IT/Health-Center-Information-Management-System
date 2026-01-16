@@ -301,6 +301,7 @@ class RecordsController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -314,7 +315,7 @@ class RecordsController extends Controller
             $patient->update([
                 'first_name' => ucfirst(strtolower($data['first_name'])) ?? ucfirst($patient->first_name),
                 'last_name' =>  ucfirst(strtolower($data['last_name'])) ?? ucfirst($patient->last_name),
-                'middle_initial' => ucfirst($data['middle_initial']) ?? ucfirst($patient->middle_initial),
+                'middle_initial' => $middleName,
                 'full_name' => ucwords(strtolower($fullName)),
                 'date_of_birth' => $data['date_of_birth'] ?? $patient->date_of_birth,
                 'place_of_birth' => $data['place_of_birth'] ?? $patient->place_of_birth,

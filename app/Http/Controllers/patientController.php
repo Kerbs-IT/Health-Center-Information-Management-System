@@ -343,6 +343,7 @@ class patientController extends Controller
             // Prepare name components
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -362,7 +363,7 @@ class patientController extends Controller
                 // Update patient information
                 $patient->update([
                     'first_name' => ucwords($data['first_name']) ?? null,
-                    'middle_initial' => ucwords($data['middle_initial']) ?? null,
+                    'middle_initial' => $middleName,
                     'last_name' => ucwords($data['last_name']) ?? null,
                     'full_name' => $fullName,
                     'age' => $age ,
@@ -397,7 +398,7 @@ class patientController extends Controller
                     'email' => $data['email'] ?? $user->email,
                     'first_name' => $data['first_name'] ?? $user->first_name,
                     'last_name' => $data['last_name'] ?? $user->last_name,
-                    'middle_initial' => $data['middle_initial'] ?? $user->middle_initial,
+                    'middle_initial' => $data['middle_initial'] ?? '',
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'],
                     'address' => $fullAddress,
@@ -424,7 +425,7 @@ class patientController extends Controller
                     'email' => $data['email'] ?? $user->email,
                     'first_name' => $data['first_name'] ?? $user->first_name,
                     'last_name' => $data['last_name'] ?? $user->last_name,
-                    'middle_initial' => $data['middle_initial'] ?? $user->middle_initial,
+                    'middle_initial' => $data['middle_initial'] ?? '',
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'],
                     'address' => $fullAddress,

@@ -158,6 +158,7 @@ class PrenatalController extends Controller
             // create the patient information record
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
@@ -170,7 +171,7 @@ class PrenatalController extends Controller
             $prenatalPatient = patients::create([
                 'user_id' => null,
                 'first_name'     => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => ucfirst($patientData['middle_initial']),
+                'middle_initial' => $middleName,
                 'last_name'      => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
@@ -680,6 +681,7 @@ class PrenatalController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -692,7 +694,7 @@ class PrenatalController extends Controller
             // update the patient data first
             $prenatalRecord->patient->update([
                 'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
-                'middle_initial' => ucwords($data['middle_initial']) ?? ucwords($prenatalRecord->patient->middle_initial),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
                 'full_name' =>$fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,

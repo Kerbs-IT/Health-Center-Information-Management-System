@@ -61,6 +61,7 @@ class TbDotsController extends Controller
 
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
@@ -73,7 +74,7 @@ class TbDotsController extends Controller
             $tbDotsPatient = patients::create([
                 'user_id' => null,
                 'first_name' => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => ucwords(strtolower($patientData['middle_initial'])),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
@@ -241,6 +242,7 @@ class TbDotsController extends Controller
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -253,7 +255,7 @@ class TbDotsController extends Controller
             // update the patient data first
             $tbDotsRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->first_name)),
-                'middle_initial' => ucwords(strtolower($data['middle_initial'])) ?? ucwords(strtolower($tbDotsRecord->patient->middle_initial)),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($tbDotsRecord->patient->last_name)),
                 'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
