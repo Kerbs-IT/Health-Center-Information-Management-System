@@ -107,6 +107,10 @@
                                             <small class="text-muted d-block" id="fileName">No file chosen</small>
                                             <small class="text-danger d-block" id="image-error"></small>
                                         </div>
+                                        <div class="input-fieldxl:w-[50%] flex-fill">
+
+                                            <button type="button" class="btn btn-danger text-white px-2 py-2 flex-grow-1 fs-6" id="reset_password">Reset Password</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -178,6 +182,7 @@
                                     </div>
                                 </div>
 
+
                                 <!-- Address -->
                                 <div class="mb-3">
                                     <label class="form-label">Patient Address</label>
@@ -191,7 +196,7 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Puroks<span class="text-danger">*</span></label>
-                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
 
@@ -333,7 +338,7 @@
                                 </div>
                                 <div class="items w-full lg:w-[50%]">
                                     <label for="patient_purok_dropdown">Puroks<span class="text-danger">*</span></label>
-                                    <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                    <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
                                         <option value="" selected disabled>Select a purok</option>
                                     </select>
 

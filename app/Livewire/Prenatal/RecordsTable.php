@@ -42,7 +42,7 @@ class RecordsTable extends Component
         }
     }
 
-    
+
     public function render()
     {
         $prenatalRecord = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
@@ -73,7 +73,7 @@ class RecordsTable extends Component
         });
 
         $prenatalRecord->setCollection($sortedCollection);
-       
+
         return view('livewire.prenatal.records-table', ['isActive' => true, 'page' => 'RECORD', 'prenatalRecord' => $prenatalRecord]);
     }
 

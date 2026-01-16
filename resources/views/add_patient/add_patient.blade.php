@@ -29,7 +29,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex  flex-column overflow-x-auto">
+        <div class="flex-grow-1 d-flex  flex-column">
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info overflow-x-auto">
 
@@ -153,8 +153,8 @@
                                         <!-- administered by -->
                                         @if(Auth::user()->role == 'nurse')
                                         <div class="mb-2 flex-fill xl:w-[50%] ">
-                                            <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select ">
+                                            <label for="handled_by">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
+                                            <select name="handled_by" id="handled_by" class="form-select " data-is-health-worker ="{{Auth::user()->role='staff'?true:false}}">
                                                 <option value="" disabled selected>Select a person</option>
                                                 @foreach($healthworkers as $worker)
                                                 <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>

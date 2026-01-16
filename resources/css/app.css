@@ -490,3 +490,9 @@ main h3,
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+
+/* for the homepage user */
+.nav-item a:hover{
+    color:rgb(45, 43, 43);
+}

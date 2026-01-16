@@ -1,33 +1,48 @@
 import { error } from "jquery";
 import Swal from "sweetalert2";
+import * as bootstrap from "bootstrap";
+window.bootstrap = bootstrap;
+import resetPasswordManually from "../passwordReset";
+import { copyPassword } from "../passwordReset";
 
 fetch("/showBrgyUnit")
     .then((response) => response.json())
     .then((data) => {
         let dropdown = document.getElementById("edit_patient_purok_dropdown");
-
+        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
         // console.log(data);
         data.forEach((item) => {
             let option = document.createElement("option");
             option.value = item.brgy_unit;
             option.text = item.brgy_unit;
+            if (healthWorkerId) { // this is for the health worker account to enable other option
+                if (item.id != healthWorkerId) {
+                    option.disabled = true;
+                }
+            }
             dropdown.appendChild(option);
         });
     });
 
-    fetch("/showBrgyUnit")
-        .then((response) => response.json())
-        .then((data) => {
-            let dropdown = document.getElementById("patient_purok_dropdown");
-
-            // console.log(data);
-            data.forEach((item) => {
-                let option = document.createElement("option");
-                option.value = item.brgy_unit;
-                option.text = item.brgy_unit;
-                dropdown.appendChild(option);
-            });
+fetch("/showBrgyUnit")
+    .then((response) => response.json())
+    .then((data) => {
+        let dropdown = document.getElementById("patient_purok_dropdown");
+        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
+        // console.log(data);
+        data.forEach((item) => {
+            let option = document.createElement("option");
+            option.value = item.brgy_unit;
+            option.text = item.brgy_unit;
+            if (healthWorkerId) {
+                // this is for the health worker account to enable other option
+                if (item.id != healthWorkerId) {
+                    option.disabled = true;
+                }
+            }
+            dropdown.appendChild(option);
         });
+    });
 
 // add the patient account
 const addPatientSubmitBtn = document.getElementById("add-patient-submit-btn");
@@ -42,10 +57,10 @@ if (addModalBtn) {
         if (form) {
             form.reset();
         }
-        if(errorsMessages){
-            errorsMessages.forEach(element => element.innerHTML = '');
+        if (errorsMessages) {
+            errorsMessages.forEach((element) => (element.innerHTML = ""));
         }
-    })
+    });
 }
 
 addPatientSubmitBtn.addEventListener("click", async (e) => {
@@ -55,7 +70,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
 
     try {
         // errors container
-       
+
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
             ".middle-initial-error"
@@ -93,7 +108,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
         const result = await response.json();
         if (!response.ok) {
             // set the errors
-            
+
             fname_error.innerHTML = result.errors?.first_name?.[0] ?? "";
             middle_initial_error.innerHTML =
                 result.errors?.middle_initial?.[0] ?? "";
@@ -145,10 +160,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
 
 // import the address function
 
-
-
-
-const submitBtn = document.getElementById("edit-user-submit-btn")??null;
+const submitBtn = document.getElementById("edit-user-submit-btn") ?? null;
 
 // get data for the form
 document.addEventListener("click", async (e) => {
@@ -180,6 +192,12 @@ document.addEventListener("click", async (e) => {
         const brgy = document.getElementById("edit_patient_purok_dropdown");
         const street = document.getElementById("edit_blk_n_street");
         const fullName = document.getElementById("full_name");
+        const resetPassword = document.getElementById("reset_password");
+
+        if (resetPassword) {
+            resetPassword.dataset.id = data.info.id ?? null;
+        }
+
         Object.entries(data.info).forEach(([key, value]) => {
             const input = document.getElementById(`edit_${key}`);
             if (input) {
@@ -290,7 +308,7 @@ if (submitBtn) {
 }
 
 // remove user
-document.addEventListener('click', async (e) => {
+document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".delete-user");
     if (!deleteBtn) return;
     const id = deleteBtn.dataset.id;
@@ -300,39 +318,39 @@ document.addEventListener('click', async (e) => {
         console.error("id is not provided");
         return;
     }
-     Swal.fire({
-         title: "Are you sure?",
-         text: "This user account will be moved to archived status.",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#d33",
-         cancelButtonColor: "#3085d6",
-         confirmButtonText: "Yes, archived it!",
-     }).then((result) => {
-         if (result.isConfirmed) {
-             fetch(`/delete-patient-account/${id}`, {
-                 method: "POST",
-                 headers: {
-                     "X-CSRF-TOKEN": document.querySelector(
-                         'meta[name="csrf-token"]'
-                     ).content,
-                     Accept: "application/json",
-                 },
-             }).then((response) => {
-                 if (response.ok) {
-                     Swal.fire(
-                         "Deleted!",
-                         "The user has been removed.",
-                         "success"
-                     );
-                     deleteBtn.closest("tr").remove(); // remove row from table
-                 } else {
-                     Swal.fire("Error", "Failed to delete user.", "error");
-                 }
-             });
-         }
-     });
-})
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This user account will be moved to archived status.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, archived it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/delete-patient-account/${id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+                    Accept: "application/json",
+                },
+            }).then((response) => {
+                if (response.ok) {
+                    Swal.fire(
+                        "Deleted!",
+                        "The user has been removed.",
+                        "success"
+                    );
+                    deleteBtn.closest("tr").remove(); // remove row from table
+                } else {
+                    Swal.fire("Error", "Failed to delete user.", "error");
+                }
+            });
+        }
+    });
+});
 
 // Error field mapping
 const errorFieldMap = {
@@ -354,6 +372,50 @@ const errorFieldMap = {
     cityKey: "city-error",
     barangayKey: "brgy-error",
 };
+
+// Reset password
+const resetPasswordElement = document.getElementById("reset_password");
+
+if (resetPasswordElement) {
+    resetPasswordElement.addEventListener("click", (e) => {
+        const id = e.target.dataset.id;
+
+        const profileModalEl = document.getElementById("edit-user-profile");
+        const profileModal =
+            bootstrap.Modal.getInstance(profileModalEl) ||
+            new bootstrap.Modal(profileModalEl);
+
+        profileModal.hide();
+
+        if (!id) {
+            Swal.fire({
+                title: "User ID not found",
+                text: "This user has no data.",
+                icon: "warning",
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: "Ok",
+            });
+        } else {
+            Swal.fire({
+                title: "Reset Password",
+                text: `Are you sure to reset the password?`,
+                icon: "question",
+                confirmButtonColor: "#198754",
+                showCancelButton: true,
+                confirmButtonText: "Yes, show Password Here!",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    resetPasswordManually(
+                        id,
+                        "/patient-account/reset-password/"
+                    );
+                }
+            });
+        }
+    });
+}
 
 function displayErrors(errors) {
     if (!errors) return;

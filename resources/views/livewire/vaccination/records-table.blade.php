@@ -76,9 +76,9 @@
                 @foreach($vaccinationRecord as $record)
                 <tr class="{{ isset($record->vaccination_status_info['class']) ? $record->vaccination_status_info['class'] : '' }}">
                     <td>{{ $record->patient->id ?? 'N/A' }}</td>
-                    <td>{{ $record->patient->full_name ?? 'N/A' }}</td>
-                    <td>{{ $record->patient->age ?? 'N/A' }}</td>
-                    <td>{{ $record->patient->sex ?? 'N/A' }}</td>
+                    <td class="text-nowrap">{{ $record->patient->full_name ?? 'N/A' }}</td>
+                    <td class="text-nowrap">{{ $record->patient->age_display?? 'N/A' }}</td>
+                    <td>{{ $record->patient->sex?? 'N/A' }}</td>
                     <td>{{ $record->patient->contact_number ?? 'N/A' }}</td>
 
                     <!-- Status Column -->

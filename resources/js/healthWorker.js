@@ -1,7 +1,11 @@
 import { error } from "jquery";
 import Swal from "sweetalert2";
 import { loadAddress } from "./address/address";
+import * as bootstrap from "bootstrap";
+window.bootstrap = bootstrap;
 import { automateAge } from "./automateAge";
+import resetPasswordManually from "./passwordReset";
+import { copyPassword } from "./passwordReset";
 // import the address function
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,11 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const editIcon = document.querySelectorAll(".edit-icon");
     const popUp = document.getElementById("pop-up");
     const cancelBtn = document.getElementById("cancel-btn");
-    
+
     const editErrors = document.querySelectorAll(".edit-healthworker-info");
 
     if (editErrors) {
-        editErrors.forEach(error => error.innerHTML = '');
+        editErrors.forEach((error) => (error.innerHTML = ""));
     }
     editIcon.forEach((icon) => {
         icon.addEventListener("click", (e) => {
@@ -110,6 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const brgy = document.getElementById("brgy");
                     // suffix
                     const suffix = document.getElementById("edit_suffix");
+                    const resetPassword =
+                        document.getElementById("reset_password");
 
                     // reset first
                     region.dataset.selected = "";
@@ -148,15 +154,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     bday.value = data.response.date_of_birth;
                     contact.value = data.response.contact_number;
                     nationality.value = data.response.nationality;
-                    
+
                     email.value = data.response.email;
-                    
+
                     blkNstreet.value = data.response.street ?? "none";
                     postalCode.value = data.response.postal_code;
                     suffix.value = data.response.suffix ?? "";
-                    
 
-                   
+                    if (resetPassword) {
+                        resetPassword.dataset.id = data.response.id ?? null;
+                    }
                 })
                 .catch((error) => {
                     console.error("Fetch error: ", error);
@@ -234,11 +241,9 @@ if (submitBtn) {
                 );
 
                 if (ok) {
-                    
-
-                     if (editErrors) {
-                         editErrors.forEach((error) => (error.innerHTML = ""));
-                     }
+                    if (editErrors) {
+                        editErrors.forEach((error) => (error.innerHTML = ""));
+                    }
                     Swal.fire({
                         title: "Update",
                         text: "Health Worker Information is successfully updated",
@@ -252,9 +257,9 @@ if (submitBtn) {
                     middleError.innerHTML = "";
                     // clear others as needed...
                 } else {
-                      if (editErrors) {
-                          editErrors.forEach((error) => (error.innerHTML = ""));
-                      }
+                    if (editErrors) {
+                        editErrors.forEach((error) => (error.innerHTML = ""));
+                    }
                     Swal.fire({
                         title: "Update",
                         text: "Invalid input value",
@@ -367,7 +372,7 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
 
     try {
         // errors container
-        
+
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
             ".middle-initial-error"
@@ -400,7 +405,7 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
                 ".add-healthworker-error"
             );
             // remove all error messages after submission
-            errorMessages.forEach(error => error.innerHTML = '');
+            errorMessages.forEach((error) => (error.innerHTML = ""));
             Swal.fire({
                 title: "Add New Health Worker",
                 text: "Health Worker Account is successfully added",
@@ -442,7 +447,7 @@ addHealthWorkerBtn.addEventListener("click", () => {
     const modalForm = document.getElementById("add-health-worker-form");
     // reset first
     modalForm.reset();
-    
+
     const fname_error = document.querySelector(".fname-error");
     const middle_initial_error = document.querySelector(
         ".middle-initial-error"
@@ -470,4 +475,45 @@ const hiddenAge = document.getElementById("hiddenAge");
 
 if (dob && age && hiddenAge) {
     automateAge(dob, age, hiddenAge);
+}
+
+// Reset password
+const resetPasswordElement = document.getElementById("reset_password");
+
+if (resetPasswordElement) {
+    resetPasswordElement.addEventListener("click", (e) => {
+        const id = e.target.dataset.id;
+
+        const profileModalEl = document.getElementById("profileModal");
+        const profileModal =
+            bootstrap.Modal.getInstance(profileModalEl) ||
+            new bootstrap.Modal(profileModalEl);
+
+        profileModal.hide();
+
+        if (!id) {
+            Swal.fire({
+                title: "Health worker ID not found",
+                text: "This user has no data.",
+                icon: "warning",
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: "Ok",
+            });
+        } else {
+            Swal.fire({
+                title: "Reset Password",
+                text: `Are you sure to reset the password?`,
+                icon: "question",
+                confirmButtonColor: "#198754",
+                showCancelButton: true,
+                confirmButtonText: "Yes, show Password Here!",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    resetPasswordManually(id, "/health-worker/reset-password/");
+                }
+            });
+        }
+    });
 }
