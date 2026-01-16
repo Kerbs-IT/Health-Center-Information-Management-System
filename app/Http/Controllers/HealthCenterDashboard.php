@@ -317,19 +317,19 @@ class HealthCenterDashboard extends Controller
             // If staff, filter by health worker
             if ($user->role === 'staff') {
                 $query->where(function ($q) use ($staffId) {
-                    $q->whereHas('vaccinationRecords', function ($subQ) use ($staffId) {
+                    $q->whereHas('vaccination_medical_record', function ($subQ) use ($staffId) {
                         $subQ->where('health_worker_id', $staffId);
                     })
-                        ->orWhereHas('prenatalRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('prenatal_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('seniorCitizenRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('senior_citizen_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('tbDotsRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('tb_dots_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('familyPlanningRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         });
                 });

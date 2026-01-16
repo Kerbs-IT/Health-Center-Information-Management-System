@@ -153,7 +153,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-full md:w-[50%]">
                                             <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->health_worker_id??''}}">
+                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->health_worker_id??''}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="">Select a person</option>
                                             </select>
 
@@ -214,8 +214,8 @@
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
                                                 <label for="brgy">Barangay<span class="text-danger">*</span></label>
-                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}">
-                                                    <option value="">Select a brgy</option>
+                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}">
+                                                    <option value="" disabled>Select a brgy</option>
                                                 </select>
 
                                                 <small class="text-danger error-text" id="brgy_error"></small>

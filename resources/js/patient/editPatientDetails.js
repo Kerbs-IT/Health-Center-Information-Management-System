@@ -11,20 +11,32 @@ const healthWorkerDropDown = document.getElementById("healthWorkersDropDown");
 const healthWorkerId = healthWorkerDropDown.dataset.bsSelectedHealthWorker;
 const dropdown = document.getElementById("brgy"); // the brgy input dropdown
 // console.log(healthWorkerId);
+const currentLoginhealthWorkerId = healthWorkerDropDown.dataset.staffId;
+let disablerOption = null;
+if (currentLoginhealthWorkerId) {
+    disablerOption = true;
+}
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
         // console.log(element);
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
-        }>${element.staff.full_name}</option>`;
+        } 
+        ${healthWorkerId != element.id && disablerOption ? "disabled" : ""}>${
+            element.staff.full_name
+        }</option>`;
     });
 });
 
 // load the current selected address of the patient
 const selected = dropdown.dataset.bsPurok;
 // console.log(selected);
-puroks(dropdown, selected);
-
+const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
+if (healthWorkerAssignedArea) {
+    puroks(dropdown,selected, "staff", healthWorkerAssignedArea);
+} else {
+    puroks(dropdown,selected);
+}
 // update the record
 const updateBtn = document.getElementById("update-record-btn");
 updateBtn.addEventListener("click", async (e) => {
@@ -110,7 +122,6 @@ const hiddenAge = document.getElementById("hiddenAge");
 if (dob && age && hiddenAge) {
     automateAge(dob, age, hiddenAge);
 }
-
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

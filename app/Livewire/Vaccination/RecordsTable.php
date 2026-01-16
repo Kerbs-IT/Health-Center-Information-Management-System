@@ -56,6 +56,14 @@ class RecordsTable extends Component
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
+            ->when($this->sortField === 'age', function ($query) {
+                // Sort by age in years first, then by age_in_months for those with age = 0
+                $query->orderBy('patients.age', $this->sortDirection)
+                    ->orderBy('patients.age_in_months', $this->sortDirection);
+            }, function ($query) {
+                // Default sorting for other fields
+                $query->orderBy($this->sortField, $this->sortDirection);
+            })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->entries);
 

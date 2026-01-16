@@ -1,11 +1,15 @@
 import { puroks } from "../patient/healthWorkerList.js";
 import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
+import { displayAage } from "../automateAge.js";
 
 const editBtn = document.querySelectorAll(".vaccination-masterlist-edit-btn");
 const saveBtn = document.getElementById(
     "update_vaccination_masterlist_save_btn"
 );
+const dob = document.getElementById("birthdate");
+const age = document.getElementById("age");
+const hiddenAge = document.getElementById("hiddenAge");
 
 document.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".vaccination-masterlist-edit-btn");
@@ -71,7 +75,7 @@ document.addEventListener("click", async (e) => {
                             .querySelector(`input[name="${key}"]`)
                             .classList.remove("bg-light");
                     }
-                } else if (key == 'age' && value !=null) {
+                } else if (key == "age" && value != null) {
                     const age = document.getElementById("age");
                     const hiddenAge = document.getElementById("hiddenAge");
                     if (age && hiddenAge) {
@@ -116,6 +120,11 @@ document.addEventListener("click", async (e) => {
                 }
             });
 
+            // display the age properly
+            if (dob && age && hiddenAge) {
+                // console.log("checking if its working");
+                displayAage(dob, age, hiddenAge);
+            }
             // add the medical record case id to update btn
 
             saveBtn.dataset.medicalRecordCaseId =
@@ -131,9 +140,6 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
-
-
-
 
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -213,12 +219,9 @@ saveBtn.addEventListener("click", async (e) => {
 });
 
 // handle the automation of age
-const dob = document.getElementById("birthdate");
-const age = document.getElementById("age");
-const hiddenAge = document.getElementById("hiddenAge");
 
 if (dob && age && hiddenAge) {
-    console.log("checking if its working");
+    // console.log("checking if its working");
     automateAge(dob, age, hiddenAge);
 }
 function capitalizeEachWord(str) {

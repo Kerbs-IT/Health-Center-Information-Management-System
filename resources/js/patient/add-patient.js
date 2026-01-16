@@ -535,6 +535,66 @@ if (LMP) {
         changeLmp(LMP, expectedDelivery);
     });
 }
+
+//  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
+const healthWorkerElement = document.getElementById("handled_by");
+const brgyElement = document.getElementById("brgy");
+const isHealthWorker = healthWorkerElement.dataset.isHealthWorker;
+if (healthWorkerElement && isHealthWorker == true) {
+    healthWorkerElement.addEventListener("change", async (e) => {
+        const id = e.target.value;
+
+        try {
+            // get the assigned area
+            const response = await fetch(
+                `/add-patient/get-assigned-area/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            const data = await response.json();
+            if (response.ok) {
+                brgyElement.value = data.assigned_area;
+            }
+        } catch (error) {
+            console.log("Error happened:", error);
+        }
+    });
+}
+// sync the change in brgy and health worker 
+if (brgyElement && isHealthWorker == true) {
+    brgyElement.addEventListener("change", async (e) => {
+        const purok = e.target.value;
+
+        try {
+            // get the assigned area
+            const response = await fetch(
+                `/get-health-worker?assigned_area=${purok}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"), // Important for Laravel POST
+                    },
+                }
+            );
+
+            const data = await response.json();
+            if (response.ok) {
+                healthWorkerElement.value = data.health_worker_id;
+            }
+        } catch (error) {
+            console.log("Error happened:", error);
+        }
+    });
+}
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

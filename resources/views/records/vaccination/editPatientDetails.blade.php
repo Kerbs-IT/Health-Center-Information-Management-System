@@ -105,7 +105,7 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
-                                            <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($info)-> age ?? 'none'}}">
+                                            <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($info)-> age_display ?? 'none'}}">
                                             <input type="hidden" id="hiddenAge" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
                                         </div>
@@ -149,7 +149,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-[100%] md:w-[50%] ">
                                             <label for="healthWorkersDropDown">Handled by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="healthWorkersDropDown" class="form-select" data-bs-selected-Health-Worker="{{optional($info->medical_record_case[0]->vaccination_medical_record)->health_worker_id ?? 'N/A'}}">
+                                            <select name="handled_by" id="healthWorkersDropDown" class="form-select" data-bs-selected-Health-Worker="{{optional($info->medical_record_case[0]->vaccination_medical_record)->health_worker_id ?? 'N/A'}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" selected disabled>Select a person</option>
                                             </select>
 
@@ -188,7 +188,7 @@
                                             </div>
                                             <div class="mb-2  w-[100%] md:w-[50%]">
                                                 <label for="brgy">Barangay<span class="text-danger">*</span></label>
-                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-purok="{{optional($address)->purok??'none'}}">
+                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-purok="{{optional($address)->purok??'none'}}" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}">
                                                     <option value="" selected disabled>Select a brgy</option>
                                                 </select>
 

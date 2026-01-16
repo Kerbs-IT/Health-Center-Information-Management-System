@@ -107,19 +107,28 @@
                         </div>
                         <!-- chart n recent patient -->
                         <div class="charts d-flex flex-wrap px-2 px-md-4 justify-content-center">
-                            <div class="chart-container flex-fill  card">
+                            <!-- Bar Chart -->
+                            <div class="chart-container flex-fill card">
                                 <div class="chart-header">
                                     <h1 class="chart-title">Monthly Patient Statistics</h1>
-                                    <div class="filter-container">
-                                        <label class="filter-label" for="patientType">Patient Type:</label>
-                                        <select class="filter-select" id="patientType">
-                                            <option value="all">All Patients</option>
-                                            <option value="vaccination">Vaccination</option>
-                                            <option value="prenatal">Prenatal</option>
-                                            <option value="senior">Senior Citizen</option>
-                                            <option value="tb">TB Treatment</option>
-                                            <option value="family_planning">Family Planning</option>
-                                        </select>
+                                    <div class="filter-container d-flex gap-3 align-items-center flex-wrap">
+                                        <!-- Date Range Picker -->
+                                        <div class="date-range-filter">
+                                            <label class="filter-label" for="dateRange">Date Range:</label>
+                                            <input type="text" id="dateRange" class="filter-select" style="min-width: 250px;" />
+                                        </div>
+                                        <!-- Patient Type Filter -->
+                                        <div class="patient-type-filter">
+                                            <label class="filter-label" for="patientType">Patient Type:</label>
+                                            <select class="filter-select" id="patientType">
+                                                <option value="all">All Patients</option>
+                                                <option value="vaccination">Vaccination</option>
+                                                <option value="prenatal">Prenatal</option>
+                                                <option value="senior">Senior Citizen</option>
+                                                <option value="tb">TB Treatment</option>
+                                                <option value="family_planning">Family Planning</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -127,10 +136,17 @@
                                     <canvas id="patientChart"></canvas>
                                 </div>
                             </div>
-                            <div class="flex-grow-1 flex-shrink-1 xl:max-w-[520px] xl:min-h-[390px] d-flex align-items-center chart-canvas justify-content-center bg-white rounded p-3 shadow">
-                                <canvas id="myPieChart"></canvas>
+
+                            <!-- Pie Chart -->
+                            <div class="flex-grow-1 flex-shrink-1 xl:max-w-[520px] xl:min-h-[390px] d-flex flex-column chart-canvas bg-white rounded p-3 shadow">
+                                <div class="mb-3">
+                                    <label class="filter-label" for="pieChartDateRange">Date Range:</label>
+                                    <input type="text" id="pieChartDateRange" class="filter-select" style="width: 100%;" />
+                                </div>
+                                <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <canvas id="myPieChart"></canvas>
+                                </div>
                             </div>
-                            <!-- end  -->
                         </div>
                         <!-- other -->
                         <div class="patient-today w-100 px-lg-4 px-md-3 px-2 d-flex gap-3 mb-3 flex-wrap">

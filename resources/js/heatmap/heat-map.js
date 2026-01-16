@@ -129,7 +129,7 @@ class HealthHeatmap {
 
         // If offline and not forcing refresh, use cached data
         if (!this.isOnline && !forceRefresh) {
-            console.log("📦 Loading from cache"); // DEBUG
+            console.log("Loading from cache"); // DEBUG
             this.loadCachedData(purok, caseType); // Pass current filters to cache
             return;
         }
@@ -156,7 +156,7 @@ class HealthHeatmap {
             }
 
             const result = await response.json();
-            // console.log("✅ Data received:", result); // DEBUG
+            // console.log(" Data received:", result); // DEBUG
 
             if (result.success) {
                 // Update map
@@ -195,6 +195,10 @@ class HealthHeatmap {
     updateHeatmap(data, center) {
         if (this.heatLayer) {
             this.map.removeLayer(this.heatLayer);
+        }
+
+        if (this.markerGroup) {
+            this.map.removeLayer(this.markerGroup);
         }
 
         if (data.length < 3) {
@@ -447,21 +451,20 @@ document.addEventListener("click", (e) => {
     const mapElement = e.target.closest(".map-legend");
     const legendContent = document.querySelector(".map-legend-content");
     if (!mapElement) return;
-    
+
     const iElement = document.querySelector(".map-legend i");
     if (iElement.classList.contains("fa-info")) {
         legendContent.classList.add("show");
         iElement.classList.add("icon-rotate");
-        
+
         iElement.classList.remove("fa-info");
         iElement.classList.add("fa-x");
-        
-        legendContent.style.transform =' scale(1)';
+
+        legendContent.style.transform = " scale(1)";
     } else if (iElement.classList.contains("fa-x")) {
         legendContent.classList.remove("show");
         iElement.classList.remove("icon-rotate");
         iElement.classList.remove("fa-x");
         iElement.classList.add("fa-info");
-    
     }
-})
+});

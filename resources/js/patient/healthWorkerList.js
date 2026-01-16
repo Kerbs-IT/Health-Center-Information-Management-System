@@ -24,16 +24,44 @@ export async function getVaccines() {
 }
 
 // show the puroks for the assigned area
-export async function puroks(dropdown, purok) {
+export async function puroks(
+    dropdown,
+    purok,
+    userRole = null,
+    assignedPurok = null
+) {
     try {
         const response = await fetch("/showBrgyUnit");
         const brgyData = await response.json();
 
+        // Check if user is staff with restricted access
+        const isRestrictedStaff =
+            userRole === "staff" && assignedPurok !== null;
+
         brgyData.forEach((element) => {
-            dropdown.innerHTML += `<option value="${element.brgy_unit}" ${
-                element.brgy_unit == purok ? "selected" : ""
-            }  >${element.brgy_unit}</option>`;
+            const isSelected = element.brgy_unit == purok;
+            const isAssigned = element.id== assignedPurok;
+
+            // For restricted staff, only show assigned purok or disable other options
+            if (isRestrictedStaff) {
+                // Option 1: Only show assigned purok
+                if (isAssigned) {
+                    dropdown.innerHTML += `<option value="${element.brgy_unit}" selected>${element.brgy_unit}</option>`;
+                }
+
+                // Option 2: Show all but disable non-assigned (uncomment if preferred)
+                // const disabled = !isAssigned ? 'disabled' : '';
+                // dropdown.innerHTML += `<option value="${element.brgy_unit}" ${isSelected ? 'selected' : ''} ${disabled}>${element.brgy_unit}</option>`;
+            } else {
+                // Nurse or unrestricted user - show all options
+                dropdown.innerHTML += `<option value="${element.brgy_unit}" ${
+                    isSelected ? "selected" : ""
+                }>${element.brgy_unit}</option>`;
+            }
         });
+
+        
+       
     } catch (error) {
         console.log("Errors", error);
     }

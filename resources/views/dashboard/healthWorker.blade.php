@@ -256,9 +256,13 @@
 
                                 <!-- email -->
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="email" class="">Email<span class="text-danger">*</span></label>
+                                    <label for="email" class="w-100">Email<span class="text-danger">*</span></label>
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
                                     <small class="text-danger edit-healthworker-info" id="email-error"></small>
+                                </div>
+                                <div class="input-fieldxl:w-[50%] flex-fill">
+                                    <label for="reset_password" class="w-100">Password</label>
+                                    <button type="button" class="btn btn-danger text-white px-2 py-2 flex-grow-1 fs-6" id="reset_password">Reset Password</button>
                                 </div>
 
                             </div>
