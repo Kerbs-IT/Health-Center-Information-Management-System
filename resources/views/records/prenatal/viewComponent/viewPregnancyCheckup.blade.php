@@ -1,21 +1,21 @@
 <div class="inner w-100 rounded">
     <div class="table-responsive">
-    <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <th>Patient Name</th>
-                <td id="checkup_patient_name"></td>
-            </tr>
-            <tr>
-                <th>Administered By</th>
-                <td id="health_worker_name"></td>
-            </tr>
-            <tr>
-                <th>Time</th>
-                <td id="check_up_time"></td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Patient Name</th>
+                    <td id="checkup_patient_name"></td>
+                </tr>
+                <tr>
+                    <th>Administered By</th>
+                    <td id="health_worker_name"></td>
+                </tr>
+                <tr>
+                    <th>Time</th>
+                    <td id="check_up_time"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <h5 class="mt-4">Vital Signs</h5>
@@ -105,6 +105,10 @@
                 <tr>
                     <th>Overall Remarks</th>
                     <td colspan="3" id="overall_remarks"></td>
+                </tr>
+                <tr>
+                    <th>Date of comeback</th>
+                    <td colspan="3" id="view_date_of_comeback"></td>
                 </tr>
             </tbody>
         </table>

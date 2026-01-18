@@ -23,6 +23,12 @@ document.addEventListener("click", async (e) => {
     }
     // console.log(id);
 
+    // RESET THE ERRORS
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
+    }
+
     // == try catch block ==
     try {
         const response = await fetch(`/masterist/vaccination/${id}`, {
@@ -163,18 +169,19 @@ saveBtn.addEventListener("click", async (e) => {
     });
 
     const data = await response.json();
+    const errorElements = document.querySelectorAll(".error-text");
 
     if (!response.ok) {
-        // // reset the error element text first
-        // errorElements.forEach((element) => {
-        //     element.textContent = "";
-        // });
-        // // if there's an validation error load the error text
-        // Object.entries(data.errors).forEach(([key, value]) => {
-        //     if (document.getElementById(`${key}_error`)) {
-        //         document.getElementById(`${key}_error`).textContent = value;
-        //     }
-        // });
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
         let errorMessage = "";
 
         if (data.errors) {
@@ -198,9 +205,9 @@ saveBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
-        // errorElements.forEach((element) => {
-        //     element.textContent = "";
-        // });
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Update",
             text: capitalizeEachWord(data.message),

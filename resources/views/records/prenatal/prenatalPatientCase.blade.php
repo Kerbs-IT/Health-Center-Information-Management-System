@@ -412,7 +412,7 @@
                                                     <div class="previous-record mb-3 d-flex gap-1 flex-wrap flex-xl-nowrap">
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="year_of_pregnancy">Year of Pregnancy</label>
-                                                            <input type="number" class="form-control w-100" id="pregnancy_year">
+                                                            <input type="number" class="form-control w-100" id="pregnancy_year" placeholder="Enter the year">
                                                             <span class="text-danger error-text" id="pregnancy_year_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
@@ -433,17 +433,17 @@
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="place_of_delivery">Place of Delivery</label>
-                                                            <input type="text" class="form-control w-100" placeholder="trece" id="place_of_delivery">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the place of delivery" id="place_of_delivery">
                                                             <span class="text-danger error-text" id="place_of_delivery_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="birth_attendant">Birth Attendant</label>
-                                                            <input type="text" class="form-control w-100" placeholder="Nurse joy" id="birth_attendant">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the name of birth attendant" id="birth_attendant">
                                                             <span class="text-danger error-text" id="birth_attendant_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="Complication">Complication</label>
-                                                            <input type="text" class="form-control w-100" placeholder="" id="complication" value="None">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the complication" id="complication" value="None">
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="G">Outcome</label>
@@ -645,7 +645,7 @@
                                                         <div class="mb-3">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
                                                                 <label for="place_of_birth" class="fs-5 fw-medium w-100 whitespace-normal lg:whitespace-nowrap ">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="cost_of_pregnancy" id="cost_of_pregnancy">
+                                                                <input type="number" class="flex-grow-1 form-control" name="cost_of_pregnancy" id="cost_of_pregnancy" placeholder="Ilagay and tinatayang gagastusin sa pasilidad">
                                                             </div>
                                                             <small id="cost_of_pregnancy_error" class="text-danger error-text"></small>
                                                         </div>
@@ -748,7 +748,7 @@
                                                         <div class="mb-3">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
                                                                 <label for="place_of_birth" class="fs-5">Tirahan: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="address" id="emergency_person_residency">
+                                                                <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="Ilagay and address ng tirahan" id="emergency_person_residency">
                                                             </div>
                                                             <small id="emergency_person_residency_error" class="text-danger error-text"></small>
                                                         </div>
@@ -756,7 +756,7 @@
                                                         <div class="mb-3">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
                                                                 <label for="place_of_birth" class="fs-5"> Telepono: </label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="ex. 0936627872" id="emergency_person_contact_number">
+                                                                <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="Ilagay and numero ng telepono" id="emergency_person_contact_number">
                                                             </div>
                                                             <small id="emergency_person_contact_number_error" class="text-danger error-text"></small>
                                                         </div>
@@ -818,7 +818,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- view pregnnacy check up -->
+                            <!-- view PRENATAL check up -->
                             <div class="modal fade" id="pregnancyCheckUpModal" tabindex="-1" aria-labelledby="pregnancyCheckUpModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                     <div class="modal-content">
@@ -990,32 +990,32 @@
                                                             <div class="item flex-fill">
                                                                 <label for="add_G">G</label>
                                                                 <input type="number" name="add_G" class="form-control w-100" placeholder="0" id="add_grada_input">
-                                                                <small class="text-danger error-text error-text" id="add_G_error"></small>
+                                                                <small class="text-danger  error-text" id="add_G_error"></small>
                                                             </div>
                                                             <div class="item flex-fill">
                                                                 <label for="add_P">P</label>
                                                                 <input type="number" name="add_P" class="form-control w-100" placeholder="0" id="add_para_input">
-                                                                <small class="text-danger error-text error-text" id="add_P_error"></small>
+                                                                <small class="text-danger error-text" id="add_P_error"></small>
                                                             </div>
                                                             <div class="item flex-fill">
                                                                 <label for="add_T">T</label>
                                                                 <input type="number" name="add_T" class="form-control w-100" placeholder="0" id="add_term_input">
-                                                                <small class="text-danger error-text error-text" id="add_T_error"></small>
+                                                                <small class="text-danger  error-text" id="add_T_error"></small>
                                                             </div>
                                                             <div class="item flex-fill">
                                                                 <label for="add_premature">Premature</label>
                                                                 <input type="number" name="add_premature" class="form-control w-100" placeholder="0" id="add_premature_input">
-                                                                <small class="text-danger error-text error-text" id="add_premature_error"></small>
+                                                                <small class="text-danger error-text" id="add_premature_error"></small>
                                                             </div>
                                                             <div class="item flex-fill">
                                                                 <label for="add_abortion">Abortion</label>
                                                                 <input type="number" name="add_abortion" class="form-control w-100" placeholder="0" id="add_abortion_input">
-                                                                <small class="text-danger error-text error-text" id="add_abortion_error"></small>
+                                                                <small class="text-danger  error-text" id="add_abortion_error"></small>
                                                             </div>
                                                             <div class="item flex-fill">
                                                                 <label for="add_living_children">Living Children</label>
                                                                 <input type="number" name="add_living_children" class="form-control w-100" placeholder="0" id="add_living_children_input">
-                                                                <small class="text-danger error-text error-text" id="add_living_children_error"></small>
+                                                                <small class="text-danger  error-text" id="add_living_children_error"></small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1023,7 +1023,7 @@
                                                     <div class="previous-record mb-3 d-flex gap-1 flex-wrap flex-xl-nowrap">
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="add_year_of_pregnancy">Year of Pregnancy</label>
-                                                            <input type="number" class="form-control w-100" id="add_pregnancy_year">
+                                                            <input type="number" class="form-control w-100" id="add_pregnancy_year" placeholder="Enter the year of pregnacy">
                                                             <span class="text-danger error-text" id="add_pregnancy_year_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
@@ -1044,17 +1044,17 @@
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="add_place_of_delivery">Place of Delivery</label>
-                                                            <input type="text" class="form-control w-100" placeholder="trece" id="add_place_of_delivery">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the place of delivery" id="add_place_of_delivery">
                                                             <span class="text-danger error-text" id="add_place_of_delivery_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="add_birth_attendant">Birth Attendant</label>
-                                                            <input type="text" class="form-control w-100" placeholder="Nurse joy" id="add_birth_attendant">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the birth attendant" id="add_birth_attendant">
                                                             <span class="text-danger error-text" id="add_birth_attendant_error"></span>
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="add_Complication">Complication</label>
-                                                            <input type="text" class="form-control w-100" placeholder="" id="add_complication" value="None">
+                                                            <input type="text" class="form-control w-100" placeholder="Enter the complication" id="add_complication" value="None">
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="add_outcome">Outcome</label>
@@ -1108,7 +1108,7 @@
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="add_menarche_input">Menarche</label>
-                                                                <input type="text" name="add_menarche" class="form-control w-100" placeholder="trece" id="add_menarche_input">
+                                                                <input type="text" name="add_menarche" class="form-control w-100" placeholder="Enter the menarche" id="add_menarche_input">
                                                                 <small class="text-danger error-text error-text" id="add_menarche_error"></small>
                                                             </div>
                                                         </div>
@@ -1151,39 +1151,39 @@
                                                         <div class="checkboxes d-flex gap-2 mb-2 flex-wrap">
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" name="add_spotting" class="p-4" id="add_spotting_input" value="yes">
-                                                                <label for="spotting_input" class="w-100 fs-5">Spotting</label>
+                                                                <label for="add_spotting_input" class="w-100 fs-5">Spotting</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_edema" class="p-4" id="add_edema_input">
-                                                                <label for="edema_input" class="w-100 fs-5">Edema</label>
+                                                                <label for="add_edema_input" class="w-100 fs-5">Edema</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_severe_headache" class="p-4" id="add_severe_headache_input">
-                                                                <label for="severe_headache_input" class="w-100 fs-5">severe headache</label>
+                                                                <label for="add_severe_headache_input" class="w-100 fs-5">severe headache</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_blurring_of_vission" class="p-4" id="add_blurring_of_vission_input">
-                                                                <label for="blurring_of_vission_input" class="w-100 fs-5">blumming of vision</label>
+                                                                <label for="add_blurring_of_vission_input" class="w-100 fs-5">blumming of vision</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_watery_discharge" class="p-4" id="add_watery_discharge_input">
-                                                                <label for="watery_discharge_input" class="w-100 fs-5">Watery discharge</label>
+                                                                <label for="add_watery_discharge_input" class="w-100 fs-5">Watery discharge</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_severe_vomiting" class="p-4" id="add_severe_vomiting_input">
-                                                                <label for="severe_vomiting_input" class="w-100 fs-5">severe vomiting</label>
+                                                                <label for="add_severe_vomiting_input" class="w-100 fs-5">severe vomiting</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_hx_smoking" class="p-4" id="add_hx_smoking_input">
-                                                                <label for="hx_smoking_input" class="w-100 fs-5">Hx of smoking </label>
+                                                                <label for="add_hx_smoking_input" class="w-100 fs-5">Hx of smoking </label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_alcohol_drinker" class="p-4" id="add_alcohol_drinker_input">
-                                                                <label for="alcohol_drinker_input" class="w-100 fs-5">alcohol drinker</label>
+                                                                <label for="add_alcohol_drinker_input" class="w-100 fs-5">alcohol drinker</label>
                                                             </div>
                                                             <div class="mb-1 d-flex align-items-center gap-1">
                                                                 <input type="checkbox" value="yes" name="add_drug_intake" class="p-4" id="add_drug_intake_input">
-                                                                <label for="drug_intake_input" class="w-100 fs-5">Drug intake</label>
+                                                                <label for="add_drug_intake_input" class="w-100 fs-5">Drug intake</label>
                                                             </div>
                                                         </div>
 
@@ -1361,7 +1361,7 @@
                                                         <div class="mb-md-3 mb-1">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
                                                                 <label for="add_emergency_person_residency" class="fs-5">Tirahan: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="add_emergency_person_residency" placeholder="address" id="add_emergency_person_residency">
+                                                                <input type="text" class="flex-grow-1 form-control" name="add_emergency_person_residency" placeholder="ilagay and addres ng tirahan" id="add_emergency_person_residency">
                                                             </div>
                                                             <small id="add_emergency_person_residency_error" class="text-danger error-text"></small>
                                                         </div>
@@ -1369,7 +1369,7 @@
                                                         <div class="mb-md-3 mb-1">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
                                                                 <label for="add_emergency_person_contact_number" class="fs-5"> Telepono: </label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="add_emergency_person_contact_number" placeholder="ex. 0936627872" id="add_emergency_person_contact_number">
+                                                                <input type="number" class="flex-grow-1 form-control" name="add_emergency_person_contact_number" placeholder="ilagay and number ng telepono" id="add_emergency_person_contact_number">
                                                             </div>
                                                             <small id="add_emergency_person_contact_number_error" class="text-danger error-text"></small>
                                                         </div>

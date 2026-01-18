@@ -61,7 +61,7 @@ class PrenatalController extends Controller
 
             $medicalCaseData = $request->validate([
                 'family_head_name' => 'sometimes|nullable|string',
-                'family_serial_no' => 'sometimes|nullable|string',
+                'family_serial_no' => 'sometimes|nullable|numeric',
                 'blood_type' => 'sometimes|nullable|string',
                 'religion' => 'sometimes|nullable|string',
                 'philHealth_number' => 'sometimes|nullable|string',
@@ -690,7 +690,7 @@ class PrenatalController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = isset($data['sex']) ?? $prenatalRecord->patient->sex;
+            $sex = isset($data['sex']) ? $data['sex']: $prenatalRecord->patient->sex;
             // update the patient data first
             $prenatalRecord->patient->update([
                 'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
@@ -699,10 +699,10 @@ class PrenatalController extends Controller
                 'full_name' =>$fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,
                 'sex' => $sex? ucfirst($sex):null,
-                'civil_status' => $data['civil_status'] ?? $prenatalRecord->patient->civil_status,
-                'contact_number' => $data['contact_number'],
+                'civil_status' => $data['civil_status'] ?? '',
+                'contact_number' => $data['contact_number']??'',
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? $prenatalRecord->patient->nationality,
+                'nationality' => $data['nationality'] ?? '',
                 'date_of_registration' => $data['date_of_registration'] ?? $prenatalRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $prenatalRecord->patient->place_of_birth,
                 'suffix'=> $data['suffix']??'',
@@ -1720,6 +1720,32 @@ class PrenatalController extends Controller
                 'add_tt4' => 'sometimes|nullable|numeric',
                 'add_tt5' => 'sometimes|nullable|numeric'
 
+            ],[
+                'add_prenatal_case_medical_record_case_id.required' => 'The prenatal case medical record case id field is required.',
+                'add_prenatal_case_health_worker_id.required' => 'The prenatal case health worker id field is required.',
+                'add_prenatal_case_patient_name.required' => 'The prenatal case patient name field is required.',
+                'add_G.numeric' => 'The G field must be a number.',
+                'add_P.numeric' => 'The P field must be a number.',
+                'add_T.numeric' => 'The T field must be a number.',
+                'add_premature.numeric' => 'The premature field must be a number.',
+                'add_abortion.numeric' => 'The abortion field must be a number.',
+                'add_living_children.numeric' => 'The living children field must be a number.',
+                'add_preg_year.array' => 'The preg year field must be an array.',
+                'add_type_of_delivery.array' => 'The type of delivery field must be an array.',
+                'add_place_of_delivery.array' => 'The place of delivery field must be an array.',
+                'add_birth_attendant.array' => 'The birth attendant field must be an array.',
+                'add_compilation.array' => 'The compilation field must be an array.',
+                'add_outcome.array' => 'The outcome field must be an array.',
+                'add_LMP.required' => 'The LMP field is required.',
+                'add_LMP.date' => 'The LMP field must be a valid date.',
+                'add_expected_delivery.required' => 'The expected delivery field is required.',
+                'add_expected_delivery.date' => 'The expected delivery field must be a valid date.',
+                'add_menarche.numeric' => 'The menarche field must be a number.',
+                'add_tt1.numeric' => 'The tt1 field must be a number.',
+                'add_tt2.numeric' => 'The tt2 field must be a number.',
+                'add_tt3.numeric' => 'The tt3 field must be a number.',
+                'add_tt4.numeric' => 'The tt4 field must be a number.',
+                'add_tt5.numeric' => 'The tt5 field must be a number.',
             ]);
 
             // assessment validation
@@ -1733,8 +1759,17 @@ class PrenatalController extends Controller
                 'add_hx_smoking' => 'sometimes|nullable|string',
                 'add_alcohol_drinker' => 'sometimes|nullable|string',
                 'add_drug_intake' => 'sometimes|nullable|string'
+            ], [
+                'add_spotting.string' => 'The spotting field must be a string.',
+                'add_edema.string' => 'The edema field must be a string.',
+                'add_severe_headache.string' => 'The severe headache field must be a string.',
+                'add_blurring_of_vission.string' => 'The blurring of vission field must be a string.',
+                'add_watery_discharge.string' => 'The watery discharge field must be a string.',
+                'add_severe_vomiting.string' => 'The severe vomiting field must be a string.',
+                'add_hx_smoking.string' => 'The hx smoking field must be a string.',
+                'add_alcohol_drinker.string' => 'The alcohol drinker field must be a string.',
+                'add_drug_intake.string' => 'The drug intake field must be a string.',
             ]);
-
             // check first if there is existing record
 
             $existingCaseRecord = prenatal_case_records::where("medical_record_case_id", $data['add_prenatal_case_medical_record_case_id'])->where("status", '!=','Archived')->first();
@@ -1810,13 +1845,13 @@ class PrenatalController extends Controller
 
             return response()->json(['message' => 'Patient Info is Uploaded'], 200);
 
-        }catch (\Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ], 422);
         }catch(ValidationException $e){
             return response()->json([
                 'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
             ], 422);
         }
     }

@@ -60,18 +60,18 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light border-dark" name="first_name" value="{{optional($prenatalRecord)->patient?->first_name??''}}">
+                                            <input type="text" id="first_name" placeholder="Enter your first name" class="form-control bg-light border-dark" name="first_name" value="{{optional($prenatalRecord)->patient?->first_name??''}}">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="middle_initial" class="">Middle Name</label>
-                                            <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
+                                            <input type="text" id="middle_initial" placeholder="Enter your middle name" class="form-control bg-light border-dark " name="middle_initial" value="{{optional($prenatalRecord)->patient?->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="last_name" placeholder="Last Name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
+                                            <input type="text" id="last_name" placeholder="Enter your last name" class="form-control bg-light border-dark" name="last_name" value="{{optional($prenatalRecord)->patient?->last_name??''}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
@@ -100,7 +100,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control bg-light border-dark" name="place_of_birth" value="{{optional($prenatalRecord)->patient?->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your the place of birth" class="form-control bg-light border-dark" name="place_of_birth" value="{{optional($prenatalRecord)->patient?->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="birth_place_error"></small>
 
@@ -123,7 +123,7 @@
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
                                                 @endphp
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'Male'?'checked':''}}>Male</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" disabled {{optional($prenatalRecord)->patient?->sex == 'Male'?'checked':''}}>Male</label>
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{optional($prenatalRecord)->patient?->sex == 'Female'?'checked':''}}>Female</label>
                                                 </div>
 
@@ -134,14 +134,14 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
+                                            <input type="text" placeholder="Enter your phone number" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control bg-light border-dark" name="nationality" value="{{optional($prenatalRecord)->patient?->nationality??''}}">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control bg-light border-dark" name="nationality" value="{{optional($prenatalRecord)->patient?->nationality??''}}">
 
                                             <small class="text-danger error-text" id="nationality_error"></small>
 
@@ -262,9 +262,9 @@
                                     <div class="mb-3">
                                         <div class="input-field">
                                             <label for="family_serial_no" class="form-label w-100">Family Serial No.</label>
-                                            <input type="number" name="family_serial_no" placeholder="enter family serial no." class="w-100 form-control bg-light border-dark" value="{{optional($prenatalRecord)->prenatal_medical_record->family_serial_no ??''}}">
+                                            <input type="text" name="family_serial_no" placeholder="enter family serial no." class="w-100 form-control bg-light border-dark" value="{{optional($prenatalRecord)->prenatal_medical_record->family_serial_no ??''}}">
                                         </div>
-                                        <small class="text-danger error-text" id="family_serial_error"></small>
+                                        <small class="text-danger error-text" id="family_serial_no_error"></small>
                                     </div>
                                     <!-- address -->
                                     <div class="mb-2 d-flex gap-1 flex-column border-top border-bottom">

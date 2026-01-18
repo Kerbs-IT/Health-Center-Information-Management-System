@@ -57,7 +57,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light" name="first_name" value="{{optional($tbDotsRecord->patient)->first_name??''}}">
+                                            <input type="text" id="first_name" placeholder="Enter your first name" class="form-control bg-light" name="first_name" value="{{optional($tbDotsRecord->patient)->first_name??''}}">
 
                                             <small class="text-danger error-text" id="first_name_error"></small>
 
@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="middle_initial" class="">Middle Name</label>
-                                            <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{optional($tbDotsRecord->patient)->middle_initial??''}}">
+                                            <input type="text" id="middle_initial" placeholder="Enter your middle name" class="form-control" name="middle_initial" value="{{optional($tbDotsRecord->patient)->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
 
@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{optional($tbDotsRecord->patient)->last_name}}">
+                                            <input type="text" id="last_name" placeholder="Enter your last name" class="form-control" name="last_name" value="{{optional($tbDotsRecord->patient)->last_name}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
 
                                         </div>
@@ -103,7 +103,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="{{optional($tbDotsRecord->patient)->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your place of birth" class="form-control" name="place_of_birth" value="{{optional($tbDotsRecord->patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
 
@@ -135,14 +135,14 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($tbDotsRecord -> patient)->contact_number??''}}">
+                                            <input type="text" placeholder="Enter your contact number" class="form-control" name="contact_number" value="{{optional($tbDotsRecord -> patient)->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="{{optional($tbDotsRecord -> patient)->nationality??''}}">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="{{optional($tbDotsRecord -> patient)->nationality??''}}">
 
                                             <small class="text-danger error-text" id="nationality_error"></small>
 

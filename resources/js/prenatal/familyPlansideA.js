@@ -196,6 +196,12 @@ if (editIcon) {
             "editfamilyPlanningCaseModal"
         );
 
+        // reset errors
+        const errors = document.querySelectorAll(".error-text");
+        if (errors) {
+            errors.forEach((error) => (error.innerHTML = ""));
+        }
+
         editSaveBtn.dataset.caseId = caseId;
 
         const response = await fetch(

@@ -97,7 +97,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control bg-light" name="place_of_birth" value="{{optional($familyPlanningRecord->patient)->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your place of birth" class="form-control bg-light" name="place_of_birth" value="{{optional($familyPlanningRecord->patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
                                         </div>
@@ -127,14 +127,14 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light" name="contact_number" value="{{optional($familyPlanningRecord->patient)->contact_number??''}}">
+                                            <input type="text" placeholder="Enter your contact number" class="form-control bg-light" name="contact_number" value="{{optional($familyPlanningRecord->patient)->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control bg-light" name="nationality" value="{{optional($familyPlanningRecord->patient)->nationality??''}}">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control bg-light" name="nationality" value="{{optional($familyPlanningRecord->patient)->nationality??''}}">
 
                                             <small class="text-danger error-text" id="nationality_error"></small>
 
@@ -202,7 +202,7 @@
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="philhealth_no">Philhealth No:</label>
-                                            <input type="text" class="form-control" name="philhealth_no" value="{{optional($familyPlanningRecord->family_planning_medical_record->first())->philhealth_no??''}}">
+                                            <input type="text" class="form-control" placeholder="Enter your philhealth number" name="philhealth_no" value="{{optional($familyPlanningRecord->family_planning_medical_record->first())->philhealth_no??''}}">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%] ">

@@ -582,7 +582,7 @@ class FamilyPlanningController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,300',  // kg range
-                'client_id' =>  'sometimes|nullable|string',
+                'client_id' =>  'sometimes|nullable|numeric',
                 'philhealth_no' => [
                     'sometimes',
                     'nullable',

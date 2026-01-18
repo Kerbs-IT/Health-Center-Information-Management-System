@@ -342,6 +342,21 @@ class TbDotsController extends Controller
                 'edit_side_effect' =>  'sometimes|nullable|string',
                 'edit_tb_remarks' => 'sometimes|nullable|string',
                 'edit_tb_outcome' => 'sometimes|nullable|string',
+            ], [
+                'edit_type_of_tuberculosis.required' => 'The type of tuberculosis field is required.',
+                'edit_type_of_tuberculosis.string' => 'The type of tuberculosis field must be a string.',
+                'edit_type_of_tb_case.required' => 'The type of tb case field is required.',
+                'edit_type_of_tb_case.string' => 'The type of tb case field must be a string.',
+                'edit_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
+                'edit_date_of_diagnosis.date' => 'The date of diagnosis field must be a valid date.',
+                'edit_name_of_physician.string' => 'The name of physician field must be a string.',
+                'edit_sputum_test_results.string' => 'The sputum test results field must be a string.',
+                'edit_treatment_category.string' => 'The treatment category field must be a string.',
+                'edit_date_administered.required' => 'The date administered field is required.',
+                'edit_date_administered.date' => 'The date administered field must be a valid date.',
+                'edit_side_effect.string' => 'The side effect field must be a string.',
+                'edit_tb_remarks.string' => 'The remarks field must be a string.',
+                'edit_tb_outcome.string' => 'The outcome field must be a string.',
             ]);
 
             $caseRecord-> update([
@@ -562,6 +577,23 @@ class TbDotsController extends Controller
                 'add_tb_side_effect' =>  'sometimes|nullable|string',
                 'add_tb_remarks' => 'sometimes|nullable|string',
                 'add_tb_outcome' => 'sometimes|nullable|string',
+            ],[
+                'add_tb_case_patient_name.required' => 'The case patient name field is required.',
+                'add_tb_health_worker_id.required' => 'The health worker id field is required.',
+                'add_tb_type_of_tuberculosis.required' => 'The type of tuberculosis field is required.',
+                'add_tb_type_of_tuberculosis.string' => 'The type of tuberculosis field must be a string.',
+                'add_tb_type_of_tb_case.required' => 'The type of tb case field is required.',
+                'add_tb_type_of_tb_case.string' => 'The type of tb case field must be a string.',
+                'add_tb_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
+                'add_tb_date_of_diagnosis.date' => 'The date of diagnosis field must be a valid date.',
+                'add_tb_name_of_physician.string' => 'The name of physician field must be a string.',
+                'add_tb_sputum_test_results.string' => 'The sputum test results field must be a string.',
+                'add_tb_treatment_category.string' => 'The treatment category field must be a string.',
+                'add_tb_date_administered.required' => 'The date administered field is required.',
+                'add_tb_date_administered.date' => 'The date administered field must be a valid date.',
+                'add_tb_side_effect.string' => 'The side effect field must be a string.',
+                'add_tb_remarks.string' => 'The remarks field must be a string.',
+                'add_tb_outcome.string' => 'The outcome field must be a string.',
             ]);
 
             $caseRecord = tb_dots_case_records::create([
