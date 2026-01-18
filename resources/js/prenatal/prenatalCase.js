@@ -3,9 +3,6 @@ import changeLmp from "../LMP/lmp";
 import initSignatureCapture from "../signature/signature";
 // load the existing info
 
-const viewBtn = document.getElementById("viewCaseBtn");
-
-const medicalId = viewBtn.dataset.bsMedicalId;
 
 document.addEventListener("click", async (e) => {
     const viewBtn = e.target.closest(".viewCaseBtn");
@@ -599,6 +596,9 @@ document.addEventListener("click", async (e) => {
     // let set the custom variable for the save btn since i place it outside this event listener to avoid redundancy and overlapping
     updateBTN.dataset.pregnancyPlanId = pregnancyPlanId;
 
+    // reset the errors
+     const errors = document.querySelectorAll(".error-text");
+     errors.forEach((error) => (error.innerHTML = ""));
     // fetch the pregnancy plan information from the database
     const response = await fetch(
         `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`
@@ -845,6 +845,10 @@ const uploadBTN = document.getElementById("check-up-save-btn");
 prentalCheckUpBTN.addEventListener("click", async (e) => {
     const medicalId = e.target.dataset.bsMedicalRecordId;
     uploadBTN.dataset.bsMedicalRecordId = medicalId;
+
+    // reset the error
+     const errors = document.querySelectorAll(".error-text");
+     errors.forEach((error) => (error.innerHTML = ""));
     // console.log("medical id: ", medicalId);
     const response = await fetch(`/patient-record/view-details/${medicalId}`);
     // get the data

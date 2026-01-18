@@ -7,7 +7,7 @@ import { automateAge } from "./automateAge";
 import resetPasswordManually from "./passwordReset";
 import { copyPassword } from "./passwordReset";
 // import the address function
-
+// Archived
 document.addEventListener("DOMContentLoaded", () => {
     const removeIcons = document.querySelectorAll(".remove-icon-con");
 
@@ -60,6 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
 const submitBtn = document.getElementById("submit-btn");
 // EDIT PROFILE the pop-up
 document.addEventListener("DOMContentLoaded", () => {
+    const editErrorText = document.querySelectorAll(".edit-healthworker-info");
+    // reset the error
+    editErrorText.forEach((error) => error.innerHTML = '');
     const editIcon = document.querySelectorAll(".edit-icon");
     const popUp = document.getElementById("pop-up");
     const cancelBtn = document.getElementById("cancel-btn");

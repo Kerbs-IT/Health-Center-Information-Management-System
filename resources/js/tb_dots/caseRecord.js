@@ -23,6 +23,13 @@ document.addEventListener("click", async (e) => {
             const data = await response.json();
 
             Object.entries(data.caseInfo).forEach(([key, value]) => {
+                if (key == 'date_of_comeback') {
+                    if (document.getElementById(`view_${key}`)) {
+                        const date = new Date(value);
+                        const formatted = date.toISOString().split("T")[0];
+                        document.getElementById(`view_${key}`).innerHTML = formatted;
+                    }
+                }
                 if (document.getElementById(`view_${key}`)) {
                     document.getElementById(`view_${key}`).innerHTML = value;
                 }
@@ -73,8 +80,13 @@ document.addEventListener("click", async (e) => {
     const id = editBtn.dataset.caseId;
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
-       
+
         return;
+    }
+
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
     }
 
     try {
@@ -148,6 +160,10 @@ if (addBTN) {
         const start_date = document.getElementById("edit_tb_start_date");
         const end_date = document.getElementById("edit_tb_end_date");
 
+        const errors = document.querySelectorAll(".error-text");
+        if (errors) {
+            errors.forEach((error) => (error.innerHTML = ""));
+        }
         if (
             medicine.value == "" ||
             dosage_n_frequency.value == "" ||
@@ -292,86 +308,86 @@ saveBtn.addEventListener("click", async (e) => {
 });
 
 // == event delegation for archive record
-document.addEventListener('click', async (e) => {
+document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".archiveCaseBtn");
-     if (!deleteBtn) return;
-        const id = deleteBtn.dataset.caseId;
-    
-        // Validate case ID
-        if (!id || id === "undefined" || id === "null") {
-            console.error("Invalid case ID:", id);
-            alert("Unable to archive: Invalid ID");
-            return;
+    if (!deleteBtn) return;
+    const id = deleteBtn.dataset.caseId;
+
+    // Validate case ID
+    if (!id || id === "undefined" || id === "null") {
+        console.error("Invalid case ID:", id);
+        alert("Unable to archive: Invalid ID");
+        return;
+    }
+
+    try {
+        // ✅ Show confirmation dialog FIRST
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "Tb dots Case Record will be moved to archived status.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, archive it!",
+            cancelButtonText: "Cancel",
+        });
+
+        // ✅ Exit if user cancelled
+        if (!result.isConfirmed) return;
+
+        // ✅ Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            throw new Error("CSRF token not found. Please refresh the page.");
         }
-    
-        try {
-            // ✅ Show confirmation dialog FIRST
-            const result = await Swal.fire({
-                title: "Are you sure?",
-                text: "Tb dots Case Record will be moved to archived status.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, archive it!",
-                cancelButtonText: "Cancel",
-            });
-    
-            // ✅ Exit if user cancelled
-            if (!result.isConfirmed) return;
-    
-            // ✅ Get CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
-            if (!csrfToken) {
-                throw new Error("CSRF token not found. Please refresh the page.");
+
+        const response = await fetch(
+            `/patient-record/tb-dots/case-record/delete/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken.content,
+                    Accept: "application/json",
+                },
             }
-    
-            const response = await fetch(
-                `/patient-record/tb-dots/case-record/delete/${id}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken.content,
-                        Accept: "application/json",
-                    },
-                }
+        );
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(
+                data.message || `HTTP error! status: ${response.status}`
             );
-    
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(
-                    data.message || `HTTP error! status: ${response.status}`
-                );
-            }
-    
-            // Success - refresh table
-            if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("tbRefreshTable"); // ✅ Update dispatch name if needed
-            }
-    
-            // Remove the row from DOM
-            const row = deleteBtn.closest("tr");
-            if (row) {
-                row.remove();
-            }
-    
-            // Show success message
-            Swal.fire({
-                title: "Archived!",
-                text: "Tb dots Case Record has been archived.",
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-            });
-        } catch (error) {
-            console.error("Error archiving case:", error);
-            Swal.fire({
-                title: "Error",
-                text: `Failed to archive record: ${error.message}`,
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-            });
         }
-})
+
+        // Success - refresh table
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("tbRefreshTable"); // ✅ Update dispatch name if needed
+        }
+
+        // Remove the row from DOM
+        const row = deleteBtn.closest("tr");
+        if (row) {
+            row.remove();
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Archived!",
+            text: "Tb dots Case Record has been archived.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+        });
+    } catch (error) {
+        console.error("Error archiving case:", error);
+        Swal.fire({
+            title: "Error",
+            text: `Failed to archive record: ${error.message}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+        });
+    }
+});
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

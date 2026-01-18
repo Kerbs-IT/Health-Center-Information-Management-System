@@ -6,7 +6,7 @@
     <h4>MEDICAL INFORMATION</h4>
     <div class="mb-2 d-flex gap-md-2 w-100 flex-wrap flex-xl-nowrap">
         <div class="mb-2 flex-fill xl:w-[50%]">
-            <label for="tb-type">Type of Tuberculosis(TB):</label>
+            <label for="tb-type">Type of Tuberculosis(TB)<span class="text-danger">*</span></label>
             <select id="edit_type_of_tuberculosis" name="edit_type_of_tuberculosis" class="form-select">
                 <option value="">-- Select Type --</option>
                 <option value="pulmonary">Pulmonary TB</option>
@@ -26,7 +26,7 @@
             <small class="text-danger error-text" id="edit_type_of_tuberculosis_error"></small>
         </div>
         <div class="mb-2 flex-fill xl:w-[50%]">
-            <label for="tb-case-type">Type of TB Case:</label>
+            <label for="tb-case-type">Type of TB Case<span class="text-danger">*</span></label>
             <select name="edit_type_of_tb_case" id="edit_type_of_tb_case" class="form-select">
                 <option value="" disabled>-- Select Case Type --</option>
                 <option value="New">New</option>
@@ -41,7 +41,7 @@
             <small class="text-danger error-text" id="edit_type_of_tb_case_error"></small>
         </div>
         <div class="mb-2 flex-fill xl:w-[50%]">
-            <label for="date_of_diagnosis">Date of Diagnosis</label>
+            <label for="date_of_diagnosis">Date of Diagnosis<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="edit_date_of_diagnosis" id="edit_date_of_diagnosis" min="1950-01-01" max="{{date('Y-m-d')}}">
             <small class="text-danger error-text" id="edit_date_of_diagnosis_error"></small>
         </div>
@@ -166,7 +166,7 @@
     <!-- monitoring progress -->
     <div class="mb-2 d-flex gap-md-2 flex-md-row flex-column flex-md-nowrap">
         <div class="mb-2 w-[100%] md:w-[50%]">
-            <label for="date_of_diagnosis">Date of Diagnosis</label>
+            <label for="date_of_diagnosis">Date of Diagnosis<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="edit_date_administered" id="edit_date_administered" min="1950-01-01" max="{{date('Y-m-d')}}">
             <small class="text-danger error-text" id="edit_date_administered_error"></small>
         </div>

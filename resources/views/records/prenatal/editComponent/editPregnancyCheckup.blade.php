@@ -219,7 +219,7 @@
         <!-- overall remarks -->
         <div class="mb-2 w-100">
             <label for="remarks">Remarks</label>
-            <input type="text" class="form-control" name="edit_overall_remarks" id="edit_overall_remarks">
+            <input type="text" class="form-control" name="edit_overall_remarks" id="edit_overall_remarks" placeholder="Enter your remarks">
         </div>
         <div class="mb-2 w-100">
             <label for="">Date of comeback<span class="text-danger">*</span></label>

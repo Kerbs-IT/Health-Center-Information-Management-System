@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // BUTTON CLICK - ONLY SETS DATA
     if (addPregnancyPlanBtn) {
         addPregnancyPlanBtn.addEventListener("click", function (e) {
+            const errors = document.querySelectorAll(".error-text");
+            errors.forEach(error => error.innerHTML = '');
             const patientInfo = JSON.parse(
                 addPregnancyPlanBtn.dataset.patientInfo
             );

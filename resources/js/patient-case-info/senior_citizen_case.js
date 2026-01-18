@@ -50,7 +50,12 @@ document.addEventListener("click", async (e) => {
                 try {
                     // console.log("Processing key:", key);
                     const element = document.getElementById(`view_${key}`);
-
+                    if (key == 'date_of_comeback') {
+                        const date = new Date(value);
+                        const formatted = date.toISOString().split("T")[0];
+                        element.innerHTML = formatted;
+                        
+                    }
                     if (element) {
                         // Escape HTML to prevent XSS
                         const safeValue =

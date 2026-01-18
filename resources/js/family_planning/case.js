@@ -311,6 +311,12 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
+    // reset the errors here
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach(error => error.innerHTML = '');
+    }
+
     // try catch block
     try {
         const response = await fetch(
@@ -709,6 +715,11 @@ editSaveBtn.addEventListener("click", async (e) => {
 const side_b_BTN = document.getElementById("side-b-add-record-btn");
 
 side_b_BTN.addEventListener("click", () => {
+    // reset the errors
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
+    }
     const patientInfo = JSON.parse(side_b_BTN.dataset.patientInfo);
     // populate the hidden input
     const medical_case_record_id_element = document.getElementById(
@@ -868,6 +879,11 @@ side_b_save_record_btn.addEventListener("click", async (e) => {
 const add_side_A_BTN = document.getElementById("side-a-add-record-btn");
 
 add_side_A_BTN.addEventListener("click", () => {
+    // reset the errors
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
+    }
     // add modal
     const addSideAmodal = document.getElementById("side-a-add-record");
     // reset the form first

@@ -97,7 +97,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="{{optional($seniorCitizenRecord -> patient)->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your place of birth" class="form-control" name="place_of_birth" value="{{optional($seniorCitizenRecord -> patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
 
@@ -107,7 +107,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="number" id="age" placeholder="20" class="form-control" disabled value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>

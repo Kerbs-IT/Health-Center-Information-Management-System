@@ -5,15 +5,18 @@
             <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_visit" id="edit_date_of_visit" min="1950-01-01" max="{{date('Y-m-d')}}">
             <input type="hidden" name="edit_side_b_medical_record_case_id" id="edit_side_b_medical_record_case_id">
             <input type="hidden" name="edit_side_b_health_worker_id" id="edit_side_b_health_worker_id">
+            <small class="text-danger error-text" id="edit_date_of_visit_error"></small>
         </div>
         <div class="input-field">
             <label for="" class="w-100 fs-5">Medical Findings:</label>
             <label for="edit_side_b_medical_findings" class="w-100">(Medical observation/complaints, service rendered/procedures, laboratory examination, treatment and referrals)</label>
             <textarea name="edit_side_b_medical_findings" id="edit_medical_findings" class="bg-light border-1 w-100 h-[150px]"></textarea>
+            <small class="text-danger error-text" id="edit_side_b_medical_findings_error"></small>
         </div>
         <div class="input-field">
             <label for="edit_side_b_method_accepted" class="fs-5">Method Accepted<span class="text-danger">*</span></label>
             <input type="text" class="form-control w-100" name="edit_side_b_method_accepted" id="edit_method_accepted">
+            <small class="text-danger error-text" id="edit_side_b_method_accepted_error"></small>
         </div>
         <div class="input-field">
             <label for="edit_side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
@@ -57,6 +60,7 @@
         <div class="input-field mb-3">
             <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_follow_up_visit" id="edit_date_of_follow_up_visit" max="{{date('Y-m-d',strtotime('+5 years'))}}">
+            <small class="text-danger error-text" id="edit_side_b_date_of_follow_up_visit_error"></small>
         </div>
     </div>
     <!-- follow up questions -->
@@ -74,6 +78,7 @@
                 <label for="edit_baby_Less_than_six_months_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_baby_Less_than_six_months_question_error"></small>
         <!-- q2 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
@@ -87,6 +92,7 @@
                 <label for="edit_sexual_intercouse_or_mesntrual_period_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_sexual_intercouse_or_mesntrual_period_question_error"></small>
         <!-- q3 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
@@ -100,6 +106,7 @@
                 <label for="edit_baby_last_4_weeks_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_baby_last_4_weeks_question_error"></small>
         <!-- q4 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
@@ -113,6 +120,7 @@
                 <label for="edit_menstrual_period_in_seven_days_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_menstrual_period_in_seven_days_question_error"></small>
         <!-- q5 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
@@ -126,6 +134,7 @@
                 <label for="edit_miscarriage_or_abortion_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_miscarriage_or_abortion_question_error"></small>
         <!-- q6 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
@@ -139,6 +148,7 @@
                 <label for="edit_contraceptive_question_no" class="fs-5">No</label>
             </div>
         </div>
+        <small class="text-danger error-text" id="edit_contraceptive_question_error"></small>
         <div class="notices">
             <p>- If the client answered YES to at least one of the questions and she is free of signs or sign or symptoma of pregnancy, provide client with desired method</p>
             <p>- If the client answered NO to all the question, pregnancy cannot be ruled out. the client should await menses or use a pregnancy test</p>

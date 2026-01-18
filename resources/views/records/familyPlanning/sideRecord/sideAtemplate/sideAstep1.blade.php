@@ -14,7 +14,7 @@
                         </div>
                         <div class="input-field  flex-fill lg:w-[50%]">
                             <label for="side_A_add_philhealth_no">Philhealth No:</label>
-                            <input type="text" id="side_A_add_philhealth_no" placeholder="Enter the Religion" class="form-control" name="side_A_add_philhealth_no">
+                            <input type="text" id="side_A_add_philhealth_no" placeholder="Enter your philhealth number" class="form-control" name="side_A_add_philhealth_no">
                             <small class="text-danger error-text" id="side_A_add_philhealth_no_error"></small>
                         </div>
                         <div class="input-field  flex-fill lg:w-[50%] ">
@@ -39,17 +39,17 @@
                             <div class="group d-flex align-items-center justify-content-center gap-2 w-100 flex-wrap flex-lg-nowrap">
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
                                     <label for="side_A_add_client_fname" class="">First Name<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="side_A_add_client_fname" name="side_A_add_client_fname" placeholder="FirstName">
+                                    <input type="text" class="form-control" id="side_A_add_client_fname" name="side_A_add_client_fname" placeholder="Enter the client first Name">
                                     <small class="text-danger error-text" id="side_A_add_client_fname_error"></small>
                                 </div>
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
                                     <label for="side_A_add_client_MI" class="">Middle Name</label>
-                                    <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Middle Name">
+                                    <input type="text" class="form-control" id="side_A_add_client_MI" name="side_A_add_client_MI" placeholder="Enter the client Middle Name">
                                     <small class="text-danger error-text" id="side_A_add_client_MI_error"></small>
                                 </div>
                                 <div class="inputs-form flex-fill lg:w-[50%] ">
                                     <label for="side_A_add_client_lname" class="">Last Name<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="LastName">
+                                    <input type="text" class="form-control" id="side_A_add_client_lname" name="side_A_add_client_lname" placeholder="Enter the client Last Name">
                                     <small class="text-danger error-text" id="side_A_add_client_lname_error"></small>
                                 </div>
                                 <div class="input-form flex-fill lg:w-[50%]">
@@ -145,17 +145,17 @@
                         <div class="group d-flex align-items-center justify-content-center gap-2 flex-wrap flex-lg-nowrap">
                             <div class="input-form flex-fill">
                                 <label for="side_A_add_spouse_fname" class="">First Name</label>
-                                <input type="text" class="form-control" id="side_A_add_spouse_fname" name="side_A_add_spouse_fname" placeholder="FirstName">
+                                <input type="text" class="form-control" id="side_A_add_spouse_fname" name="side_A_add_spouse_fname" placeholder="Enter spouse first name">
                                 <small class="text-danger error-text" id="side_A_add_spouse_fname_error"></small>
                             </div>
                             <div class="input-form flex-fill">
                                 <label for="side_A_add_spouse_MI" class="">Middle Initial</label>
-                                <input type="text" class="form-control" id="side_A_add_spouse_MI" name="side_A_add_spouse_MI" placeholder="Middle Initial">
+                                <input type="text" class="form-control" id="side_A_add_spouse_MI" name="side_A_add_spouse_MI" placeholder="Enter spouse middle name">
                                 <small class="text-danger error-text" id="side_A_add_spouse_MI_error"></small>
                             </div>
                             <div class="input-form flex-fill">
                                 <label for="side_A_add_spouse_lname" class="">Last Name</label>
-                                <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="LastName">
+                                <input type="text" class="form-control" id="side_A_add_spouse_lname" name="side_A_add_spouse_lname" placeholder="Enter spouse last name">
                                 <small class="text-danger error-text" id="side_A_add_spouse_lname_error"></small>
                             </div>
                             <div class="input-form flex-fill">
@@ -177,21 +177,21 @@
                 <div class="mb-md-2 mb-1 d-flex gap-2 flex-md-nowrap flex-lg-nowrap flex-wrap flex-lg-row flex-column">
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="contact_number" class="">Contact Number</label>
-                        <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light" id="side_A_add_spouse_contact_number" name="side_A_add_spouse_contact_number">
+                        <input type="number" placeholder="Enter the spouse occupation" class="form-control bg-light" id="side_A_add_spouse_contact_number" name="side_A_add_spouse_contact_number">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_contact_number_error"></small>
 
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Age</label>
-                        <input type="text" id="side_A_add_spouse_age" placeholder="Enter the age" class="form-control bg-light" name="side_A_add_spouse_age">
+                        <input type="text" id="side_A_add_spouse_age" placeholder="Enter the spouse age" class="form-control bg-light" name="side_A_add_spouse_age">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_age_error"></small>
 
                     </div>
                     <div class="input-field flex-fill lg:w-[50%]">
                         <label for="age">Occupation</label>
-                        <input type="text" id="side_A_add_spouse_occupation" placeholder="Enter the occupation" class="form-control bg-light" name="side_A_add_spouse_occupation">
+                        <input type="text" id="side_A_add_spouse_occupation" placeholder="Enter the spouse occupation" class="form-control bg-light" name="side_A_add_spouse_occupation">
 
                         <small class="text-danger error-text" id="side_A_add_spouse_occupation_error"></small>
 

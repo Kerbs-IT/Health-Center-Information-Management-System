@@ -72,14 +72,17 @@
                                     <div class="input-group">
                                         <label for="vaccination_masterlist_fname" class="w-100">First Name<span class=" text-danger">*</span></label>
                                         <input type="text" name="vaccination_masterlist_fname" id="vaccination_masterlist_fname" placeholder="Enter First Name" class="form-control border flex-fill">
+
                                     </div>
                                     <div class="input-group">
                                         <label for="vaccination_masterlist_MI" class="w-100">Middle Name</label>
                                         <input type="text" name="vaccination_masterlist_MI" id="vaccination_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border flex-fill">
+
                                     </div>
                                     <div class="input-group">
                                         <label for="vaccination_masterlist_lname" class="w-100">Last Name<span class=" text-danger">*</span></label>
                                         <input type="text" name="vaccination_masterlist_lname" id="vaccination_masterlist_lname" placeholder="Enter Last Name" class="form-control  border flex-fill">
+
                                     </div>
                                     <div class="input-form flex-fill lg:w-[50%]">
                                         <label for="vaccination_masterlist_suffix" class="w-100">Suffix</label>
@@ -92,10 +95,13 @@
                                             <option value="IV.">IV</option>
                                             <option value="V.">V</option>
                                         </select>
-                                        <small class="text-danger" id="vaccination_masterlist_suffix_error"></small>
+
                                     </div>
                                 </div>
-
+                                <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_fname_error"></small>
+                                <small class="text-danger" id="vaccination_masterlist_suffix_error"></small>
+                                <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_MI_error"></small>
+                                <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_lname_error"></small>
                             </div>
                             <div class="input-group mb-2">
                                 <h4>Address</h4>
@@ -103,7 +109,7 @@
                                     <div class=" mb-2 w-[100%]  w-lg-[50%]">
                                         <label for="street">Street<span class=" text-danger">*</span></label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
-                                        <small class="text-danger error-text" id="street_error"></small>
+                                        <small class="text-danger error-text flex-grow-1" id="street_error"></small>
                                     </div>
                                     <div class="mb-2 w-[100%]  w-lg-[50%]">
                                         <label for="brgy">Barangay<span class=" text-danger">*</span></label>
@@ -116,7 +122,7 @@
                                             <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
                                             @endforeach
                                         </select>
-                                        <small class="text-danger error-text" id="brgy_error"></small>
+                                        <small class="text-danger error-text flex-grow-1" id="brgy_error"></small>
                                     </div>
                                 </div>
                             </div>
@@ -130,20 +136,20 @@
                                             <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0">
                                             <label for="female">Female</label>
                                         </div>
-                                        <small class="text-danger error-text" id="sex_error"></small>
+                                        <small class="text-danger error-text flex-grow-1" id="sex_error"></small>
                                     </div>
                                 </div>
 
                                 <div class="input-field flex-grow-1 ">
                                     <label for="birthdate">Date of Birth<span class=" text-danger">*</span></label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
-                                    <small class="text-danger error-text" id="date_of_birth_error"></small>
+                                    <small class="text-danger error-text flex-grow-1" id="date_of_birth_error"></small>
                                 </div>
                                 <div class="input-field flex-grow-1 ">
                                     <label for="age">Age<span class=" text-danger">*</span></label>
                                     <input type="text" id="age" placeholder="Enter the age" class="form-control" disabled value="">
                                     <input type="hidden" id="hiddenAge" name="age">
-                                    <small class="text-danger error-text" id="age_error"></small>
+                                    <small class="text-danger error-text flex-grow-1" id="age_error"></small>
                                 </div>
                             </div>
 
@@ -151,16 +157,19 @@
                                 <div class="vaccination-date flex-grow-1">
                                     <label>SE status</label>
                                     <input type="text" name="SE_status" class="form-control">
+                                    <small class="text-danger error-text flex-grow-1" id="SE_status_error"></small>
                                 </div>
 
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="BCG_input">BCG</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="BCG" id="BCG_input">
+                                    <small class="text-danger error-text flex-grow-1" id="BCG_error"></small>
                                 </div>
 
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="Hepatitis_w/in_24hrs">Hepatitis w/in 24hrs</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="Hepatitis_B" id="Hepatitis_w/in_24hrs_input">
+                                    <small class="text-danger error-text flex-grow-1" id="Hepatitis_B_error"></small>
                                 </div>
                             </div>
 
@@ -168,42 +177,51 @@
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_1" class="form-control w-100 border">
+                                    <small class="text-danger error-text flex-grow-1" id="PENTA_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_2" class="form-control w-100 border">
+                                    <small class="text-danger error-text flex-grow-1" id="PENTA_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PENTA 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_3" class="form-control w-100 border">
+                                    <small class="text-danger error-text flex-grow-1" id="PENTA_3_error"></small>
                                 </div>
                             </div>
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_1" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="OPV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_2" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="OPV_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">OPV 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_3" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="OPV_3_error"></small>
                                 </div>
                             </div>
                             <div class="input-group d-flex gap-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_1" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="PCV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_2" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="PCV_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">PCV 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_3" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="PCV_3_error"></small>
                                 </div>
                             </div>
                             <!-- ipv -->
@@ -211,10 +229,12 @@
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">IPV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_1" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="IPV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">IPV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_2" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="IPV_2_error"></small>
                                 </div>
                             </div>
                             <!-- mcv -->
@@ -222,15 +242,18 @@
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">MCV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_1" class="form-control border w-100" id="MCV_1">
+                                    <small class="text-danger error-text flex-grow-1" id="MCV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="">MCV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_2" class="form-control border w-100">
+                                    <small class="text-danger error-text flex-grow-1" id="MCV_2_error"></small>
                                 </div>
                             </div>
                             <div class="mb-2">
                                 <label for="" class="">Remarks</label>
                                 <input type="text" name="remarks" class="form-control">
+                                <small class="text-danger error-text flex-grow-1" id="remarks"></small>
                             </div>
                         </div>
 
