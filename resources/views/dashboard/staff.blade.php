@@ -255,16 +255,39 @@
 
                                 </div>
                             </div>
-                            <!-- <div class="card shadow-sm mt-4 flex-fill overflow-hidden">
-                                <div class="card-header bg-success text-white">
-                                    <h5 class="mb-0">Number of Patient per Area</h5>
+                            <div class="card shadow-sm mt-4 flex-fill overflow-hidden">
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center flex-wrap">
+                                    <h5 class="mb-0"><span id="dashboard-healthworker-assigned-area">Karlaville</span> Patient Distribution</h5>
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <label class="filter-label text-white" for="pieChartDateRange">Date Range:</label>
+                                        <input type="text" id="patientDistributionDateRange" class="filter-select" style="width: 100%;" />
+                                    </div>
                                 </div>
-                                <div class="card-body overflow-y-auto patient-per-area-con" style="max-height: 300px;">
+                                <div class="card-body overflow-y-auto patient-distribution" style="max-height: 300px;">
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom vaccination">
+                                        <p class="mb-0">Vaccination</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom prenatal">
+                                        <p class="mb-0">Prenatal</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold " style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom senior_citizen">
+                                        <p class="mb-0">Senior Citizen</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom tb_dots">
+                                        <p class="mb-0">Tb-dots</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom family_planning">
+                                        <p class="mb-0">Family Planning</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold " style="border-radius: 10px;">0</h5>
+                                    </div>
 
-                                 
 
                                 </div>
-                            </div> -->
+                            </div>
 
                         </div>
 

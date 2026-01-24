@@ -264,7 +264,7 @@ class PrenatalController extends Controller
                 'weight' => $prenatalCaseData['weight'] ?? null,
                 'health_worker_id' => $patientData['handled_by'],
                 'type_of_record' => 'Case Record',
-                'planning' => $prenatalCaseData['add_prenatal_planning']??null
+                'planning' => $prenatalCaseData['add_prenatal_planning'] ?? null
             ]);
 
             // insert the pregnancy timeline
@@ -1080,10 +1080,10 @@ class PrenatalController extends Controller
                 }
             } else {
                 if ($isFamilyPlan != null && $isFamilyPlan === 'no') {
-                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->exists();
+                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->exists();
 
                     if (!empty($hasExistingFamilyPlan)) {
-                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
+                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->first();
 
                         $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
                         $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
@@ -1326,14 +1326,14 @@ class PrenatalController extends Controller
                 'tetanus_toxoid_4' => $data['tt4'] ?? null,
                 'tetanus_toxoid_5' => $data['tt5'] ?? null,
                 'decision' => $data['nurse_decision'] ?? null,
-                'blood_pressure' => $data['edit_case_blood_pressure']?? null,
+                'blood_pressure' => $data['edit_case_blood_pressure'] ?? null,
                 'pulse_rate'  => $data['edit_case_pulse_rate'] ?? null,
                 'temperature' => $data['edit_case_temperature'] ?? null,
                 'respiratory_rate' => $data['edit_case_respiratory_rate'] ?? null,
-                'height' => $data['edit_case_height']?? null,
-                'weight' => $data['edit_case_weight']?? null,
-                'planning' => $data['edit_case_planning']?? null,
-                
+                'height' => $data['edit_case_height'] ?? null,
+                'weight' => $data['edit_case_weight'] ?? null,
+                'planning' => $data['edit_case_planning'] ?? null,
+
             ]);
 
             // after resetting the record of pregnancy timeline add new record

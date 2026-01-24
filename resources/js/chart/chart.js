@@ -23,25 +23,25 @@ let pieChart = null;
 
 // Date range state
 let barChartDateRange = {
-    start: moment().startOf("year"),
-    end: moment().endOf("year"),
+    start: moment().subtract(6, "months").startOf("month"),
+    end: moment().endOf("month"),
 };
 
 let pieChartDateRange = {
-    start: moment().startOf("year"),
-    end: moment().endOf("year"),
+    start: moment().subtract(6, "months").startOf("month"),
+    end: moment().endOf("month"),
 };
 
 let numberPerAreaRange = {
-    start: moment().startOf("year"),
-    end: moment().endOf("year"),
+    start: moment().subtract(6, "months").startOf("month"),
+    end: moment().endOf("month"),
 };
 
 // Age chart state
 let ageChart = null;
 let ageChartDateRange = {
-    start: moment().startOf("year"),
-    end: moment().endOf("year"),
+    start: moment().subtract(6, "months").startOf("month"),
+    end: moment().endOf("month"),
 };
 
 // initiliaze the age dirtribution table
@@ -631,12 +631,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Initialize all dashboard components
         await Promise.all([
+            initAgeChart(),
+            initOverDueCount(),
             initBarChart(),
             initPieChart(),
             initCountPerArea(),
             initPatientToday(),
-            initAgeChart(),
-            initOverDueCount(),
         ]);
 
         // Setup patient type dropdown listener
@@ -1399,17 +1399,50 @@ async function initOverDueCount() {
 
     // Handle visit link click
     function handleVisitClick(type) {
-        // Define your routes here
         const routes = {
-            vaccination: "/patient-record/vaccination",
-            prenatal: "/patient-record/prenatal/view-records",
-            senior_citizen: "/patient-record/senior-citizen/view-records",
-            tb_dots: "/patient-record/tb-dots/view-records",
-            family_planning: "/patient-record/family-planning/view-records",
+            vaccination: {
+                url: "/patient-record/vaccination",
+                menuId: "record_vaccination",
+            },
+            prenatal: {
+                url: "/patient-record/prenatal/view-records",
+                menuId: "record_prenatal",
+            },
+            senior_citizen: {
+                url: "/patient-record/senior-citizen/view-records",
+                menuId: "record_senior_citizen",
+            },
+            tb_dots: {
+                url: "/patient-record/tb-dots/view-records",
+                menuId: "record_tb_dots",
+            },
+            family_planning: {
+                url: "/patient-record/family-planning/view-records",
+                menuId: "record_family_planning",
+            },
         };
 
         if (routes[type]) {
-            window.location.href = routes[type];
+            const route = routes[type];
+
+            // Find the index of the "Records" menu-option by its ID
+            const recordsMenu = document.getElementById("records-menu");
+            const allMenuOptions = Array.from(
+                document.querySelectorAll(".menu-option"),
+            );
+            const recordsIndex = allMenuOptions.indexOf(recordsMenu);
+
+            // Set localStorage
+            if (recordsIndex !== -1) {
+                localStorage.setItem(
+                    "openSubmenus",
+                    JSON.stringify([recordsIndex]),
+                );
+            }
+            localStorage.setItem("activeMenuItem", `#${route.menuId}`);
+
+            // Redirect
+            window.location.href = route.url;
         }
     }
 }

@@ -406,6 +406,11 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     // get overdue
     Route::get('/daily-overdue-record/count',[HealthCenterDashboard::class, 'getOverdueCounts']);
     
+    // get the patient distribution
+
+    Route::get("/health-worker/area-patient-distribution",[HealthCenterDashboard::class, 'healthWorkerPatientDistribution']);
+
+
 });
 // ---------------------------- home page
 // Route to homepage
