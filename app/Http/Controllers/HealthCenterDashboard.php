@@ -920,4 +920,89 @@ class HealthCenterDashboard extends Controller
             ], 403);
         }
     }
+
+    // health worker specific area
+    public function healthWorkerPatientDistribution(Request $request)
+    {
+        try {
+            // Get the date range
+            $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+            $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
+
+            $data = [];
+
+            if (Auth::user()->role == 'staff') {
+                $user = Auth::user();
+                $staffId = $user->id;
+
+                // Get staff's assigned area
+                $staff = DB::table('staff')->where('user_id', $staffId)->first();
+
+                if (!$staff || !$staff->assigned_area_id) {
+                    return response()->json([
+                        'error' => 'No assigned area found for this staff member'
+                    ], 404);
+                }
+
+                // Get the brgy_unit details
+                $assignedArea = brgy_unit::find($staff->assigned_area_id);
+
+                if (!$assignedArea) {
+                    return response()->json([
+                        'error' => 'Assigned area not found'
+                    ], 404);
+                }
+               
+
+                // Base query for the assigned area
+                $baseQuery = patient_addresses::query()
+                    ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
+                    ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
+                    ->where('medical_record_cases.status', '!=', 'Archived')
+                    ->where('patients.status', '!=', 'Archived')
+                    ->whereNotNull('patient_addresses.purok')
+                    ->whereBetween('patients.created_at', [$startDate, $endDate]); // Changed to medical_record_cases
+
+               
+
+                // Count patients by service type
+                $data = [
+                    'assigned_area' => $assignedArea->brgy_unit,
+
+                    'vaccination' => (clone $baseQuery)
+                        ->join('vaccination_medical_records as v', 'v.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('v.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+
+                    'prenatal' => (clone $baseQuery)
+                        ->join('prenatal_medical_records as p', 'p.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('p.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+
+                    'senior_citizen' => (clone $baseQuery)
+                        ->join('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('s.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+
+                    'tb_dots' => (clone $baseQuery)
+                        ->join('tb_dots_medical_records as t', 't.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('t.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+
+                    'family_planning' => (clone $baseQuery)
+                        ->join('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('f.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+                ];
+            }
+
+            return response()->json([
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
