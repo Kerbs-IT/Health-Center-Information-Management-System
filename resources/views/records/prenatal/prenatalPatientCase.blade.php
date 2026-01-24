@@ -139,7 +139,7 @@
                                                                 <small class="text-danger error-text" id="check_up_blood_pressure_error"></small>
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
-                                                                <label for="BP">Temperature:</label>
+                                                                <label for="BP">Temperature(°C):</label>
                                                                 <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="check_up_temperature">
                                                                 <small class="text-danger error-text" id="check_up_temperature_error"></small>
                                                             </div>
@@ -417,7 +417,7 @@
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="type_of_delivery">Type of Delivery</label>
-                                                            <select id="type_of_delivery" class="form-select" >
+                                                            <select id="type_of_delivery" class="form-select">
                                                                 <option value="" disabled selected>Select Type of Delivery</option>
                                                                 <option value="Normal Spontaneous Delivery">Normal Spontaneous Delivery (NSD)</option>
                                                                 <option value="Cesarean Section">Cesarean Section (CS)</option>
@@ -534,6 +534,46 @@
                                                         </div>
 
                                                     </div>
+
+                                                    <div class="w-100">
+                                                        <h5>Objective</h5>
+                                                        <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="edit_case_blood_pressure">Blood Pressure:</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" id="edit_case_blood_pressure" name="edit_case_blood_pressure">
+                                                                <small class="text-danger error-text error-text" id="edit_case_blood_pressure_error"></small>
+                                                            </div>
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="edit_case_temperature">Temperature(°C):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" id="edit_case_temperature" name="edit_case_temperature">
+                                                                <small class="text-danger error-text error-text" id="edit_case_temperature_error"></small>
+                                                            </div>
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="edit_case_pulse_rate">Pulse Rate(Bpm):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="edit_case_pulse_rate" name="edit_case_pulse_rate">
+                                                                <small class="text-danger error-text error-text" id="edit_case_pulse_rate_error"></small>
+                                                            </div>
+
+                                                        </div>
+                                                        <!-- 2nd row -->
+                                                        <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="edit_case_respiratory_rate">Respiratory Rate (breaths/min):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" id="edit_case_respiratory_rate" name="edit_case_respiratory_rate">
+                                                                <small class="text-danger error-text error-text" id="edit_case_respiratory_rate_error"></small>
+                                                            </div>
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="preantal_view_height">Height(cm):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the height" id="edit_case_height" name="edit_case_height">
+                                                                <small class="text-danger error-text error-text" id="edit_case_height_error"></small>
+                                                            </div>
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="edit_case_weight">Weight(kg):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" id="edit_case_weight" name="edit_case_weight">
+                                                                <small class="text-danger error-text error-text" id="edit_case_weight_error"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <!-- ASSESSMENT -->
                                                     <div class="assessment-con mb-3">
                                                         <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
@@ -576,6 +616,11 @@
                                                             </div>
                                                         </div>
 
+                                                    </div>
+                                                    <div class="planning-section mb-3">
+                                                        <h4>Planning</h4>
+                                                        <textarea name="edit_case_planning" id="edit_case_planning" class=" border-1 border-black w-100 form-control" style="min-height:150px;"></textarea>
+                                                        <small class="text-danger error-text error-text" id="edit_case_planning_error"></small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1145,6 +1190,46 @@
                                                         </div>
 
                                                     </div>
+                                                    <!-- add objective -->
+                                                    <div class="w-100">
+                                                        <h5>Objective</h5>
+                                                        <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="add_case_blood_pressure">Blood Pressure:</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" id="add_case_blood_pressure" name="add_case_blood_pressure">
+                                                                <small class="text-danger error-text error-text" id="add_case_blood_pressure_error"></small>
+                                                            </div>
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="add_case_temperature">Temperature(°C):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" id="add_case_temperature" name="add_case_temperature">
+                                                                <small class="text-danger error-text error-text" id="add_case_temperature_error"></small>
+                                                            </div>
+                                                            <div class="mb-md-2 mb-1 flex-fill">
+                                                                <label for="add_case_pulse_rate">Pulse Rate(Bpm):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="add_case_pulse_rate" name="add_case_pulse_rate">
+                                                                <small class="text-danger error-text error-text" id="add_case_pulse_rate_error"></small>
+                                                            </div>
+
+                                                        </div>
+                                                        <!-- 2nd row -->
+                                                        <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="add_case_respiratory_rate">Respiratory Rate (breaths/min):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" id="add_case_respiratory_rate" name="add_case_respiratory_rate">
+                                                                <small class="text-danger error-text error-text" id="add_case_respiratory_rate_error"></small>
+                                                            </div>
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="preantal_view_height">Height(cm):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the height" id="add_case_height" name="add_case_height">
+                                                                <small class="text-danger error-text error-text" id="add_case_height_error"></small>
+                                                            </div>
+                                                            <div class="mb-2 flex-fill">
+                                                                <label for="add_case_weight">Weight(kg):</label>
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" id="add_case_weight" name="add_case_weight">
+                                                                <small class="text-danger error-text error-text" id="add_case_weight_error"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <!-- ASSESSMENT -->
                                                     <div class="assessment-con mb-3">
                                                         <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
@@ -1186,7 +1271,11 @@
                                                                 <label for="add_drug_intake_input" class="w-100 fs-5">Drug intake</label>
                                                             </div>
                                                         </div>
-
+                                                    </div>
+                                                    <div class="planning-section mb-3">
+                                                        <h4>Planning</h4>
+                                                        <textarea name="add_case_planning" id="add_case_planning" class=" border-1 border-black w-100 form-control" style="min-height:150px;"></textarea>
+                                                        <small class="text-danger error-text error-text" id="add_case_weight_error"></small>
                                                     </div>
                                                 </div>
                                             </div>

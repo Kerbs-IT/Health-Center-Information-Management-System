@@ -101,6 +101,7 @@ class PrenatalController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'add_prenatal_planning' => 'nullable|string:max:2000'
 
             ]);
 
@@ -262,7 +263,8 @@ class PrenatalController extends Controller
                 'height' => $prenatalCaseData['height'] ?? null,
                 'weight' => $prenatalCaseData['weight'] ?? null,
                 'health_worker_id' => $patientData['handled_by'],
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'planning' => $prenatalCaseData['add_prenatal_planning']??null
             ]);
 
             // insert the pregnancy timeline
@@ -1223,11 +1225,67 @@ class PrenatalController extends Controller
                 'tt2' => 'sometimes|nullable|numeric',
                 'tt3' => 'sometimes|nullable|numeric',
                 'tt4' => 'sometimes|nullable|numeric',
-                'tt5' => 'sometimes|nullable|numeric'
+                'tt5' => 'sometimes|nullable|numeric',
+                'edit_case_blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
+                'edit_case_temperature' => 'nullable|numeric|between:30,45',
+                'edit_case_pulse_rate' => 'nullable|string|max:20',
+                'edit_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'edit_case_height' => 'nullable|numeric|between:30,300',
+                'edit_case_weight' => 'nullable|numeric|between:1,500',
+                'edit_case_planning' => 'nullable|string|max:2000',
+            ], [
+                // Required fields
+                'LMP.required' => 'The LMP field is required.',
+                'LMP.date' => 'The LMP field must be a valid date.',
+                'expected_delivery.required' => 'The expected delivery field is required.',
+                'expected_delivery.date' => 'The expected delivery field must be a valid date.',
 
+                // Numeric fields
+                'G.numeric' => 'The G field must be a number.',
+                'P.numeric' => 'The P field must be a number.',
+                'T.numeric' => 'The T field must be a number.',
+                'premature.numeric' => 'The premature field must be a number.',
+                'abortion.numeric' => 'The abortion field must be a number.',
+                'living_children.numeric' => 'The living children field must be a number.',
+                'menarche.numeric' => 'The menarche field must be a number.',
+
+                // TT fields
+                'tt1.numeric' => 'The TT1 field must be a number.',
+                'tt2.numeric' => 'The TT2 field must be a number.',
+                'tt3.numeric' => 'The TT3 field must be a number.',
+                'tt4.numeric' => 'The TT4 field must be a number.',
+                'tt5.numeric' => 'The TT5 field must be a number.',
+
+                // Array fields
+                'preg_year.array' => 'The pregnancy year field must be an array.',
+                'type_of_delivery.array' => 'The type of delivery field must be an array.',
+                'place_of_delivery.array' => 'The place of delivery field must be an array.',
+                'birth_attendant.array' => 'The birth attendant field must be an array.',
+                'compilation.array' => 'The compilation field must be an array.',
+                'outcome.array' => 'The outcome field must be an array.',
+
+                // Vital signs and measurements
+                'edit_case_blood_pressure.regex' => 'The blood pressure format is invalid. Expected format: systolic/diastolic (e.g., 120/80).',
+                'edit_case_temperature.numeric' => 'The temperature field must be a number.',
+                'edit_case_temperature.between' => 'The temperature must be between 30 and 45 degrees Celsius.',
+                'edit_case_pulse_rate.string' => 'The pulse rate field must be a string.',
+                'edit_case_pulse_rate.max' => 'The pulse rate field must not exceed 20 characters.',
+                'edit_case_respiratory_rate.integer' => 'The respiratory rate field must be an integer.',
+                'edit_case_respiratory_rate.min' => 'The respiratory rate must be at least 5 breaths per minute.',
+                'edit_case_respiratory_rate.max' => 'The respiratory rate must not exceed 60 breaths per minute.',
+                'edit_case_height.numeric' => 'The height field must be a number.',
+                'edit_case_height.between' => 'The height must be between 30 and 300 cm.',
+                'edit_case_weight.numeric' => 'The weight field must be a number.',
+                'edit_case_weight.between' => 'The weight must be between 1 and 500 kg.',
+                'edit_case_planning.string' => 'The planning field must be a string.',
+                'edit_case_planning.max' => 'The planning field must not exceed 2000 characters.',
             ]);
 
-            // assessment validation
+            // Assessment validation
             $assessment = $request->validate([
                 'spotting' => 'sometimes|nullable|string',
                 'edema' => 'sometimes|nullable|string',
@@ -1237,27 +1295,45 @@ class PrenatalController extends Controller
                 'severe_vomiting' => 'sometimes|nullable|string',
                 'hx_smoking' => 'sometimes|nullable|string',
                 'alcohol_drinker' => 'sometimes|nullable|string',
-                'drug_intake' => 'sometimes|nullable|string'
+                'drug_intake' => 'sometimes|nullable|string',
+            ], [
+                'spotting.string' => 'The spotting field must be a valid text value.',
+                'edema.string' => 'The edema field must be a valid text value.',
+                'severe_headache.string' => 'The severe headache field must be a valid text value.',
+                'blurring_of_vission.string' => 'The blurring of vision field must be a valid text value.',
+                'watery_discharge.string' => 'The watery discharge field must be a valid text value.',
+                'severe_vomiting.string' => 'The severe vomiting field must be a valid text value.',
+                'hx_smoking.string' => 'The smoking history field must be a valid text value.',
+                'alcohol_drinker.string' => 'The alcohol drinker field must be a valid text value.',
+                'drug_intake.string' => 'The drug intake field must be a valid text value.',
             ]);
 
             // if it passess the validation,then:
             // update the values
             $caseRecord->update([
-                'G' => $data['G'] ?? $caseRecord->G,
-                'P' => $data['P'] ?? $caseRecord->P,
-                'T' => $data['T'] ?? $caseRecord->T,
-                'premature' => $data['premature'] ?? $caseRecord->premature,
-                'abortion' => $data['abortion'] ?? $caseRecord->abortion,
-                'living_children' => $data['living_children'] ?? $caseRecord->living_children,
+                'G' => $data['G'] ?? null,
+                'P' => $data['P'] ?? null,
+                'T' => $data['T'] ?? null,
+                'premature' => $data['premature'] ?? null,
+                'abortion' => $data['abortion'] ?? null,
+                'living_children' => $data['living_children'] ?? null,
                 'LMP' => $data['LMP'] ?? $caseRecord->LMP,
                 'expected_delivery' => $data['expected_delivery'] ?? $caseRecord->expected_delivery,
-                'menarche' => $data['menarche'] ?? $caseRecord->menarche,
-                'tetanus_toxoid_1' => $data['tt1'] ?? $caseRecord->tetanus_toxoid_1,
-                'tetanus_toxoid_2' => $data['tt2'] ?? $caseRecord->tetanus_toxoid_2,
-                'tetanus_toxoid_3' => $data['tt3'] ?? $caseRecord->tetanus_toxoid_3,
-                'tetanus_toxoid_4' => $data['tt4'] ?? $caseRecord->tetanus_toxoid_4,
-                'tetanus_toxoid_5' => $data['tt5'] ?? $caseRecord->tetanus_toxoid_5,
-                'decision' => $data['nurse_decision'] ?? $caseRecord->decision,
+                'menarche' => $data['menarche'] ?? null,
+                'tetanus_toxoid_1' => $data['tt1'] ?? null,
+                'tetanus_toxoid_2' => $data['tt2'] ?? null,
+                'tetanus_toxoid_3' => $data['tt3'] ?? null,
+                'tetanus_toxoid_4' => $data['tt4'] ?? null,
+                'tetanus_toxoid_5' => $data['tt5'] ?? null,
+                'decision' => $data['nurse_decision'] ?? null,
+                'blood_pressure' => $data['edit_case_blood_pressure']?? null,
+                'pulse_rate'  => $data['edit_case_pulse_rate'] ?? null,
+                'temperature' => $data['edit_case_temperature'] ?? null,
+                'respiratory_rate' => $data['edit_case_respiratory_rate'] ?? null,
+                'height' => $data['edit_case_height']?? null,
+                'weight' => $data['edit_case_weight']?? null,
+                'planning' => $data['edit_case_planning']?? null,
+                
             ]);
 
             // after resetting the record of pregnancy timeline add new record
@@ -1743,34 +1819,61 @@ class PrenatalController extends Controller
                 'add_tt2' => 'sometimes|nullable|numeric',
                 'add_tt3' => 'sometimes|nullable|numeric',
                 'add_tt4' => 'sometimes|nullable|numeric',
-                'add_tt5' => 'sometimes|nullable|numeric'
-
+                'add_tt5' => 'sometimes|nullable|numeric',
+                'add_case_temperature' => 'nullable|numeric|between:30,45',
+                'add_case_pulse_rate' => 'nullable|string|max:20',
+                'add_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'add_case_height' => 'nullable|numeric|between:30,300',
+                'add_case_weight' => 'nullable|numeric|between:1,500',
+                'add_case_planning' => 'nullable|string|max:2000',
             ], [
+                // Required fields
                 'add_prenatal_case_medical_record_case_id.required' => 'The prenatal case medical record case id field is required.',
                 'add_prenatal_case_health_worker_id.required' => 'The prenatal case health worker id field is required.',
                 'add_prenatal_case_patient_name.required' => 'The prenatal case patient name field is required.',
+                'add_LMP.required' => 'The LMP field is required.',
+                'add_LMP.date' => 'The LMP field must be a valid date.',
+                'add_expected_delivery.required' => 'The expected delivery field is required.',
+                'add_expected_delivery.date' => 'The expected delivery field must be a valid date.',
+
+                // Numeric fields
                 'add_G.numeric' => 'The G field must be a number.',
                 'add_P.numeric' => 'The P field must be a number.',
                 'add_T.numeric' => 'The T field must be a number.',
                 'add_premature.numeric' => 'The premature field must be a number.',
                 'add_abortion.numeric' => 'The abortion field must be a number.',
                 'add_living_children.numeric' => 'The living children field must be a number.',
-                'add_preg_year.array' => 'The preg year field must be an array.',
-                'add_type_of_delivery.array' => 'The type of delivery field must be an array.',
-                'add_place_of_delivery.array' => 'The place of delivery field must be an array.',
-                'add_birth_attendant.array' => 'The birth attendant field must be an array.',
-                'add_compilation.array' => 'The compilation field must be an array.',
-                'add_outcome.array' => 'The outcome field must be an array.',
-                'add_LMP.required' => 'The LMP field is required.',
-                'add_LMP.date' => 'The LMP field must be a valid date.',
-                'add_expected_delivery.required' => 'The expected delivery field is required.',
-                'add_expected_delivery.date' => 'The expected delivery field must be a valid date.',
                 'add_menarche.numeric' => 'The menarche field must be a number.',
+
+                // TT fields
                 'add_tt1.numeric' => 'The tt1 field must be a number.',
                 'add_tt2.numeric' => 'The tt2 field must be a number.',
                 'add_tt3.numeric' => 'The tt3 field must be a number.',
                 'add_tt4.numeric' => 'The tt4 field must be a number.',
                 'add_tt5.numeric' => 'The tt5 field must be a number.',
+
+                // Array fields
+                'add_preg_year.array' => 'The pregnancy year field must be an array.',
+                'add_type_of_delivery.array' => 'The type of delivery field must be an array.',
+                'add_place_of_delivery.array' => 'The place of delivery field must be an array.',
+                'add_birth_attendant.array' => 'The birth attendant field must be an array.',
+                'add_compilation.array' => 'The compilation field must be an array.',
+                'add_outcome.array' => 'The outcome field must be an array.',
+
+                // Vital signs and measurements
+                'add_case_temperature.numeric' => 'The temperature field must be a number.',
+                'add_case_temperature.between' => 'The temperature must be between 30 and 45 degrees.',
+                'add_case_pulse_rate.string' => 'The pulse rate field must be a string.',
+                'add_case_pulse_rate.max' => 'The pulse rate field must not exceed 20 characters.',
+                'add_case_respiratory_rate.integer' => 'The respiratory rate field must be an integer.',
+                'add_case_respiratory_rate.min' => 'The respiratory rate must be at least 5.',
+                'add_case_respiratory_rate.max' => 'The respiratory rate must not exceed 60.',
+                'add_case_height.numeric' => 'The height field must be a number.',
+                'add_case_height.between' => 'The height must be between 30 and 300 cm.',
+                'add_case_weight.numeric' => 'The weight field must be a number.',
+                'add_case_weight.between' => 'The weight must be between 1 and 500 kg.',
+                'add_case_planning.string' => 'The planning field must be a string.',
+                'add_case_planning.max' => 'The planning field must not exceed 2000 characters.',
             ]);
 
             // assessment validation
@@ -1824,12 +1927,13 @@ class PrenatalController extends Controller
                 'tetanus_toxoid_3' => $data['add_tt3'] ?? null,
                 'tetanus_toxoid_4' => $data['add_tt4'] ?? null,
                 'tetanus_toxoid_5' => $data['add_tt5'] ?? null,
-                'blood_pressure' => null,
-                'temperature' => null,
-                'pulse_rate' => null,
-                'respiratory_rate' => null,
-                'height' => null,
-                'weight' => null,
+                'blood_pressure' => $data['add_case_blood_pressure'] ?? null,
+                'pulse_rate'  => $data['add_case_pulse_rate'] ?? null,
+                'temperature' => $data['add_case_temperature'] ?? null,
+                'respiratory_rate' => $data['add_case_respiratory_rate'] ?? null,
+                'height' => $data['add_case_height'] ?? null,
+                'weight' => $data['add_case_weight'] ?? null,
+                'planning' => $data['add_case_planning'] ?? null,
                 'status' => 'Active',
                 'type_of_record' => 'Case Record'
             ]);

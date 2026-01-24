@@ -18,7 +18,7 @@
                     <small class="text-danger error-text" id="blood_pressure_error"></small>
                 </div>
                 <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
-                    <label for="BP">Temperature:</label>
+                    <label for="BP">Temperature(°C):</label>
                     <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature">
                     <small class="text-danger error-text" id="temperature_error"></small>
                 </div>

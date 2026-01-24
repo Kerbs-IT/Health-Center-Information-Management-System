@@ -25,7 +25,7 @@
                 <tr>
                     <th>Blood Pressure</th>
                     <td id="check_up_blood_pressure">120/80</td>
-                    <th>Temperature</th>
+                    <th>Temperature(°C)</th>
                     <td id="check_up_temperature">36.5 °C</td>
                 </tr>
                 <tr>
