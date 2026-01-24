@@ -154,7 +154,7 @@
                                         @if(Auth::user()->role == 'nurse')
                                         <div class="mb-2 flex-fill xl:w-[50%] ">
                                             <label for="handled_by">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select " data-is-health-worker ="{{Auth::user()->role='staff'?true:false}}">
+                                            <select name="handled_by" id="handled_by" class="form-select " data-is-health-worker="{{Auth::user()->role='staff'?true:false}}">
                                                 <option value="" disabled selected>Select a person</option>
                                                 @foreach($healthworkers as $worker)
                                                 <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>
@@ -412,17 +412,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure" id="add_patient_blood_pressure">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
-                                                <label for="BP">Temperature:</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature">
+                                                <label for="BP">Temperature(°C):</label>
+                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" id="add_patient_temperature">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate" id="add_patient_pulse_rate">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -431,17 +431,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate" id="add_patient_respiratory_rate">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" id="add_patient_height">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight" id="add_patient_weight">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

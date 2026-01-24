@@ -166,7 +166,42 @@
             </div>
 
         </div>
-        
+        <div class="w-100">
+            <h5>Objective</h5>
+            <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_bp">Blood Pressure:</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" id="prenatal_view_blood_pressure" disabled>
+
+                </div>
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_temperature">Temperature:</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the temperature" id="prenatal_view_temperature" disabled>
+
+                </div>
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_pulse_rate">Pulse Rate(Bpm):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="prenatal_view_pulse_rate" disabled>
+
+                </div>
+
+            </div>
+            <!-- 2nd row -->
+            <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
+                <div class="mb-2 flex-fill">
+                    <label for="prenatal_view_respiratory_rate">Respiratory Rate (breaths/min):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" id="prenatal_view_respiratory_rate" disabled>
+                </div>
+                <div class="mb-2 flex-fill">
+                    <label for="preantal_view_height">Height(cm):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the height" id="prenatal_view_height" disabled>
+                </div>
+                <div class="mb-2 flex-fill">
+                    <label for="prenatal_view_weight">Weight(kg):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the weight" id="prenatal_view_weight" disabled>
+                </div>
+            </div>
+        </div>
         <!-- ASSESSMENT -->
         <div class="assessment-con mb-3 border-bottom">
             <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
@@ -209,6 +244,10 @@
                 </div>
             </div>
 
+        </div>
+        <div class="planning-section mb-3">
+            <h4>Planning</h4>
+            <textarea name="add_prenatal_planning" id="add_patient_prenatal_planning" class=" border-1 border-black w-100 form-control" style="min-height:150px;"></textarea>
         </div>
         <!-- main info about pregnancy -->
         <div class="survey-questionare w-100 ">

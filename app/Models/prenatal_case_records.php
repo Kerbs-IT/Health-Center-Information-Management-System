@@ -32,7 +32,8 @@ class prenatal_case_records extends Model
         'respiratory_rate',
         'height',
         'weight',
-        'status'
+        'status',
+        'planning'
 
     ];
     public function medical_record_case()

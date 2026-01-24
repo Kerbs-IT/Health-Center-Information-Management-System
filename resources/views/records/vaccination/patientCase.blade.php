@@ -142,7 +142,7 @@
                                                         <small class="text-danger error-text add_vaccination_case_record_errors" id="add_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
-                                                        <label for="add_temperature">Temperature</label>
+                                                        <label for="add_temperature">Temperature(°C)</label>
                                                         <input type="text" class="form-control" name="add_temperature" id="add_temperature" required placeholder="Enter the temperature">
                                                         <small class="text-danger error-text add_vaccination_case_record_errors" id="add_temperature_error"></small>
                                                     </div>
@@ -262,7 +262,7 @@
                                                         <small class="text-danger error-text" id="update_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
-                                                        <label for="temperature">Temperature</label>
+                                                        <label for="temperature">Temperature(°C)</label>
                                                         <input type="text" class="form-control" name="temperature" id="edit-temperature" required placeholder="00.0">
                                                         <small class="text-danger error-text" id="update_temperature_error"></small>
                                                     </div>

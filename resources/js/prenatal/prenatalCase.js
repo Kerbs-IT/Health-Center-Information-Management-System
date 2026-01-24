@@ -21,6 +21,13 @@ document.addEventListener("click", async (e) => {
     const premature = document.getElementById("premature_value");
     const abortion = document.getElementById("abortion_value");
     const livingChildren = document.getElementById("livingChildren_value");
+     const blood_pressure = document.getElementById("blood_pressure_value");
+     const weight = document.getElementById("weight_value");
+     const height = document.getElementById("height_value");
+     const temperature = document.getElementById("temperature_value");
+     const respiratory_rate = document.getElementById("respiratory_rate_value");
+     const pulse_rate = document.getElementById("pulse_rate_value");
+     const planning = document.getElementById("planning_value");
 
     // load the value
     gravida.innerHTML = data.caseInfo.G ?? "0";
@@ -29,6 +36,38 @@ document.addEventListener("click", async (e) => {
     premature.innerHTML = data.caseInfo.premature ?? "0";
     abortion.innerHTML = data.caseInfo.abortion ?? "0";
     livingChildren.innerHTML = data.caseInfo.living_children ?? "0";
+    // load the vital
+    if (blood_pressure) {
+        blood_pressure.innerHTML = data.caseInfo.blood_pressure ?? 0;
+    }
+    if (height) {
+      height.innerHTML = data.caseInfo.height ? `${data.caseInfo.height} cm` : '0 cm';  
+    }
+    if (weight) {
+        weight.innerHTML = data.caseInfo.weight
+            ? `${data.caseInfo.weight} cm`
+            : "0 cm";
+    }
+    
+    if (temperature) {
+        temperature.innerHTML = data.caseInfo.temperature
+            ? `${data.caseInfo.temperature} °C`
+            : "0 °C";
+    }
+    
+    if (respiratory_rate) {
+        respiratory_rate.innerHTML = data.caseInfo.respiratory_rate
+        ? `${data.caseInfo.respiratory_rate}`
+        : "0";
+    }
+    
+    if (pulse_rate) {
+        pulse_rate.innerHTML = data.caseInfo.pulse_rate
+            ? `${data.caseInfo.pulse_rate}`
+            : "0";
+    }
+    
+    if (planning) planning.innerHTML = data.caseInfo.planning ?? 'N/A';
 
     // load the pregnancy timeline
     const tableBody = document.getElementById("pregnancy_history_body");
@@ -169,6 +208,9 @@ document.addEventListener("click", async (e) => {
     const signatureImg = document.getElementById("signature_value");
     const noSignatureText = document.getElementById("no_signature");
 
+   
+   
+
     // load the value
 
     midwifeName.innerHTML = data.pregnancyPlan.midwife_name ?? "N/A";
@@ -193,6 +235,9 @@ document.addEventListener("click", async (e) => {
     emergencyPersonContactNo.innerHTML =
         data.pregnancyPlan.emergency_person_contact_number ?? "N/A";
     patientName.innerHTML = data.pregnancyPlan.patient_name ?? "N/A";
+
+    // load the vital sign
+    
 
     const signaturePath = data.pregnancyPlan.signature
         ? `/storage/${data.pregnancyPlan.signature}`
@@ -434,6 +479,32 @@ document.addEventListener("click", async (e) => {
         subjectiveFields.tt4.value = data.caseInfo.tetanus_toxoid_4 ?? "";
     if (subjectiveFields.tt5)
         subjectiveFields.tt5.value = data.caseInfo.tetanus_toxoid_5 ?? "";
+
+    const vitalSign = {
+        blood_pressure: getElement("edit_case_blood_pressure"),
+        weight: getElement("edit_case_weight"),
+        height: getElement("edit_case_height"),
+        temperature: getElement("edit_case_temperature"),
+        respiratory_rate: getElement("edit_case_respiratory_rate"),
+        pulse_rate: getElement("edit_case_pulse_rate"),
+    };
+
+    if (vitalSign.blood_pressure) vitalSign.blood_pressure.value = data.caseInfo.blood_pressure ?? null;
+    if (vitalSign.height) vitalSign.height.value = data.caseInfo.height ?? null;
+    if (vitalSign.weight)
+        vitalSign.weight.value = data.caseInfo.weight ?? null;
+    if (vitalSign.temperature)
+        vitalSign.temperature.value = data.caseInfo.temperature ?? null;
+    if (vitalSign.respiratory_rate)
+        vitalSign.respiratory_rate.value = data.caseInfo.respiratory_rate ?? null;
+    if (vitalSign.pulse_rate)
+        vitalSign.pulse_rate.value = data.caseInfo.pulse_rate ?? null;
+
+    const planning = document.getElementById("edit_case_planning");
+    if(planning){
+        planning.value = data.caseInfo.planning ?? '';
+    }
+
 
     // Load assessment data
     const assessmentFields = {

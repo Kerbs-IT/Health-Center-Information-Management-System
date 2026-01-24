@@ -125,7 +125,7 @@
 
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
                                                     <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>
-                                                    <label  for="male"> Male</label>
+                                                    <label for="male"> Male</label>
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Female' ? 'checked' : '' }}>
                                                     <label for="female">Female</label>
                                                 </div>
@@ -207,7 +207,7 @@
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
-                                                <label for="BP">Temperature:</label>
+                                                <label for="BP">Temperature(°C):</label>
                                                 <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
