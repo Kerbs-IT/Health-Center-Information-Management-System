@@ -251,7 +251,7 @@ class SeniorCitizenController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ?? $seniorCitizenRecord->patient->sex;
+            $sex = $data['sex'] ?? '';
             // update the patient data first
             $seniorCitizenRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
@@ -282,15 +282,15 @@ class SeniorCitizenController extends Controller
             $seniorCitizenRecord->senior_citizen_medical_record-> update([
                 'health_worker_id'=> $data['handled_by']?? $seniorCitizenRecord->senior_citizen_medical_record->health_worker_id,
                 'patient_name' => $seniorCitizenRecord->patient->full_name,
-                'occupation'=> $data['occupation']?? '',
-                'religion' => $data['religion']?? '',
-                'SSS'=> $data['SSS']?? '',
-                'blood_pressure' => $data['blood_pressure']?? '',
-                'temperature' => $data['temperature']?? '',
-                'pulse_rate'=> $data['pulse_rate']?? '',
-                'respiratory_rate'=> $data['respiratory_rate']?? '',
-                'height' => $data['height']?? '',
-                'weight' => $data['weight']?? ''
+                'occupation'=> $data['occupation']?? null,
+                'religion' => $data['religion']?? null,
+                'SSS'=> $data['SSS']?? null,
+                'blood_pressure' => $data['blood_pressure']?? null,
+                'temperature' => $data['temperature']?? null,
+                'pulse_rate'=> $data['pulse_rate']?? null,
+                'respiratory_rate'=> $data['respiratory_rate']?? null,
+                'height' => $data['height']?? null,
+                'weight' => $data['weight']?? null
             ]);
 
             foreach ($seniorCitizenCase as $record) {

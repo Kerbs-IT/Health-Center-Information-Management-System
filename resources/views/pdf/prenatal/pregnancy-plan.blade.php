@@ -3,45 +3,54 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plano sa Oras ng Panganganak at Kagipitan</title>
     <style>
-        @media print {
-            body {
-                margin: 0;
-            }
-
-            .container {
-                page-break-inside: avoid;
-            }
-        }
-
         body {
             font-family: 'Times New Roman', Times, serif;
-            margin: 0 auto;
+            padding: 0;
             background: white;
+            font-size: 9pt;
+            line-height: 1.8;
         }
 
         .header {
+            width: 100%;
+            margin-bottom: 0px;
+        }
+
+        .header table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header td {
+            vertical-align: middle;
+        }
+
+        .header img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .doh_image img {
+            width: 120px !important;
+        }
+
+        .header .text-content {
             text-align: center;
-            margin-bottom: 30px;
-            position: relative;
+            line-height: 25px;
         }
 
-        .header-text {
-            padding-top: 10px;
-        }
-
-        .header-text h3 {
-            margin: 5px 0;
+        .header h5 {
+            margin: 0 0;
             font-size: 14pt;
-            font-weight: normal;
+            font-weight: bold;
         }
 
         .title {
             font-size: 16pt;
             font-weight: bold;
-            margin: 20px 0 10px 0;
+            margin: 0px 0 0px 0;
             text-align: center;
         }
 
@@ -49,178 +58,255 @@
             font-size: 11pt;
             margin-bottom: 30px;
             text-align: center;
+            line-height: 1.5;
         }
 
         .form-line {
-            margin: 20px 0;
-            font-size: 11pt;
-            line-height: 1.8;
-            display: flex;
-            /* ADDED */
-            flex-direction: column;
-            /* ADDED */
-        }
-
-        .line-with-input {
-            display: flex;
-            align-items: baseline;
-            margin-bottom: 5px;
-        }
-
-        .underline {
-            flex: 1;
-            /* CHANGED from width: calc(100% - 20px) */
-            border-bottom: 1px solid #000;
-            margin: 0 5px;
-            min-height: 1.2em;
-            /* ADDED */
-        }
-
-        .underline-full {
-            display: block;
-            border-bottom: 1px solid #000;
-            width: 100%;
             margin: 10px 0;
+            font-size: 11pt;
+        }
+
+        .form-line table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .form-line td {
+            padding: 0;
+            vertical-align: bottom;
+        }
+
+        .label-cell {
+            white-space: nowrap;
+        }
+
+        .underline-cell {
+            width: 100%;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+            padding-left: 10px !important;
         }
 
         .small-text {
             font-size: 10pt;
             font-style: italic;
+            text-align: center;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .fw-bold {
+            font-weight: bold;
         }
 
         .section {
-            margin: 25px 0;
+            margin: 10px 0;
+        }
+
+        .section.donor-names {
+            margin: 0px 0 !important;
         }
 
         .signature-section {
-            margin-top: 40px;
+            margin-top: 10px;
         }
 
         .signature-line {
             display: inline-block;
             border-bottom: 1px solid #000;
             width: 45%;
-            margin: 10px 2%;
+            margin: 5px 2%;
+            min-height: 20px;
+        }
+
+        .checkbox-table {
+            display: inline;
+        }
+
+        .checkbox-table table {
+            display: inline-table;
+            border-collapse: collapse;
+        }
+
+        .checkbox-cell {
+            border-bottom: 1px solid #000;
+            text-align: center;
+            padding: 0 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    @vite([
-    'resources/css/app.css',
-    'resources/css/pdfTableTemplate.css'])
-    <div class="container">
-        <div class="content d-flex justify-content-between w-100 align-items-center mb-3">
-            <img src="{{$treceLogo}}" class="pdf-logo">
-            <div class="text-content">
-                <h5 class="text-center fw-bold">CITH HEALTH OFFICE</h5>
-                <h5 class="text-center fw-bold">Trece Martires Cavite</h5>
-                <h5 class="text-center fw-bold">PRE-NATAL</h5>
-            </div>
-            <img src="{{ $DOHlogo }}" alt="logo" class="pdf-logo">
-        </div>
+    <div class="header">
+        <table>
+            <tr>
+                <td style="width: 15%; text-align: center;">
+                    <img src="{{$treceLogo}}" alt="Trece Logo">
+                </td>
+                <td style="width: 70%;">
+                    <div class="text-content">
+                        <h5>Republic of the Philippines</h5>
+                        <h5>Province of Cavite</h5>
+                        <h5>CITH HEALTH OFFICE</h5>
+                        <h5>Trece Martires City</h5>
+                    </div>
+                </td>
+                <td style="width: 15% !important; text-align: center;object-fit:fill;" class="doh_image">
+                    <img src="{{$DOHlogo}}" alt="DOH Logo">
+                </td>
+            </tr>
+        </table>
+    </div>
 
-        <div class="title">PLANO SA ORAS NG PANGANGANAK AT KAGIPITAN</div>
-        <div class="subtitle">
-            Alarn kong maaring magkaroon ng kumplikasyon sa oras ng panganganak. Alarn kong<br>
-            dapat akong magantak sa isang ospital o pansakan.
-        </div>
+    <div class="title">PLANO SA ORAS NG PANGANGANAK AT KAGIPITAN</div>
 
-        <div class="form-line w-100">
-            <div class="line-with-input">
-                Ako ay paamkain ni <span class="underline fw-bold">{{$pregnancyPlan->midwife_name}}</span>
-            </div>
-            <span class="small-text text-center">(pangalan ng doctor / nars / midwife, atbp.)</span>
-        </div>
+    <div class="subtitle">
+        Alarn kong maaring magkaroon ng kumplikasyon sa oras ng panganganak. Alarn kong<br>
+        dapat akong magantak sa isang ospital o pansakan.
+    </div>
 
+    <div class="form-line" style="margin:0 0;">
+        <table>
+            <tr>
+                <td class="label-cell">Ako ay paamkain ni</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->midwife_name}}</td>
+            </tr>
+        </table>
+        <span class="small-text">(pangalan ng doctor / nars / midwife, atbp.)</span>
+    </div>
+
+    <div class="form-line" style="margin:0 0;">
+        <table>
+            <tr>
+                <td class="label-cell">Plano kong manganak sa</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->place_of_pregnancy}}</td>
+            </tr>
+        </table>
+        <span class="small-text">(pangalan ng ospital / lying-in center / maternity clinic)</span>
+    </div>
+
+    <div class="form-line" style="margin:0 0;">
+        Ito ay pisilidad na otortado ng Philhealth Oo <span style="display: inline-block; border-bottom: 1px solid #000; width: 80px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth == 'yes')✓@else &nbsp; @endif</span> Hindi <span style="display: inline-block; border-bottom: 1px solid #000; width: 120px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth != 'yes')✓@else &nbsp; @endif</span>
+        <span class="small-text">(lagyan ng tsek)</span>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Ang tinatayong gastusin ng pangangangak sa pasilidad ay P</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->cost_of_pregnancy ??''}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Ang paraan ng pagbabayad ay</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->payment_method ??''}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Ang maaring magamit na paraan ng pagbyrahe patungo na pasilidad ay</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->transportation_mode ??''}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Kinansap ko na si</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->accompany_person_to_hospital ??''}}</td>
+                <td class="label-cell">upang ako'y dalhin sa ospital / Klinikang panganganganak.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Ako ay tanunahan ni</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->accompany_through_pregnancy??''}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-line">
+        <table>
+            <tr>
+                <td class="label-cell">Si</td>
+                <td class="underline-cell fw-bold">{{$pregnancyPlan->care_person ??''}}</td>
+                <td class="label-cell">ang mangungalaga sa aking anak / bahay habang ako ay nasa ospital / pansakan.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section donor-names">
         <div class="form-line">
-            <div class="line-with-input">
-                Plano kong manganak sa <span class="underline fw-bold">{{$pregnancyPlan->place_of_pregnancy}}</span>
-            </div>
-            <span class="small-text text-center">(pangalan ng ospital / lying-in center / maternity clinic)</span>
+            Kung sakaling mangailangan ng pagsalie ng dugo, ang maaring makagabigay ay sinu:
         </div>
+        @for($i = 0; $i < 6; $i++)
+            @if(isset($pregnancyPlan->donor_name[$i]))
+            <div class="signature-line">{{$pregnancyPlan->donor_name[$i]->donor_name}}</div>
+            @else
+            <div class="signature-line">&nbsp;</div>
+            @endif
+            @endfor
+    </div>
 
+    <div class="section">
         <div class="form-line">
-            <div class="line-with-input">
-                Ito ay pisilidad na otortado ng Philhealth Oo <span class="underline fw-bold" style="flex: 0 0 100px;">{{$pregnancyPlan->authorized_by_philhealth == 'yes'?'✓':''}}</span> Hindi <span class="underline fw-bold" style="flex: 0 0 100px;">{{$pregnancyPlan->authorized_by_philhealth != 'yes'?'✓':''}}</span>
-            </div>
-            <span class="small-text">(lagyan ng tsek)</span>
+            Kung magkakaroon ng kumplikasyon, kailangan salihan kaagad si:
         </div>
-
         <div class="form-line">
-            <div class="line-with-input">
-                Ang tinatayong gastusin ng pangangangak sa pasilidad ay P <span class="underline fw-bold">{{$pregnancyPlan->cost_of_pregnancy ??''}}</span>
-            </div>
+            <table>
+                <tr>
+                    <td class="label-cell">Pangalan:</td>
+                    <td class="underline-cell fw-bold">{{$pregnancyPlan->emergency_person_name??''}}</td>
+                </tr>
+            </table>
         </div>
-
         <div class="form-line">
-            <div class="line-with-input">
-                Ang paraan ng pagbabayad ay <span class="underline fw-bold">{{$pregnancyPlan->payment_mode ??''}}</span>
-            </div>
+            <table>
+                <tr>
+                    <td class="label-cell">Tirahan:</td>
+                    <td class="underline-cell fw-bold">{{$pregnancyPlan->emergency_person_residency??''}}</td>
+                </tr>
+            </table>
         </div>
-
         <div class="form-line">
-            <div class="line-with-input">
-                Ang maaring magamit na paraan ng pagbyrahe patungo na pasilidad ay <span class="underline fw-bold fw-bold">{{$pregnancyPlan->transportation_mode ??''}}</span>
-            </div>
+            <table>
+                <tr>
+                    <td class="label-cell">Telepono:</td>
+                    <td class="underline-cell fw-bold">{{$pregnancyPlan->emergency_person_contact_number??''}}</td>
+                </tr>
+            </table>
         </div>
+    </div>
 
+    <div class="signature-section" style="padding-left:30px;">
         <div class="form-line">
-            <div class="line-with-input">
-                Kinansap ko na si <span class="underline fw-bold">{{$pregnancyPlan->accompany_person_to_hospital ??''}}</span> upang ako'y dalhin sa ospital /
-            </div>
-            <div>Klinikang panganganganak.</div>
+            <table>
+                <tr>
+                    <td class="label-cell">Pangalan ng panyente:</td>
+                    <td class="underline-cell fw-bold">{{$pregnancyPlan->patient_name??''}}</td>
+                </tr>
+            </table>
         </div>
-
         <div class="form-line">
-            <div class="line-with-input">
-                Ako ay tanunahan ni <span class="underline fw-bold">{{$pregnancyPlan->accompany_through_pregnancy??''}}</span>
-            </div>
-        </div>
-
-        <div class="form-line">
-            <div class="line-with-input">
-                Si <span class="underline fw-bold">{{$pregnancyPlan->care_person ??''}}</span> ang mangungalaga sa aking anak / bahay habang
-            </div>
-            <div>ako ay nasa ospital / pansakan.</div>
-        </div>
-
-        <div class="section">
-            <div class="form-line">
-                Kung sakaling mangailangan ng pagsalie ng dugo, ang maaring makagabigay ay sinu:
-            </div>
-            @forelse($pregnancyPlan ->donor_name as $name)
-            <div class="signature-line">{{$name->donor_name}}</div>
-            @empty
-            <div class="signature-line"></div>
-            <div class="signature-line"></div>
-            <div class="signature-line"></div>
-            <div class="signature-line"></div>
-            @endforelse
-        </div>
-
-        <div class="section">
-            <div class="form-line">
-                Kung magkakaroon ng kumplikasyon, kailangan salihan kaagad si:
-            </div>
-            <div class="form-line">
-                Pangalan: <span class="underline-full fw-bold">{{$pregnancyPlan->emergency_person_name??''}}</span>
-            </div>
-            <div class="form-line">
-                Tirahan: <span class="underline-full fw-bold">{{$pregnancyPlan->emergency_person_residency??''}}</span>
-            </div>
-            <div class="form-line">
-                Telepono: <span class="underline-full fw-bold">{{$pregnancyPlan->emergency_person_contact_number??''}}</span>
-            </div>
-        </div>
-
-        <div class="signature-section">
-            <div class="form-line">
-                Pangalan ng panyente: <span class="underline fw-bold">{{$pregnancyPlan->patient_name??''}}</span>
-            </div>
-            <div class="form-line">
-                Lagda: <span class="underline fw-bold"></span>
-            </div>
+            Lagda:
+            @if($pregnancyPlan->signature != null)
+            <img src="{{ storage_path('app/public/' . $pregnancyPlan->signature) }}" alt="Signature" style="max-width:400px; height:40px;">
+            <div style="width: 100%;border-bottom:1px solid black; margin-top: 1px;"></div>
+            @else
+            <div style="width: 100%;border-bottom:1px solid black; min-height: 40px;">&nbsp;</div>
+            @endif
         </div>
     </div>
 </body>

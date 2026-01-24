@@ -1,95 +1,58 @@
-<table class="table table-bordered table-striped mb-0">
-    <thead class="seperator">
-        <tr>
-            <th colspan="12" class="text-start">II.Obstetrical History Record</th>
-        </tr>
-    </thead>
-    <tbody class="">
-        <tr>
-            <td colspan="12" class="p-0">
-                <div style="display: flex; text-align: center; margin: 0;">
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Gravida (G):</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong id="view_G">{{$caseInfo->obsterical_history->G??'N/A'}}</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Para (P):</strong>
-                    </div>
-                    <div style="flex: 1; padding: 4px;">
-                        <strong id="view_P">{{$caseInfo->obsterical_history->P??'N/A'}}</strong>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="12" class="p-0">
-                <div style="display: flex; text-align: center; margin: 0;">
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Term:</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong id="view_full_term">{{$caseInfo->obsterical_history->full_term??'N/A'}}</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Abortion:</strong>
-                    </div>
-                    <div style="flex: 1; padding: 4px;">
-                        <strong id="view_abortion">{{$caseInfo->obsterical_history->abortion??'N/A'}}</strong>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="12" class="p-0">
-                <div style="display: flex; text-align: center; margin: 0;">
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Premature:</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong id="view_premature">{{$caseInfo->obsterical_history->premature??'N/A'}}</strong>
-                    </div>
-                    <div style="flex: 1; border-right: 1px solid #dee2e6; padding: 4px;">
-                        <strong>Living Children:</strong>
-                    </div>
-                    <div style="flex: 1; padding: 4px;">
-                        <strong id="view_living_children">{{$caseInfo->obsterical_history->living_children??'N/A'}}</strong>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>Date of Last Delivery</td>
-            <td id="view_date_of_last_delivery">{{$caseInfo->obsterical_history->date_of_last_delivery??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Type of Last Delivery</td>
-            <td id="view_type_of_last_delivery">{{$caseInfo->obsterical_history->type_of_last_delivery??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Last Menstrual Period</td>
-            <td id="view_date_of_last_delivery_menstrual_period">{{$caseInfo->obsterical_history->date_of_last_delivery_menstrual_period??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Previous Menstrual Period</td>
-            <td id="view_date_of_previous_delivery_menstrual_period">{{$caseInfo->obsterical_history->date_of_previous_delivery_menstrual_period??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Menstrual Flow</td>
-            <td id="view_type_of_menstrual">{{$caseInfo->obsterical_history->type_of_menstrual??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Dysmenorrhea</td>
-            <td id="view_Dysmenorrhea">{{$caseInfo->obsterical_history->Dysmenorrhea??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>Hydatidiform Mole (last 12 months)</td>
-            <td id="view_hydatidiform_mole">{{$caseInfo->obsterical_history->hydatidiform_mole??'N/A'}}</td>
-        </tr>
-        <tr>
-            <td>History of Ectopic Pregnancy</td>
-            <td id="view_ectopic_pregnancy">{{$caseInfo->obsterical_history->ectopic_pregnancy??'N/A'}}</td>
-        </tr>
-    </tbody>
+<!-- step 3 -->
+<table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+    <tr style="background-color: #e9ecef; border-bottom: 2px solid #000;">
+        <th colspan="4" style="border: 1px solid #000; padding: 10px 10px; text-align: left; font-weight: bold;">II. Obstetrical History Record</th>
+    </tr>
+    <!-- 2-Column Section -->
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Gravida (G):</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_G">{{$caseInfo->obsterical_history->G??'N/A'}}</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Para (P):</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_P">{{$caseInfo->obsterical_history->P??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Term:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_full_term">{{$caseInfo->obsterical_history->full_term??'N/A'}}</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Abortion:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_abortion">{{$caseInfo->obsterical_history->abortion??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Premature:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_premature">{{$caseInfo->obsterical_history->premature??'N/A'}}</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%; font-weight: bold;">Living Children:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 25%;" id="view_living_children">{{$caseInfo->obsterical_history->living_children??'N/A'}}</td>
+    </tr>
+    <!-- Single Column Section -->
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Date of Last Delivery:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_date_of_last_delivery">{{$caseInfo->obsterical_history->date_of_last_delivery??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Type of Last Delivery:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_type_of_last_delivery">{{$caseInfo->obsterical_history->type_of_last_delivery??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Last Menstrual Period:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_date_of_last_delivery_menstrual_period">{{$caseInfo->obsterical_history->date_of_last_delivery_menstrual_period??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Previous Menstrual Period:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_date_of_previous_delivery_menstrual_period">{{$caseInfo->obsterical_history->date_of_previous_delivery_menstrual_period??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Menstrual Flow:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_type_of_menstrual">{{$caseInfo->obsterical_history->type_of_menstrual??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Dysmenorrhea:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_Dysmenorrhea">{{$caseInfo->obsterical_history->Dysmenorrhea??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">Hydatidiform Mole (last 12 months):</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_hydatidiform_mole">{{$caseInfo->obsterical_history->hydatidiform_mole??'N/A'}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%; font-weight: bold;" colspan="2">History of Ectopic Pregnancy:</td>
+        <td style="border: 1px solid #000; padding: 5px 5px; width: 50%;" colspan="2" id="view_ectopic_pregnancy">{{$caseInfo->obsterical_history->ectopic_pregnancy??'N/A'}}</td>
+    </tr>
 </table>

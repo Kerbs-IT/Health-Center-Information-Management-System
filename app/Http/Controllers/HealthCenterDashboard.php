@@ -22,8 +22,8 @@ class HealthCenterDashboard extends Controller
 
                 $baseQuery = medical_record_cases::query()
                     ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
-                    ->where('patients.status', '!=', 'Archived')
-                    ->where('medical_record_cases.status', '!=', 'Archived');
+                    ->where('patients.status', 'Active')
+                    ->where('medical_record_cases.status','Active');
 
                 $totalPatient = (clone $baseQuery)
                     ->count();
@@ -430,9 +430,13 @@ class HealthCenterDashboard extends Controller
         }
     }
     // UNCHANGED - Keep as is
-    public function patientCountPerArea()
+    public function patientCountPerArea(Request $request)
     {
         try {
+
+            // get the date range
+            $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+            $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
 
             $data = [];
             $query = patient_addresses::query()
@@ -442,7 +446,9 @@ class HealthCenterDashboard extends Controller
                 ->where('medical_record_cases.status', '!=', 'Archived')
                 ->where('patient_addresses.barangay', 'Hugo Perez')
                 ->where('patients.status', '!=', 'Archived')
-                ->whereNotNull('patient_addresses.purok');
+                ->whereNotNull('patient_addresses.purok')
+                ->whereDate('patients.created_at', '>=', $startDate)
+                ->whereDate('patients.created_at', '<=', $endDate);
 
             $brgyUnits = brgy_unit::get();
 
@@ -477,7 +483,7 @@ class HealthCenterDashboard extends Controller
 
                     $areaData = $staffQuery
                         ->where('patient_addresses.purok', $unit->brgy_unit)
-                        ->distinct('patient_addresses.patient_id')
+                        // ->distinct('patient_addresses.patient_id')
                         ->count('patient_addresses.patient_id');
 
                     $data[$unit->brgy_unit] = $areaData;
@@ -588,6 +594,330 @@ class HealthCenterDashboard extends Controller
             return response()->json([
                 'errors' => $e->getMessage()
             ], 422);
+        }
+    }
+    public function getAgeDistribution(Request $request)
+    {
+        $user = Auth::user();
+        $staffId = $user->id;
+
+        $startDate = $request->input('start_date', Carbon::now()->startOfYear());
+        $endDate = $request->input('end_date', Carbon::now()->endOfYear());
+
+        // Start building the query
+        $query = medical_record_cases::with('patient')
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('patients.status', 'Active')
+            ->where('medical_record_cases.status', 'Active')
+            ->whereBetween('patients.created_at', [$startDate, $endDate]);
+
+        // Apply staff filter BEFORE calling get()
+        if ($user->role === 'staff') {
+            $query->where(function ($q) use ($staffId) {
+                $q->whereHas('vaccination_medical_record', function ($subQ) use ($staffId) {
+                    $subQ->where('health_worker_id', $staffId);
+                })
+                    ->orWhereHas('prenatal_medical_record', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    })
+                    ->orWhereHas('senior_citizen_medical_record', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    })
+                    ->orWhereHas('tb_dots_medical_record', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    })
+                    ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
+                    });
+            });
+        }
+
+        // Now execute the query
+        $records = $query->get();
+
+        // Initialize result structure
+        $ageDistribution = [
+            'vaccination' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'prenatal' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'seniorCitizen' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'tbDots' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'familyPlanning' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+        ];
+
+        // Process each record
+        foreach ($records as $record) {
+            if (!$record->patient || !$record->patient->date_of_birth) {
+                continue;
+            }
+
+            $age = Carbon::parse($record->patient->date_of_birth)->age;
+            $ageGroup = $this->getAgeGroup($age);
+            $caseType = $this->mapCaseType($record->type_of_case);
+
+            if ($caseType && isset($ageDistribution[$caseType][$ageGroup])) {
+                $ageDistribution[$caseType][$ageGroup]++;
+            }
+        }
+
+        return response()->json($ageDistribution);
+    }
+    private function getAgeGroup($age)
+    {
+        if ($age < 1) {
+            return '0-11'; // 0-11 months
+        } elseif ($age >= 1 && $age <= 5) {
+            return '1-5';
+        } elseif ($age >= 6 && $age <= 17) {
+            return '6-17';
+        } elseif ($age >= 18 && $age <= 59) {
+            return '18-59';
+        } else {
+            return '60+';
+        }
+    }
+
+    /**
+     * Map database case type to camelCase format
+     */
+    private function mapCaseType($typeOfCase)
+    {
+        $mapping = [
+            'vaccination' => 'vaccination',
+            'prenatal' => 'prenatal',
+            'senior-citizen' => 'seniorCitizen',
+            'tb-dots' => 'tbDots',
+            'family-planning' => 'familyPlanning',
+        ];
+
+        return $mapping[$typeOfCase] ?? null;
+    }
+
+    public function overdueCounts()
+    {
+        try{
+            $user = Auth::user();
+            $today = Carbon::now()->format('Y-m-d');
+            $isStaff = $user->role === 'staff';
+            $staff = null;
+            if($isStaff){
+                $staff = $user->staff;
+            }
+            $counts = [];
+
+            // 1. VACCINATION OVERDUE COUNT
+            $lastVaccinationSubquery = DB::table('vaccination_case_records as vcr')
+                ->select('vcr.medical_record_case_id', DB::raw('MAX(vcr.id) as last_record_id'))
+                ->where('vcr.status', '!=', 'Archived')
+                ->where('vcr.vaccination_status', 'completed')
+                ->groupBy('vcr.medical_record_case_id');
+
+            $vaccinationBaseQuery = DB::table('vaccination_case_records as vcr')
+                ->joinSub($lastVaccinationSubquery, 'last_vcr', function ($join) {
+                    $join->on('vcr.id', '=', 'last_vcr.last_record_id');
+                })
+                ->join('medical_record_cases as mrc', 'mrc.id', '=', 'vcr.medical_record_case_id')
+                ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
+                ->whereDate('vcr.date_of_comeback', '<', $today)
+                ->where('p.status', '!=', 'Archived');
+
+            if ($isStaff) {
+                $vaccinationBaseQuery->join('vaccination_medical_records as vmr', 'vmr.medical_record_case_id', '=', 'mrc.id')
+                    ->where('vmr.health_worker_id', $staff->user_id);
+            }
+
+            $vaccinationCases = $vaccinationBaseQuery
+                ->select('vcr.*', 'mrc.id as medical_record_case_id', 'p.id as patient_id')
+                ->get();
+
+            $countedPatients = [];
+            $vaccineDoseConfig = [
+                'BCG' => ['maxDoses' => 1],
+                'Hepatitis B' => ['maxDoses' => 1],
+                'PENTA' => ['maxDoses' => 3],
+                'OPV' => ['maxDoses' => 3],
+                'IPV' => ['maxDoses' => 2],
+                'PCV' => ['maxDoses' => 3],
+                'MMR' => ['maxDoses' => 2],
+                'MCV' => ['maxDoses' => 2],
+                'TD' => ['maxDoses' => 2],
+                'Human Papiliomavirus' => ['maxDoses' => 2],
+                'Influenza Vaccine' => ['maxDoses' => 3],
+                'Pnuemococcal Vaccine' => ['maxDoses' => 3],
+            ];
+
+            foreach ($vaccinationCases as $case) {
+                if (in_array($case->patient_id, $countedPatients)) {
+                    continue;
+                }
+
+                $vaccines = explode(',', $case->vaccine_type ?? '');
+                $currentDose = $case->dose_number;
+                $nextDosage = $currentDose + 1;
+                $allVaccinesComplete = true;
+                $hasPendingDose = false;
+
+                foreach ($vaccines as $vaccine) {
+                    $vaccineAcronym = trim($vaccine);
+
+                    if (isset($vaccineDoseConfig[$vaccineAcronym])) {
+                        $maxDoses = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
+
+                        if ($currentDose < $maxDoses) {
+                            $allVaccinesComplete = false;
+
+                            $nextDoseExists = DB::table('vaccination_case_records')
+                                ->where('medical_record_case_id', $case->medical_record_case_id)
+                                ->where('vaccine_type', 'LIKE', '%' . $vaccineAcronym . '%')
+                                ->where('status', '!=', 'Archived')
+                                ->where('dose_number', $nextDosage)
+                                ->exists();
+
+                            if (!$nextDoseExists) {
+                                $hasPendingDose = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!$allVaccinesComplete && $hasPendingDose) {
+                    $countedPatients[] = $case->patient_id;
+                }
+            }
+
+            $counts['vaccination'] = count($countedPatients);
+
+            // 2. PRENATAL OVERDUE COUNT
+            $lastPrenatalSubquery = DB::table('pregnancy_checkups as pc')
+                ->select('pc.medical_record_case_id', DB::raw('MAX(pc.id) as last_record_id'))
+                ->where('pc.status', '!=', 'Archived')
+                ->whereNotNull('pc.date_of_comeback')
+                ->groupBy('pc.medical_record_case_id');
+
+            $prenatalBaseQuery = DB::table('pregnancy_checkups as pc')
+                ->joinSub($lastPrenatalSubquery, 'last_pc', function ($join) {
+                    $join->on('pc.id', '=', 'last_pc.last_record_id');
+                })
+                ->join('medical_record_cases as mrc', 'mrc.id', '=', 'pc.medical_record_case_id')
+                ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
+                ->whereDate('pc.date_of_comeback', '<', $today)
+                ->where('p.status', '!=', 'Archived');
+
+            if ($isStaff) {
+                $prenatalBaseQuery->join('prenatal_medical_records as pmr', 'pmr.medical_record_case_id', '=', 'mrc.id')
+                    ->where('pmr.health_worker_id', $staff->user_id);
+            }
+
+            $prenatalCases = $prenatalBaseQuery
+                ->select('pc.*', 'mrc.id as medical_record_case_id')
+                ->get();
+
+            $prenatalCount = 0;
+            foreach ($prenatalCases as $case) {
+                $checkupExists = DB::table('pregnancy_checkups')
+                    ->where('medical_record_case_id', $case->medical_record_case_id)
+                    ->where('status', '!=', 'Archived')
+                    ->whereDate('created_at', '>=', $case->date_of_comeback)
+                    ->where('id', '!=', $case->id)
+                    ->exists();
+
+                if (!$checkupExists) {
+                    $prenatalCount++;
+                }
+            }
+
+            $counts['prenatal'] = $prenatalCount;
+
+            // 3. SENIOR CITIZEN OVERDUE COUNT
+            $seniorCitizenSubquery = DB::table('senior_citizen_case_records as sccr')
+                ->select('sccr.medical_record_case_id', DB::raw('MAX(sccr.id) as last_record_id'))
+                ->where('sccr.status', '!=', 'Archived')
+                ->whereNotNull('sccr.date_of_comeback')
+                ->groupBy('sccr.medical_record_case_id');
+
+            $seniorCitizenQuery = DB::table('senior_citizen_case_records as sccr')
+                ->joinSub($seniorCitizenSubquery, 'last_sccr', function ($join) {
+                    $join->on('sccr.id', '=', 'last_sccr.last_record_id');
+                })
+                ->join('medical_record_cases as mrc', 'mrc.id', '=', 'sccr.medical_record_case_id')
+                ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
+                ->whereDate('sccr.date_of_comeback', '<', $today)
+                ->where('p.status', '!=', 'Archived');
+
+            if ($isStaff) {
+                $seniorCitizenQuery->join('senior_citizen_medical_records as scmr', 'scmr.medical_record_case_id', '=', 'mrc.id')
+                    ->where('scmr.health_worker_id', $staff->user_id);
+            }
+
+            $counts['senior_citizen'] = $seniorCitizenQuery->distinct()->count('p.id');
+
+            // 4. TB DOTS OVERDUE COUNT
+            $tbDotsSubquery = DB::table('tb_dots_check_ups as tdcu')
+                ->select('tdcu.medical_record_case_id', DB::raw('MAX(tdcu.id) as last_record_id'))
+                ->where('tdcu.status', '!=', 'Archived')
+                ->whereNotNull('tdcu.date_of_comeback')
+                ->groupBy('tdcu.medical_record_case_id');
+
+            $tbDotsQuery = DB::table('tb_dots_check_ups as tdcu')
+                ->joinSub($tbDotsSubquery, 'last_tdcu', function ($join) {
+                    $join->on('tdcu.id', '=', 'last_tdcu.last_record_id');
+                })
+                ->join('medical_record_cases as mrc', 'mrc.id', '=', 'tdcu.medical_record_case_id')
+                ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
+                ->whereDate('tdcu.date_of_comeback', '<', $today)
+                ->where('p.status', '!=', 'Archived');
+
+            if ($isStaff) {
+                $tbDotsQuery->join('tb_dots_medical_records as tdmr', 'tdmr.medical_record_case_id', '=', 'mrc.id')
+                    ->where('tdmr.health_worker_id', $staff->user_id);
+            }
+
+            $counts['tb_dots'] = $tbDotsQuery->distinct()->count('p.id');
+
+            // 5. FAMILY PLANNING OVERDUE COUNT
+            $familyPlanningSubquery = DB::table('family_planning_side_b_records as fpsbr')
+                ->select('fpsbr.medical_record_case_id', DB::raw('MAX(fpsbr.id) as last_record_id'))
+                ->where('fpsbr.status', '!=', 'Archived')
+                ->whereNotNull('fpsbr.date_of_follow_up_visit')
+                ->groupBy('fpsbr.medical_record_case_id');
+
+            $familyPlanningQuery = DB::table('family_planning_side_b_records as fpsbr')
+                ->joinSub($familyPlanningSubquery, 'last_fpsbr', function ($join) {
+                    $join->on('fpsbr.id', '=', 'last_fpsbr.last_record_id');
+                })
+                ->join('medical_record_cases as mrc', 'mrc.id', '=', 'fpsbr.medical_record_case_id')
+                ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
+                ->whereDate('fpsbr.date_of_follow_up_visit', '<=', $today)
+                ->where('p.status', '!=', 'Archived');
+
+            if ($isStaff) {
+                $familyPlanningQuery->join('family_planning_medical_records as fpmr', 'fpmr.medical_record_case_id', '=', 'mrc.id')
+                    ->where('fpmr.health_worker_id', $staff->user_id);
+            }
+
+            $counts['family_planning'] = $familyPlanningQuery->distinct()->count('p.id');
+
+            return $counts;
+
+        }catch(\Exception $e){
+            return response() -> json([
+                'errors' => $e->getMessage()
+            ],403);
+        }
+    }
+
+    public function getOverDueCounts(){
+        try{
+            // call the function
+
+            $overDueCount = $this->overdueCounts();
+
+            return response()->json($overDueCount, 200);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 403);
         }
     }
 }

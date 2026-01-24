@@ -16,7 +16,8 @@
     'resources/js/header.js',
     'resources/css/profile.css',
     'resources/css/patient/record.css',
-    'resources/js/record/record.js'])
+    'resources/js/record/record.js',
+    'resources/js/datePicker/record.js'])
 
     <div class="vaccination min-vh-100 d-flex">
         <aside>
@@ -27,7 +28,7 @@
             <main class="flex-column p-2">
                 <h1>Senior Citizen</h1>
                 <!-- body part -->
-               <livewire:senior-citizen.records-table >
+                <livewire:senior-citizen.records-table>
 
             </main>
         </div>

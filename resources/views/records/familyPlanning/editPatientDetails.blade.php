@@ -105,9 +105,9 @@
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
-                                            <input type="number" id="age" placeholder="20" class="form-control bg-light" disabled value="{{optional($familyPlanningRecord->patient)->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
-                                            <small class="text-danger error-text" id="age_error"></small>
+                                            <input type="text" id="age" placeholder="20" class="form-control bg-light" disabled value="{{optional($familyPlanningRecord->patient)->age??''}}">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($familyPlanningRecord->patient)->age??''}}">
+                                            <small class=" text-danger error-text" id="age_error"></small>
 
                                         </div>
                                     </div>
