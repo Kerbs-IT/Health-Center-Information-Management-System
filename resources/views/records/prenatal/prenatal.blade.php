@@ -16,7 +16,8 @@
     'resources/js/header.js',
     'resources/css/profile.css',
     'resources/css/patient/record.css',
-    'resources/js/record/record.js'])
+    'resources/js/record/record.js',
+    'resources/js/datePicker/record.js'])
 
     <div class="vaccination min-vh-100 d-flex">
         <aside>

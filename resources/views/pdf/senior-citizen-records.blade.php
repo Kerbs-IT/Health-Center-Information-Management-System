@@ -57,12 +57,47 @@
             margin-top: 10px;
             color: #666;
         }
+
+        /* header section */
+
+        header {
+            width: 100%;
+        }
+
+        header img {
+            height: 120px;
+            width: 120px;
+            float: left;
+            margin-right: 20px;
+            margin-top: 20px;
+        }
+
+        .header-text {
+            width: 70%;
+            text-align: center;
+            text-transform: uppercase;
+            float: left;
+            padding-top: 20px;
+            /* Adjust to vertically center text */
+        }
+
+        .header-text h4 {
+            font-size: 15px;
+        }
     </style>
 </head>
 
 <body>
-    @foreach($recordPages as $pageIndex => $records)
+    @forelse($recordPages as $pageIndex => $records)
     <div class="{{ !$loop->last ? 'page-break' : '' }}">
+        <header>
+            <img src="{{public_path('images/hugoperez_logo.png')}}" alt="">
+            <div class="header-text">
+                <h4>Barangay Hugo Perez Proper -</h4>
+                <h4>Health Center Information Management System</h4>
+            </div>
+            <div style="clear: both;"></div>
+        </header>
         <h1>Senior Citizen Records</h1>
 
         <div class="header-info">
@@ -73,6 +108,7 @@
             <p><strong>Search Filter:</strong> "{{ $search }}"</p>
             @endif
             <p><strong>Sorted By:</strong> {{ ucfirst(str_replace('_', ' ', str_replace('patients.', '', $sortField))) }} ({{ strtoupper($sortDirection) }})</p>
+            <p><strong>Date Range: </strong>{{$startDate}} - {{$endDate}}</p>
         </div>
 
         <table>
@@ -131,7 +167,70 @@
             Page {{ $pageIndex + 1 }} of {{ $recordPages->count() }}
         </div>
     </div>
-    @endforeach
+    @empty
+    <header>
+        <img src="{{public_path('images/hugoperez_logo.png')}}" alt="">
+        <div class="header-text">
+            <h4>Barangay Hugo Perez Proper -</h4>
+            <h4>Health Center Information Management System</h4>
+        </div>
+        <div style="clear: both;"></div>
+    </header>
+    <h1>Senior Citizen Records</h1>
+
+    <div class="header-info">
+        <p><strong>Generated:</strong> {{ now()->format('F d, Y h:i A') }}</p>
+        <p><strong>Total Records:</strong> {{ $totalRecords }}</p>
+        <p><strong>Records Per Page:</strong> {{ $entriesPerPage }}</p>
+        @if($search)
+        <p><strong>Search Filter:</strong> "{{ $search }}"</p>
+        @endif
+        <p><strong>Sorted By:</strong> {{ ucfirst(str_replace('_', ' ', str_replace('patients.', '', $sortField))) }} ({{ strtoupper($sortDirection) }})</p>
+        <p><strong>Date Range: </strong>{{$startDate}} - {{$endDate}}</p>
+    </div>
+    <table>
+
+        <thead>
+            <tr>
+                <th class="{{ $sortField == 'patients.full_name' || $sortField == 'full_name' ? 'sorted' : '' }}">
+                    Full Name
+                    @if($sortField == 'patients.full_name' || $sortField == 'full_name')
+                    <span class="sort-indicator">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                    @endif
+                </th>
+                <th class="{{ $sortField == 'patients.age' || $sortField == 'age' ? 'sorted' : '' }}">
+                    Age
+                    @if($sortField == 'patients.age' || $sortField == 'age')
+                    <span class="sort-indicator">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                    @endif
+                </th>
+                <th class="{{ $sortField == 'patients.sex' || $sortField == 'sex' ? 'sorted' : '' }}">
+                    Sex
+                    @if($sortField == 'patients.sex' || $sortField == 'sex')
+                    <span class="sort-indicator">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                    @endif
+                </th>
+                <th class="{{ $sortField == 'patients.contact_number' || $sortField == 'contact_number' ? 'sorted' : '' }}">
+                    Contact Number
+                    @if($sortField == 'patients.contact_number' || $sortField == 'contact_number')
+                    <span class="sort-indicator">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                    @endif
+                </th>
+                <th class="{{ $sortField == 'created_at' ? 'sorted' : '' }}">
+                    Date
+                    @if($sortField == 'created_at')
+                    <span class="sort-indicator">{{ $sortDirection == 'asc' ? '↑' : '↓' }}</span>
+                    @endif
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="12" style="text-align:center">No record available.</td>
+            </tr>
+        </tbody>
+    </table>
+    @endforelse
 </body>
 
 </html>

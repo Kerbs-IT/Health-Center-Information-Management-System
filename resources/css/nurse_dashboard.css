@@ -141,7 +141,7 @@
 /* FIXED CANVAS CONTAINER - NO OVERFLOW */
 .canvas-container {
 
-    height: 280px;
+    height: 450px;
     margin-top: 15px;
 }
 
@@ -165,6 +165,31 @@
     max-height: 100%;
     max-width: 100%;
 }
+/* Ensure chart canvas is responsive */
+#ageDistributionChart {
+    max-width: 100%;
+    height: auto !important;
+}
+
+
+.charts-dashboard {
+    width: 100%;
+    max-width: 100%;
+}
+
+.charts-dashboard .row {
+    width: 100%;
+}
+
+.charts-dashboard .card {
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    .charts .card {
+        min-height: 400px !important;
+    }
+}
 
 /* RESPONSIVE DESIGN */
 @media (max-width: 1200px) {
@@ -181,6 +206,7 @@
     .filter-container {
         justify-content: center;
     }
+      
 }
 
 @media (max-width: 768px) {
@@ -195,4 +221,16 @@
     .canvas-container {
         height: 250px;
     }
+
+         .date-range-filter,
+         .patient-type-filter {
+             width: 100%;
+         }
+    
+         .date-range-filter input,
+         .patient-type-filter select {
+             max-width: 100% !important;
+         }
+    
 }
+

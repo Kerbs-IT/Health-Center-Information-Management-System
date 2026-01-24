@@ -656,20 +656,24 @@ class FamilyPlanningController extends Controller
                 'weight' => $data['weight'] ?? $familyPlanningMedicalRecord->weight
             ]);
             // update case record
-            $familyPlanningCaseRecord->update([
-                'client_name' => $familyPlanningRecord->patient->full_name,
-                'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
-                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
-                'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
-                'client_address' =>  $fullAddress ?? '',
-                'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
-                'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
-                'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
-                'client_suffix' => $data['suffix'] ?? '',
-                'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
-                'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
-                'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
-            ]);
+
+            if($familyPlanningCaseRecord){
+                $familyPlanningCaseRecord->update([
+                    'client_name' => $familyPlanningRecord->patient->full_name,
+                    'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
+                    'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
+                    'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
+                    'client_address' =>  $fullAddress ?? '',
+                    'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
+                    'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
+                    'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
+                    'client_suffix' => $data['suffix'] ?? '',
+                    'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
+                    'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
+                    'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
+                ]);
+            }
+            
 
             // update the prenatal and wra if the patient have those records
             $prenatalMedicalCaseRecord = medical_record_cases::where('patient_id', $familyPlanningRecord->patient->id)->where('type_of_case', 'prenatal')->first() ?? null;

@@ -3,13 +3,12 @@ import changeLmp from "../LMP/lmp";
 import initSignatureCapture from "../signature/signature";
 // load the existing info
 
-
 document.addEventListener("click", async (e) => {
     const viewBtn = e.target.closest(".viewCaseBtn");
     if (!viewBtn) return;
     const medicalId = viewBtn.dataset.bsMedicalId;
     const response = await fetch(
-        `/view-case/case-record/prenatal/${medicalId}`
+        `/view-case/case-record/prenatal/${medicalId}`,
     );
 
     const data = await response.json();
@@ -56,7 +55,7 @@ document.addEventListener("click", async (e) => {
     // subjective info
     const lmp = document.getElementById("lmp_value");
     const expected_delivery = document.getElementById(
-        "expected_delivery_value"
+        "expected_delivery_value",
     );
     const menarche = document.getElementById("menarche_value");
     const tt1 = document.getElementById("tt1_value");
@@ -80,7 +79,7 @@ document.addEventListener("click", async (e) => {
     const edema = document.getElementById("edema_value");
     const severe_headache = document.getElementById("severe_headache_value");
     const blurring_vission = document.getElementById(
-        "blurring_of_vission_value"
+        "blurring_of_vission_value",
     );
     const water_discharge = document.getElementById("water_discharge_value");
     const severe_vomitting = document.getElementById("severe_vomiting_value");
@@ -128,7 +127,7 @@ document.addEventListener("click", async (e) => {
 
     // fetch the pregnancy plan information from the database
     const response = await fetch(
-        `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`
+        `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`,
     );
 
     // get the response data
@@ -139,32 +138,32 @@ document.addEventListener("click", async (e) => {
     // get the id of response container
     const midwifeName = document.getElementById("midwife_name_value");
     const placeOfPregnancy = document.getElementById(
-        "place_of_pregnancy_value"
+        "place_of_pregnancy_value",
     );
     const authorizedByPH = document.getElementById(
-        "authorized_by_philhealth_value"
+        "authorized_by_philhealth_value",
     );
     const costOfPregnancy = document.getElementById("cost_of_pregnancy_value");
     const modeOfPayment = document.getElementById("mode_of_payment_value");
     const transportation = document.getElementById(
-        "mode_of_transportation_value"
+        "mode_of_transportation_value",
     );
     const accompanyPerson = document.getElementById(
-        "accompany_person_to_hospital_value"
+        "accompany_person_to_hospital_value",
     );
     const accompanyThroughPregnancy = document.getElementById(
-        "accompany_person_through_pregnancy_value"
+        "accompany_person_through_pregnancy_value",
     );
     const care_person = document.getElementById("care_person_value");
     const blood_donor = document.getElementById("blood_donor_value");
     const emergencyPersonName = document.getElementById(
-        "emergency_person_name_value"
+        "emergency_person_name_value",
     );
     const emergencyPersonResidency = document.getElementById(
-        "emergency_person_residency_value"
+        "emergency_person_residency_value",
     );
     const emergencyPersonContactNo = document.getElementById(
-        "emergency_person_contact_number_value"
+        "emergency_person_contact_number_value",
     );
     const patientName = document.getElementById("patient_name_value");
     const signatureImg = document.getElementById("signature_value");
@@ -206,284 +205,274 @@ document.addEventListener("click", async (e) => {
 });
 // add event listener and load the data to the modal
 
-// fetch the same data for viewing the case
+const saveRecordBtn = document.getElementById("update-save-btn") ?? null;
+
+// Helper function to get element safely
+const getElement = (id) => document.getElementById(id) ?? null;
+
+// Helper function to create timeline row HTML
+const createTimelineRow = (timeline) => `
+    <tr class="text-center prenatal-record">
+        <td>${timeline.year}</td>
+        <input type="hidden" name="preg_year[]" value="${timeline.year}">
+        <td>${timeline.type_of_delivery}</td>
+        <input type="hidden" name="type_of_delivery[]" value="${timeline.type_of_delivery}">
+        <td>${timeline.place_of_delivery}</td>
+        <input type="hidden" name="place_of_delivery[]" value="${timeline.place_of_delivery}">
+        <td>${timeline.birth_attendant}</td>
+        <input type="hidden" name="birth_attendant[]" value="${timeline.birth_attendant}">
+        <td>${timeline.complication ?? "none"}</td>
+        <input type="hidden" name="compilation[]" value="${timeline.complication ?? "none"}">
+        <td>${timeline.outcome}</td>
+        <input type="hidden" name="outcome[]" value="${timeline.outcome}">
+        <td>
+            <button type="button" class="btn btn-danger btn-sm timeline-remove">Remove</button>
+        </td>
+    </tr>
+`;
+
+// Validation function for pregnancy timeline inputs
+const validateTimelineInputs = (
+    year,
+    typeOfDelivery,
+    placeOfDelivery,
+    birthAttendant,
+    outcome,
+) => {
+    const errors = {};
+    const currentYear = new Date().getFullYear();
+
+    if (!year.value) errors.year = "Year input is empty";
+    else if (year.value > currentYear || year.value < 1000)
+        errors.year = "The year entered is not valid";
+    else if (year.value.toString().length > 4)
+        errors.year = "Invalid year input";
+
+    if (!typeOfDelivery.value)
+        errors.typeOfDelivery = "Type of Delivery input is empty";
+    if (!placeOfDelivery.value)
+        errors.placeOfDelivery = "Place of Delivery input is empty";
+    if (!birthAttendant.value)
+        errors.birthAttendant = "Birth Attendant input is empty";
+    if (!outcome.value) errors.outcome = "Outcome input is empty";
+
+    return errors;
+};
+
+// Display validation errors
+const displayErrors = (errors, errorElements) => {
+    errorElements.year.innerHTML = errors.year || "";
+    errorElements.typeOfDelivery.innerHTML = errors.typeOfDelivery || "";
+    errorElements.placeOfDelivery.innerHTML = errors.placeOfDelivery || "";
+    errorElements.birthAttendant.innerHTML = errors.birthAttendant || "";
+    errorElements.outcome.innerHTML = errors.outcome || "";
+
+    if (Object.keys(errors).length > 0) {
+        Swal.fire({
+            title: "Pregnancy Timeline Error",
+            text: "Information provided is incomplete or invalid.",
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+        });
+        return true;
+    }
+    return false;
+};
+
+// Reset timeline input fields
+const resetTimelineInputs = (inputs) => {
+    inputs.year.value = "";
+    inputs.typeOfDelivery.value = "";
+    inputs.placeOfDelivery.value = "";
+    inputs.birthAttendant.value = "";
+    inputs.complication.value = "";
+    inputs.outcome.value = "";
+};
+
+// Main event handler for case editing
 document.addEventListener("click", async (e) => {
     const caseEditBtn = e.target.closest(".case-edit-icon");
     if (!caseEditBtn) return;
-    // console.log("working tong case");
-    // this is the id of the case record itself
-    const medicalId = caseEditBtn.dataset.bsMedicalId;
 
+    const medicalId = caseEditBtn.dataset.bsMedicalId;
+    saveRecordBtn.dataset.medicalId = medicalId ?? null;
+
+    // Fetch case data
     const response = await fetch(
         `/view-case/case-record/prenatal/${medicalId}`,
         {
             method: "GET",
-            headers: {
-                Accept: "application/json",
-            },
-        }
+            headers: { Accept: "application/json" },
+        },
     );
 
     const data = await response.json();
 
-    // input fields
-    const grada = document.getElementById("grada_input") ?? null;
-    const para = document.getElementById("para_input") ?? null;
-    const term = document.getElementById("term_input") ?? null;
-    const premature = document.getElementById("premature_input") ?? null;
-    const abortion = document.getElementById("abortion_input") ?? null;
-    const livingChildren =
-        document.getElementById("living_children_input") ?? null;
+    // Load basic case information
+    const basicFields = {
+        grada: getElement("grada_input"),
+        para: getElement("para_input"),
+        term: getElement("term_input"),
+        premature: getElement("premature_input"),
+        abortion: getElement("abortion_input"),
+        livingChildren: getElement("living_children_input"),
+    };
 
-    // load the data
-    if (
-        grada == null ||
-        para == null ||
-        term == null ||
-        premature == null ||
-        abortion == null ||
-        abortion == null ||
-        livingChildren == null
-    )
-        return;
-    grada.value = data.caseInfo.G ?? 0;
-    para.value = data.caseInfo.P ?? 0;
-    term.value = data.caseInfo.T ?? 0;
-    premature.value = data.caseInfo.premature ?? 0;
-    abortion.value = data.caseInfo.abortion ?? 0;
-    livingChildren.value = data.caseInfo.living_children ?? 0;
+    // Validate all basic fields exist
+    if (Object.values(basicFields).some((field) => field === null)) return;
 
-    // -------------------------- handle the interaction adding and removing pregnancy timeline history ----------------------------------------
-    const addBtn = document.getElementById("add-pregnancy-history-btn");
-    const year = document.getElementById("pregnancy_year") ?? null;
-    const typeOfDelivery = document.getElementById("type_of_delivery") ?? null;
-    const placeOfDelivery =
-        document.getElementById("place_of_delivery") ?? null;
-    const birthAttendant = document.getElementById("birth_attendant") ?? null;
-    const complication = document.getElementById("complication") ?? null;
-    const outcome = document.getElementById("outcome") ?? null;
+    // Load basic field values
+    basicFields.grada.value = data.caseInfo.G ?? 0;
+    basicFields.para.value = data.caseInfo.P ?? 0;
+    basicFields.term.value = data.caseInfo.T ?? 0;
+    basicFields.premature.value = data.caseInfo.premature ?? 0;
+    basicFields.abortion.value = data.caseInfo.abortion ?? 0;
+    basicFields.livingChildren.value = data.caseInfo.living_children ?? 0;
 
-    // errors variables
+    // Pregnancy timeline elements
+    const timelineInputs = {
+        year: getElement("pregnancy_year"),
+        typeOfDelivery: getElement("type_of_delivery"),
+        placeOfDelivery: getElement("place_of_delivery"),
+        birthAttendant: getElement("birth_attendant"),
+        complication: getElement("complication"),
+        outcome: getElement("outcome"),
+    };
 
-    const yearError = document.getElementById("pregnancy_year_error");
-    const typeOfDeliveryError = document.getElementById(
-        "type_of_delivery_error"
-    );
-    const placeOfDeliveryError = document.getElementById(
-        "place_of_delivery_error"
-    );
-    const birthAttendantError = document.getElementById(
-        "birth_attendant_error"
-    );
-    const outcomeError = document.getElementById("outcome_error");
+    const errorElements = {
+        year: getElement("pregnancy_year_error"),
+        typeOfDelivery: getElement("type_of_delivery_error"),
+        placeOfDelivery: getElement("place_of_delivery_error"),
+        birthAttendant: getElement("birth_attendant_error"),
+        outcome: getElement("outcome_error"),
+    };
 
-    // load the existing timeline first
-    const tableBody = document.getElementById("edit-previous-records-body");
+    const addBtn = getElement("add-pregnancy-history-btn");
+    const tableBody = getElement("edit-previous-records-body");
 
-    // use foreach to load the data
+    // Load existing pregnancy timeline
     const pregnancyTimeline = data.caseInfo.pregnancy_timeline_records.sort(
-        (a, b) => a.year - b.year
+        (a, b) => a.year - b.year,
     );
-    // reset first everytime edit icon is clicked
-    tableBody.innerHTML = "";
-    pregnancyTimeline.forEach((timeline) => {
-        tableBody.innerHTML += `
-                        <tr class="text-center prenatal-record">
-                            <td>${timeline.year}</td>
-                            <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.year
-                            }>
-                            <td>${timeline.type_of_delivery}</td>
-                            <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.type_of_delivery
-                            }>
-                            <td>${timeline.place_of_delivery}</td>
-                            <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.place_of_delivery
-                            }>
-                            <td>${timeline.birth_attendant}</td>
-                            <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.birth_attendant
-                            }>
-                            <td>${timeline.compilation}</td>
-                            <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.compilation ?? "none"
-                            }>
-                            <td>${timeline.outcome}</td>
-                            <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${
-                                timeline.outcome
-                            }>
-                            <td>
-                                <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
-                            </td>
-                        </tr>`;
-    });
+    tableBody.innerHTML = pregnancyTimeline.map(createTimelineRow).join("");
 
-    // ------------------------ UPDATE ADD BTN -----------------------------------
-    let firstclicked = true;
-    if (addBtn == null) return;
-    addBtn.addEventListener("click", (e) => {
-        if (
-            year == null ||
-            typeOfDelivery == null ||
-            placeOfDelivery == null ||
-            birthAttendant == null ||
-            outcome == null
-        )
-            return;
+    // Remove old event listeners by cloning the button
+    if (addBtn) {
+        const newAddBtn = addBtn.cloneNode(true);
+        addBtn.parentNode.replaceChild(newAddBtn, addBtn);
 
-        if (
-            year.value == "" ||
-            typeOfDelivery.value == "" ||
-            placeOfDelivery.value == "" ||
-            birthAttendant.value == "" ||
-            outcome.value == ""
-        ) {
-            // add the error message
-            Swal.fire({
-                title: "Pregnancy Timeline Error",
-                text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+        // Add new event listener to the cloned button
+        newAddBtn.addEventListener("click", () => {
+            // Validate all inputs exist
+            if (Object.values(timelineInputs).some((input) => input === null))
+                return;
 
-            yearError.innerHTML = year.value ? "" : "Year input is empty";
-            typeOfDeliveryError.innerHTML = typeOfDelivery.value
-                ? ""
-                : "Type of Delivery input is empty";
-            placeOfDeliveryError.innerHTML = placeOfDelivery.value
-                ? ""
-                : "Place of Delivery input is empty";
-            birthAttendantError.innerHTML = birthAttendant.value
-                ? ""
-                : "Birth Attendant input is empty";
-            outcomeError.innerHTML = outcome.value
-                ? ""
-                : "Outcome input is empty";
+            // Validate inputs
+            const errors = validateTimelineInputs(
+                timelineInputs.year,
+                timelineInputs.typeOfDelivery,
+                timelineInputs.placeOfDelivery,
+                timelineInputs.birthAttendant,
+                timelineInputs.outcome,
+            );
 
-            return;
-        }
-        // add a condition for year if it is greater than the current year then return
-        const currentYear = new Date().getFullYear();
-        if (year.value > currentYear || year.value < 1000) {
-            yearError.innerHTML = "The year entered is not valid";
-            return;
-        }
-        // if no error then
-        yearError.innerHTML = "";
-        typeOfDeliveryError.innerHTML = "";
-        placeOfDeliveryError.innerHTML = "";
-        birthAttendantError.innerHTML = "";
-        outcomeError.innerHTML = "";
+            // Display errors if any
+            if (displayErrors(errors, errorElements)) return;
 
-        // check if the provided year is valid
-        if (year.value.toString().length > 4) {
-            Swal.fire({
-                title: "Pregnancy Timeline Error",
-                text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
-            yearError.innerHTML = "Invalid year input";
+            // Add new timeline record
+            const newTimeline = {
+                year: timelineInputs.year.value,
+                type_of_delivery: timelineInputs.typeOfDelivery.value,
+                place_of_delivery: timelineInputs.placeOfDelivery.value,
+                birth_attendant: timelineInputs.birthAttendant.value,
+                complication: timelineInputs.complication.value,
+                outcome: timelineInputs.outcome.value,
+            };
 
-            return;
-        }
-        yearError.innerHTML = "";
+            tableBody.innerHTML += createTimelineRow(newTimeline);
 
-        // after validating the inputs proceed to inserting the
+            // Reset inputs
+            resetTimelineInputs(timelineInputs);
+        });
+    }
 
-        tableBody.innerHTML += `
-                        <tr class="text-center prenatal-record">
-                            <td>${year.value}</td>
-                            <input type="hidden"  name="preg_year[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${year.value}>
-                            <td>${typeOfDelivery.value}</td>
-                            <input type="hidden"  name="type_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${typeOfDelivery.value}>
-                            <td>${placeOfDelivery.value}</td>
-                            <input type="hidden"  name="place_of_delivery[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${placeOfDelivery.value}>
-                            <td>${birthAttendant.value}</td>
-                            <input type="hidden"  name="birth_attendant[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${birthAttendant.value}>
-                            <td>${complication.value}</td>
-                            <input type="hidden"  name="compilation[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${complication.value}>
-                            <td>${outcome.value}</td>
-                            <input type="hidden"  name="outcome[]" min="1900" max="2099" placeholder="YYYY" class="form-control w-100" required value= ${outcome.value}>
-                            <td>
-                                <button type=button class="btn btn-danger btn-sm timeline-remove">Remove</button>
-                            </td>
-                        </tr>`;
-
-        // reset the inputs
-        year.value = "";
-        typeOfDelivery.value = "";
-        placeOfDelivery.value = "";
-        birthAttendant.value = "";
-        outcome.value = "";
-    });
-
-    // remove timeline
+    // Handle timeline row removal
     tableBody.addEventListener("click", (e) => {
-        if (e.target.closest(".prenatal-record")) {
-            if (e.target.closest(".timeline-remove")) {
-                e.target.closest("tr").remove();
-            }
+        const removeBtn = e.target.closest(".timeline-remove");
+        if (removeBtn) {
+            e.target.closest("tr").remove();
         }
     });
 
-    // input fields of subjective section
-    const lmp = document.getElementById("LMP_input");
-    const expected_delivery = document.getElementById(
-        "expected_delivery_input"
-    );
-    const menarche = document.getElementById("menarche_input");
-    const tt1 = document.getElementById("tt1_input");
-    const tt2 = document.getElementById("tt2_input");
-    const tt3 = document.getElementById("tt3_input");
-    const tt4 = document.getElementById("tt4_input");
-    const tt5 = document.getElementById("tt5_input");
+    // Load subjective section data
+    const subjectiveFields = {
+        lmp: getElement("LMP_input"),
+        expected_delivery: getElement("expected_delivery_input"),
+        menarche: getElement("menarche_input"),
+        tt1: getElement("tt1_input"),
+        tt2: getElement("tt2_input"),
+        tt3: getElement("tt3_input"),
+        tt4: getElement("tt4_input"),
+        tt5: getElement("tt5_input"),
+    };
 
-    // load the value
-    lmp.value = data.caseInfo.LMP ?? "";
-    expected_delivery.value = data.caseInfo.expected_delivery ?? "";
-    menarche.value = data.caseInfo.menarche ?? "";
-    tt1.value = data.caseInfo.tetanus_toxoid_1 ?? "";
-    tt2.value = data.caseInfo.tetanus_toxoid_2 ?? "";
-    tt3.value = data.caseInfo.tetanus_toxoid_3 ?? "";
-    tt4.value = data.caseInfo.tetanus_toxoid_4 ?? "";
-    tt5.value = data.caseInfo.tetanus_toxoid_5 ?? "";
+    if (subjectiveFields.lmp)
+        subjectiveFields.lmp.value = data.caseInfo.LMP ?? "";
+    if (subjectiveFields.expected_delivery)
+        subjectiveFields.expected_delivery.value =
+            data.caseInfo.expected_delivery ?? "";
+    if (subjectiveFields.menarche)
+        subjectiveFields.menarche.value = data.caseInfo.menarche ?? "";
+    if (subjectiveFields.tt1)
+        subjectiveFields.tt1.value = data.caseInfo.tetanus_toxoid_1 ?? "";
+    if (subjectiveFields.tt2)
+        subjectiveFields.tt2.value = data.caseInfo.tetanus_toxoid_2 ?? "";
+    if (subjectiveFields.tt3)
+        subjectiveFields.tt3.value = data.caseInfo.tetanus_toxoid_3 ?? "";
+    if (subjectiveFields.tt4)
+        subjectiveFields.tt4.value = data.caseInfo.tetanus_toxoid_4 ?? "";
+    if (subjectiveFields.tt5)
+        subjectiveFields.tt5.value = data.caseInfo.tetanus_toxoid_5 ?? "";
 
-    // assessment input field
-    const spotting = document.getElementById("spotting_input");
-    const edema = document.getElementById("edema_input");
-    const severe_headache = document.getElementById("severe_headache_input");
-    const blurring_of_vission = document.getElementById(
-        "blurring_of_vission_input"
-    );
-    const watery_discharge = document.getElementById("watery_discharge_input");
-    const severe_vomitting = document.getElementById("severe_vomiting_input");
-    const hx_smoking = document.getElementById("hx_smoking_input");
-    const alcohol_drinker = document.getElementById("alcohol_drinker_input");
-    const drug_intake = document.getElementById("drug_intake_input");
+    // Load assessment data
+    const assessmentFields = {
+        spotting: getElement("spotting_input"),
+        edema: getElement("edema_input"),
+        severe_headache: getElement("severe_headache_input"),
+        blurring_of_vission: getElement("blurring_of_vission_input"),
+        watery_discharge: getElement("watery_discharge_input"),
+        severe_vomitting: getElement("severe_vomiting_input"),
+        hx_smoking: getElement("hx_smoking_input"),
+        alcohol_drinker: getElement("alcohol_drinker_input"),
+        drug_intake: getElement("drug_intake_input"),
+    };
 
-    // load the data
-
-    spotting.checked = data.caseInfo.prenatal_assessment.spotting == "yes";
-    edema.checked = data.caseInfo.prenatal_assessment.edema == "yes";
-    severe_headache.checked =
-        data.caseInfo.prenatal_assessment.severe_headache == "yes";
-    blurring_of_vission.checked =
-        data.caseInfo.prenatal_assessment.blumming_vission == "yes";
-    watery_discharge.checked =
-        data.caseInfo.prenatal_assessment.water_discharge == "yes";
-    severe_vomitting.checked =
-        data.caseInfo.prenatal_assessment.severe_vomitting == "yes";
-    hx_smoking.checked = data.caseInfo.prenatal_assessment.hx_smoking == "yes";
-    alcohol_drinker.checked =
-        data.caseInfo.prenatal_assessment.alchohol_drinker == "yes";
-    drug_intake.checked =
-        data.caseInfo.prenatal_assessment.drug_intake == "yes";
+    const assessment = data.caseInfo.prenatal_assessment;
+    if (assessmentFields.spotting)
+        assessmentFields.spotting.checked = assessment.spotting === "yes";
+    if (assessmentFields.edema)
+        assessmentFields.edema.checked = assessment.edema === "yes";
+    if (assessmentFields.severe_headache)
+        assessmentFields.severe_headache.checked =
+            assessment.severe_headache === "yes";
+    if (assessmentFields.blurring_of_vission)
+        assessmentFields.blurring_of_vission.checked =
+            assessment.blumming_vission === "yes";
+    if (assessmentFields.watery_discharge)
+        assessmentFields.watery_discharge.checked =
+            assessment.water_discharge === "yes";
+    if (assessmentFields.severe_vomitting)
+        assessmentFields.severe_vomitting.checked =
+            assessment.severe_vomitting === "yes";
+    if (assessmentFields.hx_smoking)
+        assessmentFields.hx_smoking.checked = assessment.hx_smoking === "yes";
+    if (assessmentFields.alcohol_drinker)
+        assessmentFields.alcohol_drinker.checked =
+            assessment.alchohol_drinker === "yes";
+    if (assessmentFields.drug_intake)
+        assessmentFields.drug_intake.checked = assessment.drug_intake === "yes";
 });
-
 // add a expected delivery change in the LMP
 const LMP = document.getElementById("LMP_input") ?? null;
 
@@ -496,14 +485,13 @@ if (LMP) {
 }
 
 // update the case
-const saveRecordBtn = document.getElementById("update-save-btn") ?? null;
 
 if (saveRecordBtn) {
     saveRecordBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
         const form = document.getElementById(
-            "update-prenatal-case-record-form"
+            "update-prenatal-case-record-form",
         );
         const formData = new FormData(form);
 
@@ -511,18 +499,19 @@ if (saveRecordBtn) {
         //     console.log(key, value);
         // }
 
+        const medicalId = e.target.dataset.medicalId;
         const response = await fetch(
             `/patient-record/update/prenatal-case/${medicalId}`,
             {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
                 body: formData,
-            }
+            },
         );
 
         const data = await response.json();
@@ -543,7 +532,7 @@ if (saveRecordBtn) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("editPrenatalCaseModal")
+                        document.getElementById("editPrenatalCaseModal"),
                     );
                     modal.hide();
                     form.reset();
@@ -597,11 +586,11 @@ document.addEventListener("click", async (e) => {
     updateBTN.dataset.pregnancyPlanId = pregnancyPlanId;
 
     // reset the errors
-     const errors = document.querySelectorAll(".error-text");
-     errors.forEach((error) => (error.innerHTML = ""));
+    const errors = document.querySelectorAll(".error-text");
+    errors.forEach((error) => (error.innerHTML = ""));
     // fetch the pregnancy plan information from the database
     const response = await fetch(
-        `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`
+        `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`,
     );
     const data = await response.json();
     // console.log(data);
@@ -609,29 +598,29 @@ document.addEventListener("click", async (e) => {
     const midwife_name = document.getElementById("midwife_name");
     const place_of_birth = document.getElementById("place_of_birth");
     const authorized_by_philhealth_yes = document.getElementById(
-        "authorized_by_philhealth_yes"
+        "authorized_by_philhealth_yes",
     );
     const authorized_by_philhealth_no = document.getElementById(
-        "authorized_by_philhealth_no"
+        "authorized_by_philhealth_no",
     );
     const cost_of_pregnancy = document.getElementById("cost_of_pregnancy");
     const payment_method = document.getElementById("payment_method");
     const transportation_mode = document.getElementById("transportation_mode");
     const accompany_person_to_hospital = document.getElementById(
-        "accompany_person_to_hospital"
+        "accompany_person_to_hospital",
     );
     const accompany_through_pregnancy = document.getElementById(
-        "accompany_through_pregnancy"
+        "accompany_through_pregnancy",
     );
     const care_person = document.getElementById("care_person");
     const emergency_person_name = document.getElementById(
-        "emergency_person_name"
+        "emergency_person_name",
     );
     const emergency_person_residency = document.getElementById(
-        "emergency_person_residency"
+        "emergency_person_residency",
     );
     const emergency_person_contact_number = document.getElementById(
-        "emergency_person_contact_number"
+        "emergency_person_contact_number",
     );
     const patient_name = document.getElementById("patient_name");
     // lets reset the container of donor names so it only show the data from the database removing the redundancy
@@ -642,12 +631,11 @@ document.addEventListener("click", async (e) => {
             if (value == "yes") {
                 // console.log("yes");
                 document.getElementById(
-                    "authorized_by_philhealth_yes"
+                    "authorized_by_philhealth_yes",
                 ).checked = true;
             } else if (value == "no") {
-                document.getElementById(
-                    "authorized_by_philhealth_no"
-                ).checked = true;
+                document.getElementById("authorized_by_philhealth_no").checked =
+                    true;
             }
         }
         if (document.getElementById(`${key}`)) {
@@ -774,12 +762,12 @@ if (updateBTN) {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
                 body: formData,
-            }
+            },
         );
 
         const data = await response.json();
@@ -798,7 +786,7 @@ if (updateBTN) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("case2PrenatalModal")
+                        document.getElementById("case2PrenatalModal"),
                     );
                     modal.hide();
                     form.reset();
@@ -847,8 +835,8 @@ prentalCheckUpBTN.addEventListener("click", async (e) => {
     uploadBTN.dataset.bsMedicalRecordId = medicalId;
 
     // reset the error
-     const errors = document.querySelectorAll(".error-text");
-     errors.forEach((error) => (error.innerHTML = ""));
+    const errors = document.querySelectorAll(".error-text");
+    errors.forEach((error) => (error.innerHTML = ""));
     // console.log("medical id: ", medicalId);
     const response = await fetch(`/patient-record/view-details/${medicalId}`);
     // get the data
@@ -859,7 +847,7 @@ prentalCheckUpBTN.addEventListener("click", async (e) => {
     const handled_by = document.getElementById("check_up_handled_by");
     const healthworkerId = document.getElementById("health_worker_id");
     const hiddenPatientName = document.getElementById(
-        "hidden_check_up_patient_name"
+        "hidden_check_up_patient_name",
     );
 
     // provide the info
@@ -939,7 +927,7 @@ uploadBTN.addEventListener("click", async (e) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("prenatalCheckupModal")
+                    document.getElementById("prenatalCheckupModal"),
                 );
                 modal.hide();
                 form.reset();
@@ -995,13 +983,13 @@ document.addEventListener("click", async (e) => {
                     "X-CSRF-TOKEN": csrfToken.content,
                     Accept: "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(
-                data.message || `HTTP error! status: ${response.status}`
+                data.message || `HTTP error! status: ${response.status}`,
             );
         }
 
@@ -1077,13 +1065,13 @@ document.addEventListener("click", async (e) => {
                     "X-CSRF-TOKEN": csrfToken.content,
                     Accept: "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(
-                data.message || `HTTP error! status: ${response.status}`
+                data.message || `HTTP error! status: ${response.status}`,
             );
         }
 

@@ -417,7 +417,7 @@
                                                         </div>
                                                         <div class="item w-[100%] xl:w-[16.66%]">
                                                             <label for="type_of_delivery">Type of Delivery</label>
-                                                            <select id="type_of_delivery" class="form-select" required>
+                                                            <select id="type_of_delivery" class="form-select" >
                                                                 <option value="" disabled selected>Select Type of Delivery</option>
                                                                 <option value="Normal Spontaneous Delivery">Normal Spontaneous Delivery (NSD)</option>
                                                                 <option value="Cesarean Section">Cesarean Section (CS)</option>

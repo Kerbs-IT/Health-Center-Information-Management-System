@@ -113,7 +113,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($tbDotsRecord->patient)->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($tbDotsRecord->patient)->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -124,8 +124,10 @@
                                             <div class="input-field d-flex align-items-center p-2">
 
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Female' ? 'checked' : '' }}>Female</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>
+                                                    <label  for="male"> Male</label>
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Female' ? 'checked' : '' }}>
+                                                    <label for="female">Female</label>
                                                 </div>
 
                                                 <small class="text-danger error-text" id="sex_error"></small>

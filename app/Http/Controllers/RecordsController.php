@@ -226,11 +226,11 @@ class RecordsController extends Controller
 
             return response()->json([
                 'message' => 'updating information successfully'
-            ],200);
+            ], 200);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
-            ],402);
+            ], 402);
         }
     }
 
@@ -312,15 +312,16 @@ class RecordsController extends Controller
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             $age = Carbon::parse($data['date_of_birth'])->age;
             $ageInMonth = $this->calculateAgeInMonths($data['date_of_birth']);
+            $sex = $data['sex'] ?? '';
             $patient->update([
                 'first_name' => ucfirst(strtolower($data['first_name'])) ?? ucfirst($patient->first_name),
                 'last_name' =>  ucfirst(strtolower($data['last_name'])) ?? ucfirst($patient->last_name),
                 'middle_initial' => $middleName,
                 'full_name' => ucwords(strtolower($fullName)),
                 'date_of_birth' => $data['date_of_birth'] ?? $patient->date_of_birth,
-                'place_of_birth' => $data['place_of_birth'] ??'',
+                'place_of_birth' => $data['place_of_birth'] ?? '',
                 'age' => $age ?? $patient->age,
-                'sex' => ucfirst($data['sex']) ?? ucfirst($patient->sex),
+                'sex' => $sex?? ucfirst($sex) ?? '',
                 'age_in_months' => $ageInMonth ?? 0,
                 'contact_number' => $data['contact_number'] ?? '',
                 'nationality' => $data['nationality'] ?? '',
@@ -331,23 +332,23 @@ class RecordsController extends Controller
             foreach ($vaccination_case_record as $record) {
                 $record->update([
                     'patient_name' => trim(
-                        $fullName?
-                        ucwords(strtolower($fullName)):''
+                        $fullName ?
+                            ucwords(strtolower($fullName)) : ''
                     )
                 ]);
             }
 
             $vaccination_medical_record->update([
                 'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
-                'mother_name' => $data['mother_name']? ucwords($data['mother_name']) :'',
-                'father_name' => $data['father_name']?ucwords($data['father_name']) : '',
+                'mother_name' => $data['mother_name'] ? ucwords($data['mother_name']) : '',
+                'father_name' => $data['father_name'] ? ucwords($data['father_name']) : '',
                 'birth_height' => $data['vaccination_height'] ?? $medical_record_case->birth_height,
                 'birth_weight' => $data['vaccination_weight'] ?? $medical_record_case->birth_weight,
             ]);
             $blk_n_street = explode(',', $data['street']);
             $patient_address->update([
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
-                'street' => $blk_n_street[1]?trim($blk_n_street[1]): null,
+                'street' => $blk_n_street[1] ? trim($blk_n_street[1]) : null,
                 'purok' => $data['brgy'] ?? $patient_address->purok
             ]);
             // refresh the record
@@ -364,11 +365,11 @@ class RecordsController extends Controller
             // update the masterlist 
             if ($vaccinationMasterlist) {
                 $vaccinationMasterlist->update([
-                    'name_of_child' =>  $fullName?ucwords(strtolower($fullName)) : ucwords($vaccinationMasterlist->name_of_child),
-                    'sex' => $data['sex']? ucfirst($data['sex']) : null,
+                    'name_of_child' =>  $fullName ? ucwords(strtolower($fullName)) : ucwords($vaccinationMasterlist->name_of_child),
+                    'sex' => $data['sex'] ? ucfirst($data['sex']) : null,
                     'age' => $data['age'] ?? $vaccinationMasterlist->age,
                     'date_of_birth' => $data['date_of_birth'] ?? $vaccinationMasterlist->date_of_birth,
-                    'Address' => $newAddress??''
+                    'Address' => $newAddress ?? ''
                 ]);
             }
 
@@ -689,7 +690,7 @@ class RecordsController extends Controller
     public function editPrenatalDetail($id)
     {
         $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
-        $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)->firstOrFail();
+        $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)->where("status", "!=", 'Archived')->firstOrFail();
 
         $address = patient_addresses::where('patient_id', $prenatalRecord->patient->id)->firstOrFail();
         return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'prenatalRecord' => $prenatalRecord, 'address' => $address, 'caseRecord' => $caseRecord]);
