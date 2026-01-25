@@ -5,7 +5,7 @@
         <i class="fa-solid fa-bars fs-2"></i>
       </button>
       @if ($page === 'DASHBOARD')
-      <h1 class="mb-0">Welcome, <span class="text-success">{{ Auth::user()->first_name ?? 'Guest' }}</span></h1>
+      <h1 class="mb-0">Welcome, <span class="text-success">{{ Auth::user()->first_name ?? 'Guest' }}</span> </h1>
       @else
       <h1 class="mb-0">{{ $page }}</h1>
       @endif
