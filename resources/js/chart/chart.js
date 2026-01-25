@@ -155,7 +155,7 @@ function initDateRangePickers() {
             },
         );
     } else {
-        console.warn("⚠ Bar chart date range input not found");
+        // console.warn("⚠ Bar chart date range input not found");
     }
 
     // Pie Chart Date Range
@@ -173,7 +173,7 @@ function initDateRangePickers() {
             },
         );
     } else {
-        console.warn("⚠ Pie chart date range input not found");
+        // console.warn("⚠ Pie chart date range input not found");
     }
 
     // number per area config
@@ -195,7 +195,7 @@ function initDateRangePickers() {
             },
         );
     } else {
-        console.warn("⚠ Area date range input not found");
+        // console.warn("⚠ Area date range input not found");
     }
 }
 
@@ -338,7 +338,7 @@ async function initBarChart() {
 // Update chart based on patient type selection
 function updateChart(patientType) {
     if (!barChart || !patientData[patientType]) {
-        console.warn("Chart or data not available for:", patientType);
+        // console.warn("Chart or data not available for:", patientType);
         return;
     }
 
@@ -541,7 +541,7 @@ async function initCountPerArea(
 
         const container = document.querySelector(".patient-per-area-con");
         if (!container) {
-            console.warn("⚠ Container '.patient-per-area-con' not found");
+            // console.warn("⚠ Container '.patient-per-area-con' not found");
             return;
         }
 
@@ -646,7 +646,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 updateChart(e.target.value);
             });
         } else {
-            console.warn("⚠ Patient type dropdown not found");
+            // console.warn("⚠ Patient type dropdown not found");
         }
 
         // Setup PDF download button with BOTH date ranges
@@ -687,7 +687,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 window.open(url, "_blank");
             });
         } else {
-            console.warn("⚠ Dashboard charts button not found");
+            // console.warn("⚠ Dashboard charts button not found");
         }
 
         // Listen for completion message from the popup
@@ -735,7 +735,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 updateAgeChart(e.target.value);
             });
         } else {
-            console.warn("⚠ Age patient type dropdown not found");
+            // console.warn("⚠ Age patient type dropdown not found");
         }
 
         const generateTable = document.getElementById("generateTableReport");
@@ -914,7 +914,7 @@ if (dashboardChartsBtn) {
         }
     });
 } else {
-    console.warn("⚠ Dashboard charts button not found");
+    // console.warn("⚠ Dashboard charts button not found");
 }
 
 // ============================================
@@ -1281,7 +1281,7 @@ function initAgeChartDatePicker() {
             },
         );
     } else {
-        console.warn("⚠ Age chart date range input not found");
+        // console.warn("⚠ Age chart date range input not found");
     }
 }
 
