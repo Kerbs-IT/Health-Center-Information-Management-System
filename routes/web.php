@@ -397,6 +397,23 @@ Route::middleware(['role:nurse,staff'])->group(function(){
             ->name('health-workers.swap');
     });
 
+    // Inventory Route
+    // Route to categories
+    Route::get('/categories', CategoriesTable::class)->name('categories');
+    // Route to medicines
+    Route::get('/medicines', Medicines::class)->name('medicines');
+
+    // Route to report
+    Route::get('/report',InventoryReport::class)->name('inventory-report');
+
+    // Route to manage medicine request
+    Route::get('/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
+
+    // Route to logs
+    Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
+
+    Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
+    Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
 
 });
 // ---------------------------- home page
@@ -519,27 +536,6 @@ Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamil
 
 
     // LOUIE'S CHANGES
-Route::middleware(['role:nurse,staff'])->group(function(){
-
-    // Inventory Route
-    // Route to categories
-    Route::get('/categories', CategoriesTable::class)->name('categories');
-    // Route to medicines
-    Route::get('/medicines', Medicines::class)->name('medicines');
-
-    // Route to report
-    Route::get('/report',InventoryReport::class)->name('inventory-report');
-
-    // Route to manage medicine request
-    Route::get('/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
-
-    // Route to logs
-    Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
-
-    Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
-    Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
-
-});
 
 Route::get('/medicineRequest', MedicineRequestComponent::class)->name('medicineRequest');
 
