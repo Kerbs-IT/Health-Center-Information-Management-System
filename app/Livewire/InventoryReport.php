@@ -127,36 +127,70 @@ class InventoryReport extends Component
         ];
     }
 
-public function getPieChartData(){
-    $start = Carbon::parse($this->pieChartStartDate)->startOfDay();
-    $end = Carbon::parse($this->pieChartEndDate)->endOfDay();
-    $daysDiff = $start->diffInDays($end);
+    public function getPieChartData(){
+        $start = Carbon::parse($this->pieChartStartDate)->startOfDay();
+        $end = Carbon::parse($this->pieChartEndDate)->endOfDay();
+        $daysDiff = $start->diffInDays($end);
 
-    // Get medicines that were created or updated within the date range
-    if ($daysDiff == 0) {
-        // For single day: medicines created or updated today
-        $medicines = Medicine::where(function($query) use ($start) {
-            $query->whereDate('created_at', $start)
-                  ->orWhereDate('updated_at', $start);
-        })->get();
-    } else {
-        // For date range: medicines created or updated in the range
-        $medicines = Medicine::where(function($query) use ($start, $end) {
-            $query->whereBetween('created_at', [$start, $end])
-                  ->orWhereBetween('updated_at', [$start, $end]);
-        })->get();
+        // Get ALL medicines that were either:
+        // 1. Dispensed during this period, OR
+        // 2. Created/Updated during this period
+
+        $medicineNames = collect();
+
+        // Get medicines dispensed in this date range
+        if ($daysDiff == 0) {
+            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+                ->whereDate('performed_at', $start)
+                ->distinct()
+                ->pluck('medicine_name');
+        } else {
+            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+                ->whereBetween('performed_at', [$start, $end])
+                ->distinct()
+                ->pluck('medicine_name');
+        }
+
+        // Get medicines created/updated in this date range
+        if ($daysDiff == 0) {
+            $modifiedMedicines = Medicine::whereDate('updated_at', $start)
+                ->orWhereDate('created_at', $start)
+                ->pluck('medicine_name');
+        } else {
+            $modifiedMedicines = Medicine::whereBetween('updated_at', [$start, $end])
+                ->orWhereBetween('created_at', [$start, $end])
+                ->pluck('medicine_name');
+        }
+
+        // Merge both lists (remove duplicates)
+        $medicineNames = $dispensedMedicines->merge($modifiedMedicines)->unique();
+
+        // If no medicines found, return empty data
+        if ($medicineNames->isEmpty()) {
+            return [
+                'labels' => ['In Stock', 'Low Stock', 'Out of Stock'],
+                'data' => [0, 0, 0]
+            ];
+        }
+
+        // Get current stock status for those medicines
+        $inStock = Medicine::whereIn('medicine_name', $medicineNames)
+            ->where('stock_status', 'In Stock')
+            ->count();
+
+        $lowStock = Medicine::whereIn('medicine_name', $medicineNames)
+            ->where('stock_status', 'Low Stock')
+            ->count();
+
+        $outOfStock = Medicine::whereIn('medicine_name', $medicineNames)
+            ->where('stock_status', 'Out of Stock')
+            ->count();
+
+        return [
+            'labels' => ['In Stock', 'Low Stock', 'Out of Stock'],
+            'data' => [$inStock, $lowStock, $outOfStock]
+        ];
     }
-
-    // Count by stock status
-    $inStock = $medicines->where('stock_status', 'In Stock')->count();
-    $lowStock = $medicines->where('stock_status', 'Low Stock')->count();
-    $outOfStock = $medicines->where('stock_status', 'Out of Stock')->count();
-
-    return [
-        'labels' => ['In Stock', 'Low Stock', 'Out of Stock'],
-        'data' => [$inStock, $lowStock, $outOfStock]
-    ];
-}
 
     public function getDateRangeGivenData(){
         $start = Carbon::parse($this->startDate);
@@ -568,27 +602,28 @@ public function getTopMedicinesDateRangeData(){
         'datasets' => $datasets
     ];
 }
+
     public function getAllMedicinesData(){
-        return Medicine::with('category')->select('medicine_name', 'category_id', 'category_name','dosage', 'stock', 'stock_status','expiry_date')
+        return Medicine::with('category')->select('medicine_name', 'category_id', 'dosage', 'stock', 'stock_status','expiry_date')
         ->orderBy('medicine_name')
-        ->get();
+        ->get()
+        ->map(function($medicine){
+            $medicine->category_name = $medicine->category ? $medicine->category->category_name : 'N/A';
+            return $medicine;
+        });
     }
 
     public function getAllRequestsData(){
         return MedicineRequest::with(['medicine', 'patients', 'user'])
-            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'medicine_name', 'medicine_dosage', 'quantity_requested', 'status', 'created_at')
+            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
             ->orderByDesc('created_at')
             ->get()
             ->map(function($request) {
                 $request->requester_name = $request->requester_name;
-                $request->medicine_name =
-                    $request->medicine_name
-                    ?? 'N/A';
-
-                $request->dosage =
-                    $request->medicine_dosage
-                    ?? optional($request->medicine)->dosage
-                    ?? 'N/A';
+                $request->medicine_name = $request->medicine
+                    ? $request->medicine->medicine_name
+                    : 'N/A';
+                $request->dosage = $request->medicine ? $request->medicine->dosage : 'N/A';
                 return $request;
             });
     }
@@ -647,24 +682,18 @@ public function getTopMedicinesDateRangeData(){
     public function generateReport()
     {
         try {
-            // Get the date-filtered data
-            $monthlyGivenData = $this->getDateRangeGivenData();
-            $requestTrendData = $this->getDateRangeRequestData();
-            $categoriesData = $this->getMedicineCategoriesData();
-            $pieChartData = $this->getPieChartData();
-            $topDispensedTable = $this->getTopDispensedTable();
-
+            // Get all the data
             $data = [
                 'totalMedicines' => $this->totalMedicineCount(),
                 'totalRequests' => $this->totalRequests(),
                 'totalDispensed' => $this->totalMedicineDispense(),
                 'lowStock' => $this->totalLowStock(),
                 'expiringSoon' => $this->totalExpSoon(),
-                'categoriesData' => $categoriesData,
-                'pieChartData' => $pieChartData,
-                'monthlyGivenData' => $monthlyGivenData,
-                'requestTrendData' => $requestTrendData,
-                'topDispensedTable' => $topDispensedTable,
+                'categoriesData' => $this->getMedicineCategoriesData(),
+                'pieChartData' => $this->getPieChartData(),
+                'monthlyGivenData' => $this->getDateRangeGivenData(),
+                'requestTrendData' => $this->getDateRangeRequestData(),
+                'topDispensedTable' => $this->getTopDispensedTable()->toArray(),
                 'generatedDate' => now()->format('F d, Y h:i A'),
                 'startDate' => Carbon::parse($this->startDate)->format('F d, Y'),
                 'endDate' => Carbon::parse($this->endDate)->format('F d, Y'),
@@ -674,23 +703,12 @@ public function getTopMedicinesDateRangeData(){
                 'pieChartEndDate' => Carbon::parse($this->pieChartEndDate)->format('F d, Y'),
             ];
 
-            $pdf = SnappyPdf::loadView('reports.inventory-report-pdf', $data)
-                ->setOption('margin-top', 10)
-                ->setOption('margin-right', 10)
-                ->setOption('margin-bottom', 10)
-                ->setOption('margin-left', 10)
-                ->setOption('enable-local-file-access', true);
-
-            $filename = 'inventory-report-' . now()->format('Y-m-d-His') . '.pdf';
-
-            return response()->streamDownload(function() use ($pdf) {
-                echo $pdf->output();
-            }, $filename);
+            // Dispatch event to JavaScript to generate PDF
+            $this->dispatch('generate-pdf', $data);
 
         } catch (\Exception $e) {
-            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            \Log::error('Report Generation Error: ' . $e->getMessage());
             session()->flash('error', 'Failed to generate report: ' . $e->getMessage());
-            return null;
         }
     }
 

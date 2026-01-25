@@ -2,104 +2,154 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Request List - {{ date('Y-m-d') }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Medicine Request List Report</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @page {
+            margin: 15mm 10mm;
         }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 11px;
-            padding: 20px;
+            line-height: 1.4;
         }
+
         .header {
             text-align: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #10b981;
+            border-bottom: 2px solid #4CAF50;
         }
+
         .header h1 {
-            font-size: 24px;
-            color: #000;
+            margin: 0 0 5px 0;
+            font-size: 22px;
+            color: #4CAF50;
         }
+
+        .header p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 10px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        th {
-            background: #10b981;
-            color: white;
-            padding: 10px;
-            text-align: left;
-            font-size: 11px;
-        }
-        td {
-            padding: 8px;
+
+        th, td {
             border: 1px solid #ddd;
-            font-size: 11px;
+            padding: 8px;
+            text-align: left;
         }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        td {
+            font-size: 10px;
+        }
+
         tr:nth-child(even) {
-            background: #f9f9f9;
+            background-color: #f9f9f9;
         }
+
+        .total-box {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
         .badge {
             padding: 3px 8px;
             border-radius: 3px;
             font-size: 9px;
-            font-weight: bold;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
         }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-success { background: #d1fae5; color: #065f46; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .bg-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .bg-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .bg-info {
+            background-color: #cff4fc;
+            color: #055160;
+        }
+
+        .bg-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>MEDICINE REQUESTS LIST</h1>
-        <p>Generated: {{ $generatedDate }}</p>
-        <p>Total Requests: {{ $total }}</p>
+        <h1>Medicine Request List Report</h1>
+        <p>Generated on: {{ $generatedDate }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 8%;">ID</th>
-                <th style="width: 22%;">Patient Name</th>
-                <th style="width: 25%;">Medicine</th>
-                <th style="width: 10%;">Dosage</th>
-                <th style="width: 10%;">Quantity</th>
-                <th style="width: 12%;">Status</th>
-                <th style="width: 13%;">Date</th>
+                <th style="width: 5%">#</th>
+                <th style="width: 20%">Patient Name</th>
+                <th style="width: 18%">Medicine</th>
+                <th style="width: 12%">Dosage</th>
+                <th style="width: 10%">Quantity</th>
+                <th style="width: 12%">Status</th>
+                <th style="width: 18%">Date Requested</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($requests as $request)
+            @foreach($requests as $index => $request)
             <tr>
-                <td>#{{ $request->id }}</td>
+                <td>{{ $index + 1 }}</td>
                 <td>{{ $request->requester_name }}</td>
-                <td>{{ $request->medicine_display }}</td>
-                <td>{{ $request->dosage_display }}</td>
+                <td>{{ $request->medicine_name }}</td>
+                <td>{{ $request->dosage }}</td>
                 <td>{{ $request->quantity_requested }}</td>
                 <td>
-                    <span class="badge badge-{{
-                        $request->status === 'pending' ? 'warning' :
-                        ($request->status === 'completed' ? 'success' : 'danger')
-                    }}">
+                    <span class="badge bg-{{ $request->status == 'completed' ? 'success' : ($request->status == 'pending' ? 'warning' : ($request->status == 'approved' ? 'info' : 'danger')) }}">
                         {{ ucfirst($request->status) }}
                     </span>
                 </td>
-                <td>{{ $request->created_at->format('M d, Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y h:i A') }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="7" style="text-align: center; padding: 20px; color: #999;">
-                    No requests found
-                </td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
+
+    <div class="total-box">
+        Total Requests: {{ $total }}
+    </div>
+
+    <script type="text/php">
+        if (isset($pdf)) {
+            $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+            $size = 9;
+            $font = $fontMetrics->getFont("DejaVu Sans");
+            $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+            $x = ($pdf->get_width() - $width) / 2;
+            $y = $pdf->get_height() - 35;
+            $pdf->page_text($x, $y, $text, $font, $size);
+        }
+    </script>
 </body>
 </html>
