@@ -1,7 +1,7 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar  min-vh-100">
+<div class="menu-bar h-100 overflow-y-hidden">
     <!-- Close button for mobile/tablet -->
     <div class="w-100 d-flex justify-content-end mt-3">
         <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
