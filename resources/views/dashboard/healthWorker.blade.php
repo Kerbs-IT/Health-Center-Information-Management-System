@@ -162,7 +162,7 @@
                                 <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
                                 <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
                                 <span id="fileName" class="text-center text-muted">No file choosen</span>
-                                <small class="text-danger" id="image-error"></small>
+                                <small class="text-danger edit-healthworker-info" id="image-error"></small>
                             </div>
                         </div>
                         <!-- USER INFORMATION -->
@@ -172,17 +172,17 @@
                                 <div class="input-field flex-fill">
                                     <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
                                     <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="">
-                                    <small class="text-danger" id="fname-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="fname-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
                                     <label for="middle_initial" class="">Middle Name<span class="text-danger">*</span></label>
                                     <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="">
-                                    <small class="text-danger" id="middle-initial-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="middle-initial-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
                                     <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
-                                    <small class="text-danger" id="lname-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="lname-error"></small>
                                 </div>
                                 <div class="input-field flex-fill">
                                     <label for="edit_suffix" class="">Suffix</label>
@@ -195,21 +195,21 @@
                                         <option value="IV.">IV</option>
                                         <option value="V.">V</option>
                                     </select>
-                                    <small class="text-danger" id="edit-suffix-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="edit-suffix-error"></small>
                                 </div>
                             </div>
                             <!-- age -->
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-xl-nowrap flex-md-row flex-column">
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="age">Age</label>
-                                    <input type="text" id="age" placeholder="20" class="form-control"  disabled  value="">
+                                    <input type="text" id="age" placeholder="20" class="form-control" disabled value="">
                                     <input type="hidden" id="hiddenAge" name="age">
-                                    <small class="text-danger" id="age-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="age-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                     <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
-                                    <small class="text-danger" id="birthdate-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="birthdate-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="sex">Sex</label>
@@ -223,7 +223,7 @@
                                             <input type="radio" id="female" class="mb-0" name="sex" value="female" {{ $selectedSex === 'female'? 'checked' : '' }}>
                                             <label for="female" class="mb-0">Female</label>
                                         </div>
-                                        <small class="text-danger" id="sex-error"></small>
+                                        <small class="text-danger edit-healthworker-info" id="sex-error"></small>
                                     </div>
                                 </div>
                             </div>
@@ -238,37 +238,41 @@
                                         <option value="married">Married</option>
                                         <option value="divorce">Divorce</option>
                                     </select>
-                                    <small class="text-danger" id="civil-status-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="civil-status-error"></small>
                                 </div>
                                 <!-- contact -->
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="contact_number" class="">Contact Number</label>
-                                    <input type="number" placeholder="+63-936-627-8671" class="form-control" id="contact_num" name="contact_number" value="">
-                                    <small class="text-danger" id="contact-error"></small>
+                                    <input type="number" placeholder="Enter your contact number" class="form-control" id="contact_num" name="contact_number" value="">
+                                    <small class="text-danger edit-healthworker-info" id="contact-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
                                     <label for="nationality" class="">Nationality</label>
-                                    <input type="text" placeholder="ex. Filipino" class="form-control" id="nationality" name="nationality" value="">
-                                    <small class="text-danger" id="nationality-error"></small>
+                                    <input type="text" placeholder="Enter your nationality" class="form-control" id="nationality" name="nationality" value="">
+                                    <small class="text-danger edit-healthworker-info" id="nationality-error"></small>
                                 </div>
                             </div>
                             <div class="mb-2 d-flex gap-1 flex-wrap flex-nowrap">
 
                                 <!-- email -->
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="email" class="">Email<span class="text-danger">*</span></label>
+                                    <label for="email" class="w-100">Email<span class="text-danger">*</span></label>
                                     <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
-                                    <small class="text-danger" id="email-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="email-error"></small>
+                                </div>
+                                <div class="input-fieldxl:w-[50%] flex-fill">
+                                    <label for="reset_password" class="w-100">Password</label>
+                                    <button type="button" class="btn btn-danger text-white px-2 py-2 flex-grow-1 fs-6" id="reset_password">Reset Password</button>
                                 </div>
 
                             </div>
-                           
+
                             <!-- address -->
                             <div class="mb-2 d-flex gap-1 flex-column flex-wrap w-100">
                                 <label>Address</label>
                                 <div class="input-field d-flex gap-2 flex-column flex-md-row">
                                     <input type="text" placeholder="Blk & Lot n Street" class="form-control py-0" name="street" id="blk_n_street" value="">
-                                    <small class="text-danger" id="street-error"></small>
+                                    <small class="text-danger edit-healthworker-info" id="street-error"></small>
                                     <div class="postal xl:w-[50%] flex-fill">
                                         <label for="postal">Postal Code</label>
                                         <input type="number" placeholder="Enter postal code" name="postal_code" id="postal_code" class="form-control" value="">
@@ -283,7 +287,7 @@
                                         <select name="region" id="region" class="form-select" data-selected="">
                                             <option value="" dissabled hidden>Select a region</option>
                                         </select>
-                                        <small class="text-danger" id="region-error"></small>
+                                        <small class="text-danger edit-healthworker-info" id="region-error"></small>
                                     </div>
                                     <!-- province -->
                                     <div class="mb-2 xl:w-[50%] flex-fill">
@@ -291,7 +295,7 @@
                                         <select name="province" id="province" class="form-select" disabled data-selected="">
                                             <option value="">Select a province</option>
                                         </select>
-                                        <small class="text-danger" id="province-error"></small>
+                                        <small class="text-danger edit-healthworker-info" id="province-error"></small>
                                     </div>
                                 </div>
 
@@ -303,7 +307,7 @@
                                         <select name="city" id="city" class="form-select" disabled data-selected="">
                                             <option value="">Select a city</option>
                                         </select>
-                                        <small class="text-danger" id="city-error"></small>
+                                        <small class="text-danger edit-healthworker-info" id="city-error"></small>
                                     </div>
                                     <!-- brgy -->
                                     <div class="mb-2 flex-fill">
@@ -311,7 +315,7 @@
                                         <select name="brgy" id="brgy" class="form-select" disabled data-selected="">
                                             <option value="">Select a brgy</option>
                                         </select>
-                                        <small class="text-danger" id="brgy-error"></small>
+                                        <small class="text-danger edit-healthworker-info" id="brgy-error"></small>
                                     </div>
                                 </div>
                             </div>
@@ -386,7 +390,7 @@
                                         <option value="IV.">IV</option>
                                         <option value="V.">V</option>
                                     </select>
-                                    <small class="text-danger" id="add_suffix_error"></small>
+                                    <small class="text-danger add-healthworker-error" id="add_suffix_error"></small>
                                 </div>
                             </div>
                             <small class="text-danger add-healthworker-error" id="first_name_error"></small>

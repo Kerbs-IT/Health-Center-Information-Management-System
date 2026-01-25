@@ -216,17 +216,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const fname = document.getElementById("first_name");
         const middle_initial = document.getElementById("middle_initial");
         const lname = document.getElementById("last_name");
+        const suffix = document.getElementById("add_suffix");
         const fullNameCon = document.getElementById(
             "prenatal_patient_full_name"
         );
 
         // it combines the value, removing the empty such as the middle initial
-        fullNameCon.value = [fname.value, middle_initial.value, lname.value]
+        fullNameCon.value = [fname.value, middle_initial.value, lname.value,suffix.value]
             .filter(Boolean) // removes empty strings
             .join(" ");
 
         // console.log(fullNameCon);
     });
+
+    // 2nd next 
+    const secondNext = document.getElementById("prenatal_2_next");
+    secondNext.addEventListener("click", (e) => {
+        const fname = document.getElementById("first_name");
+        const middle_initial = document.getElementById("middle_initial");
+        const lname = document.getElementById("last_name");
+        const suffix = document.getElementById("add_suffix");
+        const fullNameCon = document.getElementById(
+            "add_patient_pregnancy_plan_full_name"
+        );
+        const hiddenFullName = document.getElementById(
+            "hidden_add_patient_pregnancy_plan_full_name"
+        );
+
+        // it combines the value, removing the empty such as the middle initial
+        fullNameCon.value = [fname.value, middle_initial.value, lname.value,suffix.value]
+            .filter(Boolean) // removes empty strings
+            .join(" ");
+        // give teh hidden input value
+        hiddenFullName.value = [fname.value, middle_initial.value, lname.value,suffix.value]
+            .filter(Boolean) // removes empty strings
+            .join(" ");
+
+        // console.log(fullNameCon);
+    });
+    
 
     // for the signature
      const addPatientSignature = initSignatureCapture({

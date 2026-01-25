@@ -326,7 +326,7 @@
     </div>
     <div class="mb-3 w-100">
         <label for="signature_image" class="text-black">Date</label>
-        <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement">
+        <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement" min="1950-01-01" max="{{date('Y-m-d')}}">
         <small class="text-danger error-text" id="family_planning_date_of_acknowledgement_error"></small>
     </div>
 
@@ -374,7 +374,7 @@
     </div>
     <div class="mb-3 w-50">
         <label for="family_planning_date_of_acknowledgement_consent" class="text-black">Date</label>
-        <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement_consent" id="family_planning_date_of_acknowledgement_consent">
+        <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement_consent" id="family_planning_date_of_acknowledgement_consent" min="1950-01-01" max="{{date('Y-m-d')}}">
         <small class="text-danger error-text" id="family_planning_date_of_acknowledgement_consent_error"></small>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">

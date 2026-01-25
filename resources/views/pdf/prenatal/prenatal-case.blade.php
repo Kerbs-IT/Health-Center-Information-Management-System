@@ -3,241 +3,477 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Pre-Natal Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 5px;
+            /* Reduce from 15px */
+            position: relative;
+            min-height: 110px;
+            /* Reduce from 70px */
+        }
+
+
+
+        .header-content {
+            display: inline-block;
+            text-align: center;
+            padding-top: 5px;
+            /* Reduce from 10px */
+        }
+
+        .header h3 {
+            font-size: 20px;
+            /* Reduce from 13px */
+            margin: 0;
+            line-height: 1.1;
+            /* Tighten from 1.2 */
+            font-weight: bold;
+        }
+
+        .logo-left {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            /* Reduce from 50px */
+            height: 100px;
+            /* Reduce from 50px */
+        }
+
+        .logo-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 120px;
+            /* Reduce from 50px */
+            height: 100px;
+            /* Reduce from 50px */
+        }
+
+        .patient-info {
+            margin-bottom: 5px;
+            margin-top: 3px;
+            font-size: 11px;
+        }
+
+        .info-row {
+            margin-bottom: 0;
+            line-height: 1.5;
+            clear: both;
+            position: relative;
+            /* ADD THIS */
+        }
+
+        .right-field {
+            position: absolute;
+            /* CHANGE FROM float: right */
+            right: 0;
+            /* ADD THIS */
+            top: 0;
+            /* ADD THIS */
+            border-bottom: 1px solid #000;
+            padding: 0 5px;
+        }
+
+        .info-row label {
+            font-size: 11px;
+            font-weight: bold;
+            display: inline;
+            vertical-align: baseline;
+        }
+
+        .info-row span {
+            font-size: 11px;
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 150px;
+            padding: 0 5px;
+            vertical-align: baseline;
+        }
+
+        .inline-field {
+            display: inline-block;
+            margin-right: 15px;
+            vertical-align: baseline;
+        }
+
+
+        .ob-history {
+            margin: 10px 0;
+            font-size: 11px;
+        }
+
+        .ob-history label {
+            font-weight: bold;
+        }
+
+        .ob-values {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .ob-item {
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .ob-item span {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+            padding: 0 3px;
+        }
+
+        .philhealth {
+            display: inline-block;
+            margin-left: 30px;
+            font-size: 11px;
+        }
+
+        .philhealth-item {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #000;
+            padding: 4px;
+        }
+
+        table th {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .main-table th {
+            text-align: center;
+            font-size: 12px;
+            padding: 3px;
+        }
+
+        .main-table td {
+            text-align: center;
+            font-size: 12px;
+            padding: 3px;
+        }
+
+        .detail-table th {
+            width: 30%;
+            text-align: left;
+            background-color: #fff;
+            font-weight: bold;
+        }
+
+        .detail-table td {
+            text-align: left;
+        }
+
+        .section-header {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .combined-table {
+            margin-bottom: 0;
+        }
+
+        .combined-table td {
+            vertical-align: top;
+        }
+
+        .inner-table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .inner-table th {
+            background-color: #fff;
+        }
+
+        .date {
+            text-align: center;
+            margin: auto;
+        }
+    </style>
 </head>
 
 <body>
-    @vite([
-    'resources/css/app.css',
-    'resources/css/pdfTableTemplate.css'])
-    <div class="prenatal-con">
-        <div class="content d-flex justify-content-between w-100 align-items-center mb-3">
-            <img src="{{$treceLogo}}" class="pdf-logo">
-            <div class="text-content">
-                <h5 class="text-center fw-bold">CITH HEALTH OFFICE</h5>
-                <h5 class="text-center fw-bold">Trece Martires Cavite</h5>
-                <h5 class="text-center fw-bold">PRE-NATAL</h5>
-            </div>
-            <img src="{{ $DOHlogo }}" alt="logo" class="pdf-logo">
+    <div class="header">
+        <img src="{{$treceLogo}}" class="logo-left" alt="Trece Logo">
+        <div class="header-content">
+            <h3>CITY HEALTH OFFICE</h3>
+            <h3>Trece Martires Cavite</h3>
+            <h3>PRE - NATAL</h3>
         </div>
-        <div class="patient-info-con d-flex justify-content-between mb-2 gap-2">
-            <div class="w-50">
-                <div class="info-field">
-                    <label class="fw-bold">HEAD OF THE FAMILY: </label>
-                    <span>{{ $medicalRecord->prenatal_medical_record->family_head_name ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">NAME OF PATIENT:</label>
-                    <span>{{ $caseInfo-> patient_name ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">BIRTH DAY: </label>
-                    <span>{{$medicalRecord->patient->date_of_birth?->format('m-d-Y') ?? 'N/A' }}</span>
-                    <label class="fw-bold">RELIGION: </label>
-                    <span>{{$medicalRecord->prenatal_medical_record->religion ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">COMPLETE ADDRESS: </label>
-                    <span>{{ $address?? 'N/A' }}</span>
-                </div>
-            </div>
-            <div class="w-50">
-                <div class="info-field">
-                    <label class="fw-bold">FAMILY SERIAL NO: </label>
-                    <span>{{ $medicalRecord->prenatal_medical_record->family_serial_no?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">AGE:</label>
-                    <span>{{ $medicalRecord->patient->age?? 'N/A'}}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">CIVIL STATUS:</label>
-                    <span>{{$medicalRecord->patient->civil_status?? 'N/A'}}</span>
-                </div>
-                <div class="info-field">
-                    <label class="fw-bold">CONTACT NO:</label>
-                    <span>{{ $medicalRecord->patient->contact_no?? 'N/A' }}</span>
-                </div>
-            </div>
-
-        </div>
-        <div class="mb-2 w-100 d-flex gap-3">
-            <!-- OB HISTORY Section -->
-            <div class="info-field w-50">
-                <label class="fw-bold mb-2">OB HISTORY:</label>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">G: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->G??0}}</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">P: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->P??0}}</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">T: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->T??0}}</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">P: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->premature??0}}</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">A: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->abortion??0}}</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <label class="mb-0 fw-bold me-1" style="min-width: 15px;">L: </label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 30px;">{{$caseInfo->living_children??0}}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PHILHEALTH Section -->
-            <div class="info-field w-50">
-                <label class="fw-bold mb-2">PHILHEALTH:</label>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center">
-                        <span>Yes</span>
-                        <span class="ms-1">({{ $medicalRecord->prenatal_medical_record->philHealth_number != null ? '✓' : '' }})</span>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-1">
-                        <label class="mb-0">Number:</label>
-                        <span class="border-bottom border-dark px-2" style="min-width: 120px;">
-                            {{ $medicalRecord->prenatal_medical_record->philHealth_number ?? '' }}
-                        </span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <span>No</span>
-                        <span class="ms-1">({{ $medicalRecord->prenatal_medical_record->philHealth_number == null ? '✓' : '' }})</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <table class="table table-bordered">
-            <thead class="table-secondary text-center table-header">
-                <tr>
-                    <th>Year of Pregnancy</th>
-                    <th>Type of Delivery</th>
-                    <th>Place</th>
-                    <th>Attendant</th>
-                    <th>Complication</th>
-                    <th>Outcome</th>
-                </tr>
-            </thead>
-            <tbody id="pregnancy_history_body">
-                @forelse($caseInfo->pregnancy_timeline_records as $record)
-                <tr class="text-center">
-                    <td>{{$record->year??''}}</td>
-                    <td>{{$record->type_of_delivery??''}}</td>
-                    <td>{{$record->place_of_delivery??''}}</td>
-                    <td>{{$record->birth_attendant??''}}</td>
-                    <td>{{$record->complication??''}}</td>
-                    <td>{{$record->outcome??''}}</td>
-                </tr>
-                @empty
-                <td colspan="12" class="text-center">No record available</td>
-                @endforelse
-            </tbody>
-        </table>
-        <table class="table table-bordered">
-            <thead class="table-secondary text-center table-header">
-                <tr>
-                    <th colspan="2">Subjective Info</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>LMP</th>
-                    <td id="lmp_value">{{$caseInfo->LMP??''}}</td>
-                </tr>
-                <tr>
-                    <th>Expected Delivery</th>
-                    <td id="expected_delivery_value">{{$caseInfo->expected_delivery??''}}</td>
-                </tr>
-                <tr>
-                    <th>Menarche</th>
-                    <td id="menarche_value">{{$caseInfo->menarche??''}}</td>
-                </tr>
-                <tr>
-                    <th>TT1</th>
-                    <td id="tt1_value">{{$caseInfo->tetanus_toxoid_1??''}}</td>
-                </tr>
-                <tr>
-                    <th>TT2</th>
-                    <td id="tt2_value">{{$caseInfo->tetanus_toxoid_2??''}}</td>
-                </tr>
-                <tr>
-                    <th>TT3</th>
-                    <td id="tt3_value">{{$caseInfo->tetanus_toxoid_3??''}}</td>
-                </tr>
-                <tr>
-                    <th>TT4</th>
-                    <td id="tt4_value">{{$caseInfo->tetanus_toxoid_4??''}}</td>
-                </tr>
-                <tr>
-                    <th>TT5</th>
-                    <td id="tt5_value">{{$caseInfo->tetanus_toxoid_5??''}}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table class="table table-bordered">
-            <thead class="table-secondary text-center table-header">
-                <tr>
-                    <th colspan="2">Assessment</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>Spotting</th>
-                    <td id="spotting_value">{{$caseInfo->prenatal_assessment->spotting??''}}</td>
-                </tr>
-                <tr>
-                    <th>Edema</th>
-                    <td id="edema_value">{{$caseInfo->prenatal_assessment->edema??''}}</td>
-                </tr>
-                <tr>
-                    <th>Severe Headache</th>
-                    <td id="severe_headache_value">{{$caseInfo->prenatal_assessment->severe_headache??''}}</td>
-                </tr>
-                <tr>
-                    <th>Blurring of Vision</th>
-                    <td id="blurring_of_vission_value">{{$caseInfo->prenatal_assessment->blumming_vission??''}}</td>
-                </tr>
-                <tr>
-                    <th>Watery Discharge</th>
-                    <td id="water_discharge_value">{{$caseInfo->prenatal_assessment->water_discharge??''}}</td>
-                </tr>
-                <tr>
-                    <th>Severe Vomiting</th>
-                    <td id="severe_vomiting_value">{{$caseInfo->prenatal_assessment->severe_vomitting??''}}</td>
-                </tr>
-                <tr>
-                    <th>Hx of Smoking</th>
-                    <td id="smoking_value">{{$caseInfo->prenatal_assessment->hx_smoking??''}}</td>
-                </tr>
-                <tr>
-                    <th>Alcohol Drinker</th>
-                    <td id="alcohol_drinker_value">{{$caseInfo->prenatal_assessment->alchohol_drinker??''}}</td>
-                </tr>
-                <tr>
-                    <th>Drug Intake</th>
-                    <td id="drug_intake_value">{{$caseInfo->prenatal_assessment->drug_intake??''}}</td>
-                </tr>
-            </tbody>
-        </table>
-
+        <img src="{{$DOHlogo}}" class="logo-right" alt="DOH Logo">
     </div>
+
+    <div class="patient-info">
+        <div class="info-row">
+            <div style="display: inline-block;">
+                <label>HEAD OF THE FAMILY:</label>
+                <span style="min-width: 250px;">{{ $medicalRecord->prenatal_medical_record->family_head_name ?? '' }}</span>
+            </div>
+            <div style="display: inline-block; width: 35%; text-align: left;">
+                <label>FAMILY SERIAL NO:</label>
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 100px;">{{ $medicalRecord->prenatal_medical_record->family_serial_no ?? '' }}</span>
+            </div>
+        </div>
+        <div class="info-row">
+            <div style="display: inline-block; ">
+                <label>NAME OF PATIENT:</label>
+                <span style="min-width: 280px;">{{ $caseInfo->patient_name ?? '' }}</span>
+            </div>
+            <div style="display: inline-block; width: 29%; text-align: left;">
+                <label>AGE:</label>
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 40px;">{{ $medicalRecord->patient->age ?? '' }}</span>
+            </div>
+        </div>
+        <div class="info-row">
+            <div style="display: inline-block; ">
+                <label>BIRTHDAY:</label>
+                <span style="min-width: 100px;">{{ $medicalRecord->patient->date_of_birth?->format('m-d-Y') ?? '' }}</span>
+                <label style="margin-left: 20px;">RELIGION:</label>
+                <span style="min-width: 80px;">{{ $medicalRecord->prenatal_medical_record->religion ?? '' }}</span>
+            </div>
+            <div style="display: inline-block; width: 29%; text-align: left;">
+                <label>CIVIL STATUS:</label>
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 60px;">{{ $medicalRecord->patient->civil_status ?? '' }}</span>
+            </div>
+        </div>
+        <div class="info-row">
+            <div style="display: inline-block; ">
+                <label>COMPLETE ADDRESS:</label>
+                <span style="min-width: 300px;">{{ $address ?? '' }}</span>
+            </div>
+            <div style="display: inline-block; width: 30%; text-align: left;">
+                <label>CONTACT NO:</label>
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 80px;">{{ $medicalRecord->patient->contact_number ?? '' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ob-history">
+        <label>OB HISTORY:</label>
+        <div class="ob-values">
+            <span class="ob-item">G <span>{{ $caseInfo->G ?? 0 }}</span></span>
+            <span class="ob-item">P <span>{{ $caseInfo->P ?? 0 }}</span></span>
+            <span class="ob-item">(T <span>{{ $caseInfo->T ?? 0 }}</span></span>
+            <span class="ob-item">P <span>{{ $caseInfo->premature ?? 0 }}</span></span>
+            <span class="ob-item">A <span>{{ $caseInfo->abortion ?? 0 }}</span></span>
+            <span class="ob-item">L <span>{{ $caseInfo->living_children ?? 0 }}</span>)</span>
+        </div>
+        <div class="philhealth">
+            <label>PHILHEALTH:</label>
+            <span class="philhealth-item">Yes ( {{ $medicalRecord->prenatal_medical_record->philHealth_number != null ? '/' : '' }} )</span>
+            <span class="philhealth-item">Number: <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 100px; padding: 0 5px;">{{ $medicalRecord->prenatal_medical_record->philHealth_number ?? '' }}</span></span>
+            <span class="philhealth-item">No ( {{ $medicalRecord->prenatal_medical_record->philHealth_number == null ? '/' : '' }} )</span>
+        </div>
+    </div>
+
+    <table class="main-table">
+        <thead>
+            <tr>
+                <th>YEAR OF<br>PREGNANCY</th>
+                <th>TYPE OF<br>DELIVERY</th>
+                <th>PLACE OF<br>DELIVERY</th>
+                <th>BIRTH<br>ATTENDANT</th>
+                <th>COMPLICATION</th>
+                <th>OUTCOME OF PREGNANCY</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+            $records = $caseInfo->pregnancy_timeline_records ?? collect();
+            $recordCount = $records->count();
+            $emptyRows = 9 - $recordCount;
+            @endphp
+
+            @foreach($records as $record)
+            <tr>
+                <td>{{ $record->year ?? '' }}</td>
+                <td>{{ $record->type_of_delivery ?? '' }}</td>
+                <td>{{ $record->place_of_delivery ?? '' }}</td>
+                <td>{{ $record->birth_attendant ?? '' }}</td>
+                <td>{{ $record->complication ?? '' }}</td>
+                <td>{{ $record->outcome ?? '' }}</td>
+            </tr>
+            @endforeach
+
+            @for($i = 0; $i < $emptyRows; $i++)
+                <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                </tr>
+                @endfor
+        </tbody>
+    </table>
+
+    <table class="combined-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">DATE</th>
+                <th style="width: 20%;">SUBJECTIVE</th>
+                <th style="width: 20%;">OBJECTIVE</th>
+                <th style="width: 25%;">ASSESSMENT</th>
+                <th style="width: 25%;">PLANNING</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="20" style="vertical-align: top;" class="date"> {{$caseInfo->created_at ??''}}</td>
+                <td>PNCU-1<sup>st</sup> time</td>
+                <td>BP: {{$caseInfo -> blood_pressure?? '' }}</td>
+                <td>AOG</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>G P (T P A L)</td>
+                <td>WT: {{$caseInfo -> weight?$caseInfo -> weight. ' kg': '' }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>HT: {{$caseInfo -> height?$caseInfo -> height. ' cm': '' }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>LMP: {{ $caseInfo->LMP ?? '' }}</td>
+                <td>Temp:{{ $caseInfo->temperature?$caseInfo->temperature. '°C' :'' }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>EDC: {{ $caseInfo->expected_delivery ?? '' }}</td>
+                <td>RR: {{$caseInfo -> respiratory_rate? $caseInfo -> respiratory_rate: '' }}</td>
+                <td>({{$caseInfo->prenatal_assessment->spotting == 'yes'?'/':''}}) spotting</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Menarche: {{ $caseInfo->menarche ?? ' ' }}</td>
+                <td>PR: {{$caseInfo -> pulse_rate?$caseInfo -> pulse_rate : '' }}</td>
+                <td>({{$caseInfo->prenatal_assessment->edema == 'yes'?'/':' '}}) edema</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT status:</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->severe_headache == 'yes'?'/':' '}}) severe headache</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT1: {{ $caseInfo->tetanus_toxoid_1 ?? '' }}</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->blumming_vission == 'yes'?'/':' '}}) blurring of vision</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT2: {{ $caseInfo->tetanus_toxoid_2 ?? '' }}</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->water_discharge == 'yes'?'/':' '}}) watery discharge</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT3: {{ $caseInfo->tetanus_toxoid_3 ?? '' }}</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->severe_vomitting == 'yes'?'/':' '}}) severe vomiting</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT4: {{ $caseInfo->tetanus_toxoid_4 ?? '' }}</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->hx_smoking == 'yes'?'/':' '}}) Hx of smoking</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TT5: {{ $caseInfo->tetanus_toxoid_5 ?? '' }}</td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->alchohol_drinker == 'yes'?'/':' '}}) Alcoholic drinker</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->drug_intake == 'yes'?'/':' '}}) Drug Intake</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Check up to other health<br>facility</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Date:</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>

@@ -2,11 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Models\brgy_unit;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
 use App\Models\PatientRecord;
 use App\Models\patients;
+use App\Models\staff;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PatientAccountBinding extends Component
@@ -25,27 +28,62 @@ class PatientAccountBinding extends Component
 
     public function render()
     {
-        $users = User::where('role', 'patient')
-            ->where('status', '!=', 'archived')  // <-- Move this OUTSIDE
-            ->where(function ($query) {
-                $query->where('first_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
-                   
-            })
-            ->when($this->filterStatus === 'bound', function ($query) {
-                $query->whereNotNull('patient_record_id');
-            })
-            ->when($this->filterStatus === 'unbound', function ($query) {
-                $query->whereNull('patient_record_id');
-            })
-            ->orderBy('created_at', 'desc')
+        // Build the base query
+        $query = User::where('role', 'patient')
+            ->where('status', '!=', 'archived');
+
+        // Add restriction if the user is staff
+        if (Auth::user()->role == 'staff') {
+            $userId = Auth::user()->id;
+            $staffInfo = Staff::where("user_id", $userId)->first();
+
+            if ($staffInfo && $staffInfo->assigned_area_id) {
+                $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
+
+                // Join with user_addresses to filter by purok
+                $query->join('users_addresses', 'users.id', '=', 'users_addresses.user_id')
+                    ->where('users_addresses.purok', $assignedArea->brgy_unit)
+                    ->select('users.*');
+            }
+        }
+
+        // Apply search filter
+        $query->where(function ($q) {
+            $q->where('first_name', 'like', '%' . $this->search . '%')
+                ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                ->orWhere('email', 'like', '%' . $this->search . '%');
+        });
+
+        // Apply status filters
+        $query->when($this->filterStatus === 'bound', function ($q) {
+            $q->whereNotNull('patient_record_id');
+        });
+
+        $query->when($this->filterStatus === 'unbound', function ($q) {
+            $q->whereNull('patient_record_id');
+        });
+
+        // Execute the query with pagination
+        $users = $query->orderBy('users.created_at', 'desc')
             ->paginate(15);
 
-        $unboundCount = User::where('role', 'patient')
-            ->where('status', '!=', 'archived')  // <-- Add here too
-            ->whereNull('patient_record_id')
-            ->count();
+        // Count unbound patients (apply same staff restriction)
+        $unboundQuery = User::where('role', 'patient')
+            ->where('status', '!=', 'archived')
+            ->whereNull('patient_record_id');
+
+        if (Auth::user()->role == 'staff') {
+            $userId = Auth::user()->id;
+            $staffInfo = Staff::where("user_id", $userId)->first();
+
+            if ($staffInfo && $staffInfo->assigned_area_id) {
+                $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
+                $unboundQuery->join('users_addresses', 'users.id', '=', 'users_addresses.user_id')
+                    ->where('users_addresses.purok', $assignedArea->brgy_unit);
+            }
+        }
+
+        $unboundCount = $unboundQuery->count();
 
         return view('livewire.patient-account-binding', [
             'users' => $users,
@@ -63,7 +101,7 @@ class PatientAccountBinding extends Component
 
     public function searchRecords()
     {
-        $this->patientRecords = patients::whereNull('user_id')
+        $baseQuery = patients::whereNull('user_id')
             ->where('status', '!=', 'Archived')
             ->where(function ($query) {
                 $searchTerm = str_replace(' ', '%', $this->recordSearch);
@@ -74,9 +112,62 @@ class PatientAccountBinding extends Component
                     ->orWhere('full_name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('id', 'like', '%' . trim($this->recordSearch) . '%')
                     ->orWhere('contact_number', 'like', '%' . $this->recordSearch . '%');
-            })
-            ->limit(20)
-            ->get();
+            });
+        // Add staff restriction
+        if (Auth::user()->role == 'staff') {
+            $staffId = Auth::id();
+
+            // Get all patient IDs that this staff member has worked with
+            $patientIds = collect();
+
+            // Collect patient IDs from vaccination records
+            $patientIds = $patientIds->merge(
+                DB::table('vaccination_medical_records')
+                    ->join('medical_record_cases', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('vaccination_medical_records.health_worker_id', $staffId)
+                    ->pluck('medical_record_cases.patient_id')
+            );
+
+            // Collect from prenatal records
+            $patientIds = $patientIds->merge(
+                DB::table('prenatal_medical_records')
+                    ->join('medical_record_cases', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('prenatal_medical_records.health_worker_id', $staffId)
+                    ->pluck('medical_record_cases.patient_id')
+            );
+
+            // Collect from TB DOTS records
+            $patientIds = $patientIds->merge(
+                DB::table('tb_dots_medical_records')
+                    ->join('medical_record_cases', 'tb_dots_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('tb_dots_medical_records.health_worker_id', $staffId)
+                    ->pluck('medical_record_cases.patient_id')
+            );
+
+            // Collect from senior citizen records
+            $patientIds = $patientIds->merge(
+                DB::table('senior_citizen_medical_records')
+                    ->join('medical_record_cases', 'senior_citizen_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('senior_citizen_medical_records.health_worker_id', $staffId)
+                    ->pluck('medical_record_cases.patient_id')
+            );
+
+            // Collect from family planning records
+            $patientIds = $patientIds->merge(
+                DB::table('family_planning_medical_records')
+                    ->join('medical_record_cases', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('family_planning_medical_records.health_worker_id', $staffId)
+                    ->pluck('medical_record_cases.patient_id')
+            );
+
+            // Get unique patient IDs
+            $uniquePatientIds = $patientIds->unique()->values();
+
+            // Filter patients by these IDs
+            $baseQuery->whereIn('id', $uniquePatientIds);
+        }
+
+        $this->patientRecords = $baseQuery->limit(20)->get();
     }
 
     public function bind()

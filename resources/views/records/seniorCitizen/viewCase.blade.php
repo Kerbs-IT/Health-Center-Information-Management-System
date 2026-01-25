@@ -39,7 +39,7 @@
                     </table>
                 </div>
                 <!-- table -->
-                 <div class="table-responsive">
+                <div class="table-responsive">
                     <table class="w-100 table">
                         <thead>
                             <tr class="table-header">
@@ -60,9 +60,9 @@
                             </tr> -->
                         </tbody>
                     </table>
-                 </div>
+                </div>
                 <!-- nurse -->
-                 <div class="table-responsive">
+                <div class="table-responsive">
                     <table class="table table-bordered">
                         <tr>
                             <td colspan="2" class="w-25 fw-semibold bg-light">Prescribe by:</td>
@@ -72,8 +72,12 @@
                             <td colspan="2" class="bg-light">Remarks</td>
                             <td colspan="5" id="view_remarks">none</td>
                         </tr>
+                        <tr>
+                            <td colspan="2" class="bg-light">Date of Comeback</td>
+                            <td colspan="5" id="view_date_of_comeback">none</td>
+                        </tr>
                     </table>
-                 </div>
+                </div>
             </div>
         </div>
     </div>

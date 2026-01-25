@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
+
 </head>
 
 <body>
@@ -29,9 +30,9 @@
                     <div class="container py-4">
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h2><strong>📬 Notifications</strong></h2>
-                                    <div>
+                                <div class="nofication-header d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                                    <h2><strong>📬</strong>Notifications</h2>
+                                    <div class="d-flex flex-wrap ms-auto gap-1">
                                         <button type="button" class="btn btn-outline-primary btn-sm mark-all-as-read-btn">
                                             ✓ Mark All as Read
                                         </button>

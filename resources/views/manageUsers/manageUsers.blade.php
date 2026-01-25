@@ -107,6 +107,10 @@
                                             <small class="text-muted d-block" id="fileName">No file chosen</small>
                                             <small class="text-danger d-block" id="image-error"></small>
                                         </div>
+                                        <div class="input-fieldxl:w-[50%] flex-fill">
+
+                                            <button type="button" class="btn btn-danger text-white px-2 py-2 flex-grow-1 fs-6" id="reset_password">Reset Password</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -162,7 +166,7 @@
 
                                     <div class="col-12 col-md-12">
                                         <label for="contact_num" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                                        <input type="number" placeholder="+63-936-627-8671" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
+                                        <input type="number" placeholder="Enter your contact number" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
                                         <small class="text-danger" id="contact-error"></small>
                                     </div>
 
@@ -178,6 +182,7 @@
                                     </div>
                                 </div>
 
+
                                 <!-- Address -->
                                 <div class="mb-3">
                                     <label class="form-label">Patient Address</label>
@@ -191,7 +196,7 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Puroks<span class="text-danger">*</span></label>
-                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
 
@@ -284,7 +289,7 @@
                         </div>
                         <div class="mb-2 w-100">
                             <label for="contact_number" class="mb-1 ">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" placeholder="Enter your email" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
+                            <input type="text" placeholder="Enter your contact number" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
 
                             <small class="text-danger error-element contact_number_error"></small>
 
@@ -333,7 +338,7 @@
                                 </div>
                                 <div class="items w-full lg:w-[50%]">
                                     <label for="patient_purok_dropdown">Puroks<span class="text-danger">*</span></label>
-                                    <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" required>
+                                    <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
                                         <option value="" selected disabled>Select a purok</option>
                                     </select>
 

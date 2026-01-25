@@ -6,6 +6,7 @@ use App\Models\medical_record_cases;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,7 +21,14 @@ class RecordsTable extends Component
     public $search = '';
 
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
+    public $start_date;
+    public $end_date;
 
+    public function mount()
+    {
+        $this->start_date = Carbon::now()->subYear()->startOfYear()->format('Y-m-d');
+        $this->end_date   = Carbon::now()->subYear()->endOfYear()->format('Y-m-d');
+    }
     // dont forget this for changes in the show entries
     public function updatingEntries()
     {
@@ -41,6 +49,13 @@ class RecordsTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+    #[On('dateRangeChanged')]
+    public function updateDateRange($start_date, $end_date)
+    {
+        $this->start_date = $start_date;
+        $this->end_date = $end_date;
+        $this->resetPage(); // Reset to first page when filtering
+    }
     public function render()
     {
         $tbRecords =  medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
@@ -53,6 +68,8 @@ class RecordsTable extends Component
                 $query->join('tb_dots_medical_records', 'tb_dots_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('tb_dots_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $this->start_date)
+            ->whereDate('patients.created_at', '<=', $this->end_date)
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->entries);
 
@@ -81,6 +98,8 @@ class RecordsTable extends Component
             'search' => $this->search,              // Sends "Maria"
             'sortField' => $this->sortField,        // Sends "full_name"
             'sortDirection' => $this->sortDirection,
+            'startDate' => $this->start_date,
+            'endDate' => $this->end_date,
             'entries' => $this->entries, // Sends "desc"
         ]);
     }

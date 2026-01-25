@@ -8,7 +8,7 @@
     <h4>MEDICAL INFORMATION</h4>
     <div class="mb-md-2 mb-1 d-flex gap-md-2 gap-1 w-100 flex-wrap flex-xl-nowrap">
         <div class="mb-2 flex-fill xl:w-[50%]">
-            <label for="add_tb_tb-type">Type of Tuberculosis(TB):</label>
+            <label for="add_tb_tb-type">Type of Tuberculosis(TB)<span class="text-danger">*</span></label>
             <select id="add_tb_type_of_tuberculosis" name="add_tb_type_of_tuberculosis" class="form-select">
                 <option value="">-- Select Type --</option>
                 <option value="pulmonary">Pulmonary TB</option>
@@ -43,7 +43,7 @@
             <small class="text-danger error-text" id="add_tb_type_of_tb_case_error"></small>
         </div>
         <div class="mb-md-2 mb-1 flex-fill xl:w-[50%]">
-            <label for="add_tb_date_of_diagnosis">Date of Diagnosis</label>
+            <label for="add_tb_date_of_diagnosis">Date of Diagnosis<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="add_tb_date_of_diagnosis" id="add_tb_date_of_diagnosis" min="1950-01-01" max="{{date('Y-m-d')}}">
             <small class="text-danger error-text" id="add_tb_date_of_diagnosis_error"></small>
         </div>
@@ -168,7 +168,7 @@
     <!-- monitoring progress -->
     <div class="mb-md-2 mb-1 d-flex gap-2 flex-wrap flex-md-nowrap">
         <div class="mb-md-2 mb-1 w-[100%] md:w-[50%]">
-            <label for="add_tb_date_of_diagnosis">Date of Diagnosis</label>
+            <label for="add_tb_date_of_diagnosis">Date of Diagnosis<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="add_tb_date_administered" id="add_tb_date_administered" min="1950-01-01" max="{{date('Y-m-d')}}">
             <small class="text-danger error-text" id="add_tb_date_administered_error"></small>
         </div>

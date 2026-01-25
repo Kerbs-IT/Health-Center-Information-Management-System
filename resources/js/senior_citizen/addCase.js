@@ -3,6 +3,13 @@ import Swal from "sweetalert2";
 // add medicine to the container
 const addRecordBtn = document.getElementById("add_record_btn");
 
+if (addRecordBtn) {
+    addRecordBtn.addEventListener("click", () => {
+        const errors = document.querySelectorAll(".error-text");
+        errors.forEach((error) => (error.innerHTML = ""));
+    });
+}
+
 const addBTN = document.getElementById("add-record-btn");
 const addTableBody = document.getElementById("add-record-body");
 if (addBTN) {

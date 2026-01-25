@@ -93,7 +93,7 @@
 
                     <!-- Legend -->
                     <!-- Legend -->
-                    <div class="map-legend">
+                    <div class="map-legend-content ">
                         <h3>Patient Density(Per Purok)</h3>
                         <div class="legend-item">
                             <span class="legend-color" style="background: rgba(0, 255, 0, 0.6);"></span>
@@ -111,6 +111,9 @@
                             <span class="legend-color" style="background: rgba(255, 0, 0, 0.9);"></span>
                             <span>Very High (5K-10K)</span>
                         </div>
+                    </div>
+                    <div class="map-legend cursor-pointer bg-success d-flex align-items-center justify-content-center" style="width:20px;height:20px;border-radius:50%;">
+                        <i class="fa-solid fa-info text-white"></i>
                     </div>
 
 

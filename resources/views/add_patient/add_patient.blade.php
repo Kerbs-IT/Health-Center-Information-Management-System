@@ -29,7 +29,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex  flex-column overflow-x-auto">
+        <div class="flex-grow-1 d-flex  flex-column">
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info overflow-x-auto">
 
@@ -101,7 +101,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field w-50">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="trece martires city" class="form-control" name="place_of_birth" value="">
+                                            <input type="text" id="place_of_birth" placeholder="Enter place of birth" class="form-control" name="place_of_birth" value="">
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
                                         </div>
 
@@ -132,13 +132,13 @@
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="contact_number" class="">Contact Number</label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="">
+                                            <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
+                                            <input type="number" placeholder="Enter your phone number" class="form-control" name="contact_number" value="">
                                             <small class="text-danger error-text" id="contact_number_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="">
                                             <small class="text-danger error-text" id="nationality_error"></small>
                                         </div>
 
@@ -153,8 +153,8 @@
                                         <!-- administered by -->
                                         @if(Auth::user()->role == 'nurse')
                                         <div class="mb-2 flex-fill xl:w-[50%] ">
-                                            <label for="brgy">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select ">
+                                            <label for="handled_by">Handled by <span class="text-muted">(healthworker name)</span><span class="text-danger">*</span></label>
+                                            <select name="handled_by" id="handled_by" class="form-select " data-is-health-worker="{{Auth::user()->role='staff'?true:false}}">
                                                 <option value="" disabled selected>Select a person</option>
                                                 @foreach($healthworkers as $worker)
                                                 <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>
@@ -412,17 +412,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" name="blood_pressure" id="add_patient_blood_pressure">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
-                                                <label for="BP">Temperature:</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature">
+                                                <label for="BP">Temperature(°C):</label>
+                                                <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" id="add_patient_temperature">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-md-2 mb-1 flex-fill">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" name="pulse_rate" id="add_patient_pulse_rate">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -431,17 +431,17 @@
                                         <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" name="respiratory_rate" id="add_patient_respiratory_rate">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" id="add_patient_height">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight">
+                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight" id="add_patient_weight">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>
@@ -578,7 +578,7 @@
                             @include('add_patient.prenatal')
                             <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
                                 <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
-                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()">Next</button>
+                                <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()" id="prenatal_2_next">Next</button>
                             </div>
 
                         </div>

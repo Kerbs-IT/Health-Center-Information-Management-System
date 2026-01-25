@@ -3,9 +3,9 @@
 </form>
 <div class="menu-bar  min-vh-100">
     <!-- Close button for mobile/tablet -->
-     <div class="w-100 d-flex justify-content-end mt-3">
-      <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
-     </div>
+    <div class="w-100 d-flex justify-content-end mt-3">
+        <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
+    </div>
 
     <div class="logo-con d-flex justify-content-center mb-1 px-3 ">
         <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
@@ -97,7 +97,7 @@
 
         <!-- Records -->
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
-            <a href="#" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2">
+            <a href="#" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="records-menu">
                 <div class="menu-text d-flex align-items-center my-auto gap-3 ">
                     <i class="fa-solid fs-5 fa-folder-open"></i>
                     <h4 class="mb-0 fs-6">Records</h4>
