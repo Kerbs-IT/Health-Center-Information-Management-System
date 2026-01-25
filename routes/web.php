@@ -40,6 +40,7 @@ use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
+use App\Http\Controllers\InventoryReportController;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -502,11 +503,7 @@ Route::get( '/inventory', function(){
     return view('inventory_system.inventory');
 }) -> name('inventory');
 
-// Inventory Route
-Route::get('inventory/categories', CategoriesTable::class)->name('categories');
-Route::get('inventory/medicines', Medicines::class)->name('medicines');
 
-Route::get('inventory/report',InventoryReport::class)->name('inventory-report');
 
 // GENERATE THE RECORD
 Route::get('/vaccination/records/pdf', [PdfController::class, 'generateVaccinationPdf'])
@@ -522,14 +519,32 @@ Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamil
 
 
     // LOUIE'S CHANGES
+Route::middleware(['role:nurse,staff'])->group(function(){
+
+    // Inventory Route
+    // Route to categories
+    Route::get('/categories', CategoriesTable::class)->name('categories');
+    // Route to medicines
+    Route::get('/medicines', Medicines::class)->name('medicines');
+
+    // Route to report
+    Route::get('/report',InventoryReport::class)->name('inventory-report');
+
+    // Route to manage medicine request
+    Route::get('/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
+
+    // Route to logs
+    Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
+
+    Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
+    Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
+
+});
 
 Route::get('/medicineRequest', MedicineRequestComponent::class)->name('medicineRequest');
 
 
-Route::get('inventory/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
 
-
-Route::get('inventory/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
 // family planning side a
 Route::get("/family-planning/side-a/pdf",[PdfController::class, 'generateFamilyPlanningSideAPdf'])->name('family-planning-side-a.pdf');
 Route::get("/family-planning/side-b/pdf", [PdfController::class, 'generateFamilyPlanningSideBPdf'])->name('family-planning-side-b.pdf');
@@ -599,3 +614,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);
 
 Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
+
+

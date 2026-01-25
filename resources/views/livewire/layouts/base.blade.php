@@ -24,6 +24,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     @vite(['resources/css/app.css',
         'resources/js/app.js',
         'resources/js/menudropdown.js',
@@ -34,25 +37,28 @@
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
         'resources/css/inventory_system/inventory-report.css',
+        'resources/js/inventory-report-pdf.js'
     ])
 
     @livewireStyles
 
     <style>
-        .page-item.active .page-link {
-            background-color: #ff8fb1;
-            border-color: #ff8fb1;
-        }
-        .page-link {
-            color: #d6336c;
-        }
-        .page-link:hover {
-            background-color: #ffd6e0;
-        }
+    .page-item.active .page-link {
+        background-color: var(--secondaryColor) !important;
+        border-color: var(--primaryColor) !important;
+        color: white !important; /* Add text color for active state */
+    }
+    .page-link {
+        color: var(--secondaryColor) !important;
+    }
+    .page-link:hover {
+        background-color: var(--primaryColor) !important;
+    }
+
     </style>
 </head>
 <body>
-    <div class="min-vh-100 d-flex">
+    <div class="vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
         </aside>

@@ -79,7 +79,8 @@ class ManageMedicineRequests extends Component
             ->get();
     }
 
-    public function createWalkIn(){
+    public function createWalkIn()
+    {
         $this->validate();
 
         DB::transaction(function () {
@@ -106,12 +107,9 @@ class ManageMedicineRequests extends Component
                 'stock_status' => $newStockStatus
             ]);
 
-            // Prepare request data - STORE MEDICINE DETAILS
+            // Prepare request data
             $requestData = [
                 'medicine_id' => $this->walkInMedicineId,
-                'medicine_name' => $medicine->medicine_name,        // Store medicine name
-                'medicine_dosage' => $medicine->dosage,             // Store dosage
-                'medicine_type' => $medicine->type,                 // Store type
                 'quantity_requested' => $this->walkInQuantity,
                 'reason' => $this->walkInReason,
                 'status' => 'completed',
@@ -146,7 +144,7 @@ class ManageMedicineRequests extends Component
 
         $this->resetWalkInForm();
         $this->dispatch('close-walkin-modal');
-        // session()->flash('message', 'Walk-in medicine dispensed successfully.');
+        session()->flash('message', 'Walk-in medicine dispensed successfully.');
     }
 
     public function resetWalkInForm()
@@ -177,8 +175,9 @@ class ManageMedicineRequests extends Component
     public function approve($requestId)
     {
         DB::transaction(function () use ($requestId) {
-
-            $request = MedicineRequest::with(['medicine', 'patients', 'user'])
+            $request = MedicineRequest::with(['medicine' => function($q) {
+                    $q->withTrashed(); // Include archived medicines
+                }, 'patients', 'user'])
                 ->lockForUpdate()
                 ->findOrFail($requestId);
 
@@ -187,21 +186,21 @@ class ManageMedicineRequests extends Component
                 return;
             }
 
-            // Check if medicine exists
-            if (!$request->medicine) {
-                session()->flash('error', 'Medicine not found. It may have been deleted.');
+            // Check if medicine is archived
+            if ($request->medicine && $request->medicine->trashed()) {
+                session()->flash('error', 'Cannot approve request - this medicine has been archived.');
                 return;
             }
 
-            if ($request->medicine->stock < $request->quantity_requested) {
+            if (!$request->medicine || $request->medicine->stock < $request->quantity_requested) {
                 session()->flash('error', 'Insufficient medicine stock.');
                 return;
             }
 
-            // deduct stock
+            // Deduct stock
             $request->medicine->decrement('stock', $request->quantity_requested);
 
-            // recalculate and update stock status
+            // Recalculate and update stock status
             $newStock = $request->medicine->fresh()->stock;
             $newStockStatus = $this->determineStockStatus($newStock);
 
@@ -209,15 +208,15 @@ class ManageMedicineRequests extends Component
                 'stock_status' => $newStockStatus
             ]);
 
-            // update status
+            // Update status
             $request->update([
                 'status' => 'completed',
             ]);
 
-            // Get requester name (from patient or user)
+            // Get requester name using the accessor
             $requesterName = $request->requester_name;
 
-            // create log for APPROVAL
+            // Create log for APPROVAL
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $requesterName,
@@ -230,6 +229,7 @@ class ManageMedicineRequests extends Component
                 'performed_at'        => now(),
             ]);
         });
+
         $this->dispatch('approve-modal');
         session()->flash('message', 'Medicine request approved successfully.');
     }
@@ -237,7 +237,9 @@ class ManageMedicineRequests extends Component
     public function reject($requestId)
     {
         DB::transaction(function () use ($requestId) {
-            $request = MedicineRequest::with(['medicine', 'patients', 'user'])
+            $request = MedicineRequest::with(['medicine' => function($q) {
+                    $q->withTrashed(); // Include archived medicines
+                }, 'patients', 'user'])
                 ->lockForUpdate()
                 ->findOrFail($requestId);
 
@@ -246,24 +248,20 @@ class ManageMedicineRequests extends Component
                 return;
             }
 
-            // update status
+            // Update status
             $request->update([
                 'status' => 'rejected',
             ]);
 
-            // Get requester name (from patient or user)
+            // Get requester name using the accessor
             $requesterName = $request->requester_name;
 
-            // Get medicine info (use stored values if medicine is deleted)
-            $medicineName = $request->medicine_name;
-            $medicineDosage = $request->medicine_dosage;
-
-            // create log for REJECTION
+            // Create log for REJECTION
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $requesterName,
-                'medicine_name'       => $medicineName,
-                'dosage'              => $medicineDosage,
+                'medicine_name'       => $request->medicine->medicine_name ?? 'Unknown',
+                'dosage'              => $request->medicine->dosage ?? 'N/A',
                 'quantity'            => $request->quantity_requested,
                 'action'              => 'rejected',
                 'performed_by_id'     => auth()->id(),
@@ -277,47 +275,66 @@ class ManageMedicineRequests extends Component
 
     public function viewDetails($requestId)
     {
-        $this->viewRequest = MedicineRequest::with(['medicine', 'patients', 'user'])
+        $this->viewRequest = MedicineRequest::with([
+                'medicine' => function($q) {
+                    $q->withTrashed(); // Include archived medicines
+                },
+                'patients',
+                'user'
+            ])
             ->findOrFail($requestId);
     }
 
-    public function getPendingCount(){
+    public function getPendingCount()
+    {
         return MedicineRequest::where('status', 'pending')->count();
     }
 
-    public function getCompletedCount(){
+    public function getCompletedCount()
+    {
         return MedicineRequest::where('status', 'completed')->count();
     }
 
-    public function getRejectedCount(){
+    public function getRejectedCount()
+    {
         return MedicineRequest::where('status', 'rejected')->count();
     }
 
-    public function getTotalCount(){
+    public function getTotalCount()
+    {
         return MedicineRequest::count();
     }
 
     public function render()
     {
-        $requests = MedicineRequest::with(['medicine', 'patients', 'user'])
+        $requests = MedicineRequest::query()
+            ->with([
+                'patients:id,first_name,middle_initial,last_name,suffix',
+                'user:id,first_name,middle_initial,last_name',
+                'medicine' => function($query) {
+                    $query->withTrashed();
+                }
+            ])
             ->when($this->search, function ($q) {
                 $q->where(function($query) {
-                    $query->whereHas('patients', fn ($p) =>
-                            $p->where('full_name', 'like', "%{$this->search}%")
-                        )
+                    $query->whereHas('patients', function($p) {
+                            $p->where('first_name', 'like', "%{$this->search}%")
+                              ->orWhere('last_name', 'like', "%{$this->search}%")
+                              ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name, ' ', IFNULL(suffix, '')) LIKE ?", ["%{$this->search}%"]);
+                        })
                         ->orWhereHas('user', fn ($u) =>
                             $u->whereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?", ["%{$this->search}%"])
                         )
-                        ->orWhereHas('medicine', fn ($m) =>
-                            $m->where('medicine_name', 'like', "%{$this->search}%")
-                        )
-                        ->orWhere('medicine_name', 'like', "%{$this->search}%"); // Search stored medicine name too
+                        ->orWhereHas('medicine', function($m) {
+                            $m->withTrashed()
+                              ->where('medicine_name', 'like', "%{$this->search}%");
+                        });
                 });
             })
             ->when($this->filterStatus, fn ($q) =>
                 $q->where('status', $this->filterStatus)
             )
-            ->latest()
+            ->latest('created_at')
             ->paginate($this->perPage);
 
         return view('livewire.manage-medicine-requests', compact('requests'))

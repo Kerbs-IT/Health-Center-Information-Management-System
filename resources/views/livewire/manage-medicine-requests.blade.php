@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <div class="m-3 p-5 shadow min-h-[70vh]">
+        <div class="m-3 p-lg-5 p-md-3 p-2 shadow min-h-[70vh]">
             {{-- Filters and Actions --}}
             <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
                 <div class="flex-fill">
@@ -58,7 +58,7 @@
 
             {{-- Statistics Cards --}}
             <div class="row mt-4 mb-3">
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6  mb-3">
                     <div class="card border-warning">
                         <div class="card-body text-center">
                             <h3 class="text-warning">{{ $this->getPendingCount() }}</h3>
@@ -66,7 +66,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6  mb-3">
                     <div class="card border-success">
                         <div class="card-body text-center">
                             <h3 class="text-success">{{ $this->getCompletedCount() }}</h3>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6  mb-3">
                     <div class="card border-danger">
                         <div class="card-body text-center">
                             <h3 class="text-danger">{{ $this->getRejectedCount() }}</h3>
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6  mb-3">
                     <div class="card border-primary">
                         <div class="card-body text-center">
                             <h3 class="text-primary">{{ $this->getTotalCount() }}</h3>
@@ -97,13 +97,13 @@
                 <table class="table table-hover" id="requestsTable">
                     <thead class="table-header">
                         <tr>
-                            <th class="text-center" scope="col">Patient Name</th>
-                            <th class="text-center" scope="col">Medicine</th>
-                            <th class="text-center" scope="col">Quantity</th>
-                            <th class="text-center" scope="col">Reason</th>
-                            <th class="text-center" scope="col">Status</th>
-                            <th class="text-center" scope="col">Date Requested</th>
-                            <th class="text-center" scope="col">Actions</th>
+                            <th class="text-center text-nowrap" scope="col">Patient Name</th>
+                            <th class="text-center text-nowrap" scope="col">Medicine</th>
+                            <th class="text-center text-nowrap" scope="col">Quantity</th>
+                            <th class="text-center text-nowrap" scope="col">Reason</th>
+                            <th class="text-center text-nowrap" scope="col">Status</th>
+                            <th class="text-center text-nowrap" scope="col">Date Requested</th>
+                            <th class="text-center text-nowrap" scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,11 +111,17 @@
                             <tr>
                                 <td class="text-center">{{ $request->requester_name }}</td>
                                 <td class="text-center">
-                                    {{-- Use accessor which prioritizes stored values --}}
-                                    <strong> {{$request->medicine_name ??''}}</strong><br>
-                                    <small class="text-muted">{{ $request->medicine_dosage }}</small>
-                                    @if(!$request->medicine)
-                                        <br><span class="badge bg-warning text-dark"><i class="fa-solid fa-archive me-1"></i>Archived</span>
+                                    @if($request->medicine)
+                                        <strong>{{ $request->medicine->medicine_name }}</strong>
+                                        @if($request->medicine->trashed())
+                                            <span class="badge bg-secondary text-white ms-1" title="This medicine has been archived">
+                                                <i class="fa-solid fa-archive"></i> Archived
+                                            </span>
+                                        @endif
+                                        <br>
+                                        <small class="text-muted">{{ $request->medicine->dosage }}</small>
+                                    @else
+                                        <span class="text-muted fst-italic">Medicine not found</span>
                                     @endif
                                 </td>
                                 <td class="text-center">{{ $request->quantity_requested }}</td>
@@ -136,26 +142,27 @@
                                 <td>
                                     <div class="d-flex gap-1 justify-content-center">
                                         @if ($request->status === 'pending')
-                                            @if($request->medicine)
+                                            @if($request->medicine && !$request->medicine->trashed())
                                                 <button wire:click="approve({{ $request->id }})"
-                                                        class="btn btn-sm btn-success">
+                                                        class="btn btn-sm btn-success text-nowrap">
                                                     <i class="fa-solid fa-check me-1"></i>Approve
                                                 </button>
-
-                                                <button wire:click="reject({{ $request->id }})"
-                                                        class="btn btn-sm btn-danger">
-                                                    <i class="fa-solid fa-times me-1"></i>Reject
-                                                </button>
                                             @else
-                                                <button wire:click="reject({{ $request->id }})"
-                                                        class="btn btn-sm btn-danger">
-                                                    <i class="fa-solid fa-times me-1"></i>Reject (Medicine Archived)
+                                                <button disabled
+                                                        class="btn btn-sm btn-secondary"
+                                                        title="Cannot approve - medicine is archived text-nowrap">
+                                                    <i class="fa-solid fa-ban me-1"></i>Archived
                                                 </button>
                                             @endif
+
+                                            <button wire:click="reject({{ $request->id }})"
+                                                    class="btn btn-sm btn-danger text-nowrap">
+                                                <i class="fa-solid fa-times me-1"></i>Reject
+                                            </button>
                                         @endif
 
                                         <button wire:click="viewDetails({{ $request->id }})"
-                                                class="btn btn-sm btn-primary"
+                                                class="btn btn-sm btn-primary text-nowrap"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#viewDetailsModal">
                                             <i class="fa-solid fa-eye me-1"></i>View
@@ -165,7 +172,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <i class="fa-solid fa-inbox fs-1 text-muted mb-3 d-block"></i>
                                     <p class="text-muted">No medicine requests found</p>
                                 </td>
@@ -173,8 +180,8 @@
                             @endforelse
                     </tbody>
                 </table>
-                {{ $requests->links() }}
             </div>
+            {{ $requests->links() }}
         </div>
     </main>
 
@@ -208,6 +215,12 @@
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}">
                                         {{ $user->full_name }}
+                                        @if($user->patient)
+                                            <span class="text-success">✓ Has Patient Record</span>
+                                        @endif
+                                        @if($user->patient_type)
+                                            - {{ $user->patient_type }}
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -332,39 +345,40 @@
                             <div class="col-12 mt-4">
                                 <h6 class="border-bottom pb-2 mb-3 text-success">
                                     <i class="fa-solid fa-pills me-2"></i>Medicine Details
-                                    @if(!$viewRequest->medicine)
-                                        <span class="badge bg-warning text-dark ms-2">
-                                            <i class="fa-solid fa-archive me-1"></i>Medicine Archived
-                                        </span>
-                                    @endif
                                 </h6>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Medicine Name</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine_name }}</p>
+                                <p class="fw-bold">
+                                    @if($viewRequest->medicine)
+                                        {{ $viewRequest->medicine->medicine_name }}
+                                        @if($viewRequest->medicine->trashed())
+                                            <span class="badge bg-secondary text-white ms-1" title="This medicine has been archived">
+                                                <i class="fa-solid fa-archive"></i> Archived
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="text-muted fst-italic">Medicine not found</span>
+                                    @endif
+                                </p>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Dosage</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine_dosage }}</p>
+                                <p class="fw-bold">{{ $viewRequest->medicine->dosage ?? 'N/A' }}</p>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Type</label>
-                                <p class="fw-bold">{{ $viewRequest->medicine_type }}</p>
+                                <p class="fw-bold">{{ $viewRequest->medicine->type ?? 'N/A' }}</p>
                             </div>
 
-                            @if($viewRequest->medicine)
-                                <div class="col-md-6">
-                                    <label class="form-label text-muted small">Current Stock</label>
-                                    <p class="fw-bold">{{ $viewRequest->medicine->stock }}</p>
-                                </div>
-                            @else
-                                <div class="col-md-6">
-                                    <label class="form-label text-muted small">Current Stock</label>
-                                    <p class="text-muted"><em>Medicine archived - stock unavailable</em></p>
-                                </div>
+                            @if($viewRequest->medicine && !$viewRequest->medicine->trashed())
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Current Stock</label>
+                                <p class="fw-bold">{{ $viewRequest->medicine->stock ?? 'N/A' }}</p>
+                            </div>
                             @endif
 
                             <div class="col-md-6">
@@ -398,12 +412,21 @@
                             </div>
 
                             @if($viewRequest->status === 'pending')
-                            <div class="col-12 mt-3">
-                                <div class="alert alert-warning mb-0">
-                                    <i class="fa-solid fa-clock me-2"></i>
-                                    <small>This request is awaiting approval.</small>
-                                </div>
-                            </div>
+                                @if($viewRequest->medicine && $viewRequest->medicine->trashed())
+                                    <div class="col-12 mt-3">
+                                        <div class="alert alert-danger mb-0">
+                                            <i class="fa-solid fa-archive me-2"></i>
+                                            <small><strong>Warning:</strong> This medicine has been archived and cannot be approved.</small>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="col-12 mt-3">
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="fa-solid fa-clock me-2"></i>
+                                            <small>This request is awaiting approval.</small>
+                                        </div>
+                                    </div>
+                                @endif
                             @elseif($viewRequest->status === 'completed')
                             <div class="col-12 mt-3">
                                 <div class="alert alert-success mb-0">
@@ -431,7 +454,7 @@
                 {{-- Modal Footer --}}
                 <div class="modal-footer">
                     @if($viewRequest && $viewRequest->status === 'pending')
-                        @if($viewRequest->medicine)
+                        @if($viewRequest->medicine && !$viewRequest->medicine->trashed())
                             <button type="button"
                                     wire:click="approve({{ $viewRequest->id }})"
                                     class="btn btn-success"
