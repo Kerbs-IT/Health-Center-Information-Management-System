@@ -14,7 +14,6 @@
         'resources/js/record/record.js',
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
-        'resources\css\patient\patient-request-medicine.css'
     ])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">

@@ -50,9 +50,9 @@ class patients extends Model
     public function wra_masterlist(){
         return $this->hasOne(wra_masterlists::class, 'patient_id', 'id');
     }
-  
+
     public function medicineRequests(){
-        return $this->hasMany(MedicineRequest::class, 'patient_id');
+        return $this->hasMany(MedicineRequest::class, 'patients_id', 'id');
     }
 
     // user
@@ -72,5 +72,5 @@ class patients extends Model
         $suffix = $this->suffix? $this->suffix : '';
         return "{$this->first_name} {$mi}{$this->last_name} {$suffix}";
     }
-    
+
 }
