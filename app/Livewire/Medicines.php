@@ -7,6 +7,7 @@ use App\Models\Medicine;
 use App\Models\Category;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class Medicines extends Component
 {
@@ -25,10 +26,10 @@ class Medicines extends Component
     public $archiveMedicineId;
     public $showArchived = false;
 
-    // For reset
     protected $listeners = [
         'resetFormOnModalClose' => 'resetFields'
     ];
+
     protected $rules = [
         'medicine_name' => 'required|string|max:255',
         'category_id'   => 'required|integer|exists:categories,category_id',
@@ -52,7 +53,7 @@ class Medicines extends Component
         $singular = Str::singular($name);
         $plural = Str::plural($name);
 
-        $query = Medicine::where('dosage', $dosage)
+        $query = Medicine::withTrashed()->where('dosage', $dosage)
             ->where(function($q) use ($name, $singular, $plural) {
                 $q->whereRaw('LOWER(medicine_name) = ?', [strtolower($name)])
                   ->orWhereRaw('LOWER(medicine_name) = ?', [strtolower($singular)])
@@ -75,7 +76,6 @@ class Medicines extends Component
             $singular = Str::singular($this->medicine_name);
             $plural = Str::plural($this->medicine_name);
 
-            // Check which form exists to give a helpful error message
             $existingForm = '';
             if (Medicine::whereRaw('LOWER(medicine_name) = ?', [strtolower($singular)])
                         ->where('dosage', $this->dosage)
@@ -174,13 +174,9 @@ class Medicines extends Component
             return;
         }
 
-        // Check for duplicate medicine name (singular/plural) + dosage
         if (!$this->validateMedicineUniqueness()) {
             return;
         }
-
-        // Get category name
-        $category = Category::findOrFail($this->category_id);
 
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
@@ -190,7 +186,6 @@ class Medicines extends Component
         Medicine::create([
             'medicine_name' => trim($this->medicine_name),
             'category_id'   => $this->category_id,
-            'category_name' => $category->category_name,
             'dosage'        => $this->dosage,
             'stock'         => $this->stock,
             'expiry_date'   => $this->expiry_date,
@@ -234,13 +229,9 @@ class Medicines extends Component
             return;
         }
 
-        // Check for duplicate medicine name (singular/plural) + dosage, excluding current record
         if (!$this->validateMedicineUniqueness($this->edit_id)) {
             return;
         }
-
-        // Get category name
-        $category = Category::findOrFail($this->category_id);
 
         $stockStatus = $this->determineStockStatus($this->stock);
         $expiryStatus = $this->determineExpiryStatus($this->expiry_date);
@@ -251,7 +242,6 @@ class Medicines extends Component
         Medicine::where('medicine_id', $this->edit_id)->update([
             'medicine_name'  => trim($this->medicine_name),
             'category_id'    => $this->category_id,
-            'category_name'  => $category->category_name,  // UPDATE CATEGORY NAME
             'dosage'         => $this->dosage,
             'stock'          => $this->stock,
             'expiry_date'    => $this->expiry_date,
@@ -330,42 +320,68 @@ class Medicines extends Component
             default => null,
         };
     }
+
     public function render()
     {
-        $query = Medicine::with('category')->search($this->search);
+        // Start with base query
+        $query = Medicine::query();
 
+        // Handle archived vs active records
         if ($this->showArchived) {
-            $query = $query->onlyTrashed();
+            $query->onlyTrashed();
         }
 
-        $medicines = $query
-            ->when($this->categoryFilter, function ($q) {
-                $q->where('category_id', $this->categoryFilter);
-            })
-            ->when($this->ageFilter, function ($query) {
-                $range = $this->getAgeRangeFilter($this->ageFilter);
-
-                if ($range) {
-                    $query->where(function ($q) use ($range) {
-                        if (!is_null($range['max'])) {
-                            $q->where('min_age_months', '<=', $range['max']);
-                        }
-
-                        $q->where(function ($sub) use ($range) {
-                            $sub->whereNull('max_age_months')
-                                ->orWhere('max_age_months', '>=', $range['min']);
-                        });
+        // Apply search with proper relation handling
+        $query->when($this->search, function ($q) {
+            $q->where(function ($subQuery) {
+                $subQuery->where('medicine_name', 'like', "%{$this->search}%")
+                    ->orWhereHas('category', function ($categoryQuery) {
+                        $categoryQuery->withTrashed()
+                            ->where('category_name', 'like', "%{$this->search}%");
                     });
-                }
-            })
-            ->when($this->sortField === 'category_name', function ($query) {
-                // Sort by stored category_name column directly
-                $query->orderBy('category_name', $this->sortDirection);
-            })
-            ->when($this->sortField && $this->sortField !== 'category_name', function ($query) {
-                $query->orderBy($this->sortField, $this->sortDirection);
-            })
-            ->paginate(perPage: $this->perPage);
+            });
+        });
+
+        // Apply filters
+        $query->when($this->categoryFilter, function ($q) {
+            $q->where('category_id', $this->categoryFilter);
+        });
+
+        $query->when($this->ageFilter, function ($query) {
+            $range = $this->getAgeRangeFilter($this->ageFilter);
+
+            if ($range) {
+                $query->where(function ($q) use ($range) {
+                    if (!is_null($range['max'])) {
+                        $q->where('min_age_months', '<=', $range['max']);
+                    }
+
+                    $q->where(function ($sub) use ($range) {
+                        $sub->whereNull('max_age_months')
+                            ->orWhere('max_age_months', '>=', $range['min']);
+                    });
+                });
+            }
+        });
+
+        // Apply sorting
+        if ($this->sortField === 'category_name') {
+            // For category sorting, use a subquery approach
+            $query->orderBy(
+                Category::select('category_name')
+                    ->withTrashed()
+                    ->whereColumn('categories.category_id', 'medicines.category_id')
+                    ->limit(1),
+                $this->sortDirection
+            );
+        } elseif ($this->sortField) {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
+
+        // Eager load category with trashed
+        $medicines = $query->with(['category' => function ($q) {
+            $q->withTrashed();
+        }])->paginate($this->perPage);
 
         return view('livewire.medicines', [
             'categories' => Category::orderBy('category_name')->get(),

@@ -91,7 +91,7 @@ class User extends Authenticatable implements CanResetPassword
         return $this->hasOne(patients::class, 'user_id', 'id');
     }
     public function medicineRequest(){
-        return $this->hasOne(MedicineRequest::class, 'user_id', 'id');
+        return $this->hasMany(MedicineRequest::class, 'user_id', 'id');
     }
 
     // Check if bound

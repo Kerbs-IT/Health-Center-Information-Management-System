@@ -45,6 +45,10 @@ class CategoriesTable extends Component
         return $singularized;
     }
 
+    public function clearError($field){
+        $this->resetErrorBag($field);
+    }
+
     /**
      * Check if category name (singular or plural) already exists
      */
@@ -52,7 +56,7 @@ class CategoriesTable extends Component
     {
         $normalized = $this->normalizeForComparison($name);
 
-        $query = Category::whereRaw('LOWER(category_name) = ?', [strtolower($name)])
+        $query = Category::withTrashed()->whereRaw('LOWER(category_name) = ?', [strtolower($name)])
             ->orWhereRaw('LOWER(category_name) = ?', [$normalized])
             ->orWhereRaw('LOWER(category_name) = ?', [$normalized . 's'])
             ->orWhereRaw('LOWER(category_name) = ?', [preg_replace('/y$/i', 'ies', $normalized)]);

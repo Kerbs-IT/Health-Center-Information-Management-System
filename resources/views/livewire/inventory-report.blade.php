@@ -1,7 +1,7 @@
 
-<div class="min-vh-100 p-lg-5 p-md-3 p-1">
-    <div class="shadow p-md-2 p-0">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-8 mx-2 mt-2 p-1">
+<div class="min-vh-100 p-lg-5 p-md-3 p-2">
+    <div class="shadow p-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-xl-5 gap-lg-3 gap-md-2 gap-1 mb-8 mx-2 mt-2 p-1">
             <!-- Total Medicines Card -->
             <button data-bs-toggle="modal" data-bs-target="#medicineModal">
                 <div class="report-card bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-blue-200 hover:shadow-lg shadow-md transition-shadow duration-300">
@@ -419,4 +419,18 @@
     };
 </script>
 
+@endpush
+@push('scripts')
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('download-report', (params) => {
+            // Build query string
+            const queryParams = new URLSearchParams(params[0]).toString();
+
+            // Create temporary link and trigger download
+            const downloadUrl = "{{ route('download.inventory.report') }}" + '?' + queryParams;
+            window.location.href = downloadUrl;
+        });
+    });
+</script>
 @endpush

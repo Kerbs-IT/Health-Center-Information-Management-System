@@ -10,7 +10,6 @@ if (document.readyState === 'loading') {
 function initializeCharts() {
     // Check if we're on the right page
     if (!document.getElementById('dateRangePicker')) {
-        // console.log('Not on inventory report page, skipping initialization');
         return;
     }
 
@@ -51,10 +50,19 @@ function initializeCharts() {
         autoUpdateInput: true
     };
 
+    // Store current date ranges globally so we can access them when generating PDF
+    window.currentDateRanges = {
+        line: { start: start, end: end },
+        bar: { start: start, end: end },
+        pie: { start: start, end: end }
+    };
+
     // Line Chart Date Picker
     $('#dateRangePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        // console.log('Line chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#dateRangePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+        // Store the dates
+        window.currentDateRanges.line = { start: start, end: end };
 
         const livewireElement = document.querySelector('[wire\\:id]');
         if (livewireElement && window.Livewire) {
@@ -66,8 +74,10 @@ function initializeCharts() {
 
     // Bar Chart Date Picker
     $('#barChartDatePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        // console.log('Bar chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#barChartDatePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+        // Store the dates
+        window.currentDateRanges.bar = { start: start, end: end };
 
         const livewireElement = document.querySelector('[wire\\:id]');
         if (livewireElement && window.Livewire) {
@@ -79,8 +89,10 @@ function initializeCharts() {
 
     // Pie Chart Date Picker
     $('#pieChartDatePicker').daterangepicker(dateRangeConfig, function(start, end, label) {
-        // console.log('Pie chart date range: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
         $('#pieChartDatePicker').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+        // Store the dates
+        window.currentDateRanges.pie = { start: start, end: end };
 
         const livewireElement = document.querySelector('[wire\\:id]');
         if (livewireElement && window.Livewire) {
@@ -135,7 +147,6 @@ function initializeCharts() {
         let tooltipCallbacks = {};
 
         if (chartType === 'given') {
-            // Store fullLabels for tooltip use
             const fullLabels = dateRangeGivenData.fullLabels || dateRangeGivenData.labels;
 
             newData = {
@@ -151,7 +162,6 @@ function initializeCharts() {
                 }]
             };
 
-            // Custom tooltip title to show full labels
             tooltipCallbacks = {
                 title: function(context) {
                     return fullLabels[context[0].dataIndex];
@@ -219,12 +229,9 @@ function initializeCharts() {
         }
 
         lineChart.data = newData;
-
-        // Update tooltip options
         lineChart.options.plugins.tooltip = {
             callbacks: tooltipCallbacks
         };
-
         lineChart.update();
     }
 
@@ -318,3 +325,22 @@ function initializeCharts() {
         updateLineChart(e.target.value);
     });
 }
+
+// Listen for generate-pdf event from Livewire
+window.addEventListener('generate-pdf', (event) => {
+    // Use the stored date ranges instead of parsing from the event
+    const dateRanges = window.currentDateRanges;
+
+    // Build query parameters using the stored moment objects
+    const params = new URLSearchParams({
+        start_date: dateRanges.line.start.format('YYYY-MM-DD'),
+        end_date: dateRanges.line.end.format('YYYY-MM-DD'),
+        bar_start_date: dateRanges.bar.start.format('YYYY-MM-DD'),
+        bar_end_date: dateRanges.bar.end.format('YYYY-MM-DD'),
+        pie_start_date: dateRanges.pie.start.format('YYYY-MM-DD'),
+        pie_end_date: dateRanges.pie.end.format('YYYY-MM-DD')
+    });
+
+    // Open PDF view in new window
+    window.open(`/generate-report-pdf?${params.toString()}`, '_blank');
+});
