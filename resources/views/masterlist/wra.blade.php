@@ -54,21 +54,25 @@
                             </div>
                             <div class="mb-2">
                                 <label for="house_hold_number" class="fw-bold">House Hold Number:</label>
-                                <input type="text" class="form-control border-1" name="house_hold_number">
+                                <input type="text" class="form-control border-1" name="house_hold_number" placeholder="Enter house hold number">
+                                <small class="text-danger error-text flex-grow-1" id="house_hold_number_error"></small>
                             </div>
                             <div class="input-group mb-2">
                                 <div class="full-name d-flex gap-2 w-100 flex-grow-1 flex-wrap flex-lg-nowrap">
                                     <div class="input-group">
                                         <label for="wra_masterlist_fname" class="w-100">First Name<span class=" text-danger">*</span></label>
                                         <input type="text" name="wra_masterlist_fname" id="wra_masterlist_fname" placeholder="Enter First Name" class="form-control border">
+
                                     </div>
                                     <div class="input-group">
                                         <label for="wra_masterlist_MI" class="w-100">Middle Name</label>
-                                        <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border">
+                                        <input type="text" name="wra_masterlist_MI" id="wra_masterlist_MI" placeholder="Enter Middle Name" class="form-control  border">
+
                                     </div>
                                     <div class="input-group">
                                         <label for="wra_masterlist_lname" class="w-100">Last Name<span class=" text-danger">*</span></label>
                                         <input type="text" name="wra_masterlist_lname" id="wra_masterlist_lname" placeholder="Enter Last Name" class="form-control  border">
+
                                     </div>
 
                                     <div class="input-form flex-fill lg:w-[50%]">
@@ -83,9 +87,12 @@
                                             <option value="V.">V</option>
                                         </select>
                                         <small class="text-danger" id="wra_masterlist_suffix_error"></small>
+
                                     </div>
                                 </div>
-
+                                <small class="text-danger error-text w-100" id="wra_masterlist_fname_error"></small>
+                                <small class="text-danger error-text w-100" id="wra_masterlist_MI_error"></small>
+                                <small class="text-danger error-text w-100" id="wra_masterlist_lname_error"></small>
                             </div>
                             <div class="input-group mb-2">
                                 <h4>Address</h4>
@@ -133,6 +140,7 @@
                                         <input type="radio" name="SE_status" value="No" id="NON-NHTS">
                                         <label for="NON-NHTS">NON-NHTS</label>
                                     </div>
+                                    <small class="text-danger error-text flex-grow-1" id="SE_status_error"></small>
                                 </div>
                                 <div class="input-field flex-grow-1">
                                     <label for="" class="form-label">Do you plan to have more children?</label>
@@ -167,6 +175,7 @@
                                         </div>
 
                                     </div>
+                                    <small class="text-danger error-text flex-grow-1" id="plan_to_have_more_children_error"></small>
                                 </div>
                             </div>
                             <!-- Currently using any FP method -->
@@ -250,6 +259,7 @@
                                     </div>
 
                                 </div>
+                                <small class="text-danger error-text flex-grow-1" id="currently_using_any_FP_method_error"></small>
                             </div>
                             <!-- would you like to shift to modern  method  -->
                             <div class="input-group w-100 d-flex gap-2 justify-content-between ">
@@ -262,6 +272,7 @@
                                         <input type="radio" name="shift_to_modern_method" value="No" id="shift_to_modern_method_no">
                                         <label for="shift_to_modern_method_no">No</label>
                                     </div>
+                                    <small class="text-danger error-text flex-grow-1" id="shift_to_modern_method_error"></small>
                                 </div>
                                 <!-- unmet needs -->
                                 <div class="input-field mb-3 flex-grow-1">
@@ -272,6 +283,7 @@
                                         <input type="radio" name="wra_with_MFP_unmet_need" value="no" id="wra_with_MFP_unmet_need_no">
                                         <label for="wra_with_MFP_unmet_need_no">No</label>
                                     </div>
+                                    <small class="text-danger error-text flex-grow-1" id="wra_with_MFP_unmet_need_error"></small>
                                 </div>
                             </div>
                             <!-- Did wra accept any modern method -->
@@ -283,9 +295,11 @@
                                     <input type="radio" name="wra_accept_any_modern_FP_method" value="no" id="wra_accept_any_modern_FP_method_no">
                                     <label for="wra_accept_any_modern_FP_method_no">No</label>
                                 </div>
+                                <small class="text-danger error-text flex-grow-1" id="wra_accept_any_modern_FP_method_error"></small>
                                 <!-- if the wra accept any modern method -->
                                 <label for="date_when_FP_method_accepted" class="w-100 fw-bold">Date when FP method accepted:</label>
                                 <input type="date" name="date_when_FP_method_accepted" class="form-control w-100 bg-light modern-FP-inputs" id="date_when_FP_method_accepted" min="1950-01-01" max="{{date('Y-m-d')}}">
+                                <small class="text-danger error-text flex-grow-1" id="date_when_FP_method_accepted_error"></small>
                                 <label for="" class="w-100 ">Moden FP methods:</label>
                                 <div class="methods row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 ps-4">
 
@@ -338,6 +352,7 @@
                                     </div>
 
                                 </div>
+                                <small class="text-danger error-text flex-grow-1" id="selected_modern_FP_method_error"></small>
                             </div>
 
 

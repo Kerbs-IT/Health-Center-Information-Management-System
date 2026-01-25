@@ -53,8 +53,12 @@ document.addEventListener("click", async (e) => {
                 try {
                     // console.log("Processing key:", key);
                     const element = document.getElementById(`view_${key}`);
-
-                    if (element) {
+                    if (key == "date_of_comeback") {
+                        const date = new Date(value);
+                        const formatted = date.toISOString().split("T")[0];
+                        element.innerHTML = formatted;
+                    }
+                    else if (element) {
                         // Escape HTML to prevent XSS
                         const safeValue =
                             value !== null && value !== undefined
@@ -189,6 +193,10 @@ document.addEventListener("click", async function (e) {
 
     e.preventDefault();
     e.stopPropagation();
+
+    // reset the errors
+    const errors = document.querySelectorAll(".error-text");
+    errors.forEach(error => error.innerHTML = '');
 
     const id = editBtn.dataset.bsCaseId;
 

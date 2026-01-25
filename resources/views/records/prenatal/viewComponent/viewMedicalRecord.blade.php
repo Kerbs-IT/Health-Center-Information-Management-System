@@ -99,6 +99,40 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-bordered">
+        <thead class="table-secondary text-center table-header">
+            <tr>
+                <th colspan="2">Objective </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Blood Pressure</th>
+                <td id="blood_pressure_value">0</td>
+            </tr>
+            <tr>
+                <th>Weight</th>
+                <td id="weight_value">0</td>
+            </tr>
+            <tr>
+                <th>Height</th>
+                <td id="height_value">0</td>
+            </tr>
+            <tr>
+                <th>Temperature(°C)</th>
+                <td id="temperature_value">0</td>
+            </tr>
+            <tr>
+                <th>Respiratory Rate</th>
+                <td id="respiratory_rate_value">0</td>
+            </tr>
+            <tr>
+                <th>Pulse Rate</th>
+                <td id="pulse_rate_value">0</td>
+            </tr>
+
+        </tbody>
+    </table>
 
     <table class="table table-bordered">
         <thead class="table-secondary text-center table-header">
@@ -143,6 +177,21 @@
                 <th>Drug Intake</th>
                 <td id="drug_intake_value"></td>
             </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered">
+        <thead class="table-secondary text-center table-header">
+            <tr>
+                <th colspan="2">Planning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <p id="planning_value" style="white-space: pre-wrap; margin: 0;"></p>
+                </td>
+            </tr>
+
         </tbody>
     </table>
 </div>

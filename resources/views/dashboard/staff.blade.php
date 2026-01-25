@@ -95,31 +95,109 @@
                         <div class="button-con w-100 px-5">
                             <h4 class="fw-bold text-center">Generate Report</h4>
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <a href="{{route('generate-dashboad.pdf')}}" class="btn bg-success d-flex align-items-center gap-3 p-3">
+                                <a href="" class="btn bg-success d-flex align-items-center gap-3 p-3" id="generateTableReport">
                                     <i class="fa-solid fa-clipboard fs-5" style="color: #ffffff;"></i>
                                     <h5 class="mb-0 text-white fs-5 fw-500">Patient List & Totals</h5>
                                 </a>
-                                <a href="{{route('generate-dashboard-graph.pdf')}}" target="_blank" class="btn bg-success d-flex align-items-center gap-3 p-3">
+                                <a href="" target="_blank" class="btn bg-success d-flex align-items-center gap-3 p-3" id="dashboardCharts">
                                     <i class="fa-solid fa-chart-bar fs-5" style="color: #ffffff;"></i>
                                     <h5 class="mb-0 text-white fs-5 fw-500">Patient Charts & Trends</h5>
                                 </a>
                             </div>
                         </div>
+                        <!-- age distribution and overdue records -->
+                        <div class="charts px-2 px-md-4  mb-4 charts-dashboard">
+                            <div class="row g-3 ">
+                                <!-- Age Distribution Chart -->
+                                <div class="col-12 col-xl-7 col-lg-7 pe-2">
+                                    <div class="card shadow-sm h-100" style="min-height: 500px;">
+                                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap">
+                                            <h5 class="mb-3 fw-bold">Age Distribution</h5>
+
+                                            <!-- Filters -->
+                                            <div class="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-start flex-wrap">
+                                                <!-- Date Range Picker -->
+                                                <div class="date-range-filter d-flex align-items-center justify-content-center">
+                                                    <label class="filter-label fw-bold d-block " for="ageChartDateRange">Date Range:</label>
+                                                    <input
+                                                        type="text"
+                                                        id="ageChartDateRange"
+                                                        class="form-control form-control-sm"
+                                                        style="max-width: 250px; width: 100%;"
+                                                        readonly />
+                                                </div>
+
+                                                <!-- Patient Type Filter -->
+                                                <div class="patient-type-filter d-flex align-items-center justify-content-center">
+                                                    <label class="filter-label fw-bold d-block " for="agePatientType">Patient Type:</label>
+                                                    <select id="agePatientType" class="form-select form-select-sm" style="max-width: 200px; width: 100%;">
+                                                        <option value="all">All Patients</option>
+                                                        <option value="vaccination">Vaccination</option>
+                                                        <option value="prenatal">Prenatal</option>
+                                                        <option value="seniorCitizen">Senior Citizen</option>
+                                                        <option value="tbDots">TB Treatment</option>
+                                                        <option value="familyPlanning">Family Planning</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body d-flex flex-column">
+                                            <!-- Chart Canvas -->
+                                            <div class="flex-grow-1 position-relative" style="min-height: 350px;">
+                                                <canvas id="ageDistributionChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Overdue Appointments -->
+                                <div class="col-12 col-xl-5 col-lg-5 ps-2">
+                                    <div class="card shadow-sm h-100" style="min-height: 500px;">
+                                        <div class="card-header bg-danger text-white">
+                                            <h5 class="mb-0">Overdue Appointments</h5>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="loading" class="text-center py-4">
+                                                <div class="spinner-border text-danger" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                            <div id="overdue-list" class="list-group list-group-flush" style="display: none;">
+                                                <!-- Data will be populated here -->
+                                            </div>
+                                            <div id="no-data" class="text-center py-4 text-muted" style="display: none;">
+                                                <p class="mb-0">No overdue appointments</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- chart n recent patient -->
                         <div class="charts d-flex flex-wrap px-2 px-md-4 justify-content-center">
-                            <div class="chart-container flex-fill  card">
+                            <!-- Bar Chart -->
+                            <div class="chart-container flex-fill card">
                                 <div class="chart-header">
                                     <h1 class="chart-title">Monthly Patient Statistics</h1>
-                                    <div class="filter-container">
-                                        <label class="filter-label" for="patientType">Patient Type:</label>
-                                        <select class="filter-select" id="patientType">
-                                            <option value="all">All Patients</option>
-                                            <option value="vaccination">Vaccination</option>
-                                            <option value="prenatal">Prenatal</option>
-                                            <option value="senior">Senior Citizen</option>
-                                            <option value="tb">TB Treatment</option>
-                                            <option value="family_planning">Family Planning</option>
-                                        </select>
+                                    <div class="filter-container d-flex gap-3 align-items-center flex-wrap">
+                                        <!-- Date Range Picker -->
+                                        <div class="date-range-filter">
+                                            <label class="filter-label" for="dateRange">Date Range:</label>
+                                            <input type="text" id="dateRange" class="filter-select" style="min-width: 250px;" />
+                                        </div>
+                                        <!-- Patient Type Filter -->
+                                        <div class="patient-type-filter">
+                                            <label class="filter-label" for="patientType">Patient Type:</label>
+                                            <select class="filter-select" id="patientType">
+                                                <option value="all">All Patients</option>
+                                                <option value="vaccination">Vaccination</option>
+                                                <option value="prenatal">Prenatal</option>
+                                                <option value="senior">Senior Citizen</option>
+                                                <option value="tb">TB Treatment</option>
+                                                <option value="family_planning">Family Planning</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -127,10 +205,17 @@
                                     <canvas id="patientChart"></canvas>
                                 </div>
                             </div>
-                            <div class="flex-grow-1 flex-shrink-1 xl:max-w-[520px] xl:min-h-[390px] d-flex align-items-center chart-canvas justify-content-center bg-white rounded p-3 shadow">
-                                <canvas id="myPieChart"></canvas>
+
+                            <!-- Pie Chart -->
+                            <div class="flex-grow-1 flex-shrink-1 xl:max-w-[520px] xl:min-h-[390px] d-flex flex-column chart-canvas bg-white rounded p-3 shadow">
+                                <div class="mb-3">
+                                    <label class="filter-label" for="pieChartDateRange">Date Range:</label>
+                                    <input type="text" id="pieChartDateRange" class="filter-select" style="width: 100%;" />
+                                </div>
+                                <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <canvas id="myPieChart"></canvas>
+                                </div>
                             </div>
-                            <!-- end  -->
                         </div>
                         <!-- other -->
                         <div class="patient-today w-100 px-lg-4 px-md-3 px-2 d-flex gap-3 mb-3 flex-wrap">
@@ -171,15 +256,35 @@
                                 </div>
                             </div>
                             <div class="card shadow-sm mt-4 flex-fill overflow-hidden">
-                                <div class="card-header bg-success text-white">
-                                    <h5 class="mb-0">Number of Patient per Area</h5>
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center flex-wrap">
+                                    <h5 class="mb-0"><span id="dashboard-healthworker-assigned-area">Karlaville</span> Patient Distribution</h5>
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <label class="filter-label text-white" for="pieChartDateRange">Date Range:</label>
+                                        <input type="text" id="patientDistributionDateRange" class="filter-select" style="width: 100%;" />
+                                    </div>
                                 </div>
-                                <div class="card-body overflow-y-auto patient-per-area-con" style="max-height: 300px;">
+                                <div class="card-body overflow-y-auto patient-distribution" style="max-height: 300px;">
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom vaccination">
+                                        <p class="mb-0">Vaccination</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom prenatal">
+                                        <p class="mb-0">Prenatal</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold " style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom senior_citizen">
+                                        <p class="mb-0">Senior Citizen</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom tb_dots">
+                                        <p class="mb-0">Tb-dots</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold" style="border-radius: 10px;">0</h5>
+                                    </div>
+                                    <div class="patient-distribution-item mb-2 d-flex align-items-center justify-content-between border-bottom family_planning">
+                                        <p class="mb-0">Family Planning</p>
+                                        <h5 class="py-2 px-4 mb-0 bg-success text-white fw-bold " style="border-radius: 10px;">0</h5>
+                                    </div>
 
-                                    <!-- Vaccination -->
-
-
-                                    <!-- Add more services here -->
 
                                 </div>
                             </div>

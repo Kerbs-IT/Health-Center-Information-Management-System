@@ -1,3 +1,4 @@
+import { error } from "jquery";
 
 const addTable = document.getElementById("add_tb_tbody");
 if (addTable) {
@@ -109,6 +110,11 @@ if (addCaseBtn) {
         const form = document.getElementById("add_tb_dots_case_record_form");
         // reset the form
         form.reset();
+
+        const errors = document.querySelectorAll(".error-text");
+        if (errors) {
+            errors.forEach(error => error.innerHTML = '');
+        }
 
         // console.log(patientInfo);
 

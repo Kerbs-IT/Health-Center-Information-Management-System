@@ -10,7 +10,7 @@
                     <tr>
                         <th>Case No.</th>
                         <th>Type of Record</th>
-                        <th>Nurse</th>
+                       
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                             Date
                             @if ($sortField === 'created_at')
@@ -27,7 +27,6 @@
                     <tr class="px-">
                         <td>{{$record->id}}</td>
                         <td>{{$record->type_of_record}}</td>
-                        <td>Nurse Joy</td>
                         <td>{{$record->created_at->format('M d Y')}}</td>
                         <td>{{$record->status}}</td>
 

@@ -13,6 +13,7 @@ class pregnancy_plans extends Model
         'patient_name',
         'midwife_name',
         'place_of_birth',
+        'place_of_pregnancy',
         'authorized_by_philhealth',
         'cost_of_pregnancy',
         'payment_method',
@@ -29,10 +30,12 @@ class pregnancy_plans extends Model
 
     ];
 
-    public function medical_case_record(){
-        return $this-> belongsTo(medical_record_cases::class, 'medical_case_record_id','id');
+    public function medical_case_record()
+    {
+        return $this->belongsTo(medical_record_cases::class, 'medical_case_record_id', 'id');
     }
-    public function donor_name(){
-        return $this-> hasMany(donor_names::class,'pregnancy_plan_id','id');
+    public function donor_name()
+    {
+        return $this->hasMany(donor_names::class, 'pregnancy_plan_id', 'id');
     }
 }

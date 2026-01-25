@@ -7,6 +7,7 @@ use App\Models\family_planning_case_records;
 use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
+use App\Models\patients;
 use App\Models\pregnancy_checkups;
 use App\Models\pregnancy_plans;
 use App\Models\prenatal_case_records;
@@ -14,6 +15,7 @@ use App\Models\senior_citizen_case_records;
 use App\Models\staff;
 use App\Models\tb_dots_case_records;
 use App\Models\tb_dots_check_ups;
+use App\Models\User;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_masterlists;
 use App\Models\vaccineAdministered;
@@ -25,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 
 class PdfController extends Controller
@@ -38,6 +41,8 @@ class PdfController extends Controller
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'asc');
         $entriesPerPage = $request->input('entries', 10);
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
 
         // Debug: Check what we received
         // dd([
@@ -84,6 +89,8 @@ class PdfController extends Controller
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
 
@@ -97,6 +104,8 @@ class PdfController extends Controller
             'search' => $search,
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -110,6 +119,8 @@ class PdfController extends Controller
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'asc');
         $entriesPerPage = $request->input('entries', 10);
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
 
         // Debug: Check what we received
         // dd([
@@ -150,6 +161,8 @@ class PdfController extends Controller
                 $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('prenatal_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
 
@@ -162,6 +175,8 @@ class PdfController extends Controller
             'search' => $search,
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -175,7 +190,8 @@ class PdfController extends Controller
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'asc');
         $entriesPerPage = $request->input('entries', 10);
-
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
         // Debug: Check what we received
         // dd([
         //     'search' => $search,
@@ -214,6 +230,8 @@ class PdfController extends Controller
                 $query->join('senior_citizen_medical_records', 'senior_citizen_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('senior_citizen_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
         $recordPages =  $seniorCitizenRecords->chunk($entriesPerPage);
@@ -225,6 +243,8 @@ class PdfController extends Controller
             'search' => $search,
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -238,7 +258,8 @@ class PdfController extends Controller
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'asc');
         $entriesPerPage = $request->input('entries', 10);
-
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
         // Debug: Check what we received
         // dd([
         //     'search' => $search,
@@ -277,6 +298,8 @@ class PdfController extends Controller
                 $query->join('tb_dots_medical_records', 'tb_dots_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('tb_dots_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
         $recordPages =  $tbRecords->chunk($entriesPerPage);
@@ -288,6 +311,8 @@ class PdfController extends Controller
             'search' => $search,
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -301,7 +326,8 @@ class PdfController extends Controller
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'asc');
         $entriesPerPage = $request->input('entries', 10);
-
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
         // Debug: Check what we received
         // dd([
         //     'search' => $search,
@@ -341,6 +367,8 @@ class PdfController extends Controller
                 $query->join('family_planning_medical_records', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('family_planning_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
             ->orderBy("patients.$sortField", $sortDirection)
             ->get();
 
@@ -353,6 +381,8 @@ class PdfController extends Controller
             'search' => $search,
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -380,22 +410,24 @@ class PdfController extends Controller
             $medicalRecord = medical_record_cases::with('patient')->where('id', $familyPlanCaseInfo->medical_record_case_id)->first();
             $address = patient_addresses::where('patient_id', $medicalRecord->patient_id)->first();
 
-            // $pdf = PDF::loadView('pdf.family-planning.family-planning-side-a', [
+
+
+            // return view('pdf.family-planning.family-planning-side-a', [
             //     'caseInfo' => $familyPlanCaseInfo,
-            //     'medicalRecord' => $medicalRecord,
             //     'patient' => $medicalRecord->patient,
-            //     'address' => $address
+            //     'address' => $address,
+            //     'medicalRecord' => $medicalRecord,
             // ]);
 
             // Generate PDF
-            $pdf = SnappyPdf::loadView('pdf.family-planning.family-planning-side-a', [
+            $pdf = Pdf::loadView('pdf.family-planning.family-planning-side-a', [
                 'caseInfo' => $familyPlanCaseInfo,
                 'patient' => $medicalRecord->patient,
                 'address' => $address,
                 'medicalRecord' => $medicalRecord,
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -404,7 +436,7 @@ class PdfController extends Controller
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
 
-            return $pdf->download('family-planning-' . $id . '.pdf');
+            return $pdf->download('family-planning-' . date('Y-m-d') . '.pdf');
         } catch (\Exception $e) {
             // \Log::error('PDF Generation Error: ' . $e->getMessage());
 
@@ -424,11 +456,15 @@ class PdfController extends Controller
 
         try {
             $sideBrecord = family_planning_side_b_records::findorFail($id);
-            $pdf = SnappyPdf::loadView('pdf.family-planning.family-planning-side-b', [
+
+            // return view('pdf.family-planning.family-planning-side-b', [
+            //     'sideBrecord' => $sideBrecord
+            // ]);
+            $pdf = Pdf::loadView('pdf.family-planning.family-planning-side-b', [
                 'sideBrecord' => $sideBrecord
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -437,7 +473,7 @@ class PdfController extends Controller
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
 
-            return $pdf->download('family-planning-side-b-' . $id . '.pdf');
+            return $pdf->download('family-planning-side-b-' . date('Y-m-d') . '.pdf');
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -474,13 +510,19 @@ class PdfController extends Controller
                 $vaccinationCase->id
             )->get();
 
-            $pdf = SnappyPdf::loadView('pdf.vaccination.vaccination-case', [
+            // return view('pdf.vaccination.vaccination-case', [
+            //     'vaccinationCase' => $vaccinationCase,
+            //     'vaccineAdministered' => $vaccineAdministered,
+            //     'healthWorkerName' => $healthWorkerName,
+            // ]);
+
+            $pdf = Pdf::loadView('pdf.vaccination.vaccination-case', [
                 'vaccinationCase' => $vaccinationCase,
                 'vaccineAdministered' => $vaccineAdministered,
                 'healthWorkerName' => $healthWorkerName,
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -489,7 +531,7 @@ class PdfController extends Controller
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
 
-            return $pdf->download('vaccination-case-' . $id . '.pdf');
+            return $pdf->download('vaccination-case-' . date('Y-m-d') . '.pdf');
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -523,8 +565,16 @@ class PdfController extends Controller
             $DOHlogoBase64 = base64_encode(file_get_contents(public_path('images/DOH_logo.png')));
             $DOHLogoSrc = 'data:image/png;base64,' . $DOHlogoBase64;
 
+            // return view('pdf.prenatal.prenatal-case', [
+            //     'caseInfo' => $case,
+            //     'patient' => $medicalRecord->patient,
+            //     'medicalRecord' => $medicalRecord,
+            //     'address' => $fullAddress,
+            //     'treceLogo' => $treceLogoSrc,
+            //     'DOHlogo' => $DOHLogoSrc
+            // ]);
 
-            $pdf = SnappyPdf::loadView('pdf.prenatal.prenatal-case', [
+            $pdf = Pdf::loadView('pdf.prenatal.prenatal-case', [
                 'caseInfo' => $case,
                 'patient' => $medicalRecord->patient,
                 'medicalRecord' => $medicalRecord,
@@ -532,8 +582,8 @@ class PdfController extends Controller
                 'treceLogo' => $treceLogoSrc,
                 'DOHlogo' => $DOHLogoSrc
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -572,13 +622,19 @@ class PdfController extends Controller
             $DOHlogoBase64 = base64_encode(file_get_contents(public_path('images/DOH_logo.png')));
             $DOHLogoSrc = 'data:image/png;base64,' . $DOHlogoBase64;
 
-            $pdf = SnappyPdf::loadView('pdf.prenatal.pregnancy-plan', [
+            // return view('pdf.prenatal.pregnancy-plan', [
+            //     'pregnancyPlan' => $pregnancyRecord,
+            //     'treceLogo' => $treceLogoSrc,
+            //     'DOHlogo' => $DOHLogoSrc
+            // ]);
+
+            $pdf = Pdf::loadView('pdf.prenatal.pregnancy-plan', [
                 'pregnancyPlan' => $pregnancyRecord,
                 'treceLogo' => $treceLogoSrc,
                 'DOHlogo' => $DOHLogoSrc
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -601,12 +657,17 @@ class PdfController extends Controller
             $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
             $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
 
-            $pdf = SnappyPdf::loadView('pdf.prenatal.prenatal-checkup', [
+            // return view('pdf.prenatal.prenatal-checkup', [
+            //     'pregnancy_checkup_info' => $pregnancy_checkup,
+            //     'healthWorker' => $healthWorker
+            // ]);
+
+            $pdf = Pdf::loadView('pdf.prenatal.prenatal-checkup', [
                 'pregnancy_checkup_info' => $pregnancy_checkup,
                 'healthWorker' => $healthWorker
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -639,14 +700,20 @@ class PdfController extends Controller
                 $address->province ?? null,
             ])->filter()->join(', ');
             $patient_name = $caseRecord->patient_name;
+            $patientInfo = patients::where("id", $medicalRecord->patient_id)->first();
 
-            $pdf = SnappyPdf::loadView('pdf.senior-citizen.senior-citizen-case', [
+            // return view('pdf.senior-citizen.senior-citizen-case', [
+            //      'seniorCaseRecord' => $caseRecord,
+            //     'address' => $fullAddress,
+            //      'medicalRecord' => $medicalRecord
+            // ]);
+            $pdf = Pdf::loadView('pdf.senior-citizen.senior-citizen-case', [
                 'seniorCaseRecord' => $caseRecord,
                 'address' => $fullAddress,
                 'medicalRecord' => $medicalRecord
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -685,14 +752,21 @@ class PdfController extends Controller
                 $address->province ?? null,
             ])->filter()->join(', ');
 
-            $pdf = SnappyPdf::loadView('pdf.tb-dots.tb-dots-case', [
+            // return view('pdf.tb-dots.tb-dots-case', [
+            //     'caseRecord' => $caseRecord,
+            //     'healthWorker' => $healthWorker,
+            //     'address' => $fullAddress,
+            //     'medicalRecord' => $medicalRecord
+            // ]);
+
+            $pdf = Pdf::loadView('pdf.tb-dots.tb-dots-case', [
                 'caseRecord' => $caseRecord,
                 'healthWorker' => $healthWorker,
                 'address' => $fullAddress,
                 'medicalRecord' => $medicalRecord
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -725,13 +799,19 @@ class PdfController extends Controller
                 $address->province ?? null,
             ])->filter()->join(', ');
 
-            $pdf = SnappyPdf::loadView('pdf.tb-dots.check-up', [
+            // return view('pdf.tb-dots.check-up', [
+            //     'checkUpRecord' => $checkUpRecord,
+            //     'address' => $fullAddress,
+            //     'medicalRecord' => $medicalRecord
+            // ]);
+
+            $pdf = Pdf::loadView('pdf.tb-dots.check-up', [
                 'checkUpRecord' => $checkUpRecord,
                 'address' => $fullAddress,
                 'medicalRecord' => $medicalRecord
             ])
-                ->setPaper('A4')  // 8.5" x 13"
-                ->setOrientation('portrait')
+                ->setPaper('A4', 'portrait')  // 8.5" x 13"
+                // ->setOrientation('portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -807,6 +887,31 @@ class PdfController extends Controller
             // Generate year options (last 10 years)
             $years = range(date('Y'), date('Y') - 10);
             // Prepare data for PDF
+
+            // get the assigned
+           $healthWorkerFullName = null;
+            if ($request->filled('selectedBrgy')) {
+                $assignedArea = brgy_unit::where("brgy_unit", $request->selectedBrgy)->first();
+
+                if ($assignedArea) {
+                    $staff = staff::where("assigned_area_id", $assignedArea->id)->first();
+                    $healthWorkerFullName = $staff ? $staff->full_name : null;
+                }
+            }
+
+            $assignedArea = null;
+            if (Auth::user()->role == 'staff' && Auth::user()->staff) {
+                $assignedArea = brgy_unit::find(Auth::user()->staff->assigned_area_id)?->brgy_unit;
+            }
+
+            // midwife name
+            $midwife= User::where('role','nurse')->first();
+            $midwifeName = null;
+            if($midwife){
+                $midwifeName = $midwife->nurses->full_name;
+            }
+            
+            
             $data = [
                 'vaccinationMasterlist' => $vaccinationMasterlist,
                 'selectedRange' => $selectedRange,
@@ -816,12 +921,19 @@ class PdfController extends Controller
                 'brgys' => $brgys,
                 'years' => $years,
                 'entries' => $request->entries ?? '',
-                'search' => $request->search ?? ''
+                'search' => $request->search ?? '',
+                'healthWorkerFullName' => $healthWorkerFullName,
+                'assignedArea' => $assignedArea,
+                'midwifeName'=> $midwifeName
             ];
 
-            $pdf = SnappyPdf::loadView('pdf.masterlist.vaccination', $data)
-                ->setPaper('legal')  // 8.5" x 13"
-                ->setOrientation('landscape')
+            
+
+            // return view('pdf.masterlist.vaccination', $data);
+
+            $pdf = Pdf::loadView('pdf.masterlist.vaccination', $data)
+                ->setPaper('legal', 'landscape')  // 8.5" x 13"
+                // ->setOrientation('landscape')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -875,7 +987,8 @@ class PdfController extends Controller
             }
 
             // Apply sorting
-            $query->orderBy($request->sortField, $request->sortDirection);
+            // $query->orderBy($request->sortField, $request->sortDirection);
+            $query->orderBy('name_of_wra', 'ASC');
 
             // Paginate
             $wra_masterList = $query
@@ -891,21 +1004,31 @@ class PdfController extends Controller
                 ->orderBy('year', 'DESC')
                 ->pluck('year');
 
+            // midwife name
+            $midwife = User::where('role', 'nurse')->first();
+            $midwifeName = null;
+            if ($midwife) {
+                $midwifeName = $midwife->nurses->full_name;
+            }
+
             $data = [
                 'page' => 'WOMEN OF REPRODUCTIVE AGE',
                 'pageHeader' => 'MASTERLIST',
                 'masterlistRecords' => $wra_masterList,
                 'selectedBrgy' => $request->selectedBrgy ?? '',
-                'selectedMonth' => $request->selectedMonth ?? '',
-                'selectedYear' => $request->seletedYear ?? '',
+                'selectedMonth' => $request->selectedMonth ?? 'January - December',
+                'selectedYear' => $request->selectedYear ?? '2025',
                 'entries' => $request->entries ?? '',
                 'search' => $request->search ?? '',
                 'monthName' => $request->monthName ?? '',
+                'midwifeName' => $midwifeName
             ];
 
-            $pdf = SnappyPdf::loadView('pdf.masterlist.wra', $data)
-                ->setPaper('legal')  // 8.5" x 13"
-                ->setOrientation('landscape')
+            // return view('pdf.masterlist.wra', $data);
+
+            $pdf = Pdf::loadView('pdf.masterlist.wra', $data)
+                ->setPaper('legal','landscape')  // 8.5" x 13"
+                // ->setOrientation('landscape')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('javascript-delay', 500)
                 ->setOption('margin-top', 5)      // Reduce margins
@@ -924,24 +1047,38 @@ class PdfController extends Controller
     }
 
     // generate the nurse report
-    public function generateDashboardTable()
+    public function generateDashboardTable(Request $request)
     {
         $patientCount = $this->patientCount();
-        $patientCountPerArea = $this->patientCountPerArea();
         $patientPerDay = $this->patientAddedToday();
+
+        // Get age and sex distributions
+        $ageData = $this->getAgeDistribution($request);
+        $sexData = $this->getSexDistribution($request);
+
         $generatedDate = now()->format('F d, Y h:i A');
-        $pdf = SnappyPdf::loadView('pdf.dashboard.nurse-tables', compact('patientCount', 'patientCountPerArea', 'patientPerDay', 'generatedDate'))
-            ->setPaper('letter')  // 8.5" x 13"
-            ->setOrientation('portrait')
+        $startDate = Carbon::parse($request->input('start_date'))->format('Y-m-d');
+        $endDate = Carbon::parse($request->input('end_date'))->format('Y-m-d');
+
+        $pdf = Pdf::loadView('pdf.dashboard.nurse-tables', compact(
+            'patientCount',
+            'patientPerDay',
+            'ageData',
+            'sexData',
+            'generatedDate',
+            'startDate',
+            'endDate'
+        ))
+            ->setPaper('letter', 'portrait')
             ->setOption('enable-local-file-access', true)
             ->setOption('javascript-delay', 500)
-            ->setOption('margin-top', 10)      // Reduce margins
+            ->setOption('margin-top', 10)
             ->setOption('margin-bottom', 5)
-            ->setOption('margin-left', 5)
-            ->setOption('margin-right', 5)
+            ->setOption('margin-left', 10)
+            ->setOption('margin-right', 10)
             ->setOption('zoom', 0.85);
 
-        return $pdf->download('patient-list-&-total-report' . date('m-d-Y') . '.pdf');
+        return $pdf->download('patient-detailed-report-' . date('m-d-Y') . '.pdf');
     }
     public function generateDashboardGraph(Request $request)
     {
@@ -959,7 +1096,7 @@ class PdfController extends Controller
         try {
             $user = Auth::user();
 
-            // ===== BAR CHART DATA (using barStartDate and barEndDate) =====
+            // ===== BAR CHART DATA =====
             $query = medical_record_cases::with('patient')
                 ->whereHas('patient', function ($q) {
                     $q->where('status', '!=', 'Archived');
@@ -972,19 +1109,19 @@ class PdfController extends Controller
             if ($user->role === 'staff') {
                 $staffId = $user->id;
                 $query->where(function ($q) use ($staffId) {
-                    $q->whereHas('vaccinationRecords', function ($subQ) use ($staffId) {
+                    $q->whereHas('vaccination_medical_record', function ($subQ) use ($staffId) {
                         $subQ->where('health_worker_id', $staffId);
                     })
-                        ->orWhereHas('prenatalRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('prenatal_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('seniorCitizenRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('senior_citizen_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('tbDotsRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('tb_dots_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('familyPlanningRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         });
                 });
@@ -1075,7 +1212,7 @@ class PdfController extends Controller
                 }
             }
 
-            // ===== PIE CHART DATA (using pieStartDate and pieEndDate) =====
+            // ===== PIE CHART DATA =====
             $baseQuery = medical_record_cases::with('patient')
                 ->whereHas('patient', function ($q) {
                     $q->where('status', '!=', 'Archived');
@@ -1085,20 +1222,21 @@ class PdfController extends Controller
                 ->whereDate('created_at', '<=', $pieEndDate);
 
             if ($user->role === 'staff') {
+                $staffId = $user->id;
                 $baseQuery->where(function ($q) use ($staffId) {
-                    $q->whereHas('vaccinationRecords', function ($subQ) use ($staffId) {
+                    $q->whereHas('vaccination_medical_record', function ($subQ) use ($staffId) {
                         $subQ->where('health_worker_id', $staffId);
                     })
-                        ->orWhereHas('prenatalRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('prenatal_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('seniorCitizenRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('senior_citizen_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('tbDotsRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('tb_dots_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         })
-                        ->orWhereHas('familyPlanningRecords', function ($subQ) use ($staffId) {
+                        ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         });
                 });
@@ -1112,42 +1250,28 @@ class PdfController extends Controller
                 'familyPlanningCount' => (clone $baseQuery)->where('type_of_case', 'family-planning')->count(),
             ];
 
+            //  Calculate totals for each patient type for the bar chart
+            $patientTypeTotals = [
+                'vaccination' => array_sum($patientData['vaccination']['data']),
+                'prenatal' => array_sum($patientData['prenatal']['data']),
+                'senior' => array_sum($patientData['senior']['data']),
+                'tb' => array_sum($patientData['tb']['data']),
+                'family_planning' => array_sum($patientData['family_planning']['data']),
+            ];
+
             // Format BOTH date ranges for display
             $barDateRangeText = Carbon::parse($barStartDate)->format('M d, Y') . ' - ' . Carbon::parse($barEndDate)->format('M d, Y');
             $pieDateRangeText = Carbon::parse($pieStartDate)->format('M d, Y') . ' - ' . Carbon::parse($pieEndDate)->format('M d, Y');
 
-            // Render the view
-            $html = view('pdf.dashboard.graph-table', compact(
+            //  Return view with patientTypeTotals
+            return view('pdf.dashboard.graph-table', compact(
                 'patientData',
                 'pieData',
                 'barDateRangeText',
                 'pieDateRangeText',
-                'selectedType'
-            ))->render();
-
-            $filename = 'dashboard-report-' . date('m-d-Y-His') . '.pdf';
-            $path = storage_path('app/public/' . $filename);
-
-            // ADD THIS LINE - explicitly set Chrome path
-            $chromePath = '/var/www/.cache/puppeteer/chrome/linux-143.0.7499.169/chrome-linux64/chrome';
-            // Browsershot::html($html)
-            //     ->waitUntilNetworkIdle()
-            //     ->format('Letter')
-            //     ->margins(10, 10, 10, 10)
-            //     ->save($path);
-            Browsershot::html($html)
-                ->setChromePath('/var/www/.cache/puppeteer/chrome/linux-120.0.6099.109/chrome-linux64/chrome')
-                ->setOption('args', [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                ])
-                ->waitUntilNetworkIdle()
-                ->format('Letter')
-                ->margins(10, 10, 10, 10)
-                ->save($path);
-            return response()->download($path)->deleteFileAfterSend();
+                'selectedType',
+                'patientTypeTotals'  // ← ADD THIS
+            ));
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate PDF',
@@ -1291,65 +1415,109 @@ class PdfController extends Controller
 
         return [];
     }
-    private function patientCountPerArea()
+    private function patientCountPerArea($startDate = null, $endDate = null)
     {
-        try {
 
+        try {
             $data = [];
-            $query = patient_addresses::query()
-                ->select('patient_addresses.purok', DB::raw('count(*) as count'))
+            $caseTypes = ['vaccination', 'prenatal', 'senior-citizen', 'tb-dots', 'family-planning'];
+
+            // Base query
+            $baseQuery = patient_addresses::query()
                 ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
                 ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
                 ->where('medical_record_cases.status', '!=', 'Archived')
                 ->where('patient_addresses.barangay', 'Hugo Perez')
                 ->where('patients.status', '!=', 'Archived')
                 ->whereNotNull('patient_addresses.purok');
+                
+
+            // Add date range filter if provided
+            if ($startDate && $endDate) {
+                $baseQuery->whereDate('patients.created_at', '>=', $startDate)
+                    ->whereDate('patients.created_at', '<=', $endDate);
+            }
 
             $brgyUnits = brgy_unit::get();
 
             if (Auth::user()->role == 'nurse') {
                 foreach ($brgyUnits as $unit) {
-                    $areaData = (clone $query)
-                        ->where('patient_addresses.purok', $unit->brgy_unit)
-                        ->count();
+                    $data[$unit->brgy_unit] = [];
 
-                    $data[$unit->brgy_unit] = $areaData;
+                    foreach ($caseTypes as $type) {
+                        $count = (clone $baseQuery)
+                            ->where('patient_addresses.purok', $unit->brgy_unit)
+                            ->where('medical_record_cases.type_of_case', $type)
+                            ->distinct()
+                            ->count('patient_addresses.patient_id');
+
+                        $data[$unit->brgy_unit][$type] = $count;
+                    }
                 }
             }
 
             if (Auth::user()->role == 'staff') {
-                $user = Auth::user();
-                $staffId = $user->id;
+                $staffId = Auth::user()->id;
+
                 foreach ($brgyUnits as $unit) {
+                    $data[$unit->brgy_unit] = [];
 
-                    $staffQuery = (clone $query)
-                        ->leftJoin('vaccination_medical_records as v', 'v.medical_record_case_id', '=', 'medical_record_cases.id')
-                        ->leftJoin('prenatal_medical_records as p', 'p.medical_record_case_id', '=', 'medical_record_cases.id')
-                        ->leftJoin('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
-                        ->leftJoin('tb_dots_medical_records as t', 't.medical_record_case_id', '=', 'medical_record_cases.id')
-                        ->leftJoin('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
-                        ->where(function ($q) use ($staffId) {
-                            $q->where('v.health_worker_id', $staffId)
-                                ->orWhere('p.health_worker_id', $staffId)
-                                ->orWhere('s.health_worker_id', $staffId)
-                                ->orWhere('t.health_worker_id', $staffId)
-                                ->orWhere('f.health_worker_id', $staffId);
-                        });
+                    foreach ($caseTypes as $type) {
+                        $query = (clone $baseQuery)
+                            ->where('patient_addresses.purok', $unit->brgy_unit)
+                            ->where('medical_record_cases.type_of_case', $type);
 
-                    $areaData = $staffQuery
-                        ->where('patient_addresses.purok', $unit->brgy_unit)
-                        ->distinct('patient_addresses.patient_id')
-                        ->count('patient_addresses.patient_id');
+                        // Join the appropriate medical record table based on type
+                        switch ($type) {
+                            case 'vaccination':
+                                $query->join('vaccination_medical_records as vmr', 'vmr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('vmr.health_worker_id', $staffId);
+                                break;
+                            case 'prenatal':
+                                $query->join('prenatal_medical_records as pmr', 'pmr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('pmr.health_worker_id', $staffId);
+                                break;
+                            case 'senior-citizen':
+                                $query->join('senior_citizen_medical_records as smr', 'smr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('smr.health_worker_id', $staffId);
+                                break;
+                            case 'tb-dots':
+                                $query->join('tb_dots_medical_records as tmr', 'tmr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('tmr.health_worker_id', $staffId);
+                                break;
+                            case 'family-planning':
+                                $query->join('family_planning_medical_records as fmr', 'fmr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('fmr.health_worker_id', $staffId);
+                                break;
+                        }
 
-                    $data[$unit->brgy_unit] = $areaData;
+                        $count = $query->distinct()->count('patient_addresses.patient_id');
+                        $data[$unit->brgy_unit][$type] = $count;
+                    }
                 }
             }
 
-
             return $data;
         } catch (\Exception $e) {
+            Log::error('Patient count per area error: ' . $e->getMessage());
             return [];
         }
+    }
+    public function generatePatientCountReport(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
+        $data = $this->patientCountPerArea($startDate, $endDate);
+
+        $pdf = PDF::loadView('pdf.areaReport.patient-count-per-area-report', [
+            'data' => $data,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'generatedDate' => now()->format('F d, Y')
+        ]);
+
+        return $pdf->download('patient-count-per-area-report.pdf');
     }
     private function patientAddedToday()
     {
@@ -1542,5 +1710,212 @@ class PdfController extends Controller
         }
 
         return $result;
+    }
+
+    // for socio demographic report
+    public function getAgeDistribution(Request $request)
+    {
+        $user = Auth::user();
+        $staffId = $user->id;
+
+        $startDate = $request->input('start_date', Carbon::now()->startOfYear());
+        $endDate = $request->input('end_date', Carbon::now()->endOfYear());
+
+        // Start building the query
+        $query = medical_record_cases::query()
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', '!=', 'Archived')
+            ->whereBetween('patients.created_at', [$startDate, $endDate]);
+
+        // Apply staff filter using leftJoin approach (matching patientAddedToday pattern)
+        if ($user->role === 'staff') {
+            $query
+                ->leftJoin('vaccination_medical_records as v', function ($join) use ($staffId) {
+                    $join->on('v.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('v.health_worker_id', $staffId);
+                })
+                ->leftJoin('prenatal_medical_records as p', function ($join) use ($staffId) {
+                    $join->on('p.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('p.health_worker_id', $staffId);
+                })
+                ->leftJoin('senior_citizen_medical_records as s', function ($join) use ($staffId) {
+                    $join->on('s.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('s.health_worker_id', $staffId);
+                })
+                ->leftJoin('tb_dots_medical_records as t', function ($join) use ($staffId) {
+                    $join->on('t.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('t.health_worker_id', $staffId);
+                })
+                ->leftJoin('family_planning_medical_records as f', function ($join) use ($staffId) {
+                    $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('f.health_worker_id', $staffId);
+                })
+                ->where(function ($q) {
+                    $q->whereNotNull('v.id')
+                        ->orWhereNotNull('p.id')
+                        ->orWhereNotNull('s.id')
+                        ->orWhereNotNull('t.id')
+                        ->orWhereNotNull('f.id');
+                });
+        }
+
+        // Execute query and get records with patient data
+        $records = $query->select('medical_record_cases.*', 'patients.date_of_birth', 'patients.sex')
+            ->with('patient')
+            ->get();
+
+        // Initialize result structure
+        $ageDistribution = [
+            'vaccination' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'prenatal' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'seniorCitizen' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'tbDots' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'familyPlanning' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+        ];
+
+        $totals = [
+            '0-11' => 0,
+            '1-5' => 0,
+            '6-17' => 0,
+            '18-59' => 0,
+            '60+' => 0,
+        ];
+
+        // Process each record
+        foreach ($records as $record) {
+            if (!$record->patient || !$record->patient->date_of_birth) {
+                continue;
+            }
+
+            $age = Carbon::parse($record->patient->date_of_birth)->age;
+            $ageGroup = $this->getAgeGroup($age);
+            $caseType = $this->mapCaseType($record->type_of_case);
+
+            if ($caseType && isset($ageDistribution[$caseType][$ageGroup])) {
+                $ageDistribution[$caseType][$ageGroup]++;
+                $totals[$ageGroup]++;
+            }
+        }
+
+        return [
+            'distribution' => $ageDistribution,
+            'totals' => $totals
+        ];
+    }
+
+    public function getSexDistribution(Request $request)
+    {
+        $user = Auth::user();
+        $staffId = $user->id;
+
+        $startDate = $request->input('start_date', Carbon::now()->startOfYear());
+        $endDate = $request->input('end_date', Carbon::now()->endOfYear());
+
+        // Start building the query
+        $query = medical_record_cases::query()
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', '!=', 'Archived')
+            ->whereBetween('patients.created_at', [$startDate, $endDate]);
+
+        // Apply staff filter using leftJoin approach
+        if ($user->role === 'staff') {
+            $query
+                ->leftJoin('vaccination_medical_records as v', function ($join) use ($staffId) {
+                    $join->on('v.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('v.health_worker_id', $staffId);
+                })
+                ->leftJoin('prenatal_medical_records as p', function ($join) use ($staffId) {
+                    $join->on('p.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('p.health_worker_id', $staffId);
+                })
+                ->leftJoin('senior_citizen_medical_records as s', function ($join) use ($staffId) {
+                    $join->on('s.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('s.health_worker_id', $staffId);
+                })
+                ->leftJoin('tb_dots_medical_records as t', function ($join) use ($staffId) {
+                    $join->on('t.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('t.health_worker_id', $staffId);
+                })
+                ->leftJoin('family_planning_medical_records as f', function ($join) use ($staffId) {
+                    $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('f.health_worker_id', $staffId);
+                })
+                ->where(function ($q) {
+                    $q->whereNotNull('v.id')
+                        ->orWhereNotNull('p.id')
+                        ->orWhereNotNull('s.id')
+                        ->orWhereNotNull('t.id')
+                        ->orWhereNotNull('f.id');
+                });
+        }
+
+        // Execute query and get records with patient data
+        $records = $query->select('medical_record_cases.*', 'patients.sex')
+            ->with('patient')
+            ->get();
+
+        // Initialize result structure
+        $sexDistribution = [
+            'vaccination' => ['Male' => 0, 'Female' => 0],
+            'prenatal' => ['Male' => 0, 'Female' => 0],
+            'seniorCitizen' => ['Male' => 0, 'Female' => 0],
+            'tbDots' => ['Male' => 0, 'Female' => 0],
+            'familyPlanning' => ['Male' => 0, 'Female' => 0],
+        ];
+
+        $totals = [
+            'Male' => 0,
+            'Female' => 0,
+        ];
+
+        // Process each record
+        foreach ($records as $record) {
+            if (!$record->patient || !$record->patient->sex) {
+                continue;
+            }
+
+            $sex = ucfirst(strtolower($record->patient->sex));
+            $caseType = $this->mapCaseType($record->type_of_case);
+
+            if ($caseType && isset($sexDistribution[$caseType][$sex])) {
+                $sexDistribution[$caseType][$sex]++;
+                $totals[$sex]++;
+            }
+        }
+
+        return [
+            'distribution' => $sexDistribution,
+            'totals' => $totals
+        ];
+    }
+
+    private function getAgeGroup($age)
+    {
+        if ($age < 1) {
+            return '0-11'; // 0-11 months
+        } elseif ($age >= 1 && $age <= 5) {
+            return '1-5';
+        } elseif ($age >= 6 && $age <= 17) {
+            return '6-17';
+        } elseif ($age >= 18 && $age <= 59) {
+            return '18-59';
+        } else {
+            return '60+';
+        }
+    }
+
+    private function mapCaseType($typeOfCase)
+    {
+        $mapping = [
+            'vaccination' => 'vaccination',
+            'prenatal' => 'prenatal',
+            'senior-citizen' => 'seniorCitizen',
+            'tb-dots' => 'tbDots',
+            'family-planning' => 'familyPlanning',
+        ];
+
+        return $mapping[$typeOfCase] ?? null;
     }
 }

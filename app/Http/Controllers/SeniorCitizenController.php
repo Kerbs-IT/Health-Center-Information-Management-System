@@ -32,7 +32,7 @@ class SeniorCitizenController extends Controller
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric|min:60',
                 'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
                 'handled_by' => 'required',
@@ -71,6 +71,7 @@ class SeniorCitizenController extends Controller
 
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
@@ -79,15 +80,16 @@ class SeniorCitizenController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+            $age = isset($patientData['sex'])? ucfirst($patientData['sex']):null;
 
             $seniorCitizenPatient = patients::create([
                 'user_id' => null,
                 'first_name' =>ucwords($patientData['first_name']) ,
-                'middle_initial' => ucwords($patientData['middle_initial']),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords($patientData['last_name']),
                 'full_name' =>  $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => ucfirst($patientData['sex'])?? null,
+                'sex' => $age,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -210,11 +212,11 @@ class SeniorCitizenController extends Controller
                 ],
                 'last_name' => 'required|nullable|string',
                 'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date',
                 'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric',
+                'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
                 'handled_by' => 'required',
@@ -240,6 +242,7 @@ class SeniorCitizenController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
@@ -248,21 +251,21 @@ class SeniorCitizenController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ?? $seniorCitizenRecord->patient->sex;
+            $sex = $data['sex'] ?? '';
             // update the patient data first
             $seniorCitizenRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
-                'middle_initial' => ucwords(strtolower($data['middle_initial']))?? ucwords($seniorCitizenRecord->patient->middle_initial),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
                 'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
                 'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,
                 'sex' => $sex ? ucfirst($sex) : null,
-                'civil_status' => $data['civil_status'] ?? $seniorCitizenRecord->patient->civil_status,
-                'contact_number' => $data['contact_number'] ?? $seniorCitizenRecord->patient->contact_number,
+                'civil_status' => $data['civil_status'] ?? '',
+                'contact_number' => $data['contact_number'] ?? '',
                 'date_of_birth' => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? $seniorCitizenRecord->patient->nationality,
+                'nationality' => $data['nationality'] ?? '',
                 'date_of_registration' => $data['date_of_registration'] ?? $seniorCitizenRecord->patient->date_of_registration,
-                'place_of_birth' => $data['place_of_birth'] ?? $seniorCitizenRecord->patient->place_of_birth,
+                'place_of_birth' => $data['place_of_birth'] ?? '',
                 'suffix'=> $data['suffix']??'',
             ]);
             // update the address
@@ -279,15 +282,15 @@ class SeniorCitizenController extends Controller
             $seniorCitizenRecord->senior_citizen_medical_record-> update([
                 'health_worker_id'=> $data['handled_by']?? $seniorCitizenRecord->senior_citizen_medical_record->health_worker_id,
                 'patient_name' => $seniorCitizenRecord->patient->full_name,
-                'occupation'=> $data['occupation']?? $seniorCitizenRecord->senior_citizen_medical_record->occupation,
-                'religion' => $data['religion']?? $seniorCitizenRecord->senior_citizen_medical_record->religion,
-                'SSS'=> $data['SSS']?? $seniorCitizenRecord->senior_citizen_medical_record->SSS,
-                'blood_pressure' => $data['blood_pressure']?? $seniorCitizenRecord->senior_citizen_medical_record->blood_pressure,
-                'temperature' => $data['temperature']?? $seniorCitizenRecord->senior_citizen_medical_record->temperature,
-                'pulse_rate'=> $data['pulse_rate']?? $seniorCitizenRecord->senior_citizen_medical_record->pulse_rate,
-                'respiratory_rate'=> $data['respiratory_rate']?? $seniorCitizenRecord->senior_citizen_medical_record-> respiratory_rate,
-                'height' => $data['height']?? $seniorCitizenRecord->senior_citizen_medical_record->height,
-                'weight' => $data['weight']?? $seniorCitizenRecord->senior_citizen_medical_record-> weight
+                'occupation'=> $data['occupation']?? null,
+                'religion' => $data['religion']?? null,
+                'SSS'=> $data['SSS']?? null,
+                'blood_pressure' => $data['blood_pressure']?? null,
+                'temperature' => $data['temperature']?? null,
+                'pulse_rate'=> $data['pulse_rate']?? null,
+                'respiratory_rate'=> $data['respiratory_rate']?? null,
+                'height' => $data['height']?? null,
+                'weight' => $data['weight']?? null
             ]);
 
             foreach ($seniorCitizenCase as $record) {
@@ -336,16 +339,23 @@ class SeniorCitizenController extends Controller
             $data = $request->validate([
                 'edit_existing_medical_condition' => 'sometimes|nullable|string',
                 'edit_alergies' => 'sometimes|nullable|string',
-                'edit_prescribe_by_nurse' => 'sometimes|nullable|string',
+                'edit_prescribe_by_nurse' => 'required|string',
                 'edit_medication_maintenance_remarks' => 'sometimes|nullable|string',
                 'edit_date_of_comeback' => 'required|date'
+            ], [
+                'edit_existing_medical_condition.string' => 'The existing medical condition field must be a string.',
+                'edit_alergies.string' => 'The alergies field must be a string.',
+                'edit_prescribe_by_nurse.string' => 'The prescribe by nurse field is required.',
+                'edit_medication_maintenance_remarks.string' => 'The medication maintenance remarks field must be a string.',
+                'edit_date_of_comeback.required' => 'The date of comeback field is required.',
+                'edit_date_of_comeback.date' => 'The date of comeback field must be a valid date.',
             ]);
 
             $seniorCitizenCase->update([
-                'existing_medical_condition' =>$data['edit_existing_medical_condition'],
-                'alergies' =>$data['edit_alergies'],
-                'prescribe_by_nurse' =>$data['edit_prescribe_by_nurse'],
-                'remarks' =>$data['edit_medication_maintenance_remarks'],
+                'existing_medical_condition' =>$data['edit_existing_medical_condition']??'',
+                'alergies' =>$data['edit_alergies']??'',
+                'prescribe_by_nurse' =>$data['edit_prescribe_by_nurse']?ucwords($data['edit_prescribe_by_nurse']):'',
+                'remarks' =>$data['edit_medication_maintenance_remarks']??'',
                 'status' => 'Done',
                 'date_of_comeback' => $data['edit_date_of_comeback']
             ]);
@@ -396,9 +406,18 @@ class SeniorCitizenController extends Controller
                 'add_health_worker_id' => 'required',
                 'add_existing_medical_condition' => 'sometimes|nullable|string',
                 'add_alergies' => 'sometimes|nullable|string',
-                'add_prescribe_by_nurse' => 'sometimes|nullable|string',
+                'add_prescribe_by_nurse' => 'required|string',
                 'add_medication_maintenance_remarks' => 'sometimes|nullable|string',
                 'add_date_of_comeback' => 'required|date'
+            ], [
+                'new_patient_name.required' => 'The patient name field is required.',
+                'add_health_worker_id.required' => 'The health worker id field is required.',
+                'add_existing_medical_condition.string' => 'The existing medical condition field must be a string.',
+                'add_alergies.string' => 'The alergies field must be a string.',
+                'add_prescribe_by_nurse.string' => 'The prescribe by nurse field is required.',
+                'add_medication_maintenance_remarks.string' => 'The medication maintenance remarks field must be a string.',
+                'add_date_of_comeback.required' => 'The date of comeback field is required.',
+                'add_date_of_comeback.date' => 'The date of comeback field must be a valid date.',
             ]);
 
             // create the record
@@ -408,7 +427,7 @@ class SeniorCitizenController extends Controller
                 'health_worker_id' => $data['add_health_worker_id'],
                 'existing_medical_condition' => $data['add_existing_medical_condition'] ?? '',
                 'alergies'=> $data['add_alergies']??'',
-                'prescribe_by_nurse' => $data['add_prescribe_by_nurse']??'',
+                'prescribe_by_nurse' => $data['add_prescribe_by_nurse']?ucwords($data['add_prescribe_by_nurse']):'',
                 'remarks' => $data['add_medication_maintenance_remarks']??'',
                 'type_of_record'=> 'Case Record',
                 'date_of_comeback' => $data['add_date_of_comeback']

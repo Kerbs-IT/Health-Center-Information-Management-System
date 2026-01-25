@@ -96,14 +96,14 @@
                         <!-- date of birth -->
                         <div class="mb-2">
                             <label for="date_of_birth" class="mb-1 h6 ">Date of Birth<span class="text-danger">*</span></label>
-                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
+                            <input type="date" placeholder="Enter your date of birth" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
                             @error('date_of_birth')
                             <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
                         <div class="mb-2">
                             <label for="contact_number" class="mb-1 h6 ">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" placeholder="Enter your contact number" name="contact_number" class=" form-control py-1 px-2 bg-light" value="{{old('contact_number')}}">
+                            <input type="text" placeholder="Enter your phone number" name="contact_number" class=" form-control py-1 px-2 bg-light" value="{{old('contact_number')}}">
                             @error('contact_number')
                             <small class="text-danger">{{$message}}</small>
                             @enderror

@@ -96,6 +96,7 @@ class authController extends Controller
             'Trece Martires City,',
             'Cavite'
         ]));
+        $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
 
         $data['full_address'] = $fullAddress;
 
@@ -107,7 +108,7 @@ class authController extends Controller
         $tempUser = User::create([
            
             'first_name' =>ucwords(strtolower($data['first_name'])) ,
-            'middle_initial' => ucwords(strtolower($data['middle_initial'])),
+            'middle_initial' => $middleName,
             'last_name' => ucwords(strtolower($data['last_name'])),
             'patient_type' => $data['patient_type'],
             'email' => $data['email'],
@@ -122,7 +123,7 @@ class authController extends Controller
         session([
             'pending_registration' => [
                 'first_name' => $data['first_name'],
-                'middle_initial' => $data['middle_initial'],
+                'middle_initial' => $middleName,
                 'last_name' => $data['last_name'],
                 'patient_type' => $data['patient_type'],
                 'date_of_birth' => $data['date_of_birth'],
@@ -241,7 +242,7 @@ class authController extends Controller
         $nurse = $user->nurses;
         $middle = substr($data['middle_initial'] ?? '', 0, 1);
         $middle = $middle ? strtoupper($middle) . '.' : null;
-        $middleInitial = $data['middle_initial'] ? ucwords($data['middle_initial']) : '';
+        $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
         $parts = [
             strtolower($data['first_name']),
             $middle,
@@ -257,14 +258,14 @@ class authController extends Controller
             case 'staff':
                 $user->update([
                     'first_name' => ucwords(strtolower($data['first_name'])),
-                    'middle_initial' => $middleInitial,
+                    'middle_initial' => $middleName,
                     'last_name' => ucwords(strtolower($data['last_name'])),
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'] ?? $user->contact_number,
                 ]);
                 $staff->update([
                     'first_name' => ucwords(strtolower($data['first_name'])),
-                    'middle_initial' => $middleInitial,
+                    'middle_initial' => $middleName,
                     'last_name' => ucwords(strtolower($data['last_name'])),
                     'full_name' => $fullName,
                     'age' => $ageInYears??$staff->age,
@@ -281,16 +282,16 @@ class authController extends Controller
             case 'nurse':
                 $user->update([
                     'first_name' => ucwords(strtolower($data['first_name'])),
-                    'middle_initial' => $middleInitial,
+                    'middle_initial' => $middleName,
                     'last_name' => ucwords(strtolower($data['last_name'])),
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'] ?? $user->contact_number,
                 ]);
                 $nurse->update([
                     'first_name' => $data['first_name'] ?? null,
-                    'middle_initial' => $data['middle_initial'] ?? null,
+                    'middle_initial' => $middleName,
                     'last_name' => $data['last_name'] ?? null,
-                    'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
+                    'full_name' => $fullName,
                     'age' => $data['age'] ?? null,
                     'date_of_birth' => $data['date_of_birth'] ?? null,
                     'sex' => $data['sex'] ?? null,
@@ -405,13 +406,13 @@ class authController extends Controller
             'Trece Martires City,',
             'Cavite'
         ]));
-
+        $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
         // Create user directly (NO verification needed for staff/nurse)
         $newUser = User::create([
            
             'email' => $data['email'],
             'first_name' => ucwords(strtolower($data['first_name'])),
-            'middle_initial' => ucwords(strtolower($data['middle_initial'] ?? '')),
+            'middle_initial' => $middleName,
             'last_name' => ucwords(strtolower($data['last_name'])),
             'date_of_birth' => $data['date_of_birth'],
             'contact_number' => $data['contact_number'],
@@ -440,13 +441,25 @@ class authController extends Controller
             'longitude' => null,
         ]);
 
+        $middle = substr($data['middle_initial'] ?? '', 0, 1);
+        $middle = $middle ? strtoupper($middle) . '.' : null;
+        $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
+        $parts = [
+            strtolower($data['first_name']),
+            $middle,
+            strtolower($data['last_name']),
+            $data['suffix'] ?? null,
+        ];
+
+        $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
         // Create role-specific records
         switch ($newUser->role) {
             case 'nurse':
                 nurses::create([
                     'user_id' => $userId,
                     'first_name' => $data['first_name'],
-                    'middle_initial' => $data['middle_initial'],
+                    'middle_initial' => $middleName,
                     'last_name' => $data['last_name'],
                     'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                     'address_id' => $address->id,
@@ -465,7 +478,7 @@ class authController extends Controller
                 staff::create([
                     'user_id' => $userId,
                     'first_name' => $data['first_name'],
-                    'middle_initial' => $data['middle_initial'],
+                    'middle_initial' => $middleName,
                     'last_name' => $data['last_name'],
                     'full_name' => ($data['first_name'] . ' ' . $data['middle_initial'] . ' ' . $data['last_name']),
                     'assigned_area_id' => $data['assigned_area'],

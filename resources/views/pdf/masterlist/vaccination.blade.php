@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
         body {
@@ -18,21 +17,12 @@
             text-align: center;
         }
 
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .header-item {
-            width: 50%;
-            text-align: center;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            table-layout: fixed;
+            /* This ensures width percentages are respected */
         }
 
         th,
@@ -40,7 +30,9 @@
             border: 1px solid #000;
             padding: 5px;
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
+            word-wrap: break-word;
+            /* Allow text to wrap */
         }
 
         th {
@@ -48,151 +40,154 @@
             font-weight: bold;
         }
 
-        .need-space {
-            min-width: 150px;
+        .page-break {
+            page-break-after: always;
         }
 
-        .text-decoration-underline {
-            text-decoration: underline;
-        }
-
-        .fw-light {
-            font-weight: 300;
-        }
-
-        .text-no-wrap {
-            white-space: nowrap;
+        .signature-section {
+            margin-top: 30px;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="vaccination-masterlist-con">
+    @php
+    $recordsPerPage = 15;
+    $chunks = $vaccinationMasterlist->chunk($recordsPerPage);
+    $totalPages = $chunks->count();
 
-        <div class="mb-3 text-center">
-            <h2>MASTER LIST OF {{ $selectedRange }}</h2>
-        </div>
-        <div class="mb-3 d-flex justify-content-between">
-            <h4 class="w-50 text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$selectedBrgy == ''?'All Barangays':$selectedBrgy }}</span></h4>
-            <h4 class="w-50 text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
-        </div>
-        <div class="table-con">
-            <table>
-                <thead class="table-header ">
-                    <tr>
-                        <th class="need-space text-no-wrap">Name of Child</th>
-                        <th class="need-space">Address</th>
-                        <th>sex</th>
-                        <th>Age</th>
-                        <th class="need-space">Date of Birth</th>
-                        <th class="">SE status 1 Months 4 months</th>
-                        <th>BCG</th>
-                        <th>NEPA w/in 24 hrs</th>
-                        <th>PENTA 1</th>
-                        <th>PENTA 2</th>
-                        <th>PENTA 3</th>
-                        <th>OPV 1</th>
-                        <th>OPV 2</th>
-                        <th>OPV3</th>
-                        <th>PCV 1</th>
-                        <th>PCV 2</th>
-                        <th>PCV 3</th>
-                        <th>IPV 1</th>
-                        <th>IPV 2</th>
-                        <th>MCV 1</th>
-                        <th>MCV 2</th>
-                        <th>Remarks</th>
+    if ($totalPages === 0) {
+    $chunks = collect([collect(array_fill(0, 15, null))]);
+    $totalPages = 1;
+    }
+    @endphp
 
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($vaccinationMasterlist as $masterlist)
-                    <tr>
+    @foreach($chunks as $pageIndex => $pageRecords)
+    <div @if($pageIndex < $totalPages - 1) class="page-break" @endif>
 
-                        <td class="need-space">{{optional($masterlist)->name_of_child??''}}</td>
-                        <td class="need-space">{{optional($masterlist)-> Address ?? ''}}</td>
-                        <td>{{optional($masterlist)-> sex ?? ''}}</td>
-                        <td>{{optional($masterlist)-> age ?? ''}}</td>
-                        <td class="need-space">{{optional($masterlist)-> date_of_birth?->format('Y-m-d') ?? ''}}</td>
-                        <td class="" style="font-size: 15px;">{{optional($masterlist)->SE_status??''}}</td>
-                        <td>{{optional($masterlist)->BCG??''}}</td>
-                        <td>{{optional($masterlist)->{'Hepatitis B'}??''}}</td>
-                        <td>{{optional($masterlist)-> PENTA_1??''}}</td>
-                        <td>{{optional($masterlist)-> PENTA_2??''}}</td>
-                        <td>{{optional($masterlist)->PENTA_3??''}}</td>
-                        <td>{{optional($masterlist)->OPV_1}}</td>
-                        <td>{{optional($masterlist)->OPV_2}}</td>
-                        <td>{{optional($masterlist)->OPV_3}}</td>
-                        <td>{{optional($masterlist)->PCV_1}}</td>
-                        <td>{{optional($masterlist)->PCV_2}}</td>
-                        <td>{{optional($masterlist)->PCV_3}}</td>
-                        <td>{{optional($masterlist)->IPV_1}}</td>
-                        <td>{{optional($masterlist)->IPV_2}}</td>
-                        <td>{{optional($masterlist)->MCV_1??''}}</td>
-                        <td>{{optional($masterlist)->MCV_2}}</td>
-                        <td>{{optional($masterlist)->remarks}}</td>
+        <h2>MASTER LIST OF {{ $selectedRange }}</h2>
 
-
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="24" class="text-center ">
-                            <i class="fas fa-search mb-2" style="font-size: 3rem; color: #ccc;"></i>
-                            <p class="text-muted mb-1">No records found</p>
-                            @if($search || $selectedBrgy || $filterMonth || $filterYear)
-                            <small class="text-muted">Try adjusting your filters or search term</small>
+        <table style="margin-bottom: 10px; border: none;">
+            <tr>
+                <td style="width: 50%; text-align: center; border: none;">
+                    <h4 style="margin: 0;font-size:20px">Name of Barangay: <span style="font-weight: 300; text-decoration: underline;">
+                            @if(Auth::user()->role == 'staff')
+                            {{$assignedArea}}
                             @else
-                            <small class="text-muted">No data available</small>
+                            {{$selectedBrgy == ''?'All Barangays':$selectedBrgy }}
                             @endif
-                        </td>
-                    </tr>
-                    @endforelse
-                    {{-- Fill remaining rows to maintain consistent table height --}}
-                    @php
-                    $currentCount = $vaccinationMasterlist->count();
-                    $emptyRowsNeeded = 20 - $currentCount;
-                    @endphp
+                        </span></h4>
+                </td>
+                <td style="width: 50%; text-align: center; border: none;">
+                    <h4 style="margin: 0;font-size:20px">Name of Midwife: <span style="font-weight: 300; text-decoration: underline;">{{ $midwifeName ?? 'N/A'}}</span></h4>
+                </td>
+            </tr>
+        </table>
 
-                    @if($currentCount > 0 && $emptyRowsNeeded > 0)
-                    @for($i = 0; $i < $emptyRowsNeeded; $i++)
-                        <tr>
-                        <td class="need-space">&nbsp;</td>
-                        <td class="need-space">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        </tr>
-                        @endfor
-                        @endif
-                </tbody>
-            </table>
-        </div>
-        <h2>Name OF BHW: <span class="text-decoration-underline">
-                @if(Auth::user()->role == 'staff')
-                {{ Auth::user()->staff->full_name ?? 'N/A' }}
+        <table>
+            <tr>
+                <th width="12%">Name of Child</th>
+                <th width="15%">Address</th>
+                <th width="3%">Sex</th>
+                <th width="3%">Age</th>
+                <th width="5%">Date of Birth</th>
+                <th width="4%">SE status</th>
+                <th width="3%">BCG</th>
+                <th width="3%">HEPA B</th>
+                <th width="3%">PENTA 1</th>
+                <th width="3%">PENTA 2</th>
+                <th width="3%">PENTA 3</th>
+                <th width="3%">OPV 1</th>
+                <th width="3%">OPV 2</th>
+                <th width="3%">OPV 3</th>
+                <th width="3%">PCV 1</th>
+                <th width="3%">PCV 2</th>
+                <th width="3%">PCV 3</th>
+                <th width="3%">IPV 1</th>
+                <th width="3%">IPV 2</th>
+                <th width="3%">MCV 1</th>
+                <th width="3%">MCV 2</th>
+                <th width="5%">Remarks</th>
+            </tr>
+            @if($pageRecords->count() > 0)
+            @foreach($pageRecords as $masterlist)
+            <tr>
+                <td style="text-align: left; padding-left: 3px;">{{optional($masterlist)->name_of_child??''}}</td>
+                <td style="font-size: 9px; text-align: left; padding-left: 3px;">{{optional($masterlist)->Address ?? ''}}</td>
+                <td>{{optional($masterlist)->sex ?? ''}}</td>
+                <td>{{optional($masterlist)->age_display ?? ''}}</td>
+                <td style="font-size: 9px;">{{optional($masterlist)->date_of_birth?->format('Y-m-d') ?? ''}}</td>
+                <td style="font-size: 9px;">{{optional($masterlist)->SE_status??''}}</td>
+                <td>{{optional($masterlist)->BCG??''}}</td>
+                <td>{{optional($masterlist)->{'Hepatitis B'}??''}}</td>
+                <td>{{optional($masterlist)->PENTA_1??''}}</td>
+                <td>{{optional($masterlist)->PENTA_2??''}}</td>
+                <td>{{optional($masterlist)->PENTA_3??''}}</td>
+                <td>{{optional($masterlist)->OPV_1??''}}</td>
+                <td>{{optional($masterlist)->OPV_2??''}}</td>
+                <td>{{optional($masterlist)->OPV_3??''}}</td>
+                <td>{{optional($masterlist)->PCV_1??''}}</td>
+                <td>{{optional($masterlist)->PCV_2??''}}</td>
+                <td>{{optional($masterlist)->PCV_3??''}}</td>
+                <td>{{optional($masterlist)->IPV_1??''}}</td>
+                <td>{{optional($masterlist)->IPV_2??''}}</td>
+                <td>{{optional($masterlist)->MCV_1??''}}</td>
+                <td>{{optional($masterlist)->MCV_2??''}}</td>
+                <td style="font-size: 9px;">{{optional($masterlist)->remarks??''}}</td>
+            </tr>
+            @endforeach
+
+            @php
+            $currentCount = $pageRecords->count();
+            $emptyRowsNeeded = $recordsPerPage - $currentCount;
+            @endphp
+
+            @for($i = 0; $i < $emptyRowsNeeded; $i++)
+                <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                </tr>
+                @endfor
                 @else
-                {{Auth::user()->nurses->full_name }}
+                <tr>
+                    <td colspan="22">No records found</td>
+                </tr>
                 @endif
-        </span></h2>
+        </table>
+
+        <div class="signature-section">
+            <h2 style="text-align:left">Name OF BHW: <span style="text-decoration: underline;">
+                    @if(Auth::user()->role == 'staff')
+                    {{ Auth::user()->staff->full_name ?? 'N/A' }}
+                    @else
+                    {{$healthWorkerFullName ?? $midwifeName }}
+                    @endif
+                </span></h2>
+        </div>
     </div>
+    @endforeach
+
 </body>
 
 </html>

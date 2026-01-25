@@ -50,7 +50,7 @@ class PrenatalController extends Controller
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
                 'handled_by' => 'required',
@@ -61,7 +61,7 @@ class PrenatalController extends Controller
 
             $medicalCaseData = $request->validate([
                 'family_head_name' => 'sometimes|nullable|string',
-                'family_serial_no' => 'sometimes|nullable|string',
+                'family_serial_no' => 'sometimes|nullable|numeric',
                 'blood_type' => 'sometimes|nullable|string',
                 'religion' => 'sometimes|nullable|string',
                 'philHealth_number' => 'sometimes|nullable|string',
@@ -101,6 +101,7 @@ class PrenatalController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'add_prenatal_planning' => 'nullable|string:max:2000'
 
             ]);
 
@@ -158,6 +159,7 @@ class PrenatalController extends Controller
             // create the patient information record
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
@@ -170,7 +172,7 @@ class PrenatalController extends Controller
             $prenatalPatient = patients::create([
                 'user_id' => null,
                 'first_name'     => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => ucfirst($patientData['middle_initial']),
+                'middle_initial' => $middleName,
                 'last_name'      => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
@@ -182,7 +184,7 @@ class PrenatalController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
-                'suffix' => $patientData['suffix']??'',
+                'suffix' => $patientData['suffix'] ?? '',
             ]);
 
             // use the id of the created patient for medical case record
@@ -228,9 +230,9 @@ class PrenatalController extends Controller
                 'family_head_name' => $medicalCaseData['family_head_name'] ?? null,
                 'blood_type' => $medicalCaseData['blood_type'] ?? null,
                 'religion' => $medicalCaseData['religion'] ?? null,
-                'philHealth_number' => $medicalCaseData['philHealth_number']??null,
-                'family_serial_no' => $medicalCaseData['family_serial_no']??null,
-                'family_planning_decision' => $medicalCaseData['family_planning']??null,
+                'philHealth_number' => $medicalCaseData['philHealth_number'] ?? null,
+                'family_serial_no' => $medicalCaseData['family_serial_no'] ?? null,
+                'family_planning_decision' => $medicalCaseData['family_planning'] ?? null,
                 'health_worker_id' => $patientData['handled_by'],
                 'type_of_record' => 'Medical Record'
             ]);
@@ -261,12 +263,13 @@ class PrenatalController extends Controller
                 'height' => $prenatalCaseData['height'] ?? null,
                 'weight' => $prenatalCaseData['weight'] ?? null,
                 'health_worker_id' => $patientData['handled_by'],
-                'type_of_record' => 'Case Record'
+                'type_of_record' => 'Case Record',
+                'planning' => $prenatalCaseData['add_prenatal_planning'] ?? null
             ]);
 
             // insert the pregnancy timeline
-            $isPregYear = $prenatalCaseData['preg_year']??null;
-            if($isPregYear){
+            $isPregYear = $prenatalCaseData['preg_year'] ?? null;
+            if ($isPregYear) {
                 foreach ($prenatalCaseData['preg_year'] as $index => $year) {
                     pregnancy_timeline_records::create([
                         'prenatal_case_record_id' => $prenatalCaseRecord->id,
@@ -279,7 +282,7 @@ class PrenatalController extends Controller
                     ]);
                 };
             }
-            
+
 
 
             // insert assessment
@@ -346,8 +349,8 @@ class PrenatalController extends Controller
             ]);
 
             // insert 
-            $isDonorNames = $pregnancy_plan['names_of_donor']??null;
-            if($isDonorNames){
+            $isDonorNames = $pregnancy_plan['names_of_donor'] ?? null;
+            if ($isDonorNames) {
                 foreach ($pregnancy_plan['names_of_donor'] as $index => $name) {
                     donor_names::create([
                         'pregnancy_plan_id' => $pregnancyPlanRecord->id,
@@ -355,11 +358,11 @@ class PrenatalController extends Controller
                     ]);
                 };
             }
-            
+
             // if the family planning answer is yes, then we will create a family planning record for the pregnancy patient
-            $isFamilyPlan = $medicalCaseData['family_planning']??null;
-            
-            if($isFamilyPlan != null && $isFamilyPlan === 'yes'){
+            $isFamilyPlan = $medicalCaseData['family_planning'] ?? null;
+
+            if ($isFamilyPlan != null && $isFamilyPlan === 'yes') {
                 // add record for medical_case table
                 $familyPlanningMedicalCase = medical_record_cases::create([
                     'patient_id' => $prenatalPatient->id,
@@ -375,7 +378,7 @@ class PrenatalController extends Controller
                     'health_worker_id' => $patientData['handled_by'],
                     'patient_name' => $prenatalPatient->full_name,
                     'occupation' =>  null,
-                    'religion' => $medicalCaseData['religion']?? null,
+                    'religion' => $medicalCaseData['religion'] ?? null,
                     'philhealth_no' =>  null,
                     'blood_pressure' => $prenatalCaseData['blood_pressure'] ?? null,
                     'temperature' => $prenatalCaseData['temperature'] ?? null,
@@ -397,7 +400,7 @@ class PrenatalController extends Controller
                     'client_name' =>  $prenatalPatient->full_name,
                     'client_date_of_birth' => $prenatalPatient['date_of_birth'] ?? null,
                     'client_age' => $prenatalPatient['age'] ?? null,
-                    'client_suffix' => $patientData['suffix']??'',
+                    'client_suffix' => $patientData['suffix'] ?? '',
                     'occupation' => null,
                     'client_address' => $fullAddress,
                     'client_contact_number' => $prenatalPatient['contact_number'] ?? null,
@@ -484,7 +487,7 @@ class PrenatalController extends Controller
                 // PHYSICAL EXAMINATION
                 $physicalExamination = family_planning_physical_examinations::create([
                     'case_id' => $caseId,
-                    'blood_pressure' => $prenatalCaseData['blood_pressure']?? null,
+                    'blood_pressure' => $prenatalCaseData['blood_pressure'] ?? null,
                     'pulse_rate' => $prenatalCaseData['pulse_rate'] ?? null,
                     'height' => $prenatalCaseData['height']  ?? null,
                     'weight' => $prenatalCaseData['weight']  ?? null,
@@ -570,7 +573,7 @@ class PrenatalController extends Controller
                         'name_of_wra' => $prenatalPatient->full_name,
                         'address' => $fullAddress,
                         'age' => $prenatalPatient->age ?? null,
-                        'date_of_birth' => $prenatalPatient -> date_of_birth ?? null,
+                        'date_of_birth' => $prenatalPatient->date_of_birth ?? null,
                         'SE_status' => null,
                         'plan_to_have_more_children_yes' => null,
                         'plan_to_have_more_children_no' =>  null,
@@ -585,7 +588,7 @@ class PrenatalController extends Controller
                         'date_when_FP_method_accepted' =>  null
                     ]);
                 }
-            }else{
+            } else {
                 if ($prenatalPatient->age >= 10) {
                     $wra_masterlist = wra_masterlists::create([
                         'medical_record_case_id' => null,
@@ -640,7 +643,7 @@ class PrenatalController extends Controller
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
+                'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
                 'handled_by' => 'required',
@@ -680,30 +683,31 @@ class PrenatalController extends Controller
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['suffix']??null
+                $data['suffix'] ?? null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ?? $prenatalRecord->patient->sex;
+            $sex = isset($data['sex']) ? $data['sex'] : $prenatalRecord->patient->sex;
             // update the patient data first
             $prenatalRecord->patient->update([
                 'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
-                'middle_initial' => ucwords($data['middle_initial']) ?? ucwords($prenatalRecord->patient->middle_initial),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
-                'full_name' =>$fullName,
+                'full_name' => $fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,
-                'sex' => $sex? ucfirst($sex):null,
-                'civil_status' => $data['civil_status'] ?? $prenatalRecord->patient->civil_status,
-                'contact_number' => $data['contact_number'],
+                'sex' => $sex ? ucfirst($sex) : null,
+                'civil_status' => $data['civil_status'] ?? '',
+                'contact_number' => $data['contact_number'] ?? '',
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? $prenatalRecord->patient->nationality,
+                'nationality' => $data['nationality'] ?? '',
                 'date_of_registration' => $data['date_of_registration'] ?? $prenatalRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $prenatalRecord->patient->place_of_birth,
-                'suffix'=> $data['suffix']??'',
+                'suffix' => $data['suffix'] ?? '',
             ]);
 
             // update the address
@@ -718,12 +722,12 @@ class PrenatalController extends Controller
             $address->refresh(); // <-- this pulls in DB defaults
 
             $fullAddress = collect([
-                 $address->house_number,
-                 $address->street,
-                 $address->purok,
-                 $address->barangay ?? null,
-                 $address->city ?? null,
-                 $address->province ?? null,
+                $address->house_number,
+                $address->street,
+                $address->purok,
+                $address->barangay ?? null,
+                $address->city ?? null,
+                $address->province ?? null,
             ])->filter()->join(', ');
 
             // update the case
@@ -741,16 +745,17 @@ class PrenatalController extends Controller
                 'health_worker_id' => $data['handled_by'] ?? $prenatalRecord->prenatal_medical_record->health_worker_id,
             ]);
             // update the case info
-            $prenatalCaseRecord = prenatal_case_records::where('medical_record_case_id', $prenatalRecord->id)->firstOrFail();
+            $prenatalCaseRecord = prenatal_case_records::where('medical_record_case_id', $prenatalRecord->id)->where('status', '!=', 'Archived')->firstOrFail();
             $prenatalCaseRecord->update([
                 'patient_name' => $prenatalRecord->patient->full_name,
                 'health_worker_id' => $data['handled_by'] ?? $prenatalRecord->$prenatalCaseRecord->health_worker_id,
-                'blood_pressure' => $data['blood_pressure'] ?? $prenatalRecord->$prenatalCaseRecord->blood_pressure??null,
-                'temperature' => $data['temperature'] ?? $prenatalRecord->$prenatalCaseRecord->temperature ?? null,
-                'pulse_rate' => $data['pulse_rate'] ?? $prenatalRecord->$prenatalCaseRecord->pulse_rate ?? null,
-                'respiratory_rate' => $data['respiratory_rate'] ?? $prenatalRecord->$prenatalCaseRecord->respiratory_rate ?? null,
-                'height' => $data['height'] ?? $prenatalRecord->$prenatalCaseRecord->height ?? null,
-                'weight' => $data['weight'] ?? $prenatalRecord->$prenatalCaseRecord->weight ?? null
+                'blood_pressure' => $data['blood_pressure'] ?? null,
+                'temperature' => $data['temperature'] ?? null,
+                'pulse_rate' => $data['pulse_rate'] ?? null,
+                'respiratory_rate' => $data['respiratory_rate'] ?? null,
+                'height' => $data['height'] ?? null,
+                'weight' => $data['weight'] ?? null,
+                'status' => 'Active'
             ]);
 
             // update the pregnancy history
@@ -767,22 +772,24 @@ class PrenatalController extends Controller
                 'q2_answer4' => $data['q2_answer4'] ?? $pregnancyHistory->q2_answer4,
                 'q2_answer5' => $data['q2_answer5'] ?? $pregnancyHistory->q2_answer5,
             ]);
+
+            // update the case
             // update pregnancy plan patient name
-            $pregnancyPlanRecord = pregnancy_plans::where('medical_record_case_id',$id)->firstOrFail();
-            $pregnancyPlanRecord -> update([
-                'patient_name' => $prenatalRecord->patient-> full_name
+            $pregnancyPlanRecord = pregnancy_plans::where('medical_record_case_id', $id)->firstOrFail();
+            $pregnancyPlanRecord->update([
+                'patient_name' => $prenatalRecord->patient->full_name
             ]);
 
             $isFamilyPlan = $data['family_planning'] ?? null;
 
             if ($isFamilyPlan != null && $isFamilyPlan === 'yes') {
                 // check if there is an existing family plan
-                $hasExistingFamilyPlan = medical_record_cases::where('patient_id',$prenatalRecord->patient->id)->where('type_of_case','family-planning')->exists();
+                $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->exists();
 
-                if(!empty($hasExistingFamilyPlan)){
+                if (!empty($hasExistingFamilyPlan)) {
                     $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
 
-                    if($existingFamilyPlan -> status == 'Archived'){
+                    if ($existingFamilyPlan->status == 'Archived') {
                         $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
                         $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
@@ -820,21 +827,21 @@ class PrenatalController extends Controller
                 }
                 // add record for medical_case table
                 $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
-                if($existingFamilyPlan){
+                if ($existingFamilyPlan) {
                     $familyPlanningMedicalCase = $existingFamilyPlan;
-                }else{
+                } else {
                     $familyPlanningMedicalCase = medical_record_cases::create([
                         'patient_id' => $prenatalRecord->patient->id,
                         'type_of_case' => 'family-planning',
                     ]);
                 }
-                
+
 
                 $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id; //medical record id
 
-                $existingMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningMedicalCaseId )->first();
+                $existingMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningMedicalCaseId)->first();
 
-                if(!$existingMedicalRecord){
+                if (!$existingMedicalRecord) {
                     // CREATE THE MEDICAL RECORD
                     family_planning_medical_records::create([
                         'medical_record_case_id' => $familyPlanningMedicalCaseId,
@@ -851,13 +858,13 @@ class PrenatalController extends Controller
                         'weight' => $data['weight'] ?? null,
                     ]);
                 }
-               
+
 
                 $previoulyMethod = null;
                 $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', "!=", 'Archived')->first();
                 $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', "!=", 'Archived')->first();
-                if(!$family_planning_sideA && !$family_planning_sideB){
-                   
+                if (!$family_planning_sideA && !$family_planning_sideB) {
+
                     // CREATE THE CASE RECORD
                     $caseRecord = family_planning_case_records::create([
                         'medical_record_case_id' =>  $familyPlanningMedicalCaseId,
@@ -867,7 +874,7 @@ class PrenatalController extends Controller
                         'NHTS' =>  null,
                         'client_name' =>  $prenatalRecord->patient->full_name,
                         'client_date_of_birth' => $data['date_of_birth'] ?? null,
-                        'client_suffix'=> $data['suffix']??'',
+                        'client_suffix' => $data['suffix'] ?? '',
                         'client_age' => $data['age'] ?? null,
                         'occupation' => null,
                         'client_address' => $fullAddress,
@@ -991,7 +998,7 @@ class PrenatalController extends Controller
                     ]);
                 }
 
-                
+
                 // create the wra record
                 // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
                 $method_of_FP = [
@@ -1035,8 +1042,8 @@ class PrenatalController extends Controller
                 if ($prenatalRecord->patient->age >= 10) {
                     // check if there is wra record 
                     $wra_masterlist = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
-                    if($wra_masterlist){
-                        $wra_masterlist ->update([
+                    if ($wra_masterlist) {
+                        $wra_masterlist->update([
                             'brgy_name' => $address->purok,
                             'house_hold_number' => null,
                             'name_of_wra' => $prenatalRecord->patient->full_name,
@@ -1044,7 +1051,7 @@ class PrenatalController extends Controller
                             'age' => $prenatalRecord->patient->age ?? null,
                             'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
                         ]);
-                    }else{
+                    } else {
                         $wra_masterlist = wra_masterlists::create([
                             'medical_record_case_id' => $familyPlanningMedicalCaseId,
                             'health_worker_id' => $data['handled_by'],
@@ -1070,22 +1077,21 @@ class PrenatalController extends Controller
                             'date_when_FP_method_accepted' =>  null
                         ]);
                     }
-                    
                 }
             } else {
-                if($isFamilyPlan != null && $isFamilyPlan === 'no'){
-                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->exists();
+                if ($isFamilyPlan != null && $isFamilyPlan === 'no') {
+                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->exists();
 
                     if (!empty($hasExistingFamilyPlan)) {
-                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
+                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->first();
 
-                        $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id )->where('status','!=','Archived')->first() ?? null;
-                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=','Archived')->first() ?? null;
+                        $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
+                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
                         // make the records archived
                         $existingFamilyPlan->update(['status' => 'Archived']);
-                        if($family_planning_sideA && $family_planning_sideB && $wra_record){
+                        if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
                             $family_planning_sideA->update([
                                 'status' => 'Archived',
                             ]);
@@ -1093,7 +1099,7 @@ class PrenatalController extends Controller
                             $family_planning_sideB->update([
                                 'status' => 'Archived'
                             ]);
-                            $wra_record -> update([
+                            $wra_record->update([
                                 'plan_to_have_more_children_yes' => null,
                                 'plan_to_have_more_children_no' =>  null,
                                 'current_FP_methods' => null,
@@ -1107,7 +1113,7 @@ class PrenatalController extends Controller
                                 'date_when_FP_method_accepted' =>  null
                             ]);
                         }
-                        
+
 
                         return response()->json(['errors' => 'family planning exist'], 200);
                     }
@@ -1123,7 +1129,7 @@ class PrenatalController extends Controller
                             'age' => $prenatalRecord->patient->age ?? null,
                             'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
                         ]);
-                    }else{
+                    } else {
                         $wra_masterlist = wra_masterlists::create([
                             'medical_record_case_id' => null,
                             'health_worker_id' => $data['handled_by'],
@@ -1153,20 +1159,22 @@ class PrenatalController extends Controller
             }
 
             // update the wra record
-            $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->where('status','Active')->first()??null;
-            
-            if($wra_record){
+            $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->where('status', 'Active')->first() ?? null;
+
+            if ($wra_record) {
                 $wra_record->update([
                     'name_of_wra' => $prenatalRecord->patient->full_name,
                     'age' => $prenatalRecord->patient->age,
-                    'date_of_birth'=> $prenatalRecord->patient->date_of_birth,
+                    'date_of_birth' => $prenatalRecord->patient->date_of_birth,
                     'address' => $fullAddress
                 ]);
             }
 
 
-            return response()->json(['message' => 'Updating Patient information Successfully',
-                                    'recordVerification' => $message??null], 200);
+            return response()->json([
+                'message' => 'Updating Patient information Successfully',
+                'recordVerification' => $message ?? null
+            ], 200);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
@@ -1217,11 +1225,67 @@ class PrenatalController extends Controller
                 'tt2' => 'sometimes|nullable|numeric',
                 'tt3' => 'sometimes|nullable|numeric',
                 'tt4' => 'sometimes|nullable|numeric',
-                'tt5' => 'sometimes|nullable|numeric'
+                'tt5' => 'sometimes|nullable|numeric',
+                'edit_case_blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
+                'edit_case_temperature' => 'nullable|numeric|between:30,45',
+                'edit_case_pulse_rate' => 'nullable|string|max:20',
+                'edit_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'edit_case_height' => 'nullable|numeric|between:30,300',
+                'edit_case_weight' => 'nullable|numeric|between:1,500',
+                'edit_case_planning' => 'nullable|string|max:2000',
+            ], [
+                // Required fields
+                'LMP.required' => 'The LMP field is required.',
+                'LMP.date' => 'The LMP field must be a valid date.',
+                'expected_delivery.required' => 'The expected delivery field is required.',
+                'expected_delivery.date' => 'The expected delivery field must be a valid date.',
 
+                // Numeric fields
+                'G.numeric' => 'The G field must be a number.',
+                'P.numeric' => 'The P field must be a number.',
+                'T.numeric' => 'The T field must be a number.',
+                'premature.numeric' => 'The premature field must be a number.',
+                'abortion.numeric' => 'The abortion field must be a number.',
+                'living_children.numeric' => 'The living children field must be a number.',
+                'menarche.numeric' => 'The menarche field must be a number.',
+
+                // TT fields
+                'tt1.numeric' => 'The TT1 field must be a number.',
+                'tt2.numeric' => 'The TT2 field must be a number.',
+                'tt3.numeric' => 'The TT3 field must be a number.',
+                'tt4.numeric' => 'The TT4 field must be a number.',
+                'tt5.numeric' => 'The TT5 field must be a number.',
+
+                // Array fields
+                'preg_year.array' => 'The pregnancy year field must be an array.',
+                'type_of_delivery.array' => 'The type of delivery field must be an array.',
+                'place_of_delivery.array' => 'The place of delivery field must be an array.',
+                'birth_attendant.array' => 'The birth attendant field must be an array.',
+                'compilation.array' => 'The compilation field must be an array.',
+                'outcome.array' => 'The outcome field must be an array.',
+
+                // Vital signs and measurements
+                'edit_case_blood_pressure.regex' => 'The blood pressure format is invalid. Expected format: systolic/diastolic (e.g., 120/80).',
+                'edit_case_temperature.numeric' => 'The temperature field must be a number.',
+                'edit_case_temperature.between' => 'The temperature must be between 30 and 45 degrees Celsius.',
+                'edit_case_pulse_rate.string' => 'The pulse rate field must be a string.',
+                'edit_case_pulse_rate.max' => 'The pulse rate field must not exceed 20 characters.',
+                'edit_case_respiratory_rate.integer' => 'The respiratory rate field must be an integer.',
+                'edit_case_respiratory_rate.min' => 'The respiratory rate must be at least 5 breaths per minute.',
+                'edit_case_respiratory_rate.max' => 'The respiratory rate must not exceed 60 breaths per minute.',
+                'edit_case_height.numeric' => 'The height field must be a number.',
+                'edit_case_height.between' => 'The height must be between 30 and 300 cm.',
+                'edit_case_weight.numeric' => 'The weight field must be a number.',
+                'edit_case_weight.between' => 'The weight must be between 1 and 500 kg.',
+                'edit_case_planning.string' => 'The planning field must be a string.',
+                'edit_case_planning.max' => 'The planning field must not exceed 2000 characters.',
             ]);
 
-            // assessment validation
+            // Assessment validation
             $assessment = $request->validate([
                 'spotting' => 'sometimes|nullable|string',
                 'edema' => 'sometimes|nullable|string',
@@ -1231,32 +1295,50 @@ class PrenatalController extends Controller
                 'severe_vomiting' => 'sometimes|nullable|string',
                 'hx_smoking' => 'sometimes|nullable|string',
                 'alcohol_drinker' => 'sometimes|nullable|string',
-                'drug_intake' => 'sometimes|nullable|string'
+                'drug_intake' => 'sometimes|nullable|string',
+            ], [
+                'spotting.string' => 'The spotting field must be a valid text value.',
+                'edema.string' => 'The edema field must be a valid text value.',
+                'severe_headache.string' => 'The severe headache field must be a valid text value.',
+                'blurring_of_vission.string' => 'The blurring of vision field must be a valid text value.',
+                'watery_discharge.string' => 'The watery discharge field must be a valid text value.',
+                'severe_vomiting.string' => 'The severe vomiting field must be a valid text value.',
+                'hx_smoking.string' => 'The smoking history field must be a valid text value.',
+                'alcohol_drinker.string' => 'The alcohol drinker field must be a valid text value.',
+                'drug_intake.string' => 'The drug intake field must be a valid text value.',
             ]);
 
             // if it passess the validation,then:
             // update the values
             $caseRecord->update([
-                'G' => $data['G'] ?? $caseRecord->G,
-                'P' => $data['P'] ?? $caseRecord->P,
-                'T' => $data['T'] ?? $caseRecord->T,
-                'premature' => $data['premature'] ?? $caseRecord->premature,
-                'abortion' => $data['abortion'] ?? $caseRecord->abortion,
-                'living_children' => $data['living_children'] ?? $caseRecord->living_children,
+                'G' => $data['G'] ?? null,
+                'P' => $data['P'] ?? null,
+                'T' => $data['T'] ?? null,
+                'premature' => $data['premature'] ?? null,
+                'abortion' => $data['abortion'] ?? null,
+                'living_children' => $data['living_children'] ?? null,
                 'LMP' => $data['LMP'] ?? $caseRecord->LMP,
                 'expected_delivery' => $data['expected_delivery'] ?? $caseRecord->expected_delivery,
-                'menarche' => $data['menarche'] ?? $caseRecord->menarche,
-                'tetanus_toxoid_1' => $data['tt1'] ?? $caseRecord->tetanus_toxoid_1,
-                'tetanus_toxoid_2' => $data['tt2'] ?? $caseRecord->tetanus_toxoid_2,
-                'tetanus_toxoid_3' => $data['tt3'] ?? $caseRecord->tetanus_toxoid_3,
-                'tetanus_toxoid_4' => $data['tt4'] ?? $caseRecord->tetanus_toxoid_4,
-                'tetanus_toxoid_5' => $data['tt5'] ?? $caseRecord->tetanus_toxoid_5,
-                'decision' => $data['nurse_decision'] ?? $caseRecord->decision,
+                'menarche' => $data['menarche'] ?? null,
+                'tetanus_toxoid_1' => $data['tt1'] ?? null,
+                'tetanus_toxoid_2' => $data['tt2'] ?? null,
+                'tetanus_toxoid_3' => $data['tt3'] ?? null,
+                'tetanus_toxoid_4' => $data['tt4'] ?? null,
+                'tetanus_toxoid_5' => $data['tt5'] ?? null,
+                'decision' => $data['nurse_decision'] ?? null,
+                'blood_pressure' => $data['edit_case_blood_pressure'] ?? null,
+                'pulse_rate'  => $data['edit_case_pulse_rate'] ?? null,
+                'temperature' => $data['edit_case_temperature'] ?? null,
+                'respiratory_rate' => $data['edit_case_respiratory_rate'] ?? null,
+                'height' => $data['edit_case_height'] ?? null,
+                'weight' => $data['edit_case_weight'] ?? null,
+                'planning' => $data['edit_case_planning'] ?? null,
+
             ]);
 
             // after resetting the record of pregnancy timeline add new record
-            $pregnancyYearArray = $data['preg_year']??null;
-            if($pregnancyYearArray  != null){
+            $pregnancyYearArray = $data['preg_year'] ?? null;
+            if ($pregnancyYearArray  != null) {
                 foreach ($pregnancyYearArray  as $index => $year) {
                     pregnancy_timeline_records::create([
                         'prenatal_case_record_id' => $id,
@@ -1269,7 +1351,7 @@ class PrenatalController extends Controller
                     ]);
                 }
             }
-            
+
 
             // update the assessment
             $assessmentRecord = prenatal_assessments::where('prenatal_case_record_id', $id)->firstOrFail();
@@ -1285,7 +1367,25 @@ class PrenatalController extends Controller
                 'alchohol_drinker' => $assessment['alcohol_drinker'] ?? 'no',
                 'drug_intake' => $assessment['drug_intake'] ?? 'no'
             ]);
-           
+
+            // bind the pregnancy_history_questions
+            $archiveRecord = prenatal_case_records::with('pregnancy_history_questions')
+                ->where("status", 'Archived')
+                ->whereHas('pregnancy_history_questions')
+                ->first();
+
+            if ($archiveRecord) {
+                // Get the first pregnancy_history_question from the collection
+                $pregnancyHistoryQuestion = $archiveRecord->pregnancy_history_questions->first();
+
+                if ($pregnancyHistoryQuestion) {
+                    $pregnancyHistoryQuestion->update([
+                        'prenatal_case_record_id' => $caseRecord->id
+                    ]);
+                }
+            }
+
+
 
             return response()->json(['message' => 'Patient Info is Updated'], 201);
         } catch (ValidationException $e) {
@@ -1295,8 +1395,9 @@ class PrenatalController extends Controller
         }
     }
 
-    public function updatePregnancyPlan(Request $request, $id){
-        try{
+    public function updatePregnancyPlan(Request $request, $id)
+    {
+        try {
             $pregnancyPlanRecord = pregnancy_plans::findOrFail($id);
 
             $data = $request->validate([
@@ -1337,20 +1438,21 @@ class PrenatalController extends Controller
                 $signaturePath = $this->compressAndSaveSignature($request->file('edit_signature_image'));
             }
 
+
             $pregnancyPlanRecord->update([
                 'midwife_name' => $data['midwife_name'] ?? $pregnancyPlanRecord->midwife_name,
-                'place_of_pregnancy' => $data['place_of_pregnancy'] ?? $pregnancyPlanRecord->place_of_pregnancy,
-                'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? $pregnancyPlanRecord->authorized_by_philhealth,
-                'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? $pregnancyPlanRecord->cost_of_pregnancy,
-                'payment_method' => $data['payment_method'] ?? $pregnancyPlanRecord->payment_method,
-                'transportation_mode' => $data['transportation_mode'] ?? $pregnancyPlanRecord->transportation_mode,
-                'accompany_person_to_hospital' => $data['accompany_person_to_hospital'] ?? $pregnancyPlanRecord->accompany_person_to_hospital,
-                'accompany_through_pregnancy' =>  $data['accompany_through_pregnancy'] ?? $pregnancyPlanRecord->accompany_through_pregnancy,
-                'care_person' => $data['care_person'] ?? $pregnancyPlanRecord->care_person,
-                'emergency_person_name' => $data['emergency_person_name'] ?? $pregnancyPlanRecord->emergency_person_name,
-                'emergency_person_residency' => $data['emergency_person_residency'] ?? $pregnancyPlanRecord->emergency_person_residency,
-                'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? $pregnancyPlanRecord->emergency_person_contact_number,
-                'signature' => $signaturePath ?? $pregnancyPlanRecord->signature,
+                'place_of_pregnancy' => $data['place_of_pregnancy'] ?? '',
+                'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? '',
+                'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? '',
+                'payment_method' => $data['payment_method'] ?? '',
+                'transportation_mode' => $data['transportation_mode'] ?? '',
+                'accompany_person_to_hospital' => $data['accompany_person_to_hospital'] ?? '',
+                'accompany_through_pregnancy' =>  $data['accompany_through_pregnancy'] ?? '',
+                'care_person' => $data['care_person'] ?? '',
+                'emergency_person_name' => $data['emergency_person_name'] ?? '',
+                'emergency_person_residency' => $data['emergency_person_residency'] ?? '',
+                'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? '',
+                'signature' => $signaturePath ?? '',
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
             // delete all the donor name as update logic
@@ -1366,14 +1468,13 @@ class PrenatalController extends Controller
                     }
                 }
             };
-            
+
             return response()->json(['message' => 'Updating Patient Pregnancy Plan Successfully'], 200);
-        }catch(ValidationException $e){
+        } catch (ValidationException $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], 404);
         }
-        
     }
     public function viewPrenatalDetail($id)
     {
@@ -1386,6 +1487,7 @@ class PrenatalController extends Controller
 
             $prenatalCaseRecord = prenatal_case_records::with('pregnancy_history_questions')
                 ->where('medical_record_case_id', $prenatalRecord->id)
+                ->where("status", '!=', 'Archived')
                 ->firstOrFail();
 
             $healthWorker = staff::where('user_id', $prenatalCaseRecord->health_worker_id)
@@ -1407,8 +1509,9 @@ class PrenatalController extends Controller
         }
     }
 
-    public function uploadPregnancyCheckup(Request $request,$id){
-        try{
+    public function uploadPregnancyCheckup(Request $request, $id)
+    {
+        try {
             $request->validate(
                 [
                     // Required fields
@@ -1450,7 +1553,7 @@ class PrenatalController extends Controller
                     'overall_remarks'           => 'nullable|string|max:1000',
                     'date_of_comeback' => 'required|date'
                 ],
-                [],// this is empty because we didn't customize the error message for each field we just change the name 
+                [], // this is empty because we didn't customize the error message for each field we just change the name 
                 [
                     // Replace attribute names for cleaner error messages
                     'check_up_time'             => 'Time',
@@ -1513,36 +1616,34 @@ class PrenatalController extends Controller
                 'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
 
                 'overall_remarks' => $request->overall_remarks,
-                'status'=> 'Done',
+                'status' => 'Done',
                 'date_of_comeback' => $request->date_of_comeback
             ]);
-            return response()-> json(['message'=> 'Prenatal Check-up info is added successfully'],201);
-        }catch(ValidationException $e){
+            return response()->json(['message' => 'Prenatal Check-up info is added successfully'], 201);
+        } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
             ], 404);
         };
-
     }
 
-    public function viewCheckUpInfo($id){
-        try{
+    public function viewCheckUpInfo($id)
+    {
+        try {
             $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
             $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
-            return response()-> json([
-                'pregnancy_checkup_info'=> $pregnancy_checkup,
-                'healthWorker'=> $healthWorker
+            return response()->json([
+                'pregnancy_checkup_info' => $pregnancy_checkup,
+                'healthWorker' => $healthWorker
             ]);
-        }catch(\Exception $e){
-            return response()-> json([
-                'error'=> $e->getMessage()
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
             ]);
         }
-       
-
-
     }
-    public function updatePregnancyCheckUp(Request $request, $id){
+    public function updatePregnancyCheckUp(Request $request, $id)
+    {
         try {
             $checkUp = pregnancy_checkups::findOrFail($id);
             $request->validate(
@@ -1623,14 +1724,14 @@ class PrenatalController extends Controller
 
             // data insertion
             $checkUp->update([
-                'patient_name'              => $request->edit_check_up_full_name?? $checkUp->patient_name,
-                'health_worker_id'          => $request->edit_health_worker_id?? $checkUp->health_worker_id,
+                'patient_name'              => $request->edit_check_up_full_name ?? $checkUp->patient_name,
+                'health_worker_id'          => $request->edit_health_worker_id ?? $checkUp->health_worker_id,
                 'check_up_time'             => $request->edit_check_up_time ?? $checkUp->check_up_time,
                 'check_up_blood_pressure'   => $request->edit_check_up_blood_pressure ?? $checkUp->check_up_blood_pressure,
                 'check_up_temperature'      => $request->edit_check_up_temperature ?? $checkUp->check_up_temperature,
                 'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? $checkUp->check_up_pulse_rate,
-                'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate?? $checkUp->check_up_respiratory_rate,
-                'check_up_height'           => $request->edit_check_up_height?? $checkUp->check_up_height,
+                'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate ?? $checkUp->check_up_respiratory_rate,
+                'check_up_height'           => $request->edit_check_up_height ?? $checkUp->check_up_height,
                 'check_up_weight'               => $request->edit_check_up_weight ?? $checkUp->check_up_weight,
 
                 'abdomen_question'              => $request->edit_abdomen_question ?? $checkUp->abdomen_question,
@@ -1672,8 +1773,9 @@ class PrenatalController extends Controller
         };
     }
 
-    public function archive($id){
-        try{
+    public function archive($id)
+    {
+        try {
             $checkUpRecord = pregnancy_checkups::findOrFail($id);
 
             // update the status
@@ -1683,16 +1785,17 @@ class PrenatalController extends Controller
             return response()->json([
                 'message' => 'Prenatal Check-up Record is successfully deleted.'
             ]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);
         }
     }
 
-    public function addCase(Request $request){
+    public function addCase(Request $request)
+    {
         try {
-            
+
             $data = $request->validate([
                 'add_prenatal_case_medical_record_case_id' => 'required',
                 'add_prenatal_case_health_worker_id' => 'required',
@@ -1716,8 +1819,61 @@ class PrenatalController extends Controller
                 'add_tt2' => 'sometimes|nullable|numeric',
                 'add_tt3' => 'sometimes|nullable|numeric',
                 'add_tt4' => 'sometimes|nullable|numeric',
-                'add_tt5' => 'sometimes|nullable|numeric'
+                'add_tt5' => 'sometimes|nullable|numeric',
+                'add_case_temperature' => 'nullable|numeric|between:30,45',
+                'add_case_pulse_rate' => 'nullable|string|max:20',
+                'add_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'add_case_height' => 'nullable|numeric|between:30,300',
+                'add_case_weight' => 'nullable|numeric|between:1,500',
+                'add_case_planning' => 'nullable|string|max:2000',
+            ], [
+                // Required fields
+                'add_prenatal_case_medical_record_case_id.required' => 'The prenatal case medical record case id field is required.',
+                'add_prenatal_case_health_worker_id.required' => 'The prenatal case health worker id field is required.',
+                'add_prenatal_case_patient_name.required' => 'The prenatal case patient name field is required.',
+                'add_LMP.required' => 'The LMP field is required.',
+                'add_LMP.date' => 'The LMP field must be a valid date.',
+                'add_expected_delivery.required' => 'The expected delivery field is required.',
+                'add_expected_delivery.date' => 'The expected delivery field must be a valid date.',
 
+                // Numeric fields
+                'add_G.numeric' => 'The G field must be a number.',
+                'add_P.numeric' => 'The P field must be a number.',
+                'add_T.numeric' => 'The T field must be a number.',
+                'add_premature.numeric' => 'The premature field must be a number.',
+                'add_abortion.numeric' => 'The abortion field must be a number.',
+                'add_living_children.numeric' => 'The living children field must be a number.',
+                'add_menarche.numeric' => 'The menarche field must be a number.',
+
+                // TT fields
+                'add_tt1.numeric' => 'The tt1 field must be a number.',
+                'add_tt2.numeric' => 'The tt2 field must be a number.',
+                'add_tt3.numeric' => 'The tt3 field must be a number.',
+                'add_tt4.numeric' => 'The tt4 field must be a number.',
+                'add_tt5.numeric' => 'The tt5 field must be a number.',
+
+                // Array fields
+                'add_preg_year.array' => 'The pregnancy year field must be an array.',
+                'add_type_of_delivery.array' => 'The type of delivery field must be an array.',
+                'add_place_of_delivery.array' => 'The place of delivery field must be an array.',
+                'add_birth_attendant.array' => 'The birth attendant field must be an array.',
+                'add_compilation.array' => 'The compilation field must be an array.',
+                'add_outcome.array' => 'The outcome field must be an array.',
+
+                // Vital signs and measurements
+                'add_case_temperature.numeric' => 'The temperature field must be a number.',
+                'add_case_temperature.between' => 'The temperature must be between 30 and 45 degrees.',
+                'add_case_pulse_rate.string' => 'The pulse rate field must be a string.',
+                'add_case_pulse_rate.max' => 'The pulse rate field must not exceed 20 characters.',
+                'add_case_respiratory_rate.integer' => 'The respiratory rate field must be an integer.',
+                'add_case_respiratory_rate.min' => 'The respiratory rate must be at least 5.',
+                'add_case_respiratory_rate.max' => 'The respiratory rate must not exceed 60.',
+                'add_case_height.numeric' => 'The height field must be a number.',
+                'add_case_height.between' => 'The height must be between 30 and 300 cm.',
+                'add_case_weight.numeric' => 'The weight field must be a number.',
+                'add_case_weight.between' => 'The weight must be between 1 and 500 kg.',
+                'add_case_planning.string' => 'The planning field must be a string.',
+                'add_case_planning.max' => 'The planning field must not exceed 2000 characters.',
             ]);
 
             // assessment validation
@@ -1731,16 +1887,25 @@ class PrenatalController extends Controller
                 'add_hx_smoking' => 'sometimes|nullable|string',
                 'add_alcohol_drinker' => 'sometimes|nullable|string',
                 'add_drug_intake' => 'sometimes|nullable|string'
+            ], [
+                'add_spotting.string' => 'The spotting field must be a string.',
+                'add_edema.string' => 'The edema field must be a string.',
+                'add_severe_headache.string' => 'The severe headache field must be a string.',
+                'add_blurring_of_vission.string' => 'The blurring of vission field must be a string.',
+                'add_watery_discharge.string' => 'The watery discharge field must be a string.',
+                'add_severe_vomiting.string' => 'The severe vomiting field must be a string.',
+                'add_hx_smoking.string' => 'The hx smoking field must be a string.',
+                'add_alcohol_drinker.string' => 'The alcohol drinker field must be a string.',
+                'add_drug_intake.string' => 'The drug intake field must be a string.',
             ]);
-
             // check first if there is existing record
 
-            $existingCaseRecord = prenatal_case_records::where("medical_record_case_id", $data['add_prenatal_case_medical_record_case_id'])->where("status", '!=','Archived')->first();
+            $existingCaseRecord = prenatal_case_records::where("medical_record_case_id", $data['add_prenatal_case_medical_record_case_id'])->where("status", '!=', 'Archived')->first();
 
-            if(!empty($existingCaseRecord)){
-                return response() -> json([
+            if (!empty($existingCaseRecord)) {
+                return response()->json([
                     'errors' => 'There is existing record.'
-                ],422);
+                ], 422);
             }
 
             // update the values
@@ -1762,18 +1927,19 @@ class PrenatalController extends Controller
                 'tetanus_toxoid_3' => $data['add_tt3'] ?? null,
                 'tetanus_toxoid_4' => $data['add_tt4'] ?? null,
                 'tetanus_toxoid_5' => $data['add_tt5'] ?? null,
-                'blood_pressure' => null,
-                'temperature' => null,
-                'pulse_rate' => null,
-                'respiratory_rate'=> null,
-                'height'=>null,
-                'weight' => null,
+                'blood_pressure' => $data['add_case_blood_pressure'] ?? null,
+                'pulse_rate'  => $data['add_case_pulse_rate'] ?? null,
+                'temperature' => $data['add_case_temperature'] ?? null,
+                'respiratory_rate' => $data['add_case_respiratory_rate'] ?? null,
+                'height' => $data['add_case_height'] ?? null,
+                'weight' => $data['add_case_weight'] ?? null,
+                'planning' => $data['add_case_planning'] ?? null,
                 'status' => 'Active',
                 'type_of_record' => 'Case Record'
             ]);
 
             // after resetting the record of pregnancy timeline add new record
-            $id = $caseRecord -> id;
+            $id = $caseRecord->id;
             $pregnancyYearArray = $data['add_preg_year'] ?? null;
             if ($pregnancyYearArray  != null) {
                 foreach ($pregnancyYearArray  as $index => $year) {
@@ -1790,7 +1956,7 @@ class PrenatalController extends Controller
             }
 
 
-          
+
 
             $assessmentRecord = prenatal_assessments::create([
                 'prenatal_case_record_id' => $id,
@@ -1805,26 +1971,44 @@ class PrenatalController extends Controller
                 'drug_intake' => $assessment['drug_intake'] ?? 'no'
             ]);
 
+            // bind the pregnancy_history_questions
+            $archiveRecord = prenatal_case_records::with('pregnancy_history_questions')
+                ->where("status", 'Archived')
+                ->whereHas('pregnancy_history_questions')
+                ->first();
+
+            if ($archiveRecord) {
+                // Get the first pregnancy_history_question from the collection
+                $pregnancyHistoryQuestion = $archiveRecord->pregnancy_history_questions->first();
+
+                if ($pregnancyHistoryQuestion) {
+                    $pregnancyHistoryQuestion->update([
+                        'prenatal_case_record_id' => $caseRecord->id
+                    ]);
+                }
+            }
+
+
 
             return response()->json(['message' => 'Patient Info is Uploaded'], 200);
-
-        }catch (\Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ], 422);
-        }catch(ValidationException $e){
+        } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
             ], 422);
         }
     }
 
-    public function addPregnancyPlan(Request $request,$medicalRecordCaseId){
+    public function addPregnancyPlan(Request $request, $medicalRecordCaseId)
+    {
         try {
-            
+
             // check first if there is existing active record
-            $existingPregnancyPlan = pregnancy_plans::where("medical_record_case_id", $medicalRecordCaseId)->where("status",'!=','Archived')->first();
-            if(!empty($existingPregnancyPlan)){
+            $existingPregnancyPlan = pregnancy_plans::where("medical_record_case_id", $medicalRecordCaseId)->where("status", '!=', 'Archived')->first();
+            if (!empty($existingPregnancyPlan)) {
                 return response()->json([
                     'errors' => 'Unable to add. A pregnancy plan already exists for this patient.'
                 ], 422);
@@ -1857,7 +2041,7 @@ class PrenatalController extends Controller
             // ]);
 
             // pregnancy plan
-            
+
 
             // If user uploaded an image file
             if ($request->hasFile('add_signature_image')) {
@@ -1887,7 +2071,7 @@ class PrenatalController extends Controller
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
             // delete all the donor name as update logic
-            
+
             $id = $pregnancyPlanRecord->id;
 
             if (isset($data['add_donor_names']) && !empty($data['donor_names'])) {
@@ -1906,16 +2090,17 @@ class PrenatalController extends Controller
             return response()->json([
                 'error' => $e->errors()
             ], 404);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], 404);
         }
     }
 
-    public function removeRecord($typeOfRecord,$id){
+    public function removeRecord($typeOfRecord, $id)
+    {
         try {
-            if($typeOfRecord === 'case-record'){
+            if ($typeOfRecord === 'case-record') {
                 $prenatalCaseRecord = prenatal_case_records::findOrFail($id);
                 $prenatalCaseRecord->update([
                     'status' => 'Archived'
@@ -1924,10 +2109,10 @@ class PrenatalController extends Controller
                 return response()->json(['message' => 'Patient Prenatal Case is deleted Successfully'], 200);
             }
 
-            if($typeOfRecord === 'pregnancy-plan'){
+            if ($typeOfRecord === 'pregnancy-plan') {
                 $pregnancyPlanRecord = pregnancy_plans::findOrFail($id);
 
-                $pregnancyPlanRecord -> update([
+                $pregnancyPlanRecord->update([
                     'status' => 'Archived'
                 ]);
                 return response()->json(['message' => 'Patient Pregnancy Plan is deleted Successfully'], 200);

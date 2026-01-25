@@ -97,7 +97,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="{{optional($seniorCitizenRecord -> patient)->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your place of birth" class="form-control" name="place_of_birth" value="{{optional($seniorCitizenRecord -> patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
 
@@ -107,7 +107,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="number" id="age" placeholder="20" class="form-control" disabled value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($seniorCitizenRecord -> patient)->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -128,7 +128,7 @@
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="contact_number" class="">Contact Number</label>
+                                            <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
                                             <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($seniorCitizenRecord -> patient)->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
@@ -153,7 +153,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-full md:w-[50%]">
                                             <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->health_worker_id??''}}">
+                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->health_worker_id??''}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="">Select a person</option>
                                             </select>
 
@@ -214,8 +214,8 @@
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
                                                 <label for="brgy">Barangay<span class="text-danger">*</span></label>
-                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}">
-                                                    <option value="">Select a brgy</option>
+                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}">
+                                                    <option value="" disabled>Select a brgy</option>
                                                 </select>
 
                                                 <small class="text-danger error-text" id="brgy_error"></small>
@@ -233,7 +233,7 @@
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
-                                                <label for="BP">Temperature:</label>
+                                                <label for="BP">Temperature(°C):</label>
                                                 <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" value="{{optional($seniorCitizenRecord -> senior_citizen_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>

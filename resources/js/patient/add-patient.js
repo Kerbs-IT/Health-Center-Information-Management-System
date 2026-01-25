@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const brgy = document.getElementById("brgy");
         const handled_by = document.getElementById("handled_by");
         const errors = { fname, lname, street, brgy, handled_by };
+        const suffix = document.getElementById("add_suffix");
 
         Object.values(errors).forEach((element) => {
             element.style.border = "";
@@ -144,32 +145,43 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const patient_name_view = document.getElementById(
-            "vaccination_patient_name_view"
+            "vaccination_patient_name_view",
         );
         const MI = document.getElementById("middle_initial");
         if (patient_name_view) {
-            insertNameValue(fname, MI, lname, patient_name_view);
+            insertNameValue(fname, MI, lname, patient_name_view, suffix);
         }
         // give all the patient name id
         const senior_patient_name = document.getElementById(
-            "senior_patient_name"
+            "senior_patient_name",
         );
 
         if (senior_patient_name) {
-            insertNameValue(fname, MI, lname, senior_patient_name);
+            insertNameValue(fname, MI, lname, senior_patient_name, suffix);
         }
         const tb_dots_patient_name = document.getElementById("tb_patient_name");
 
         if (tb_dots_patient_name) {
-            insertNameValue(fname, MI, lname, tb_dots_patient_name);
+            insertNameValue(fname, MI, lname, tb_dots_patient_name, suffix);
+        }
+
+        if (typeSelect.value === "prenatal") {
+            displayVitalSign();
         }
 
         window.currentStep++;
         window.showStep(window.currentStep);
     };
 
-    function insertNameValue(fname, MI, lname, element) {
-        const fullname = fname.value + " " + MI.value + " " + lname.value;
+    function insertNameValue(fname, MI, lname, element, suffix) {
+        const fullname =
+            fname.value +
+            " " +
+            MI.value +
+            " " +
+            lname.value +
+            " " +
+            suffix.value;
 
         element.value = fullname.trim();
     }
@@ -375,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         vaccineInput,
         vaccinesContainer,
         selectedVaccinesCon,
-        selectedVaccines
+        selectedVaccines,
     );
 
     if (vaccinesContainer) {
@@ -388,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (deleteBtn) {
                     if (selectedVaccines.includes(Number(vaccineId))) {
                         const selectedElement = selectedVaccines.indexOf(
-                            Number(vaccineId)
+                            Number(vaccineId),
                         );
                         console.log("index", selectedElement);
                         selectedVaccines.splice(selectedElement, 1);
@@ -411,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // SUBMIT THE FORM FOR VACCINATION
 
     const vaccinationSubmitBtn = document.getElementById(
-        "vaccination-submit-btn"
+        "vaccination-submit-btn",
     );
 
     if (!vaccinationSubmitBtn) return;
@@ -423,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Validate vaccines against selected dose
         const invalidVaccines = validateVaccinesWithDose(
             selectedVaccines,
-            selectedDose
+            selectedDose,
         );
 
         if (invalidVaccines.length > 0) {
@@ -451,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
+                    'meta[name="csrf-token"]',
                 ).content,
                 Accept: "application/json",
             },
@@ -527,11 +539,71 @@ const LMP = document.getElementById("LMP") ?? null;
 
 if (LMP) {
     const expectedDelivery = document.getElementById(
-        "add_patient_expected_delivery"
+        "add_patient_expected_delivery",
     );
 
     LMP.addEventListener("change", () => {
         changeLmp(LMP, expectedDelivery);
+    });
+}
+
+//  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
+const healthWorkerElement = document.getElementById("handled_by");
+const brgyElement = document.getElementById("brgy");
+const isHealthWorker = healthWorkerElement.dataset.isHealthWorker;
+if (healthWorkerElement && isHealthWorker == true) {
+    healthWorkerElement.addEventListener("change", async (e) => {
+        const id = e.target.value;
+
+        try {
+            // get the assigned area
+            const response = await fetch(
+                `/add-patient/get-assigned-area/${id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                },
+            );
+
+            const data = await response.json();
+            if (response.ok) {
+                brgyElement.value = data.assigned_area;
+            }
+        } catch (error) {
+            console.log("Error happened:", error);
+        }
+    });
+}
+// sync the change in brgy and health worker
+if (brgyElement && isHealthWorker == true) {
+    brgyElement.addEventListener("change", async (e) => {
+        const purok = e.target.value;
+
+        try {
+            // get the assigned area
+            const response = await fetch(
+                `/get-health-worker?assigned_area=${purok}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"), // Important for Laravel POST
+                    },
+                },
+            );
+
+            const data = await response.json();
+            if (response.ok) {
+                healthWorkerElement.value = data.health_worker_id;
+            }
+        } catch (error) {
+            console.log("Error happened:", error);
+        }
     });
 }
 function capitalizeEachWord(str) {
@@ -661,10 +733,10 @@ function disableSubmitBtn(typeOfPatient) {
     const prenatal = document.getElementById("prenatal-save-btn");
     const tbDots = document.getElementById("tb_dots_save_record_btn");
     const seniorCitizen = document.getElementById(
-        "senior_citizen_save_record_btn"
+        "senior_citizen_save_record_btn",
     );
     const familyPlanning = document.getElementById(
-        "family_planning_submit_btn"
+        "family_planning_submit_btn",
     );
     // FIRST: Disable ALL buttons
     vaccination.disabled = true;
@@ -693,4 +765,45 @@ function disableSubmitBtn(typeOfPatient) {
         default:
             break;
     }
+}
+
+// function for the prenatal objective views (readd only)
+
+function displayVitalSign() {
+    console.log("is it triggeed");
+    // add vital sign
+    // const bp = document.getElementById("add_patient_blood_pressure");
+    // const temperature = document.getElementById("add_patient_temperature");
+    // const pulse_rate = document.getElementById("add_patient_pulse_rate");
+    // const respiratory_rate = document.getElementById("add_patient_respiratory_rate");
+    // const height = document.getElementById("add_patient_height");
+    // const weight = document.getElementById("add_patient_weight");
+
+    const addVitalSign = [
+        "blood_pressure",
+        "temperature",
+        "pulse_rate",
+        "respiratory_rate",
+        "height",
+        "weight",
+    ];
+
+    addVitalSign.forEach(
+        (element) =>
+             {
+                if (document.getElementById(`add_patient_${element}`)) {
+                    const value = document.getElementById(
+                        `add_patient_${element}`,
+                    ).value;
+
+                    // populate the value of view only
+                    const viewElement = document.getElementById(
+                        `prenatal_view_${element}`,
+                    );
+                    if (viewElement) {
+                        viewElement.value = value;
+                    }
+                }
+            },
+    );
 }

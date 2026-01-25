@@ -57,7 +57,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="first_name" placeholder="First Name" class="form-control bg-light" name="first_name" value="{{optional($tbDotsRecord->patient)->first_name??''}}">
+                                            <input type="text" id="first_name" placeholder="Enter your first name" class="form-control bg-light" name="first_name" value="{{optional($tbDotsRecord->patient)->first_name??''}}">
 
                                             <small class="text-danger error-text" id="first_name_error"></small>
 
@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="middle_initial" class="">Middle Name</label>
-                                            <input type="text" id="middle_initial" placeholder="Middle Initial" class="form-control" name="middle_initial" value="{{optional($tbDotsRecord->patient)->middle_initial??''}}">
+                                            <input type="text" id="middle_initial" placeholder="Enter your middle name" class="form-control" name="middle_initial" value="{{optional($tbDotsRecord->patient)->middle_initial??''}}">
 
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
 
@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
-                                            <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="{{optional($tbDotsRecord->patient)->last_name}}">
+                                            <input type="text" id="last_name" placeholder="Enter your last name" class="form-control" name="last_name" value="{{optional($tbDotsRecord->patient)->last_name}}">
                                             <small class="text-danger error-text" id="last_name_error"></small>
 
                                         </div>
@@ -103,7 +103,7 @@
                                         <!-- place of birth -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="place_of_birth">Place of Birth</label>
-                                            <input type="text" id="place_of_birth" placeholder="20" class="form-control" name="place_of_birth" value="{{optional($tbDotsRecord->patient)->place_of_birth??''}}">
+                                            <input type="text" id="place_of_birth" placeholder="Enter your place of birth" class="form-control" name="place_of_birth" value="{{optional($tbDotsRecord->patient)->place_of_birth??''}}">
 
                                             <small class="text-danger error-text" id="place_of_birth_error"></small>
 
@@ -113,7 +113,7 @@
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="age">Age<span class="text-danger">*</span></label>
                                             <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{optional($tbDotsRecord->patient)->age??''}}">
-                                            <input type="hidden" id="hiddenAge" name="age">
+                                            <input type="hidden" id="hiddenAge" name="age" value="{{optional($tbDotsRecord->patient)->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
 
                                         </div>
@@ -124,8 +124,10 @@
                                             <div class="input-field d-flex align-items-center p-2">
 
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>Male</label>
-                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Female' ? 'checked' : '' }}>Female</label>
+                                                    <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>
+                                                    <label for="male"> Male</label>
+                                                    <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Female' ? 'checked' : '' }}>
+                                                    <label for="female">Female</label>
                                                 </div>
 
                                                 <small class="text-danger error-text" id="sex_error"></small>
@@ -134,15 +136,15 @@
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="contact_number" class="">Contact Number</label>
-                                            <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{optional($tbDotsRecord -> patient)->contact_number??''}}">
+                                            <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
+                                            <input type="text" placeholder="Enter your contact number" class="form-control" name="contact_number" value="{{optional($tbDotsRecord -> patient)->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="nationality" class="">Nationality</label>
-                                            <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="{{optional($tbDotsRecord -> patient)->nationality??''}}">
+                                            <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="{{optional($tbDotsRecord -> patient)->nationality??''}}">
 
                                             <small class="text-danger error-text" id="nationality_error"></small>
 
@@ -158,9 +160,9 @@
                                         </div>
                                         <!-- administered by -->
                                         <div class="mb-2 flex-fill xl:w-[50%]">
-                                            <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($tbDotsRecord-> tb_dots_medical_record)->health_worker_id??''}}">
-                                                <option value="">Select a person</option>
+                                            <label for="handled_by">Administered by<span class="text-danger">*</span></label>
+                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($tbDotsRecord-> tb_dots_medical_record)->health_worker_id??''}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
+                                                <option value="" disabled>Select a person</option>
                                             </select>
 
                                             <small class="text-danger error-text" id="handled_by_error"></small>
@@ -186,8 +188,8 @@
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
                                                 <label for="brgy">Barangay<span class="text-danger">*</span></label>
-                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}">
-                                                    <option value="">Select a brgy</option>
+                                                <select name="brgy" id="brgy" class="form-select py-2" data-bs-selected-brgy="{{$address-> purok}}" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}">
+                                                    <option value="" disabled>Select a brgy</option>
                                                 </select>
 
                                                 <small class="text-danger error-text" id="brgy_error"></small>
@@ -205,7 +207,7 @@
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
-                                                <label for="BP">Temperature:</label>
+                                                <label for="BP">Temperature(°C):</label>
                                                 <input type="text" class="form-control w-100" placeholder="Enter the temperature" name="temperature" value="{{optional($tbDotsRecord -> tb_dots_medical_record)->temperature??''}}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>

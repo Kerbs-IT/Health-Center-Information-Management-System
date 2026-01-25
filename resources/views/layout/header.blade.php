@@ -5,7 +5,7 @@
         <i class="fa-solid fa-bars fs-2"></i>
       </button>
       @if ($page === 'DASHBOARD')
-      <h1 class="mb-0">Welcome, <span>{{ Auth::user()->first_name ?? 'Guest' }}</span></h1>
+      <h1 class="mb-0">Welcome, <span class="text-success">{{ Auth::user()->first_name ?? 'Guest' }}</span></h1>
       @else
       <h1 class="mb-0">{{ $page }}</h1>
       @endif
@@ -332,10 +332,44 @@
 
         // Navigate to link if provided
         if (linkUrl && linkUrl !== 'null' && linkUrl !== '') {
+          // Set localStorage for menu state before redirecting
+          setMenuStateForUrl(linkUrl);
           window.location.href = linkUrl;
         }
       })
       .catch(error => console.error('Error marking notification as read:', error));
+  }
+  /**
+   * Set menu state based on URL
+   */
+  function setMenuStateForUrl(url) {
+    // Map URLs to menu IDs
+    const urlToMenuMap = {
+      '/patient-record/vaccination': 'record_vaccination',
+      '/patient-record/prenatal/view-records': 'record_prenatal',
+      '/patient-record/senior-citizen/view-records': 'record_senior_citizen',
+      '/patient-record/tb-dots/view-records': 'record_tb_dots',
+      '/patient-record/family-planning/view-records': 'record_family_planning',
+    };
+
+    // Check if URL matches any record page
+    const menuId = Object.keys(urlToMenuMap).find(key => url.includes(key));
+
+    if (menuId) {
+      // Find the index of the "Records" menu-option
+      const recordsMenu = document.getElementById('records-menu'); // Make sure you add id="records-menu" to your Records menu item
+      if (recordsMenu) {
+        const allMenuOptions = Array.from(document.querySelectorAll('.menu-option'));
+        const recordsIndex = allMenuOptions.indexOf(recordsMenu);
+
+        if (recordsIndex !== -1) {
+          localStorage.setItem('openSubmenus', JSON.stringify([recordsIndex]));
+        }
+      }
+
+      // Set active menu item
+      localStorage.setItem('activeMenuItem', `#${urlToMenuMap[menuId]}`);
+    }
   }
   /**
    * Mark all notifications as read

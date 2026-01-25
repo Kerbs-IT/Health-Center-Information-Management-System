@@ -1,7 +1,7 @@
 <div class="d-flex p-md-4 p-2 flex-column">
     <div class="contents bottom-border">
         <div class="mb-3">
-            <label for="">Patient Name:</label>
+            <label for="">Patient Name<span class="text-danger">*</span></label>
             <input type="text" id="senior_patient_name" class="form-control" disabled>
         </div>
         <h5>MEDICAL INFORMATION</h5>
@@ -89,8 +89,8 @@
             <small class="text-danger error-text" id="remarks_error"></small>
         </div>
         <div class="mb-3 ">
-            <label for="senior_citizen_date_of_comeback">Date of Comeback*</label>
-            <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback"  max="{{date('Y-m-d',strtotime('+5 years'))}}">
+            <label for="senior_citizen_date_of_comeback">Date of Comeback<span class="text-danger">*</span></label>
+            <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">

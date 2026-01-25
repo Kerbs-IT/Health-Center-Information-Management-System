@@ -164,3 +164,20 @@ if (overlay) {
         overlay.classList.remove("active");
     });
 }
+
+// add the functionality for icon
+
+const homePageUserIcon = document.getElementById("homepage-user-icon");
+
+
+if (homePageUserIcon) {
+    homePageUserIcon.addEventListener("click", (e) => {
+        const items = document.querySelector(".homepage-user-icon-items");
+
+        if (items.classList.contains("d-none")) {
+            items.classList.remove("d-none");
+        } else {
+            items.classList.add("d-none");
+        }
+    })
+}

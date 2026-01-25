@@ -9,7 +9,13 @@
 </head>
 
 <body>
-    @vite(['resources/css/app.css','resources/js/app.js','resources/js/menudropdown.js','resources/js/header.js', 'resources/css/profile.css','resources/js/address/address.js'])
+    @vite(['resources/css/app.css',
+    'resources/js/app.js',
+    'resources/js/menudropdown.js',
+    'resources/js/header.js',
+    'resources/css/profile.css',
+    'resources/js/address/address.js',
+    'resources/js/profileInterface.js'])
     <!-- always include the sweetalert -->
     @include('sweetalert::alert')
     <div class="ms-0 ps-0 d-flex w-100">
@@ -110,7 +116,9 @@
                             <div class="mb-2 flex-wrap d-flex gap-1">
                                 <div class="input-field flex-fill">
                                     <label for="age">Age<span class="text-danger">*</span></label>
-                                    <input type="text" id="age" placeholder="20" class="form-control" name="age" value="{{ optional(Auth::user() -> staff) -> age ??
+                                    <input type="text" id="age" placeholder="20" class="form-control" disabled value="{{ optional(Auth::user() -> staff) -> age ??
+                                                                                                                          optional(Auth::user() -> nurses) -> age ?? null }}">
+                                    <input type="hidden" id="hiddenAge" placeholder="20" class="form-control" name="age" value="{{ optional(Auth::user() -> staff) -> age ??
                                                                                                                           optional(Auth::user() -> nurses) -> age ?? null }}">
                                     @error('age')
                                     <small class="text-danger">{{$message}}</small>
@@ -119,7 +127,7 @@
                                 <div class="input-field flex-fill">
                                     <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
                                     <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="{{ optional(Auth::user() -> staff) -> date_of_birth ??
-                                                                                                                                                optional(Auth::user() -> nurses) -> date_of_birth ?? null }}">
+                                                                                                                                                optional(Auth::user() -> nurses) -> date_of_birth ?? null }}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                                     @error('date_of_birth')
                                     <small class="text-danger">{{$message}}</small>
                                     @enderror
@@ -163,7 +171,7 @@
                                 <!-- contact -->
                                 <div class="input-field flex-fill">
                                     <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
-                                    <input type="number" placeholder="+63-936-627-8671" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
+                                    <input type="number" placeholder="Enter your contact number" class="form-control" name="contact_number" value="{{ optional(Auth::user() -> staff) -> contact_number ??
                                                                                                                                                 optional(Auth::user() -> nurses) -> contact_number ?? null }}">
                                     @error('contact_number')
                                     <small class="text-danger">{{$message}}</small>
@@ -171,7 +179,7 @@
                                 </div>
                                 <div class="input-field flex-fill">
                                     <label for="nationality" class="">Nationality</label>
-                                    <input type="text" placeholder="ex. Filipino" class="form-control" name="nationality" value="{{ optional(Auth::user() -> staff) -> nationality ??
+                                    <input type="text" placeholder="Enter your nationality" class="form-control" name="nationality" value="{{ optional(Auth::user() -> staff) -> nationality ??
                                                                                                                                     optional(Auth::user() -> nurses) -> nationality ?? null }}">
                                     @error('nationality')
                                     <small class="text-danger">{{$message}}</small>
@@ -339,6 +347,7 @@
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
         }
+        
     </script>
 </body>
 

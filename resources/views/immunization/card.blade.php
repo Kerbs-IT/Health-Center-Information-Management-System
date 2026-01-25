@@ -16,7 +16,7 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background: #f5f5f5;
+            background: white;
         }
 
 
@@ -25,11 +25,12 @@
             margin: 0 auto;
             background: white;
             padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
         }
 
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: #1e3c72;
             color: white;
             padding: 20px;
             text-align: center;
@@ -41,6 +42,7 @@
             font-size: 32px;
             font-weight: bold;
             letter-spacing: 2px;
+            color: white;
         }
 
         .patient-info {
@@ -49,7 +51,7 @@
             gap: 15px;
             margin-bottom: 30px;
             padding: 20px;
-            background: #f9f9f9;
+            background: white;
             border-radius: 5px;
         }
 
@@ -176,66 +178,106 @@
                 box-shadow: none;
             }
         }
+
+
+
+        /* header */
+        h4 {
+            text-align: center;
+        }
+
+        header {
+            width: 100%;
+        }
+
+        header img {
+            height: 120px;
+            width: 120px;
+            float: left;
+            margin-right: 20px;
+            margin-top: 20px;
+        }
+
+        .header-text {
+            width: 70%;
+            text-align: center;
+            text-transform: uppercase;
+            float: left;
+            padding-top: 50px;
+            /* Adjust to vertically center text */
+        }
     </style>
 </head>
 
 <body>
     @vite([
     'resources/css/app.css'])
+    <header>
+        <img src="{{public_path('images/hugoperez_logo.png')}}" alt="">
+        <div class="header-text">
+            <h4>Barangay Hugo Perez Proper -</h4>
+            <h4>Health Center Information Management System</h4>
+        </div>
+        <div style="clear: both;"></div>
+    </header>
     <div class="card-container">
 
         <div class="header">
             <h1 class="mb-0 text-white">IMMUNIZATION CARD</h1>
         </div>
 
-        <div class="patient-info-con d-flex justify-content-between">
-            <div class="w-50">
-                <div class="info-field">
-                    <label>NAME:</label>
-                    <span>{{ $caseRecord->full_name ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label>DATE OF BIRTH:</label>
-                    <span>{{ $caseRecord->date_of_birth ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label>PLACE OF BIRTH:</label>
-                    <span>{{$caseRecord->place_of_birth ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label>Address:</label>
-                    <span>{{ $fullAddress?? 'N/A' }}</span>
-                </div>
-            </div>
-            <div class="w-50">
-                <div class="info-field">
-                    <label>MOTHER'S NAME:</label>
-                    <span>{{ $medicalRecord->vaccination_medical_record->mother_name?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label>FATHER'S NAME:</label>
-                    <span>{{ $medicalRecord->vaccination_medical_record->father_name?? 'N/A'}}</span>
-                </div>
-                <div class="info-field">
-                    <label>BIRTH HEIGHT:</label>
-                    <span>{{$medicalRecord->vaccination_medical_record->birth_height?? 'N/A'}} cm</span>
-                </div>
-                <div class="info-field">
-                    <label>BIRTH WEIGHT:</label>
-                    <span>{{ $medicalRecord->vaccination_medical_record->birth_weight?? 'N/A' }} kg</span>
-                </div>
-                <div class="info-field">
-                    <label>SEX:</label>
-                    <span>{{$caseRecord->sex ?? 'N/A' }}</span>
-                </div>
-                <div class="info-field">
-                    <label>CONTACT NO.</label>
-                    <span>{{$caseRecord->contact_number ?? 'N/A' }}</span>
-                </div>
-                
-            </div>
-
-        </div>
+        <table style="width: 100%; border: none; margin-bottom: 20px; border-collapse: collapse;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; padding-right: 10px; border: none;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->full_name ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">DATE OF BIRTH:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->date_of_birth ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">PLACE OF BIRTH:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->place_of_birth ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">Address:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $fullAddress ?? 'N/A' }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width: 50%; vertical-align: top; padding-left: 10px; border: none;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">MOTHER'S NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->mother_name ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">FATHER'S NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->father_name ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">BIRTH HEIGHT:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->birth_height ?? 'N/A' }} cm</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">BIRTH WEIGHT:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->birth_weight ?? 'N/A' }} kg</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">SEX:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->sex ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">CONTACT NO.:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->contact_number ?? 'N/A' }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <table class="vaccine-table">
             <thead>
                 <tr>
