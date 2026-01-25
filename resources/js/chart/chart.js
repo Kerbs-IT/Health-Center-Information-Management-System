@@ -46,7 +46,6 @@ let ageChartDateRange = {
 
 // initiliaze the age dirtribution table
 initAgeChartDatePicker();
-
 // Fetch patient data for charts
 async function loadPatientData(startDate, endDate) {
     try {
@@ -520,8 +519,9 @@ async function reloadPieChart() {
 
 // Initialize patient count per area
 async function initCountPerArea(
-    startDate = moment().startOf("year"),
-    endDate = moment().endOf("year"),
+    startDate = moment().subtract(6, "months").startOf("month"),
+    endDate = moment().endOf("month"),
+   
 ) {
     try {
         const response = await fetch(
@@ -635,7 +635,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             initOverDueCount(),
             initBarChart(),
             initPieChart(),
-            initCountPerArea(),
+            initCountPerArea(numberPerAreaRange.start, numberPerAreaRange.end),
             initPatientToday(),
         ]);
 
@@ -916,10 +916,6 @@ if (dashboardChartsBtn) {
 } else {
     console.warn("⚠ Dashboard charts button not found");
 }
-
-// ============================================
-// AGE DISTRIBUTION CHART
-// ============================================
 
 // ============================================
 // AGE DISTRIBUTION CHART
