@@ -12,12 +12,12 @@
             <div class="col-md-4 mb-4">
                 <h6 class="text-uppercase fw-bold">Navigation Links</h6>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-light text-decoration-none">Home</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Department</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">About</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Specialist</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">FAQ</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Events</a></li>
+                    <li><a href="{{ route('homepage') }}#home" class="text-light text-decoration-none">Home</a></li>
+                    <li><a href="{{ route('homepage') }}#about" class="text-light text-decoration-none">About</a></li>
+                    <li><a href="{{ route('homepage') }}#services" class="text-light text-decoration-none">Services</a></li>
+                    <li><a href="{{ route('homepage') }}#specialist" class="text-light text-decoration-none">Specialist</a></li>
+                    <li><a href="{{ route('homepage') }}#faq" class="text-light text-decoration-none">FAQ</a></li>
+                    <li><a href="{{ route('homepage') }}#events" class="text-light text-decoration-none">Events</a></li>
                 </ul>
             </div>
 
