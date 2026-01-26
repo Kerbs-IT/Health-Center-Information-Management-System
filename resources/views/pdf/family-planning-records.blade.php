@@ -91,7 +91,7 @@
     @forelse($recordPages as $pageIndex => $records)
     <div class="{{ !$loop->last ? 'page-break' : '' }}">
         <header>
-            <img src="{{public_path('images/hugoperez_logo.png')}}" alt="">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="">
             <div class="header-text">
                 <h4>Barangay Hugo Perez Proper -</h4>
                 <h4>Health Center Information Management System</h4>
@@ -169,7 +169,7 @@
     </div>
     @empty
     <header>
-        <img src="{{public_path('images/hugoperez_logo.png')}}" alt="">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="">
         <div class="header-text">
             <h4>Barangay Hugo Perez Proper -</h4>
             <h4>Health Center Information Management System</h4>
