@@ -1,61 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Health Center Information Management System
+## 📌 Project Description
+The Health Center Information Management System (IMS) is a web-based application designed to digitalize and centralize patient medical records for a local health center.
+It replaces manual, paper-based record keeping with a secure and efficient system that improves data accuracy, accessibility, and reporting for healthcare workers.
+It notify the patient about their upcoming schedule and also notify the nurse, and healtworker about the scheduled and overdue patient to plan the prioritise.
+It also includes a heatmap to provide data visualization of the patients and provide stategy and enable them to generate a plan which patient to prioritize.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The system supports multiple healthcare programs such as Vaccination, Pre-Natal Care, TB-DOTS, Senior Citizen care, and Family Planning, while providing role-based access for different users.
+## Technology Used
+- Laravel
+- PHP
+- JavaScript
+- Css
+- Leaflet
+- SMTP (Gmail)
+- Bootstrap
+- MySQL
+## ✨ Features
+- **CRUD Operations**
+  - Create, read, update, and delete medical records
 
-## About Laravel
+- **Multi-user Roles and Authorization**
+  - Nurse
+  - Health Worker
+  - Patient
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Patient Dashboard**
+  - View personal medical records
+  - Receive in-app notifications
+  - Receive email notifications via Gmail (SMTP)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Admin / Staff Dashboard**
+  - View patient statistics and total counts
+  - Data visualization using charts and heatmaps
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Automated Masterlist Generation**
+  - Consolidates records for reporting and monitoring
 
-## Learning Laravel
+- **Real-time Record Updates**
+  - Powered by Laravel Livewire
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Report Generation**
+  - Exportable and printable records
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Secure Registration System**
+  - Image-based code verification during registration
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Email Notification System**
+  - SMTP-based email delivery
+# 🔄 System Process
+1. **User Registration**
+   - Users register using a verification code sent via image or email.
 
-## Laravel Sponsors
+2. **Authentication & Authorization**
+   - Users are granted access based on assigned roles and permissions.
+3. **Health Worker Registration**
+    - Nurse account will create the account of the health worker.
+    - health worker account is responsible for handling the records.
+3. **Record Management**
+   - Health workers create and update patient medical records.
+     
+4. **Real-time Updates**
+   - Changes are reflected instantly using Laravel Livewire.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. **Patient Access**
+   - Patients can view and download their medical records and receive notifications.
 
-### Premium Partners
+6. **Monitoring & Reporting**
+   - Staff can view dashboards, generate masterlists, and export reports.
+7. **Automated Masterlist Generation**
+    - the system automate the generation of materlist record. it will based on the exisitng records.
+    - health worker or nurse can view and generate the report
+  
+## 📚 What I Learned
+- Personality this is my first laravel project and i learned a lot including MVC concepts, RESTful API, and livewire.
+- Implementing role-based authorization in Laravel
+- Implementing middleware
+- Integrating SMTP email notifications
+- Applying data visualization techniques (charts & heatmaps)
+- Improving system security through controlled access and validation
+- Building a system aligned with real-world healthcare workflows
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🖼️ Preview
+- **Home Page**
+  ![Admin Dashboard](screenshots/home_page_screenshot.png)
+- **Dashboard Page**
+![Admin Dashboard](screenshots/dsahbord_screenshot.png)
