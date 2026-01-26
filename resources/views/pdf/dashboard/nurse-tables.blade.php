@@ -133,7 +133,7 @@
         <table>
             <tr>
                 <td style="width: 120px; text-align: center;">
-                    <img src="{{public_path('images/hugoperez_logo.png')}}" alt="hugo perez logo">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="hugo perez logo">
                 </td>
                 <td>
                     <div class="header-text">
@@ -233,7 +233,7 @@
         <table>
             <tr>
                 <td style="width: 120px; text-align: center;">
-                    <img src="{{public_path('images/hugoperez_logo.png')}}" alt="hugo perez logo">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="hugo perez logo">
                 </td>
                 <td>
                     <div class="header-text">

@@ -182,7 +182,7 @@ class FamilyPlanningController extends Controller
                 'side_b_method_accepted' => 'sometimes|nullable|string',
                 'add_side_b_name_n_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_name_n_signature_data' => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'side_b_date_of_follow_up_visit' => 'required|date',
                 'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question' => 'sometimes|nullable|string',
@@ -277,7 +277,12 @@ class FamilyPlanningController extends Controller
                 'weight' => $medicalData['weight'] ?? null,
             ]);
 
-            $previoulyMethod = implode(",", $caseData['previously_used_method'] ?? []);
+            $methods = $caseData['previously_used_method'] ?? null;
+            $previoulyMethod = null;
+            if ($methods) {
+
+                $previoulyMethod = implode(",", $caseData['previously_used_method'] ?? []);
+            }
 
             // signature 
             $signaturePath = null;
@@ -458,12 +463,15 @@ class FamilyPlanningController extends Controller
             $modern_methods = [];
             $traditional_methods = [];
 
-            if ($caseData['previously_used_method'] != null) {
-                foreach ($caseData['previously_used_method'] as $method) {
-                    if (in_array($method, $method_of_FP['modern'])) {
-                        $modern_methods[] = $method;
-                    } elseif (in_array($method, $method_of_FP['traditional'])) {
-                        $traditional_methods[] = $method;
+            if ($methods) {
+
+                if ($caseData['previously_used_method'] != null) {
+                    foreach ($caseData['previously_used_method'] as $method) {
+                        if (in_array($method, $method_of_FP['modern'])) {
+                            $modern_methods[] = $method;
+                        } elseif (in_array($method, $method_of_FP['traditional'])) {
+                            $traditional_methods[] = $method;
+                        }
                     }
                 }
             }
@@ -657,7 +665,7 @@ class FamilyPlanningController extends Controller
             ]);
             // update case record
 
-            if($familyPlanningCaseRecord){
+            if ($familyPlanningCaseRecord) {
                 $familyPlanningCaseRecord->update([
                     'client_name' => $familyPlanningRecord->patient->full_name,
                     'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
@@ -673,7 +681,7 @@ class FamilyPlanningController extends Controller
                     'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
                 ]);
             }
-            
+
 
             // update the prenatal and wra if the patient have those records
             $prenatalMedicalCaseRecord = medical_record_cases::where('patient_id', $familyPlanningRecord->patient->id)->where('type_of_case', 'prenatal')->first() ?? null;

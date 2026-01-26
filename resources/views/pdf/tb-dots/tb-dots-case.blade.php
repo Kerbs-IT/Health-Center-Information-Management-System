@@ -158,7 +158,7 @@
 
 <body>
     <header class="clearfix">
-        <img src="{{public_path('images/hugoperez_logo.png')}}" alt="hugo perez logo">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="hugo perez logo">
         <div class="header-text">
             <h4>Barangay Hugo Perez Proper -</h4>
             <h4>Health Center Information Management System</h4>

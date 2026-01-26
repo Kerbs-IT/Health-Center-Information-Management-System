@@ -164,7 +164,7 @@ class PrenatalController extends Controller
                 strtolower($patientData['first_name']),
                 $middle,
                 strtolower($patientData['last_name']),
-                $patientData['suffix']
+                $patientData['suffix'] ?? null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -1441,18 +1441,18 @@ class PrenatalController extends Controller
 
             $pregnancyPlanRecord->update([
                 'midwife_name' => $data['midwife_name'] ?? $pregnancyPlanRecord->midwife_name,
-                'place_of_pregnancy' => $data['place_of_pregnancy'] ?? '',
-                'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? '',
-                'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? '',
-                'payment_method' => $data['payment_method'] ?? '',
-                'transportation_mode' => $data['transportation_mode'] ?? '',
-                'accompany_person_to_hospital' => $data['accompany_person_to_hospital'] ?? '',
-                'accompany_through_pregnancy' =>  $data['accompany_through_pregnancy'] ?? '',
-                'care_person' => $data['care_person'] ?? '',
-                'emergency_person_name' => $data['emergency_person_name'] ?? '',
-                'emergency_person_residency' => $data['emergency_person_residency'] ?? '',
-                'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? '',
-                'signature' => $signaturePath ?? '',
+                'place_of_pregnancy' => $data['place_of_pregnancy'] ?? null,
+                'authorized_by_philhealth' => $data['authorized_by_philhealth'] ?? null,
+                'cost_of_pregnancy' => $data['cost_of_pregnancy'] ?? null,
+                'payment_method' => $data['payment_method'] ?? null,
+                'transportation_mode' => $data['transportation_mode'] ?? null,
+                'accompany_person_to_hospital' => $data['accompany_person_to_hospital'] ?? null,
+                'accompany_through_pregnancy' =>  $data['accompany_through_pregnancy'] ?? null,
+                'care_person' => $data['care_person'] ?? null,
+                'emergency_person_name' => $data['emergency_person_name'] ?? null,
+                'emergency_person_residency' => $data['emergency_person_residency'] ?? null,
+                'emergency_person_contact_number' => $data['emergency_person_contact_number'] ?? null,
+                'signature' => $signaturePath ?? null,
                 'type_of_record' => 'Pregnancy Plan Record'
             ]);
             // delete all the donor name as update logic
