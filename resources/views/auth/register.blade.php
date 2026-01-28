@@ -213,7 +213,7 @@
     <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header  text-white">
                     <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -224,38 +224,41 @@
 
                         <h3>2. User Registration</h3>
                         <p>To access our services, you must:</p>
-                        <ul>
-                            <li>Provide accurate, current, and complete information during registration</li>
-                            <li>Maintain and update your information to keep it accurate and current</li>
-                            <li>Maintain the security and confidentiality of your password</li>
-                            <li>Notify us immediately of any unauthorized use of your account</li>
+                        <ul class="text-justify">
+                            <li class="text-justify">Provide accurate, current, and complete information during registration, maintain and update your information to keep it accurate and current, Maintain the security and confidentiality of your password. Notify us immediately of any unauthorized use of your account
+                            </li>
                         </ul>
 
                         <h3>3. Privacy and Data Protection</h3>
-                        <p>We are committed to protecting your personal information:</p>
+                        <p>We are committed to protecting:</p>
                         <ul>
-                            <li>Your personal and medical information will be kept confidential</li>
-                            <li>Information will only be shared with authorized healthcare providers</li>
-                            <li>Data will be stored securely and protected against unauthorized access</li>
-                            <li>You have the right to access, update, or delete your personal information</li>
+                            <li>the privacy and personal data of its users in accordance with the Data Privacy Act of 2012 (Republic Act No. 10173) and its implementing rules and regulations.
+                                All personal and medical information collected through the system is used solely for healthcare documentation, record-keeping, and administrative purposes of the health center. Data collected includes, but is not limited to, personal identification details, medical records, and vaccination information.
+                                Access to personal and medical data is restricted to authorized personnel only, such as healthcare workers and system administrators, who are required to handle information with strict confidentiality.
+                                The system implements reasonable organizational, technical, and physical security measures to protect personal data against unauthorized access, alteration, disclosure, loss, or destruction.
+                                Personal data shall not be shared with third parties without the data subject’s consent, except when required by law or authorized by relevant government agencies.
+                                By using this system, users acknowledge that they understand and consent to the collection, processing, and storage of their personal and medical information for the stated purposes.</li>
                         </ul>
 
                         <h3>4. Medical Information Disclaimer</h3>
-                        <p>The Health Center Information Management System provides:</p>
+                        <p>The Health Center Information Management System is intended solely:</p>
                         <ul>
-                            <li>Record-keeping and appointment management services</li>
-                            <li>Information that should not replace professional medical advice</li>
-                            <li>Services that complement but do not substitute for in-person medical consultations</li>
+                            <li>for record-keeping, documentation, and administrative purposes. The information stored and displayed in this system, including patient records, vaccination history, and medical data, is not intended to replace professional medical advice, diagnosis, or treatment.
+                                All medical decisions, diagnoses, and treatments remain the responsibility of licensed healthcare professionals. Users are advised not to rely solely on the information provided by this system for medical decision-making.</li>
+                            <li>By using this system, users acknowledge and agree that the platform functions as a digital record management tool only and does not provide medical services.</li>
                         </ul>
 
                         <h3>5. User Responsibilities</h3>
                         <p>As a user, you agree to:</p>
                         <ul>
-                            <li>Use the system only for lawful purposes</li>
-                            <li>Provide honest and accurate health information</li>
-                            <li>Attend scheduled appointments or cancel them in advance</li>
-                            <li>Respect the privacy of other patients and healthcare providers</li>
-                            <li>Not share your account credentials with others</li>
+                            <li>
+                                Provide accurate, truthful, and complete personal information when your data is collected or recorded by authorized health center personnel. <br>
+                                Inform the health center of any changes to your personal or medical information when applicable. <br>
+                                Respect the confidentiality and integrity of the system and refrain from attempting to access restricted areas or data. <br>
+                                Use any system access granted to you (if applicable) only for lawful and authorized purposes. <br>
+                                Refrain from submitting false, misleading, or unauthorized information that may affect the accuracy of medical records. <br>
+                                Acknowledge that medical records are managed and updated by authorized health workers, and that patients do not directly modify official health records within the system.
+                            </li>
                         </ul>
 
                         <h3>6. Service Availability</h3>
@@ -267,25 +270,31 @@
                         </ul>
 
                         <h3>7. Modifications to Terms</h3>
-                        <p>We reserve the right to modify these terms at any time. Continued use of the system after changes constitutes acceptance of the modified terms.</p>
+                        <ul>
+                            <li>We reserve the right to modify these terms at any time. Continued use of the system after changes constitutes acceptance of the modified terms.</li>
+                        </ul>
 
                         <h3>8. Termination</h3>
                         <p>We reserve the right to terminate or suspend your account if:</p>
                         <ul>
-                            <li>You violate these Terms and Conditions</li>
-                            <li>You provide false or misleading information</li>
-                            <li>Your actions pose a risk to other users or the system</li>
+                            <li>You provide false, inaccurate, or misleading information that affects the integrity of health records.  <br>
+                                You misuse the system or attempt to access restricted or unauthorized information.  <br>
+                                You violate any part of these Terms and Conditions, including privacy and data protection provisions.  <br>
+                                Your actions compromise the security, confidentiality, or proper operation of the system.  <br>
+                                Account access is no longer necessary for the intended purpose of the system, such as record maintenance or administrative requirements.</li>
                         </ul>
 
                         <h3>9. Contact Information</h3>
-                        <p>If you have questions about these Terms and Conditions, please contact the Health Center administration.</p>
+                        <ul>
+                            <li>If you have questions about these Terms and Conditions, please contact the Health Center administration.</li>
+                        </ul>
 
                         <p class="mt-4"><strong>By checking the box and registering, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.</strong></p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="acceptTermsBtn">Accept Terms</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="acceptTermsBtn">Accept Terms</button>
                 </div>
             </div>
         </div>
