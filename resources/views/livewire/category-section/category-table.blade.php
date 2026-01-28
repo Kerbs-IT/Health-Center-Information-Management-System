@@ -76,7 +76,7 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeachP
+                    @endforeach
                         <!-- dynamic td -->
                     </tbody>
                 </table>
