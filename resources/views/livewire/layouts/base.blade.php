@@ -37,7 +37,6 @@
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
         'resources/css/inventory_system/inventory-report.css',
-        'resources/js/inventory-report-pdf.js'
     ])
 
     @livewireStyles
