@@ -1790,42 +1790,37 @@ class FamilyPlanningController extends Controller
     private function compressAndSaveSignature($file)
     {
         $filename = time() . '_' . uniqid() . '.jpg';
-        $path = storage_path('app/public/signatures/family_planning/' . $filename);
-
-        // Ensure directory exists
-        if (!file_exists(storage_path('app/public/signatures/family_planning'))) {
-            mkdir(storage_path('app/public/signatures/family_planning'), 0755, true);
-        }
+        $path = 'signatures/family_planning/' . $filename;
 
         // Process image
         $manager = new ImageManager(new Driver());
         $image = $manager->read($file);
         $image->scale(width: 800);
         $image->toJpeg(quality: 60);
-        $image->save($path);
 
-        return 'signatures/family_planning/' . $filename;
+        // Save using the signatures disk
+        Storage::disk('signatures')->put($path, (string) $image->encode());
+
+        return $path;
     }
 
     private function saveCanvasSignature($base64Data)
     {
         $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+        $imageData = base64_decode($imageData);
 
         $filename = time() . '_' . uniqid() . '.jpg';
-        $path = storage_path('app/public/signatures/family_planning/' . $filename);
-
-        // Ensure directory exists
-        if (!file_exists(storage_path('app/public/signatures/family_planning'))) {
-            mkdir(storage_path('app/public/signatures/family_planning'), 0755, true);
-        }
+        $path = 'signatures/family_planning/' . $filename;
 
         // Process image
         $manager = new ImageManager(new Driver());
         $image = $manager->read($imageData);
         $image->scale(width: 800);
         $image->toJpeg(quality: 60);
-        $image->save($path);
 
-        return 'signatures/family_planning/' . $filename;
+        // Save using the signatures disk
+        Storage::disk('signatures')->put($path, (string) $image->encode());
+
+        return $path;
     }
 }

@@ -199,34 +199,31 @@ class healthWorkerController extends Controller
 
             if ($request->hasFile('profile_image')) {
                 $file = $request->file('profile_image');
-
-                // Generate unique filename
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $destinationPath = public_path('images/profile_images');
+                
+                // Path directly to public_html/images/profile_images
+                $destinationPath = base_path('../public_html/images/profile_images');
                 
                 // Make sure the folder exists
                 if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0755, true);
+                    mkdir($destinationPath, 0777, true);
                 }
 
                 // Delete the old image if it exists and is different
-                $profileImagePath = $user -> role == 'staff'? $user -> staff: $user -> nurses;
-                if (!empty( $profileImagePath ->profile_image) && $profileImagePath->profile_image !== 'images/default_profile.png') {
-                    $oldImagePath = public_path(ltrim($profileImagePath -> profile_image,'/'));
+                $profileImagePath = $user->role == 'staff' ? $user->staff : $user->nurses;
+                if (!empty($profileImagePath->profile_image) && $profileImagePath->profile_image !== 'images/default_profile.png') {
+                    $oldImagePath = base_path('../public_html/' . ltrim($profileImagePath->profile_image, '/'));
                     if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath); // Delete old file
+                        unlink($oldImagePath);
                     }
                 }
 
                 // Move the new file
                 $file->move($destinationPath, $filename);
 
-                // Update staff profile image path in DB
-            
-                $user-> staff ->profile_image = 'images/profile_images/' . $filename;
-                $user->staff ->save();
-                    
-                
+                // Update profile image path in DB
+                $profileImagePath->profile_image = 'images/profile_images/' . $filename;
+                $profileImagePath->save();
             }
 
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Console\Commands;
 
 use App\Mail\StaffDailyScheduleMail;
@@ -14,23 +15,24 @@ class SendStaffDailySchedule extends Command
 {
     protected $signature = 'staff:send-daily-schedule';
     protected $description = 'Send daily schedule notification to nurses and health workers at 5:00 AM';
-    
-    public function handle(){
+
+    public function handle()
+    {
         $today = Carbon::today()->format('Y-m-d');
 
         $this->info("==================================================");
         $this->info("Sending Daily Schedule to Staff");
-        $this->info("Date: ". $today);
+        $this->info("Date: " . $today);
         $this->info("Current Time: " . now()->format("Y-m-d H:i:s"));
         $this->info("==================================================");
 
         // get all member and staff (health worker)
-        $healthWorker = User::whereIn("role",['nurse','staff'])
-                ->where("status",'active')
-                ->whereNotNull('email')
-                ->get();
+        $healthWorker = User::whereIn("role", ['nurse', 'staff'])
+            ->where("status", 'active')
+            ->whereNotNull('email')
+            ->get();
 
-        if($healthWorker->isEmpty()){
+        if ($healthWorker->isEmpty()) {
             $this->warn("No staff member found with email addresses.");
             return 0;
         }
@@ -45,28 +47,31 @@ class SendStaffDailySchedule extends Command
     }
 
     // create a private function for handling the information that will be sent to the emails
-    private function processStaffNotification($staff,$today){
-        $scheduleData = $this->getStaffScheduleForToday($staff,$today);
+    private function processStaffNotification($staff, $today)
+    {
+        $scheduleData = $this->getStaffScheduleForToday($staff, $today);
 
-        $totalAppointments = array_sum(array_column($scheduleData,'count'));
+        $totalAppointments = array_sum(array_column($scheduleData, 'count'));
 
-        if($totalAppointments === 0 ){
+        if ($totalAppointments === 0) {
             $this->info("✓ {$staff->username} - No appointments today");
             return;
         }
-        // send consolidated email with all appointment types
-        $this->sendDailyScheduleEmail($staff,$scheduleData,$totalAppointments,$today);
 
-        // create in app notification for individual sections 
-        $this->createInAppNotifications($staff,$scheduleData,$today);
+        if (date('H') == '5') {
+            // send consolidated email with all appointment types
+            $this->sendDailyScheduleEmail($staff, $scheduleData, $totalAppointments, $today);
+
+            // create in app notification for individual sections 
+            $this->createInAppNotifications($staff, $scheduleData, $today);
+        }
 
         $this->info("✓ {$staff->username} - {$totalAppointments} appointments scheduled");
-
-    
     }
 
     // get today schedule for a specific staff member 
-    private function getStaffScheduleForToday($staff,$today){
+    private function getStaffScheduleForToday($staff, $today)
+    {
         $scheduleData = [];
         $isNurse = $staff->role === 'nurse';
         $isStaff = $staff->role === 'staff';
@@ -195,24 +200,24 @@ class SendStaffDailySchedule extends Command
         ];
 
         return $scheduleData;
-
     }
 
     // create a function to send the daily schedule email
 
-    private function sendDailyScheduleEmail($staff,$scheduleData,$totalAppointments,$today){
-        try{
+    private function sendDailyScheduleEmail($staff, $scheduleData, $totalAppointments, $today)
+    {
+        try {
             $emailData = [
-                'staff_name'=> $this->getStaffName($staff),
+                'staff_name' => $this->getStaffName($staff),
                 'date' => Carbon::parse($today)->format('l, F j, Y'),
-                'schedule_data'=>$scheduleData,
+                'schedule_data' => $scheduleData,
                 'total_appointments' => $totalAppointments
             ];
 
             Mail::to($staff->email)->send(new StaffDailyScheduleMail($emailData));
 
             $this->info("  ✓ Email sent to: {$staff->email}");
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->error("✗ Email failed for {$staff->email}: {$e->getMessage()}");
         }
     }

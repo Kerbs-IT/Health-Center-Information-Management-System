@@ -21,6 +21,7 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
+            
             // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (key == "signature_of_the_provider") {
@@ -31,7 +32,7 @@ document.addEventListener("click", async (e) => {
                     if (signatureElement) {
                         const signaturePath = data.sideBrecord
                             .signature_of_the_provider
-                            ? `/storage/${data.sideBrecord.signature_of_the_provider}`
+                            ? `/images/${data.sideBrecord.signature_of_the_provider}`
                             : null;
                         const signatureImg = document.getElementById(
                             "view_signature_of_the_provider"
@@ -69,36 +70,36 @@ const sideBupdateBTN = document.getElementById(
 
 // SIDE B SIGNATURE APPROACH
 // signature
-        const editModal = document.getElementById("editSideBcaseModal");
-        let editSideBsignature = null;
-        if (editModal) {
-            editModal.addEventListener("shown.bs.modal", function () {
-                // console.log("Modal is NOW visible!");
+const editModal = document.getElementById("editSideBcaseModal");
+let editSideBsignature = null;
+if (editModal) {
+    editModal.addEventListener("shown.bs.modal", function () {
+        // console.log("Modal is NOW visible!");
 
-                if (!editSideBsignature) {
-                    editSideBsignature = initSignatureCapture({
-                        drawBtnId: "edit_side_b_drawSignatureBtn",
-                        uploadBtnId: "edit_side_b_uploadSignatureBtn",
-                        canvasId: "edit_side_b_signaturePad",
-                        canvasSectionId: "edit_side_b_signatureCanvas",
-                        uploadSectionId: "edit_side_b_signatureUpload",
-                        previewSectionId: "edit_side_b_signaturePreview",
-                        fileInputId: "edit_side_b_signature_image",
-                        previewImageId: "edit_side_b_previewImage",
-                        errorElementId: "edit_side_b_signature_error",
-                        clearBtnId: "edit_side_b_clearSignature",
-                        saveBtnId: "edit_side_b_saveSignature",
-                        removeBtnId: "edit_side_b_removeSignature",
-                        hiddenInputId: "edit_side_b_signature_data",
-                        maxFileSizeMB: 2,
-                    });
-
-                    // console.log("✅ SIGNATURE INITIALIZED!");
-                } else {
-                    editSideBsignature.clear();
-                }
+        if (!editSideBsignature) {
+            editSideBsignature = initSignatureCapture({
+                drawBtnId: "edit_side_b_drawSignatureBtn",
+                uploadBtnId: "edit_side_b_uploadSignatureBtn",
+                canvasId: "edit_side_b_signaturePad",
+                canvasSectionId: "edit_side_b_signatureCanvas",
+                uploadSectionId: "edit_side_b_signatureUpload",
+                previewSectionId: "edit_side_b_signaturePreview",
+                fileInputId: "edit_side_b_signature_image",
+                previewImageId: "edit_side_b_previewImage",
+                errorElementId: "edit_side_b_signature_error",
+                clearBtnId: "edit_side_b_clearSignature",
+                saveBtnId: "edit_side_b_saveSignature",
+                removeBtnId: "edit_side_b_removeSignature",
+                hiddenInputId: "edit_side_b_signature_data",
+                maxFileSizeMB: 2,
             });
+
+            // console.log("✅ SIGNATURE INITIALIZED!");
+        } else {
+            editSideBsignature.clear();
         }
+    });
+}
 
 // SIDE B EDIT BTN EVENT DELEGATION
 document.addEventListener("click", async (e) => {
@@ -150,7 +151,6 @@ document.addEventListener("click", async (e) => {
                 }
             });
         }
-        
     } catch (error) {
         console.log("Error:", error);
     }

@@ -35,7 +35,7 @@ return [
 
     'pdf' => [
         'enabled' => true,
-        'binary'  => storage_path('app/bin/wkhtmltopdf'), // ✅ Change this line
+        'binary'  => base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf'), // ✅ Change this line
         'timeout' => false,
         'options' => [
             'enable-local-file-access' => true, // ✅ Add this
@@ -45,7 +45,7 @@ return [
 
     'image' => [
         'enabled' => false, // We don't need image conversion
-        'binary'  => env('WKHTML_IMG_BINARY', '/usr/local/bin/wkhtmltoimage'),
+        'binary'  => env('WKHTML_IMG_BINARY', base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf')),
         'timeout' => false,
         'options' => [],
         'env'     => [],

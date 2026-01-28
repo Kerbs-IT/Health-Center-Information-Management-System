@@ -379,7 +379,7 @@
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
+                                    Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
                                 </div>
                             </div>
                         </div>
@@ -460,7 +460,7 @@
                             </button>
                             <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
+                                    Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
 
                                 </div>
                             </div>

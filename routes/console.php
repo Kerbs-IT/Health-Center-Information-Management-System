@@ -25,7 +25,7 @@ Schedule::command('staff:send-overdue-notifications')
 Schedule::command('appointments:send-reminders')
     ->dailyAt('20:00')
     ->timezone('Asia/Manila') // Adjust to your timezone
-    ->emailOutputOnFailure('admin@yourhealthcenter.com'); // Optional: get email if it fails
+    ->emailOutputOnFailure('admin@yourhealthcenter.com');
 
   
 

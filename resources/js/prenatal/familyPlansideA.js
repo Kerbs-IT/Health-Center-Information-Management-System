@@ -2,7 +2,10 @@ import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
 import { automateAge } from "../automateAge.js";
-import { refreshToggleStates,initializeEditModal } from "../family_planning/editFamilyPlanningRadioToggle.js";
+import {
+    refreshToggleStates,
+    initializeEditModal,
+} from "../family_planning/editFamilyPlanningRadioToggle.js";
 
 // Initialize the modal on page load
 initializeEditModal();
@@ -56,7 +59,10 @@ if (viewIcon) {
                 }
                 if (key == "signature_image") {
                     const signaturePath = data.caseInfo.signature_image
-                        ? `/storage/${data.caseInfo.signature_image}`
+                        ? `/${data.caseInfo.signature_image.replace(
+                              "storage/",
+                              ""
+                          )}`
                         : null;
                     const signatureImg = document.getElementById(
                         "view_signature_image"
@@ -72,7 +78,10 @@ if (viewIcon) {
                 if (key == "acknowledgement_consent_signature_image") {
                     const signaturePath = data.caseInfo
                         .acknowledgement_consent_signature_image
-                        ? `/storage/${data.caseInfo.acknowledgement_consent_signature_image}`
+                        ? `/${data.caseInfo.acknowledgement_consent_signature_image.replace(
+                              "storage/",
+                              ""
+                          )}`
                         : null;
                     const signatureImg = document.getElementById(
                         "view_acknowledgement_consent_signature_image"
@@ -355,7 +364,6 @@ if (editIcon) {
                     key == "signature_image" ||
                     key == "acknowledgement_consent_signature_image"
                 ) {
-                    
                 } else {
                     if (document.getElementById(`edit_${key}`)) {
                         // console.log("gumagana boy", key, "value: ", value);
@@ -457,9 +465,9 @@ if (editIcon) {
             // assign the case id
         }
 
-          setTimeout(() => {
-                    refreshToggleStates();
-                }, 100);
+        setTimeout(() => {
+            refreshToggleStates();
+        }, 100);
 
         let editFamilyPlanningSignature = null;
         let editFamilyPlanningConsentSignature = null;

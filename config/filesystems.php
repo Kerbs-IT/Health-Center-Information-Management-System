@@ -46,6 +46,13 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'signatures' => [
+            'driver' => 'local',
+            'root' => base_path('../public_html/images'),
+            'url' => env('APP_URL').'/images',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
 
         's3' => [
             'driver' => 's3',
