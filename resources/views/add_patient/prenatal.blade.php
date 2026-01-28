@@ -1,15 +1,15 @@
 @vite([
 'resources/css/patient/add-patient-prenatal.css'])
-<div class="prenatal-con d-flex max-w-[1200px] flex-column card shadow p-3 align-self-center h-100 rounded">
+<div class="prenatal-con d-flex w-full lg:w-[90%] xl:w-[85%] flex-column card shadow p-3 align-self-center min-vh-100 rounded">
     <div class="mb-2 w-100">
         <label for="patient_name" class="w-100">Patient Name</label>
-        <input type="text" class="p-2 w-100 w-md-50" disabled id="prenatal_patient_full_name">
+        <input type="text" class="p-2 w-100 md:w-[50%]" disabled id="prenatal_patient_full_name">
     </div>
     <div class="mb-2 w-100">
 
         <div class="ob-history mb-2">
             <h3>OB HISTORY</h3>
-            <div class="type-of-pregnancy d-flex flex-wrap w-100 gap-1">
+            <div class="type-of-pregnancy d-flex flex-wrap w-100 gap-1 flex-xl-nowrap">
                 <div class="item">
                     <label for="G">G</label>
                     <input type="number" name="G" class="form-control w-100" placeholder="0">
@@ -251,9 +251,9 @@
         </div>
         <!-- main info about pregnancy -->
         <div class="survey-questionare w-100 ">
-            <div class="current-prenancy w-100 d-flex gap-3 mb-3 border-bottom">
+            <div class="current-prenancy flex-fill d-flex gap-3 mb-3 border-bottom flex-wrap flex-lg-nowrap">
 
-                <div class="questions w-100">
+                <div class="questions flex-fill">
                     <h3 class="w-100 bg-success text-white text-center">Kasaysayan ng Pagbubuntis</h3>
                     <div class="mb-4 d-flex">
                         <label for="number_of" class="w-100 fs-5" class="w-50">Bilang ng Pagbubuntis:</label>
@@ -306,7 +306,7 @@
                     </div>
                 </div>
                 <!-- 2nd questions-->
-                <div class="questions w-100">
+                <div class="questions flex-fill">
                     <h3 class="w-100 bg-success text-white text-center">Kasalukuyang Problemang Pang Kalusugan</h3>
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Tuberculosis(ubong labis 14 araaw):</label>
@@ -366,11 +366,11 @@
                         <input type="radio" name="nurse_decision" id="nurse_f1_option" value="1">
                         <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
                     </div>
-                    <div class="mb-2 d-flex">
+                    <div class="mb-2 d-flex flex-row">
                         <input type="radio" name="nurse_decision" id="nurse_f2_option" value="2">
                         <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
                     </div>
-                    <div class="mb-2 d-flex">
+                    <div class="mb-2 d-flex flex-row">
                         <input type="radio" name="nurse_decision" id="nurse_f3_option" value="3">
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>
