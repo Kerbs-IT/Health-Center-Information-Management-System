@@ -119,7 +119,7 @@ Route::middleware(['role:nurse'])->group(function () {
     Route::get('/patient-account/reset-password/{id}', [PasswordResetController::class, 'reset']);
 
     // generate per area report
-    Route::get('/patient-per-area/detailed-report',[PdfController::class, 'generatePatientCountReport']);
+    Route::get('/patient-per-area/detailed-report', [PdfController::class, 'generatePatientCountReport']);
 
     // swap areas
     // Health Worker Swap Routes
@@ -403,13 +403,13 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     Route::get('/api/heatmap-data', [HeatMapController::class, 'getHeatmapData'])->name('health-map.data');
 
     // age distribution
-    Route::get('/dashboard/age-distribution',[HealthCenterDashboard::class, 'getAgeDistribution']);
+    Route::get('/dashboard/age-distribution', [HealthCenterDashboard::class, 'getAgeDistribution']);
     // get overdue
-    Route::get('/daily-overdue-record/count',[HealthCenterDashboard::class, 'getOverdueCounts']);
-    
+    Route::get('/daily-overdue-record/count', [HealthCenterDashboard::class, 'getOverdueCounts']);
+
     // get the patient distribution
 
-    Route::get("/health-worker/area-patient-distribution",[HealthCenterDashboard::class, 'healthWorkerPatientDistribution']);
+    Route::get("/health-worker/area-patient-distribution", [HealthCenterDashboard::class, 'healthWorkerPatientDistribution']);
 
     // Inventory Route
     // Route to categories
@@ -418,7 +418,7 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     Route::get('/medicines', Medicines::class)->name('medicines');
 
     // Route to report
-    Route::get('/report',InventoryReport::class)->name('inventory-report');
+    Route::get('/report', InventoryReport::class)->name('inventory-report');
 
     // Route to manage medicine request
     Route::get('/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
@@ -428,7 +428,6 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
     Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
-
 });
 // ---------------------------- home page
 // Route to homepage
@@ -638,4 +637,3 @@ Route::get('run-command', function () {
 
 Route::get('/add-patient/get-assigned-area/{staffId}', [healthWorkerController::class, 'getAssignedArea']);
 Route::post('/get-health-worker', [healthWorkerController::class, 'getHealthWorker']);
-

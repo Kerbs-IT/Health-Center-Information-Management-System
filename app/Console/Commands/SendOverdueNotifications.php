@@ -64,11 +64,13 @@ class SendOverdueNotifications extends Command
             return;
         }
 
-        // 1. Send consolidated email with all overdue appointment types
-        $this->sendOverdueEmail($staff, $overdueData, $totalOverdue);
+        if (date('H') == '9') {
+            // 1. Send consolidated email with all overdue appointment types
+            $this->sendOverdueEmail($staff, $overdueData, $totalOverdue);
 
-        // 2. Create individual in-app notifications for each overdue type
-        $this->createOverdueInAppNotifications($staff, $overdueData);
+            // 2. Create individual in-app notifications for each overdue type
+            $this->createOverdueInAppNotifications($staff, $overdueData);
+        }
 
         $this->info("✓ {$staff->username} - {$totalOverdue} overdue appointments");
     }
@@ -184,7 +186,7 @@ class SendOverdueNotifications extends Command
                 $this->info("  - Patient ID: {$patientId}, Name: {$patient->first_name} {$patient->last_name}");
             }
         }
-        
+
         $this->info("=========================");
         $overdueData[] = [
             'type' => 'vaccination',
