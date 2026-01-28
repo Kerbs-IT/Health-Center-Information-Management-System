@@ -37,3 +37,10 @@ nav ul li a:hover::after{
     background-color: var(--main--color);
 
 }
+
+.login-btn svg{
+    fill: var(--main--color);
+}
+.login-btn svg:hover{
+     fill: var(--secondary--color);
+}
