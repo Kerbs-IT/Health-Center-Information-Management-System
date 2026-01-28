@@ -57,12 +57,9 @@ class MedicineRequestComponent extends Component
         $user = auth()->user();
         $patient = $user->patient; // This might be null
 
-        // Prepare request data - STORE MEDICINE DETAILS
+        // Prepare request data
         $requestData = [
             'medicine_id' => $this->selectedMedicineId,
-            'medicine_name' => $medicine->medicine_name,      // Store medicine name
-            'medicine_dosage' => $medicine->dosage,           // Store dosage
-            'medicine_type' => $medicine->type,               // Store type
             'quantity_requested' => $this->quantity,
             'reason' => $this->reason,
             'status' => 'pending',
@@ -81,7 +78,6 @@ class MedicineRequestComponent extends Component
         $this->resetErrorBag();
 
         $this->dispatch('medicineRequest-added');
-        session()->flash('message', 'Medicine request submitted successfully.');
     }
 
     public function editRequest($requestId)
@@ -166,12 +162,9 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        // Update the request - INCLUDE MEDICINE DETAILS
+        // Update the request
         $request->update([
             'medicine_id' => $this->selectedMedicineId,
-            'medicine_name' => $medicine->medicine_name,      // Update medicine name
-            'medicine_dosage' => $medicine->dosage,           // Update dosage
-            'medicine_type' => $medicine->type,               // Update type
             'quantity_requested' => $this->quantity,
             'reason' => $this->reason,
         ]);
@@ -212,6 +205,7 @@ class MedicineRequestComponent extends Component
         $this->deleteRequestMedicineId = $id;
         $this->dispatch('show-deleleteRequestModal');
     }
+    
 
     public function deleteRequest()
     {
@@ -258,6 +252,7 @@ class MedicineRequestComponent extends Component
             })
             ->get();
     }
+
 
     public function render()
     {

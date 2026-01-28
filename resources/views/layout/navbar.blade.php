@@ -15,31 +15,42 @@
           <span class="sr-only">Toggle menu</span>
 
           <!-- Hamburger -->
-          <svg class="fa-solid fa-bars text-3xl transition-all duration-300 rotate-0 opacity-100 h-30 w-30" fill="green" id="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M96 160C96 142.3 110.3 128 128 128L512 128C529.7 128 544 142.3 544 160C544 177.7 529.7 192 512 192L128 192C110.3 192 96 177.7 96 160zM96 320C96 302.3 110.3 288 128 288L512 288C529.7 288 544 302.3 544 320C544 337.7 529.7 352 512 352L128 352C110.3 352 96 337.7 96 320zM544 480C544 497.7 529.7 512 512 512L128 512C110.3 512 96 497.7 96 480C96 462.3 110.3 448 128 448L512 448C529.7 448 544 462.3 544 480z"/></svg>
+          <svg class="fa-solid fa-bars text-3xl transition-all duration-300 rotate-0 opacity-100 h-30 w-30" fill="green" id="icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+            <path d="M96 160C96 142.3 110.3 128 128 128L512 128C529.7 128 544 142.3 544 160C544 177.7 529.7 192 512 192L128 192C110.3 192 96 177.7 96 160zM96 320C96 302.3 110.3 288 128 288L512 288C529.7 288 544 302.3 544 320C544 337.7 529.7 352 512 352L128 352C110.3 352 96 337.7 96 320zM544 480C544 497.7 529.7 512 512 512L128 512C110.3 512 96 497.7 96 480C96 462.3 110.3 448 128 448L512 448C529.7 448 544 462.3 544 480z" />
+          </svg>
 
           <!-- X icon -->
-           <svg class="fa-solid fa-xmark text-3xl absolute transition-all duration-300 rotate-90 opacity-0 text-red-500 h-7 w-7" id="icon-close" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg>
+          <svg class="fa-solid fa-xmark text-3xl absolute transition-all duration-300 rotate-90 opacity-0 text-red-500 h-7 w-7" id="icon-close" fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+            <path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z" />
+          </svg>
         </button>
 
       </div>
       <div class="flex align-center my-auto md:order-3">
-        <div class="d-flex">
+        <div class="d-block">
           @guest
           <!-- User is NOT logged in -->
           <div class="nav-item">
-            <a class="btn btn-primary fw-normal btn-success" href="{{ route('login') }}">Login</a>
+            <a class="fw-normal login-btn" href="{{ route('login') }}"><svg class="h-9 w-9" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/></svg></a>
           </div>
           @else
+          <div class=" text-white rounded d-flex align-items-center justify-content-center mx-auto" style="width: 45px; height: 45px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" id="homepage-user-icon" class="cursor-pointer"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+              <path fill="#2b8842" d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" />
+            </svg>
+            <div class="nav-item homepage-user-icon-items mx-1 position-absolute right-2 top-17 bg-white box-shadow p-3 d-none">
+              <a class="text-decoration-none text-black fw-normal border-bottom" href="{{ route('login') }}">Dashboard</a>
+              <div class="nav-item">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                  @csrf
+                  <button type="submit" class="text-decoration-none text-danger fw-normal" id="headerLogOut">Logout</button>
+                </form>
+              </div>
+            </div>
+          </div>
           <!-- User is logged in -->
-          <div class="nav-item mx-1">
-            <a class="btn btn-success fw-normal" href="{{ route('login') }}">Dashboard</a>
-          </div>
-          <div class="nav-item">
-            <form method="POST" action="{{ route('logout') }}">
-              @csrf
-              <button type="submit" class="btn btn-danger fw-normal">Logout</button>
-            </form>
-          </div>
+
+
           @endguest
         </div>
       </div>

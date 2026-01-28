@@ -117,7 +117,7 @@
                         </div>
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="contact_number" class="">Contact Number</label>
-                            <input type="number" placeholder="+63-936-627-8671" class="form-control bg-light" id="edit_client_contact_number" name="edit_client_contact_number">
+                            <input type="number" placeholder="Enter the phone number" class="form-control bg-light" id="edit_client_contact_number" name="edit_client_contact_number">
 
                             <small class="text-danger error-text" id="edit_client_contact_number_error"></small>
 

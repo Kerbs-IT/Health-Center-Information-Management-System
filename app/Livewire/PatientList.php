@@ -2,10 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\brgy_unit;
 use App\Models\medical_record_cases;
 use App\Models\patients;
+use App\Models\staff;
 use App\Models\vaccination_masterlists;
 use App\Models\wra_masterlists;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -44,15 +47,14 @@ class PatientList extends Component
                     $wra_masterlist->update([
                         'status' => 'Archived'
                     ]);
-                }else{
-                    if ($record->type_of_case == 'vaccination'){
-                        $vaccination_masterlist = vaccination_masterlists::where('medical_record_case_id',$record->id)->first();
+                } else {
+                    if ($record->type_of_case == 'vaccination') {
+                        $vaccination_masterlist = vaccination_masterlists::where('medical_record_case_id', $record->id)->first();
                         $vaccination_masterlist->update([
-                            'status'=>'Archived'
+                            'status' => 'Archived'
                         ]);
                     }
                 }
-                
             }
         }
 
@@ -90,9 +92,27 @@ class PatientList extends Component
 
     public function render()
     {
-        $query = patients::query();
+        $query = '';
 
+
+        $query = patients::query();
         // Apply search filter
+
+
+        // if health worker
+        if (Auth::user()->role == 'staff') {
+            // get the assigned area of the staff
+            $staff = staff::findOrFail(Auth::user()->id);
+            $assignedArea = $staff->assigned_area_id;
+
+            $healthWorkerAssignedArea = brgy_unit::where('id', $assignedArea)->first();
+            // dd($healthWorkerAssignedArea);
+            $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                ->where('patient_addresses.purok', $healthWorkerAssignedArea->brgy_unit)
+                ->select("patients.*");
+        }
+
+
         if ($this->search) {
             $searchTerm = '%' . str_replace(' ', '%', $this->search) . '%';
 
@@ -103,7 +123,6 @@ class PatientList extends Component
                     ->orWhere('contact_number', 'like', $searchTerm);
             });
         }
-
         // Apply status filter
         if ($this->statusFilter !== 'all') {
             $query->where('status', $this->statusFilter);

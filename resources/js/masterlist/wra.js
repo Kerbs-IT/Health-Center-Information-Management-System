@@ -100,7 +100,11 @@ document.addEventListener("click", async (e) => {
         alert("Unable to archive: Invalid ID");
         return;
     }
-
+    // RESET THE ERRORS
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
+    }
     try {
         // fetch the data
         const response = await fetch(`/masterist/wra/${id}`);
@@ -126,18 +130,18 @@ document.addEventListener("click", async (e) => {
                         break;
 
                     case "date_of_birth":
-
-                        const date_of_birth = value ?? '';
+                        const date_of_birth = value ?? "";
                         // console.log("Formatted: ", formatted);
 
                         document.querySelector(`input[name="${key}"]`).value =
                             date_of_birth;
 
                         break;
-                    case 'age':
-                        if (key == 'age' && value != null) {
+                    case "age":
+                        if (key == "age" && value != null) {
                             const age = document.getElementById("age");
-                            const hiddenAge = document.getElementById("hiddenAge");
+                            const hiddenAge =
+                                document.getElementById("hiddenAge");
                             if (age && hiddenAge) {
                                 age.value = value;
                                 hiddenAge.value = value;
@@ -308,18 +312,19 @@ wra_update_btn.addEventListener("click", async (e) => {
     });
 
     const data = await response.json();
+    const errorElements = document.querySelectorAll(".error-text");
 
     if (!response.ok) {
-        // // reset the error element text first
-        // errorElements.forEach((element) => {
-        //     element.textContent = "";
-        // });
-        // // if there's an validation error load the error text
-        // Object.entries(data.errors).forEach(([key, value]) => {
-        //     if (document.getElementById(`${key}_error`)) {
-        //         document.getElementById(`${key}_error`).textContent = value;
-        //     }
-        // });
+        // reset the error element text first
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
+        // if there's an validation error load the error text
+        Object.entries(data.errors).forEach(([key, value]) => {
+            if (document.getElementById(`${key}_error`)) {
+                document.getElementById(`${key}_error`).textContent = value;
+            }
+        });
         let errorMessage = "";
 
         if (data.errors) {
@@ -343,9 +348,9 @@ wra_update_btn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
     } else {
-        // errorElements.forEach((element) => {
-        //     element.textContent = "";
-        // });
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         Swal.fire({
             title: "Update",
             text: capitalizeEachWord(data.message),

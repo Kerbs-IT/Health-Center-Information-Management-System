@@ -15,7 +15,7 @@
     <div class="hero-content w-100">
         <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
         <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
-        <a href="#" class="hero-btn">Join us Now</a>
+        <a href="{{ route('login') }}" class="hero-btn">Join us Now</a>
     </div>
 
 </section>

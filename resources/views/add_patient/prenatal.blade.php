@@ -1,15 +1,15 @@
 @vite([
 'resources/css/patient/add-patient-prenatal.css'])
-<div class="prenatal-con d-flex max-w-[1200px] flex-column card shadow p-3 align-self-center h-100 rounded">
+<div class="prenatal-con d-flex w-full lg:w-[90%] xl:w-[85%] flex-column card shadow p-3 align-self-center min-vh-100 rounded">
     <div class="mb-2 w-100">
         <label for="patient_name" class="w-100">Patient Name</label>
-        <input type="text" class="p-2 w-100 w-md-50" disabled id="prenatal_patient_full_name">
+        <input type="text" class="p-2 w-100 md:w-[50%]" disabled id="prenatal_patient_full_name">
     </div>
     <div class="mb-2 w-100">
 
         <div class="ob-history mb-2">
             <h3>OB HISTORY</h3>
-            <div class="type-of-pregnancy d-flex flex-wrap w-100 gap-1">
+            <div class="type-of-pregnancy d-flex flex-wrap w-100 gap-1 flex-xl-nowrap">
                 <div class="item">
                     <label for="G">G</label>
                     <input type="number" name="G" class="form-control w-100" placeholder="0">
@@ -166,6 +166,42 @@
             </div>
 
         </div>
+        <div class="w-100">
+            <h5>Objective</h5>
+            <div class="mb-2 input-field d-flex gap-md-3 gap-0 w-100 first-row flex-wrap flex-md-row flex-column">
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_bp">Blood Pressure:</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" id="prenatal_view_blood_pressure" disabled>
+
+                </div>
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_temperature">Temperature:</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the temperature" id="prenatal_view_temperature" disabled>
+
+                </div>
+                <div class="mb-md-2 mb-1 flex-fill">
+                    <label for="prenatal_view_pulse_rate">Pulse Rate(Bpm):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="prenatal_view_pulse_rate" disabled>
+
+                </div>
+
+            </div>
+            <!-- 2nd row -->
+            <div class="mb-2 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-column flex-md-row">
+                <div class="mb-2 flex-fill">
+                    <label for="prenatal_view_respiratory_rate">Respiratory Rate (breaths/min):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" id="prenatal_view_respiratory_rate" disabled>
+                </div>
+                <div class="mb-2 flex-fill">
+                    <label for="preantal_view_height">Height(cm):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the height" id="prenatal_view_height" disabled>
+                </div>
+                <div class="mb-2 flex-fill">
+                    <label for="prenatal_view_weight">Weight(kg):</label>
+                    <input type="text" class="form-control w-100" placeholder="Enter the weight" id="prenatal_view_weight" disabled>
+                </div>
+            </div>
+        </div>
         <!-- ASSESSMENT -->
         <div class="assessment-con mb-3 border-bottom">
             <h4>ASSESSMENT <small class="text-muted fs-5">(put check if yes)</small></h4>
@@ -209,11 +245,15 @@
             </div>
 
         </div>
+        <div class="planning-section mb-3">
+            <h4>Planning</h4>
+            <textarea name="add_prenatal_planning" id="add_patient_prenatal_planning" class=" border-1 border-black w-100 form-control" style="min-height:150px;"></textarea>
+        </div>
         <!-- main info about pregnancy -->
         <div class="survey-questionare w-100 ">
-            <div class="current-prenancy w-100 d-flex gap-3 mb-3 border-bottom">
+            <div class="current-prenancy flex-fill d-flex gap-3 mb-3 border-bottom flex-wrap flex-lg-nowrap">
 
-                <div class="questions w-100">
+                <div class="questions flex-fill">
                     <h3 class="w-100 bg-success text-white text-center">Kasaysayan ng Pagbubuntis</h3>
                     <div class="mb-4 d-flex">
                         <label for="number_of" class="w-100 fs-5" class="w-50">Bilang ng Pagbubuntis:</label>
@@ -266,7 +306,7 @@
                     </div>
                 </div>
                 <!-- 2nd questions-->
-                <div class="questions w-100">
+                <div class="questions flex-fill">
                     <h3 class="w-100 bg-success text-white text-center">Kasalukuyang Problemang Pang Kalusugan</h3>
                     <div class="mb-4 d-flex justify-content-between w-100">
                         <label for="sasarin" class="w-75">Tuberculosis(ubong labis 14 araaw):</label>
@@ -326,11 +366,11 @@
                         <input type="radio" name="nurse_decision" id="nurse_f1_option" value="1">
                         <label for="">Papuntahin sa Doktor/RHU Alamin? Sundan ang kalagayan</label>
                     </div>
-                    <div class="mb-2 d-flex">
+                    <div class="mb-2 d-flex flex-row">
                         <input type="radio" name="nurse_decision" id="nurse_f2_option" value="2">
                         <label for="">Masusing pagsusuri at aksyon ng kumadrona / Nurse</label>
                     </div>
-                    <div class="mb-2 d-flex">
+                    <div class="mb-2 d-flex flex-row">
                         <input type="radio" name="nurse_decision" id="nurse_f3_option" value="3">
                         <label for="">Ipinayong manganak sa Ospital</label>
                     </div>

@@ -61,7 +61,7 @@ window.addEventListener('show-archive-confirmation', () => {
         text: "You can restore it later from the archived items.",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#f39c12",
+        confirmButtonColor: "#f00606",
         cancelButtonColor: "#6c757d",
         confirmButtonText: "Yes, archive it!",
     }).then((result) => {

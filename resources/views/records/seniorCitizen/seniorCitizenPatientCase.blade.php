@@ -86,34 +86,34 @@
                                                         <h5>MEDICAL INFORMATION</h5>
                                                         <div class="mb-md-3 mb-0">
                                                             <label for="new_existing_medical_condition">Existing Medical Condition</label>
-                                                            <input type="text" class="form-control" name="add_existing_medical_condition" id="new_existing_medical_condition">
+                                                            <input type="text" class="form-control" name="add_existing_medical_condition" id="new_existing_medical_condition" placeholder="Enter existing medical conditions">
                                                             <small class="text-danger error-text" id="add_existing_medical_condition_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0">
                                                             <label for="new_alergies">Alergies</label>
-                                                            <input type="text" class="form-control" name="add_alergies" id="new_alergies">
+                                                            <input type="text" class="form-control" name="add_alergies" id="new_alergies" placeholder="Enter the allergies">
                                                             <small class="text-danger error-text" id="add_alergies_error"></small>
                                                         </div>
                                                         <div class="maintenance-con d-flex gap-2 flex-wrap flex-xl-nowrap flex-md-row flex-column">
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="" class="text-nowrap">Maintenance Medication</label>
-                                                                <input type="text" class="form-control" id="add_maintenance_medication">
+                                                                <input type="text" class="form-control" id="add_maintenance_medication" placeholder="Enter the maintenance medication">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Dosage & Frequency</label>
-                                                                <input type="text" class="form-control" id="add_dosage_n_frequency">
+                                                                <input type="text" class="form-control" id="add_dosage_n_frequency" placeholder="Enter the dosage">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" id="add_maintenance_quantity">
+                                                                <input type="number" class="form-control" id="add_maintenance_quantity" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="add_maintenance_start_date">
+                                                                <input type="date" class="form-control" id="add_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
-                                                                <input type="date" class="form-control" id="add_maintenance_end_date">
+                                                                <input type="date" class="form-control" id="add_maintenance_end_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill  d-flex flex-column">
                                                                 <label for="" class="text-white">End Date</label>
@@ -153,18 +153,19 @@
                                                         </div>
                                                         <!-- prescribing  -->
                                                         <div class="mb-md-3 mb-0">
-                                                            <label for="">Prescribing Nurse</label>
-                                                            <input type="text" class="form-control" name="add_prescribe_by_nurse" id="add_prescribe_by_nurse">
+                                                            <label for="">Prescribing Nurse<span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" name="add_prescribe_by_nurse" id="add_prescribe_by_nurse" placeholder="Enter the name of the nurse">
                                                             <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
                                                             <label for="" class="text-nowrap">Remarks</label>
-                                                            <input type="text" class="form-control p-2 border" name="add_medication_maintenance_remarks">
+                                                            <input type="text" class="form-control p-2 border" name="add_medication_maintenance_remarks" placeholder="Enter your remarks">
                                                             <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
                                                             <label for="add_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
                                                             <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
+                                                            <small class="text-danger error-text" id="add_date_of_comeback_error"></small>
                                                         </div>
                                                     </div>
 
@@ -208,34 +209,34 @@
                                                         <h5>MEDICAL INFORMATION</h5>
                                                         <div class="mb-3">
                                                             <label for="">Existing Medical Condition</label>
-                                                            <input type="text" class="form-control" name="edit_existing_medical_condition" id="edit_existing_medical_condition">
+                                                            <input type="text" class="form-control" name="edit_existing_medical_condition" id="edit_existing_medical_condition" placeholder="Enter existing medical conditions">
                                                             <small class="text-danger error-text" id="edit_existing_medical_condition_error"></small>
                                                         </div>
                                                         <div class="mb-3">
                                                             <label for="">Alergies</label>
-                                                            <input type="text" class="form-control" id="edit_alergies" name="edit_alergies">
+                                                            <input type="text" class="form-control" id="edit_alergies" name="edit_alergies" placeholder="Enter the allergies">
                                                             <small class="text-danger error-text" id="edit_alergies_error"></small>
                                                         </div>
                                                         <div class="maintenance-con d-flex gap-2 flex-wrap flex-xl-nowrap flex-md-row flex-column">
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="" class="text-nowrap">Maintenance Medication</label>
-                                                                <input type="text" class="form-control" id="edit_maintenance_medication">
+                                                                <input type="text" class="form-control" id="edit_maintenance_medication" placeholder="Enter the maintenance medication">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Dosage & Frequency</label>
-                                                                <input type="text" class="form-control" id="edit_dosage_n_frequency">
+                                                                <input type="text" class="form-control" id="edit_dosage_n_frequency" placeholder="Enter the dosage and frequency of the medicine">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity">
+                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="edit_maintenance_start_date">
+                                                                <input type="date" class="form-control" id="edit_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
-                                                                <input type="date" class="form-control" id="edit_maintenance_end_date">
+                                                                <input type="date" class="form-control" id="edit_maintenance_end_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill d-flex flex-column">
                                                                 <label for="" class="text-white">End</label>
@@ -275,13 +276,13 @@
                                                         </div>
                                                         <!-- prescribing  -->
                                                         <div class="mb-3">
-                                                            <label for="">Prescribing Nurse</label>
+                                                            <label for="">Prescribing Nurse<span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control p-3" name="edit_prescribe_by_nurse" id="edit_prescribe_by_nurse">
                                                             <small class="text-danger error-text" id="edit_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-3 ">
                                                             <label for="" class="text-nowrap">Remarks</label>
-                                                            <input type="text" class="form-control p-2 border" name="edit_medication_maintenance_remarks" id="edit_remarks">
+                                                            <input type="text" class="form-control p-2 border" name="edit_medication_maintenance_remarks" id="edit_remarks" placeholder="Enter your remarks">
                                                             <small class="text-danger error-text" id="edit_medication_maintenance_remarks_error"></small>
                                                         </div>
 

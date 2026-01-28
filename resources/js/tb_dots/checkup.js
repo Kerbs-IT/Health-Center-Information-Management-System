@@ -2,6 +2,17 @@ import Swal from "sweetalert2";
 
 const saveBtn = document.getElementById("add-check-up-save-btn");
 
+const addCheckup = document.getElementById("add-check-up-record-btn");
+
+if (addCheckup) {
+    addCheckup.addEventListener("click", () => {
+        const errors = document.querySelectorAll(".error-text");
+        if (errors) {
+            errors.forEach((error) => (error.innerHTML = ""));
+        }
+    })
+}
+
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -98,16 +109,19 @@ document.addEventListener("click", async (e) => {
         // console.log(data.errors);
     } else {
         Object.entries(data.checkUpInfo).forEach(([key, value]) => {
+            if (key == "date_of_comeback") {
+                if (document.getElementById(`view_${key}`)) {
+                    const date = new Date(value);
+                    const formatted = date.toISOString().split("T")[0];
+                    document.getElementById(`view_${key}`).innerHTML =
+                        formatted;
+                }
+            }
             if (document.getElementById(`view_checkup_${key}`)) {
                 document.getElementById(`view_checkup_${key}`).innerHTML =
                     value ?? "N/A";
             }
-              if (key == "date_of_comeback" && value != null) {
-                  const date = new Date(value);
-                  document.getElementById(`view_${key}`).value = date
-                      .toISOString()
-                      .split("T")[0];
-              }
+             
         });
     }
 });
@@ -121,6 +135,11 @@ document.addEventListener("click", async (e) => {
     if (!editCheckUpBtn) return;
     const id = editCheckUpBtn.dataset.caseId ?? null;
     editSaveBtn.dataset.caseId = id;
+
+    const errors = document.querySelectorAll(".error-text");
+    if (errors) {
+        errors.forEach((error) => (error.innerHTML = ""));
+    }
 
     const response = await fetch(`/patient-record/view-check-up/tb-dots/${id}`);
 

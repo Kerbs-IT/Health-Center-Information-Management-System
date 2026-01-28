@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class MedicineRequest extends Model
 {
     protected $primaryKey = 'id';
@@ -12,9 +12,6 @@ class MedicineRequest extends Model
         'patients_id',      // Nullable - for patients with full records
         'user_id',          // Nullable - for users without patient records
         'medicine_id',
-        'medicine_name',
-        'medicine_dosage',
-        'medicine_type',
         'quantity_requested',
         'reason',
         'status',
@@ -46,7 +43,7 @@ class MedicineRequest extends Model
      * Get the medicine for this request
      */
     public function medicine(){
-        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id');
+        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id')->withTrashed();
     }
 
     /**

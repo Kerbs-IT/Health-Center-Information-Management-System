@@ -11,6 +11,10 @@ if (addPrenatalCase) {
         const form = document.getElementById("add-prenatal-case-record-form");
         form.reset();
 
+        // Reset the errors
+        const errors = document.querySelectorAll(".error-text");
+        errors.forEach((error) => (error.innerHTML = ""));
+
         // add value to the hidden inputs
         const medicalRecordElement =
             document.getElementById(
@@ -196,7 +200,7 @@ const addCaseSaveBtn = document.getElementById("add-case-record-save-btn");
 
 addCaseSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-
+    
     const form = document.getElementById("add-prenatal-case-record-form");
     const formData = new FormData(form);
 
@@ -275,7 +279,7 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
 
             Swal.fire({
                 title: "Add Prenatal Case",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                html: capitalizeEachWord(message), // this will make the text capitalize each word
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -285,7 +289,7 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
         console.error("Error adding case:", error);
         Swal.fire({
             title: "Error",
-            text: `Failed to add record: ${error.message}`,
+            html: `Failed to add record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });

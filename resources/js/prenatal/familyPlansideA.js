@@ -205,6 +205,12 @@ if (editIcon) {
             "editfamilyPlanningCaseModal"
         );
 
+        // reset errors
+        const errors = document.querySelectorAll(".error-text");
+        if (errors) {
+            errors.forEach((error) => (error.innerHTML = ""));
+        }
+
         editSaveBtn.dataset.caseId = caseId;
 
         const response = await fetch(
@@ -229,6 +235,14 @@ if (editIcon) {
                         plan.forEach((element) => {
                             element.checked = element.value == value;
                         });
+                    }
+                } else if (key == "client_age") {
+                    const hiddenAge = document.getElementById("hiddenEditAge");
+                    const clientAage =
+                        document.getElementById("edit_client_age");
+                    if (hiddenAge) {
+                        hiddenAge.value = value;
+                        clientAage.value = value;
                     }
                 } else if (key == "type_of_patient") {
                     const plan = document.querySelectorAll(

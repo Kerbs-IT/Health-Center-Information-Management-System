@@ -112,6 +112,11 @@ document.addEventListener("click", async (e) => {
     if (id == "") {
         return;
     }
+
+     const errors = document.querySelectorAll(".error-text");
+     if (errors) {
+         errors.forEach((error) => (error.innerHTML = ""));
+     }
     try {
         const response = await fetch(
             `/patient-record/family-planning/view/side-b-record/${id}`,
@@ -189,8 +194,11 @@ sideBupdateBTN.addEventListener("click", async (e) => {
     );
 
     const data = await response.json();
-
+    const errorElements = document.querySelectorAll(".error-text");
     if (response.ok) {
+        errorElements.forEach((element) => {
+            element.textContent = "";
+        });
         // ✅ Safe Livewire dispatch
         if (typeof Livewire !== "undefined") {
             try {
@@ -219,6 +227,15 @@ sideBupdateBTN.addEventListener("click", async (e) => {
             }
         });
     } else {
+         errorElements.forEach((element) => {
+             element.textContent = "";
+         });
+         // handles the validation error
+         Object.entries(data.errors).forEach(([key, value]) => {
+             if (document.getElementById(`${key}_error`)) {
+                 document.getElementById(`${key}_error`).textContent = value;
+             }
+         });
         let message = "";
 
         if (data.errors) {
@@ -310,7 +327,7 @@ document.addEventListener("click", async (e) => {
         // Show success message
         Swal.fire({
             title: "Archived!",
-            text: "The Tb dots Check-up Record has been archived.",
+            text: "The Family planning side B Record has been archived.",
             icon: "success",
             confirmButtonColor: "#3085d6",
         });
@@ -324,3 +341,6 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

@@ -39,11 +39,13 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SwapHealthWorkerController;
 use App\Http\Controllers\MedicinePdfController;
+use App\Http\Controllers\PasswordResetController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
+use App\Http\Controllers\InventoryReportController;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -51,7 +53,7 @@ use App\Livewire\InventoryReport;
 use App\Livewire\ManageMedicineRequests;
 use App\Livewire\MedicineRequestComponent;
 use App\Livewire\MedicineRequestLogComponent;
-
+use Illuminate\Support\Facades\Artisan;
 use Knp\Snappy\Pdf;
 
 Route::get('/', function () {
@@ -115,6 +117,29 @@ Route::middleware(['role:nurse'])->group(function () {
     Route::post('/add-health-worker-account', [healthWorkerController::class, 'addHealthWorker'])->name('managerHealthWorker.add-account');
     // MAnage interface color pallete
 
+    // reset health worker pasword
+    Route::get('/health-worker/reset-password/{id}', [PasswordResetController::class, 'reset']);
+    // user account reset
+    Route::get('/patient-account/reset-password/{id}', [PasswordResetController::class, 'reset']);
+
+    // generate per area report
+    Route::get('/patient-per-area/detailed-report',[PdfController::class, 'generatePatientCountReport']);
+
+    // swap areas
+    // Health Worker Swap Routes
+    Route::prefix('health-workers')->group(function () {
+        // Get swap data for a specific health worker
+        Route::get('/swap/{id}/data', [SwapHealthWorkerController::class, 'getSwapData'])
+            ->name('health-workers.swap.data');
+
+        // Preview the swap impact
+        Route::post('/swap/preview', [SwapHealthWorkerController::class, 'previewSwap'])
+            ->name('health-workers.swap.preview');
+
+        // Perform the actual swap
+        Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
+            ->name('health-workers.swap');
+    });
 });
 
 // =============== health worker only
@@ -381,24 +406,40 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     Route::get('/health-map', [HeatMapController::class, 'index'])->name('health-map.index');
     Route::get('/api/heatmap-data', [HeatMapController::class, 'getHeatmapData'])->name('health-map.data');
 
-    // patient profile
+    // age distribution
+    Route::get('/dashboard/age-distribution',[HealthCenterDashboard::class, 'getAgeDistribution']);
+    // get overdue
+    Route::get('/daily-overdue-record/count',[HealthCenterDashboard::class, 'getOverdueCounts']);
+    
+    // get the patient distribution
 
+    Route::get("/health-worker/area-patient-distribution",[HealthCenterDashboard::class, 'healthWorkerPatientDistribution']);
 
-    // SWAP AREA
-    // Health Worker Swap Routes
-    Route::prefix('health-workers')->group(function () {
-        // Get swap data for a specific health worker
-        Route::get('/swap/{id}/data', [SwapHealthWorkerController::class, 'getSwapData'])
-            ->name('health-workers.swap.data');
+    // Inventory Route
+    // Route to categories
+    Route::get('/categories', CategoriesTable::class)->name('categories');
+    // Route to medicines
+    Route::get('/medicines', Medicines::class)->name('medicines');
 
-        // Preview the swap impact
-        Route::post('/swap/preview', [SwapHealthWorkerController::class, 'previewSwap'])
-            ->name('health-workers.swap.preview');
+    // Route to report
+    Route::get('/report',InventoryReport::class)->name('inventory-report');
 
+<<<<<<< HEAD
         // Perform the actual swap
         Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
             ->name('health-workers.swap');
     });
+=======
+    // Route to manage medicine request
+    Route::get('/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
+
+    // Route to logs
+    Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
+
+    Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
+    Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
+
+>>>>>>> dd26f574f0e816cd9345d981834cd17736d49f93
 });
 // ---------------------------- home page
 // Route to homepage
@@ -504,9 +545,6 @@ Route::get('/inventory', function () {
     return view('inventory_system.inventory');
 })->name('inventory');
 
-// Inventory Route
-Route::get('inventory/categories', CategoriesTable::class)->name('categories');
-Route::get('inventory/medicines', Medicines::class)->name('medicines');
 
 Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
 
@@ -528,10 +566,7 @@ Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamil
 Route::get('/medicineRequest', MedicineRequestComponent::class)->name('medicineRequest');
 
 
-Route::get('inventory/manage-medicine-requests', ManageMedicineRequests::class)->name('manageMedicineRequests');
 
-
-Route::get('inventory/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
 // family planning side a
 Route::get("/family-planning/side-a/pdf", [PdfController::class, 'generateFamilyPlanningSideAPdf'])->name('family-planning-side-a.pdf');
 Route::get("/family-planning/side-b/pdf", [PdfController::class, 'generateFamilyPlanningSideBPdf'])->name('family-planning-side-b.pdf');
@@ -581,7 +616,11 @@ Route::get('/download-low-stock-report', [InventoryController::class, 'downloadL
 Route::get('/download-expiring-soon-report', [InventoryController::class, 'downloadExpiringSoonReport'])->name('download.expSoon.report');
 
 // testing area
+<<<<<<< HEAD
 Route::get('/pdf/generate/dashbord', [PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
+=======
+Route::get('/pdf/generate/dashboard', [PdfController::class, 'generateDashboardTable'])->name('generate-dashboad.pdf');
+>>>>>>> dd26f574f0e816cd9345d981834cd17736d49f93
 Route::get('/pdf/generate/graph', [PdfController::class, 'generateDashboardGraph'])
     ->name('generate-dashboard-graph.pdf');
 
@@ -601,7 +640,10 @@ Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChart
 
 Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
 
+<<<<<<< HEAD
 // this functions call the notification approaches
+=======
+>>>>>>> dd26f574f0e816cd9345d981834cd17736d49f93
 Route::get('run-command', function () {
     Artisan::call('staff:send-daily-schedule');
 
@@ -610,6 +652,7 @@ Route::get('run-command', function () {
     Artisan::call('appointments:send-reminders');
 });
 
+<<<<<<< HEAD
 Route::get('/test-path', function() {
     dd([
         'public_path' => public_path(),
@@ -618,3 +661,11 @@ Route::get('/test-path', function() {
         'writable' => is_writable(public_path('signatures'))
     ]);
 });
+=======
+
+// get the assigned area for select 
+
+Route::get('/add-patient/get-assigned-area/{staffId}', [healthWorkerController::class, 'getAssignedArea']);
+Route::post('/get-health-worker', [healthWorkerController::class, 'getHealthWorker']);
+
+>>>>>>> dd26f574f0e816cd9345d981834cd17736d49f93

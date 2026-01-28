@@ -101,7 +101,7 @@ document.addEventListener("click", async (e) => {
 
 const caseEditBtn = document.querySelectorAll(".case-edit-btn");
 const healthWorkerDropdown = document.getElementById("update_handled_by");
-const vaccinesContainer = document.querySelector(".update-vaccine-container");
+const editvaccinesContainer = document.querySelector(".update-vaccine-container");
 let vaccineAdministered;
 
 // ADD VACCINATION CASE SECTION
@@ -404,6 +404,9 @@ document.addEventListener("click", async (e) => {
         alert("Unable to load case details: Invalid ID");
         return;
     }
+    // RESET THE ERROR
+    const errorElements = document.querySelectorAll(".error-text");
+    errorElements.forEach(error => error.innerHTML = "");
 
     selectedVaccines.length = 0;
 
@@ -411,7 +414,7 @@ document.addEventListener("click", async (e) => {
     const vaccineCon = document.getElementById("update_vaccine_type");
 
     // empty the vaccine container to avoid the redundancy from open and closing of the edit modal
-    vaccinesContainer.innerHTML = "";
+    editvaccinesContainer.innerHTML = "";
     try {
         caseRecordId.value = caseId;
 
@@ -448,7 +451,7 @@ document.addEventListener("click", async (e) => {
         // load the current selected vaccines
         const vaccines = data.vaccineAdministered;
         vaccines.forEach((vaccine) => {
-            vaccinesContainer.innerHTML += ` <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${vaccine.vaccine_id}>
+            editvaccinesContainer.innerHTML += ` <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${vaccine.vaccine_id}>
                     <p class="mb-0">${vaccine.vaccine_type}</p>
                     <div class="delete-icon d-flex align-items-center justify-content-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
@@ -513,7 +516,7 @@ document.addEventListener("click", async (e) => {
 addVaccineInteraction(
     addVaccineBtn,
     vaccineInputDropdown,
-    vaccinesContainer,
+    editvaccinesContainer,
     selectedVaccinesCon,
     selectedVaccines
 );
@@ -522,7 +525,7 @@ addVaccineInteraction(
 // console.log(vaccineAdministered.dataset.bsVaccineData);
 // function to remove the vaccine from the selected
 
-vaccinesContainer.addEventListener("click", (e) => {
+editvaccinesContainer.addEventListener("click", (e) => {
     // console.log("before deletion:", selectedVaccines);
     if (e.target.closest(".vaccine")) {
         const vaccineId = e.target.closest(".vaccine").dataset.bsId;
@@ -583,8 +586,9 @@ updateSaveBtn.addEventListener("click", async (e) => {
                 element.textContent = "";
             });
             Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).textContent = value;
+                if (document.getElementById(`update_${key}_error`)) {
+                    document.getElementById(`update_${key}_error`).textContent =
+                        value;
                 }
             });
 

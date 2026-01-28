@@ -110,7 +110,9 @@ class SendAppointmentReminders extends Command
                 $emailData['dose_number'] = ($reminder->dose_number ?? 0) + 1;
             }
 
-            Mail::to($reminder->email)->send(new AppointmentReminderMail($emailData));
+            if (date('H') == '22') {
+                Mail::to($reminder->email)->send(new AppointmentReminderMail($emailData));
+            }
 
             $this->info("✓ Email sent to: {$reminder->full_name} ({$reminder->email}) - {$appointmentType}");
         } catch (\Exception $e) {

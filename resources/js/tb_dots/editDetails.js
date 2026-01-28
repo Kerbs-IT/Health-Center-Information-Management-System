@@ -7,21 +7,32 @@ const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
 // console.log("health-worker-id", healthWorkerId);
+const currentLoginhealthWorkerId = healthWorkerDropDown.dataset.staffId;
+let disablerOption = null;
+if (currentLoginhealthWorkerId) {
+    disablerOption = true;
+}
 
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
         // console.log(element);
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
-        }>${element.staff.full_name}</option>`;
+        } ${healthWorkerId != element.id && disablerOption ? "disabled" : ""}>${
+            element.staff.full_name
+        }</option>`;
     });
 });
 
 // load the brgys
 const brgy = document.getElementById("brgy");
 const selectedPurok = brgy.dataset.bsSelectedBrgy;
-puroks(brgy, selectedPurok);
-
+const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
+if (healthWorkerAssignedArea) {
+    puroks(brgy, selectedPurok, "staff", healthWorkerAssignedArea);
+} else {
+    puroks(brgy, selectedPurok);
+}
 
 // update patient details
 // update the infor
@@ -34,19 +45,23 @@ saveBtn.addEventListener("click", async (e) => {
     const form = document.getElementById("edit-tb-dots-patient-details-form");
     const formData = new FormData(form);
 
-    const response = await fetch(`/patient-record/tb-dots/update-details/${id}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
+    const response = await fetch(
+        `/patient-record/tb-dots/update-details/${id}`,
+        {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        }
+    );
 
     const data = await response.json();
 
-     const errorElements = document.querySelectorAll(".error-text");
+    const errorElements = document.querySelectorAll(".error-text");
     if (!response.ok) {
         // reset the error element text first
         errorElements.forEach((element) => {
@@ -59,7 +74,6 @@ saveBtn.addEventListener("click", async (e) => {
             }
         });
 
-        
         let errorMessage = "";
 
         if (data.errors) {

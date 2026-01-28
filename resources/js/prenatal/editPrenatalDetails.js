@@ -7,13 +7,22 @@ const healthWorkerDropDown = document.getElementById("edit_handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
 // console.log("health-worker-id", healthWorkerId);
-
+const currentLoginhealthWorkerId = healthWorkerDropDown.dataset.staffId;
+let disablerOption = null;
+if (currentLoginhealthWorkerId) {
+    disablerOption = true;
+}
 if (healthWorkerDropDown) {
      fetchHealthworkers().then((result) => {
          result.healthWorkers.forEach((element) => {
             //  console.log(element);
              healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
                  healthWorkerId == element.id ? "selected" : ""
+             }
+             ${
+                 healthWorkerId != element.id && disablerOption
+                     ? "disabled"
+                     : ""
              }>${element.staff.full_name}</option>`;
          });
      });
@@ -32,7 +41,12 @@ for (let option of blood_type.options) {
 // load the brgys
 const brgy = document.getElementById("brgy");
 const selectedPurok = brgy.dataset.bsSelectedBrgy;
-puroks(brgy, selectedPurok);
+const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
+if (healthWorkerAssignedArea) {
+    puroks(brgy, selectedPurok, "staff", healthWorkerAssignedArea);
+} else {
+    puroks(brgy, selectedPurok);
+}
 
 // disable the philHealth Number if the 'no' is selected
 

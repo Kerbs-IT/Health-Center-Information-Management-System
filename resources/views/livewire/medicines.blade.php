@@ -125,7 +125,6 @@
                 <table class="table table-hover" id="medicineTable">
                     <thead class="table-header">
                         <tr>
-                            <!-- <th class="text-center" scope="col"><button wire:click="sortBy('medicine_id')" class="sort-btn text-nowrap">No. {!! sortIcon($sortField, 'medicine_id', $sortDirection) !!}</button></th> -->
                             <th class="text-center" scope="col"><button wire:click="sortBy('medicine_name')" class="text-nowrap">Medicine Name {!! sortIcon($sortField, 'medicine_name', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('category_name')" class="text-nowrap">Category {!! sortIcon($sortField, 'category_name', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('dosage')" class="text-nowrap">Dosage {!! sortIcon($sortField, 'dosage', $sortDirection) !!}</button></th>
@@ -134,19 +133,30 @@
                             <th class="text-center" scope="col"><button wire:click="sortBy('stock_status')" class="text-nowrap"> Stock Status {!! sortIcon($sortField, 'stock_status', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('expiry_status')" class="text-nowrap">Expiry Status {!! sortIcon($sortField, 'expiry_status', $sortDirection) !!}</button></th>
                             <th class="text-center" scope="col"><button wire:click="sortBy('expiry_date')" class="text-nowrap">Expiry Date {!! sortIcon($sortField, 'expiry_date', $sortDirection) !!}</button></th>
-                            <!-- <th class="text-center" scope="col"><button wire:click="sortBy('created_at')">Date {!! sortIcon($sortField, 'created_at', $sortDirection) !!}</button></th> -->
                             <th class="text-center" scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($medicines as $medicine)
                         <tr>
-                            <!-- <td>{{ $medicine->medicine_id }}</td> -->
-                            <td>{{ $medicine->medicine_name??'' }}</td>
-                            <td>{{ $medicine->category_name??'' }}</td>
-                            <td>{{ $medicine->dosage??'' }}</td>
+                            <td>{{ $medicine->medicine_name ?? '' }}</td>
+                            <td>
+                                <div class="text-wrap">
+                                    @if($medicine->category)
+                                        {{ $medicine->category->category_name }}
+                                        @if($medicine->category->trashed())
+                                            <span class="badge bg-secondary text-white ms-1" title="This category has been archived">
+                                                <i class="fa-solid fa-archive"></i> Archived
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="text-muted fst-italic">No Category</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>{{ $medicine->dosage ?? '' }}</td>
                             <td class="text-center">
-                                <span class=" px-3 py-1 rounded-full text-xs font-semibold bg-primary bg-opacity-25 text-blue-800">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary bg-opacity-25 text-blue-800">
                                     {{ formatAgeRange($medicine->min_age_months, $medicine->max_age_months) }}
                                 </span>
                             </td>
@@ -170,7 +180,6 @@
                                 </span>
                             </td>
                             <td>{{ $medicine->expiry_date}}</td>
-                            <!-- <td>{{ $medicine->created_at->format('M d, Y') }}</td> -->
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     @if($showArchived)
@@ -190,13 +199,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <i class="fa-solid fa-inbox fs-1 text-muted mb-3 d-block"></i>
                                 <p class="text-muted">No medicine found</p>
                             </td>
                         </tr>
                         @endforelse
-                        <!-- Dynamic td -->
                     </tbody>
                 </table>
             </div>

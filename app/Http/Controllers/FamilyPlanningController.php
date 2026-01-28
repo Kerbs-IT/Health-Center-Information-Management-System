@@ -107,7 +107,7 @@ class FamilyPlanningController extends Controller
                 'family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'current_user_type' => 'sometimes|nullable|string'
             ]);
-           
+
 
             // medical history
             $medicalHistoryData = $request->validate([
@@ -182,7 +182,7 @@ class FamilyPlanningController extends Controller
                 'side_b_method_accepted' => 'sometimes|nullable|string',
                 'add_side_b_name_n_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_name_n_signature_data' => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
+                'side_b_date_of_follow_up_visit' => 'required|date',
                 'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question' => 'sometimes|nullable|string',
@@ -195,11 +195,12 @@ class FamilyPlanningController extends Controller
             // INSERT THE DATA 
             $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
             $parts = [
                 strtolower($patientData['first_name']),
                 $middle,
                 strtolower($patientData['last_name']),
-                $patientData['suffix']??null
+                $patientData['suffix'] ?? null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -208,7 +209,7 @@ class FamilyPlanningController extends Controller
             $familPlanningPatient = patients::create([
                 'user_id' => null,
                 'first_name' => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => ucwords(strtolower($patientData['middle_initial'])),
+                'middle_initial' => $middleName,
                 'last_name' => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
@@ -220,7 +221,7 @@ class FamilyPlanningController extends Controller
                 'nationality' => $patientData['nationality'] ?? null,
                 'date_of_registration' => $patientData['date_of_registration'] ?? null,
                 'place_of_birth' => $patientData['place_of_birth'] ?? null,
-                'suffix' => $patientData['suffix']??'',
+                'suffix' => $patientData['suffix'] ?? '',
             ]);
 
             $familyPlanningPatientRecordId = $familPlanningPatient->id;
@@ -276,7 +277,12 @@ class FamilyPlanningController extends Controller
                 'weight' => $medicalData['weight'] ?? null,
             ]);
 
-            $previoulyMethod = implode(",", $caseData['previously_used_method']??[]);
+            $methods = $caseData['previously_used_method'] ?? null;
+            $previoulyMethod = null;
+            if ($methods) {
+
+                $previoulyMethod = implode(",", $caseData['previously_used_method'] ?? []);
+            }
 
             // signature 
             $signaturePath = null;
@@ -321,7 +327,7 @@ class FamilyPlanningController extends Controller
                 'spouse_date_of_birth' => $caseData['spouse_date_of_birth'] ?? null,
                 'spouse_age' => $caseData['spouse_age'] ?? null,
                 'spouse_occupation' => $caseData['spouse_occupation'] ?? null,
-                'spouse_suffix' => $caseData['spouse_suffix']??'',
+                'spouse_suffix' => $caseData['spouse_suffix'] ?? '',
                 'number_of_living_children' => $caseData['number_of_living_children'] ?? null,
                 'plan_to_have_more_children' => $caseData['plan_to_have_more_children'] ?? null,
 
@@ -337,7 +343,7 @@ class FamilyPlanningController extends Controller
                 'acknowledgement_consent_signature_image' => $signatureConsentPath ?? null,
                 'date_of_acknowledgement_consent' => $caseData['family_planning_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['current_user_type'] ?? null,
-                'status'=> 'Active'
+                'status' => 'Active'
             ]);
 
             $caseId = $caseRecord->id;
@@ -419,7 +425,7 @@ class FamilyPlanningController extends Controller
             // side b signature
             // signature 
             $sideBsignaturePath = null;
-           
+
 
             // If user uploaded an image file
             if ($request->hasFile('add_side_b_name_n_signature_image')) {
@@ -445,7 +451,7 @@ class FamilyPlanningController extends Controller
                 'menstrual_period_in_seven_days_question' => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
                 'miscarriage_or_abortion_question' => $sideBdata['miscarriage_or_abortion_question'] ?? null,
                 'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null,
-                'status'=>'Active'
+                'status' => 'Active'
             ]);
 
             // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
@@ -457,12 +463,15 @@ class FamilyPlanningController extends Controller
             $modern_methods = [];
             $traditional_methods = [];
 
-            if ($caseData['previously_used_method'] != null) {
-                foreach ($caseData['previously_used_method'] as $method) {
-                    if (in_array($method, $method_of_FP['modern'])) {
-                        $modern_methods[] = $method;
-                    } elseif (in_array($method, $method_of_FP['traditional'])) {
-                        $traditional_methods[] = $method;
+            if ($methods) {
+
+                if ($caseData['previously_used_method'] != null) {
+                    foreach ($caseData['previously_used_method'] as $method) {
+                        if (in_array($method, $method_of_FP['modern'])) {
+                            $modern_methods[] = $method;
+                        } elseif (in_array($method, $method_of_FP['traditional'])) {
+                            $traditional_methods[] = $method;
+                        }
                     }
                 }
             }
@@ -541,7 +550,7 @@ class FamilyPlanningController extends Controller
 
             $familyPlanningRecord = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
             $familyPlanningMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningRecord->id)->first();
-            $familyPlanningCaseRecord = family_planning_case_records::where("medical_record_case_id", $familyPlanningRecord->id)->where("status", "!=",'Archived')->first();
+            $familyPlanningCaseRecord = family_planning_case_records::where("medical_record_case_id", $familyPlanningRecord->id)->where("status", "!=", 'Archived')->first();
             $address = patient_addresses::where('patient_id', $familyPlanningRecord->patient->id)->firstOrFail();
 
 
@@ -581,7 +590,7 @@ class FamilyPlanningController extends Controller
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
                 'height'            => 'nullable|numeric|between:30,300', // cm range
                 'weight'            => 'nullable|numeric|between:1,300',  // kg range
-                'client_id' =>  'sometimes|nullable|string',
+                'client_id' =>  'sometimes|nullable|numeric',
                 'philhealth_no' => [
                     'sometimes',
                     'nullable',
@@ -593,11 +602,12 @@ class FamilyPlanningController extends Controller
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             $parts = [
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['suffix']??null
+                $data['suffix'] ?? null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -605,18 +615,18 @@ class FamilyPlanningController extends Controller
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
-                'middle_initial' => ucwords(strtolower($data['middle_initial'])) ?? ucwords(strtolower($familyPlanningRecord->patient->middle_initial)),
+                'middle_initial' =>  $middleName,
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->last_name)),
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
                 'sex' => $sex ? ucfirst($sex) : null,
                 'civil_status' => $data['civil_status'] ?? $familyPlanningRecord->patient->civil_status,
-                'contact_number' => $data['contact_number'] ??null,
+                'contact_number' => $data['contact_number'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? $familyPlanningRecord->patient->date_of_birth,
                 'nationality' => $data['nationality'] ?? $familyPlanningRecord->patient->nationality,
                 'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? $familyPlanningRecord->patient->place_of_birth,
-                'suffix' => $data['suffix']??''
+                'suffix' => $data['suffix'] ?? ''
             ]);
             // update the address
             $blk_n_street = explode(',', $data['street'], 2);
@@ -654,20 +664,24 @@ class FamilyPlanningController extends Controller
                 'weight' => $data['weight'] ?? $familyPlanningMedicalRecord->weight
             ]);
             // update case record
-            $familyPlanningCaseRecord->update([
-                'client_name' => $familyPlanningRecord->patient->full_name,
-                'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
-                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
-                'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
-                'client_address' =>  $fullAddress ?? '',
-                'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
-                'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
-                'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
-                'client_suffix' => $data['suffix']??'',
-                'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
-                'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
-                'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
-            ]);
+
+            if ($familyPlanningCaseRecord) {
+                $familyPlanningCaseRecord->update([
+                    'client_name' => $familyPlanningRecord->patient->full_name,
+                    'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
+                    'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
+                    'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
+                    'client_address' =>  $fullAddress ?? '',
+                    'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
+                    'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
+                    'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
+                    'client_suffix' => $data['suffix'] ?? '',
+                    'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
+                    'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
+                    'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
+                ]);
+            }
+
 
             // update the prenatal and wra if the patient have those records
             $prenatalMedicalCaseRecord = medical_record_cases::where('patient_id', $familyPlanningRecord->patient->id)->where('type_of_case', 'prenatal')->first() ?? null;
@@ -859,7 +873,7 @@ class FamilyPlanningController extends Controller
             ]);
 
             // update patient info first
-            $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method']??[]);
+            $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method'] ?? []);
 
             $signaturePath = null;
             $signatureConsentPath = null;
@@ -891,7 +905,7 @@ class FamilyPlanningController extends Controller
                 'client_name' => trim(($patientData['side_A_add_client_fname'] . ' ' . $patientData['side_A_add_client_MI'] . ' ' . $patientData['side_A_add_client_lname'])) ?? null,
                 'client_date_of_birth' => $patientData['side_A_add_client_date_of_birth'] ?? null,
                 'client_age' => $patientData['side_A_add_client_age'] ?? null,
-                'client_suffix' => $patientData['side_A_add_client_suffix']??'',
+                'client_suffix' => $patientData['side_A_add_client_suffix'] ?? '',
                 'occupation' => $patientData['side_A_add_occupation'] ?? null,
                 'client_contact_number' => $patientData['side_A_add_client_contact_number'] ?? null,
                 'client_civil_status' => $patientData['side_A_add_client_civil_status'] ?? null,
@@ -902,7 +916,7 @@ class FamilyPlanningController extends Controller
                 'spouse_date_of_birth' => $caseData['side_A_add_spouse_date_of_birth'] ?? null,
                 'spouse_age' => $caseData['side_A_add_spouse_age'] ?? null,
                 'spouse_occupation' => $caseData['side_A_add_spouse_occupation'] ?? null,
-                'spouse_suffix' => $caseData['spouse_suffix']?? '',
+                'spouse_suffix' => $caseData['spouse_suffix'] ?? '',
                 'number_of_living_children' => $caseData['side_A_add_number_of_living_children'] ?? null,
                 'plan_to_have_more_children' => $caseData['side_A_add_plan_to_have_more_children'] ?? null,
 
@@ -1123,7 +1137,7 @@ class FamilyPlanningController extends Controller
                     'edit_street' => 'required',
                     'edit_brgy' => 'required',
                     'edit_client_contact_number' => 'required|digits_between:7,12',
-                    'edit_client_suffix'=> 'sometimes|nullable|string',
+                    'edit_client_suffix' => 'sometimes|nullable|string',
                 ],
                 [],
                 [ // Custom attribute names
@@ -1178,7 +1192,7 @@ class FamilyPlanningController extends Controller
                     'edit_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                     'edit_current_user_type' => 'sometimes|nullable|string'
                 ],
-                
+
                 [],
                 [ // ✅ Custom attribute names is for removing the edit_
                     'edit_client_id' => 'client ID',
@@ -1289,7 +1303,7 @@ class FamilyPlanningController extends Controller
                 strtolower($patientData['edit_client_fname']),
                 $middle,
                 strtolower($patientData['edit_client_lname']),
-                $patientData ['edit_client_suffix'] ?? null
+                $patientData['edit_client_suffix'] ?? null
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
@@ -1297,14 +1311,14 @@ class FamilyPlanningController extends Controller
             // update patient info first
             $medical_case_record->patient->update([
                 'first_name' => $patientData['edit_client_fname'] ?? $medical_case_record->patient->first_name,
-                'middle_initial' => $patientData['edit_client_MI'] ?? $medical_case_record->patient->middle_initial,
+                'middle_initial' => $patientData['edit_client_MI'] ?? '',
                 'last_name' => $patientData['edit_client_lname'] ?? $medical_case_record->patient->last_name,
                 'full_name' => $fullName,
                 'age' => $patientData['edit_client_age'] ?? $medical_case_record->patient->age,
                 'contact_number' => $patientData['edit_client_contact_number'] ?? $medical_case_record->patient->contact_number,
                 'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $medical_case_record->patient->date_of_birth,
                 'civil_status' => $patientData['edit_client_civil_status'] ?? $medical_case_record->patient->civil_status,
-                'suffix' => $patientData['edit_client_suffix']??''
+                'suffix' => $patientData['edit_client_suffix'] ?? ''
             ]);
             $address = patient_addresses::where('patient_id',  $medical_case_record->patient->id)->firstOrFail();
             $blk_n_street = explode(',', $patientData['edit_street']);
@@ -1370,17 +1384,17 @@ class FamilyPlanningController extends Controller
             if ($request->filled('edit_family_planning_consent_signature_data')) {
                 // Delete old file if exists
                 if ($familyPlanCaseInfo->acknowledgement_consent_signature_image) {
-                   Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
+                    Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
                 }
-                 $consentSignaturePath = $this->saveCanvasSignature($request->edit_family_planning_consent_signature_data);
+                $consentSignaturePath = $this->saveCanvasSignature($request->edit_family_planning_consent_signature_data);
             }
             // Check if new signature provided (uploaded)
             else if ($request->hasFile('edit_family_planning_acknowledgement_signature_image')) {
                 // Delete old file if exists
                 if ($familyPlanCaseInfo->acknowledgement_consent_signature_image) {
-                   Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
+                    Storage::disk('public')->delete($familyPlanCaseInfo->acknowledgement_consent_signature_image);
                 }
-                 $consentSignaturePath = $this->compressAndSaveSignature($request->file('edit_family_planning_acknowledgement_signature_image'));
+                $consentSignaturePath = $this->compressAndSaveSignature($request->file('edit_family_planning_acknowledgement_signature_image'));
             }
 
             // update the case
@@ -1396,11 +1410,11 @@ class FamilyPlanningController extends Controller
                 'client_contact_number' => $patientData['edit_client_contact_number'] ?? $familyPlanCaseInfo->client_contact_number,
                 'client_civil_status' => $patientData['edit_client_civil_status'] ?? $familyPlanCaseInfo->client_civil_status,
                 'client_religion' => $patientData['edit_client_religion'] ?? $familyPlanCaseInfo->client_religion,
-                'client_suffix'=> $patientData['edit_client_suffix']?? '',
+                'client_suffix' => $patientData['edit_client_suffix'] ?? '',
                 'spouse_lname' => $caseData['edit_spouse_lname'] ?? $familyPlanCaseInfo->spouse_lname,
                 'spouse_fname' => $caseData['edit_spouse_fname'] ?? $familyPlanCaseInfo->spouse_fname,
                 'spouse_MI' => $caseData['edit_spouse_MI'] ?? $familyPlanCaseInfo->spouse_MI,
-                'spouse_suffix' => $caseData['edit_spouse_suffix']??'',
+                'spouse_suffix' => $caseData['edit_spouse_suffix'] ?? '',
                 'spouse_date_of_birth' => $caseData['edit_spouse_date_of_birth'] ?? $familyPlanCaseInfo->spouse_date_of_birth,
                 'spouse_age' => $caseData['edit_spouse_age'] ?? $familyPlanCaseInfo->spouse_age,
                 'spouse_occupation' => $caseData['edit_spouse_occupation'] ?? $familyPlanCaseInfo->spouse_occupation,

@@ -142,7 +142,7 @@
                                                         <small class="text-danger error-text add_vaccination_case_record_errors" id="add_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
-                                                        <label for="add_temperature">Temperature</label>
+                                                        <label for="add_temperature">Temperature(°C)</label>
                                                         <input type="text" class="form-control" name="add_temperature" id="add_temperature" required placeholder="Enter the temperature">
                                                         <small class="text-danger error-text add_vaccination_case_record_errors" id="add_temperature_error"></small>
                                                     </div>
@@ -206,7 +206,7 @@
                                         @csrf
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="vaccinationModalLabel">Vaccination Details</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
 
                                         <div class="modal-body">
@@ -240,31 +240,31 @@
                                                 <div class="mb-2 w-100">
                                                     <label for="date_of_vaccination">Date of Vaccination <span class="text-danger">*</span></label>
                                                     <input type="date" id="edit_date_of_vaccination" class="form-control" name="date_of_vaccination" min="1950-01-01" max="{{date('Y-m-d')}}">
-                                                    <small class="text-danger error-text" id="date_of_vaccination_error"></small>
+                                                    <small class="text-danger error-text" id="update_date_of_vaccination_error"></small>
                                                 </div>
 
                                                 <div class="mb-2 w-100">
                                                     <label for="time_of_vaccination">Time</label>
                                                     <input type="time" class="form-control" name="time_of_vaccination" id="edit-time-of-vaccination">
-                                                    <small class="text-danger error-text" id="time_of_vaccination_error"></small>
+                                                    <small class="text-danger error-text" id="update_time_of_vaccination_error"></small>
                                                 </div>
                                                 <!-- Hidden data -->
                                                 <div class="vaccine-administered" hidden id="vaccine-administered"></div>
                                                 <div class="mb-2 w-100 d-flex gap-2 flex-md-nowrap">
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="weight">Weight</label>
-                                                        <input type="number" class="form-control" name="weight" id="edit-weight" required placeholder="00.0">
-                                                        <small class="text-danger error-text" id="weight_error"></small>
+                                                        <input type="text" class="form-control" name="weight" id="edit-weight" required placeholder="00.0">
+                                                        <small class="text-danger error-text" id="update_weight_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
                                                         <label for="time">Height</label>
-                                                        <input type="number" class="form-control" name="height" id="edit-height" required placeholder="00.0">
-                                                        <small class="text-danger error-text" id="height_error"></small>
+                                                        <input type="text" class="form-control" name="height" id="edit-height" required placeholder="00.0">
+                                                        <small class="text-danger error-text" id="update_height_error"></small>
                                                     </div>
                                                     <div class="mb-2 w-[100%] md:w-[50%]">
-                                                        <label for="temperature">Temperature</label>
-                                                        <input type="number" class="form-control" name="temperature" id="edit-temperature" required placeholder="00.0">
-                                                        <small class="text-danger error-text" id="temperature_error"></small>
+                                                        <label for="temperature">Temperature(°C)</label>
+                                                        <input type="text" class="form-control" name="temperature" id="edit-temperature" required placeholder="00.0">
+                                                        <small class="text-danger error-text" id="update_temperature_error"></small>
                                                     </div>
                                                 </div>
 
@@ -283,6 +283,7 @@
 
 
                                                 </div>
+                                                <small class="text-danger error-text" id="update_selected_vaccine_error"></small>
                                                 <!-- hidden inputs -->
                                                 <input type="text" name="selected_vaccine" id="update_selected_vaccine" hidden>
                                                 <input type="number" name="case_record_id" id="case_record_id" hidden>
@@ -295,13 +296,13 @@
                                                         <option value="2">2nd Dose</option>
                                                         <option value="3">3rd Dose</option>
                                                     </select>
-                                                    <small class="text-danger error-text" id="dose_error"></small>
+                                                    <small class="text-danger error-text" id="update_dose_error"></small>
                                                 </div>
                                                 <div class="mb-2 w-100 ">
                                                     <div class="mb-2 w-100">
                                                         <label for="edit-date-of-comeback">Date of Comeback <span class="text-danger">*</span></label>
                                                         <input type="date" placeholder="20" class="form-control w-100 " id="edit-date-of-comeback" name="date_of_comeback" required min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
-                                                        <small class="text-danger error-text" id="date_of_comeback_error"></small>
+                                                        <small class="text-danger error-text" id="update_date_of_comeback_error"></small>
                                                     </div>
                                                 </div>
 
@@ -314,7 +315,7 @@
                                         </div>
 
                                         <div class="modal-footer d-flex justify-content-between">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                             <button type="submit" class="btn btn-success" id="update-save-btn">Save Record</button>
                                         </div>
                                     </form>
