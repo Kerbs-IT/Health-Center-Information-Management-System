@@ -54,11 +54,14 @@ class SendStaffDailySchedule extends Command
             $this->info("✓ {$staff->username} - No appointments today");
             return;
         }
-        // send consolidated email with all appointment types
-        $this->sendDailyScheduleEmail($staff,$scheduleData,$totalAppointments,$today);
+        
+        if (date('H') == '5') {
+            // send consolidated email with all appointment types
+            $this->sendDailyScheduleEmail($staff, $scheduleData, $totalAppointments, $today);
 
-        // create in app notification for individual sections 
-        $this->createInAppNotifications($staff,$scheduleData,$today);
+            // create in app notification for individual sections 
+            $this->createInAppNotifications($staff, $scheduleData, $today);
+        }
 
         $this->info("✓ {$staff->username} - {$totalAppointments} appointments scheduled");
 
