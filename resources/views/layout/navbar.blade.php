@@ -31,7 +31,7 @@
           @guest
           <!-- User is NOT logged in -->
           <div class="nav-item">
-            <a class="fw-normal login-btn btn text-white btn-success" href="{{ route('login') }}">Login</a>
+            <a class="fw-normal login-btn btn text-white btn-success" href="{{ route('login') }}">Loginn</a>
           </div>
           @else
           <div class=" text-white rounded d-flex align-items-center justify-content-center mx-auto" style="width: 45px; height: 45px;">
