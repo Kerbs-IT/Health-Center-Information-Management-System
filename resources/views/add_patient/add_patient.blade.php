@@ -29,7 +29,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="flex-grow-1 d-flex  flex-column">
+        <div class="flex-grow-1 d-flex  flex-column overflow-auto">
             @include('layout.header')
             <main class=" flex-grow-1 py-2 px-md-4 px-2 basic-info overflow-x-auto">
 
@@ -574,7 +574,7 @@
                             </div>
                         </div>
                         <!-- PRENATAL -->
-                        <div class="prenatal d-none patient-type overflow-hidden" id="prenatal-con">
+                        <div class="prenatal d-none patient-type overflow-x-auto" id="prenatal-con">
                             @include('add_patient.prenatal')
                             <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
                                 <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
