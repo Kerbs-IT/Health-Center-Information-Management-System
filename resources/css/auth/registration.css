@@ -28,5 +28,11 @@ ul li a {
 label{
     font-weight: bold !important;
 }
+li{
+    text-align: justify !important;
+}
 
+.modal-header{
+    background-color: var(--tertiaryColor);
+}
 /*  */
