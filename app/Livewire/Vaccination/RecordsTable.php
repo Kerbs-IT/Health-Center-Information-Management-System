@@ -33,8 +33,8 @@ class RecordsTable extends Component
 
     public function mount()
     {
-        $this->start_date = Carbon::now()->subYear()->startOfYear()->format('Y-m-d');
-        $this->end_date   = Carbon::now()->subYear()->endOfYear()->format('Y-m-d');
+        $this->start_date = Carbon::now()->subMonth(6)->format('Y-m-d');;
+        $this->end_date   = Carbon::now()->format('Y-m-d');
     }
 
     // dont forget this for changes in the show entries
