@@ -25,7 +25,7 @@ class RecordsTable extends Component
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
     public function mount()
     {
-        $this->start_date = Carbon::now()->subMonth(6)->format('Y-m-d');;
+        $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
     }
     // dont forget this for changes in the show entries

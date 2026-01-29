@@ -14,17 +14,16 @@ const moment = momentLib;
 
 // Livewire Records Date Range state
 let recordsDateRange = {
-    start: moment().subtract(1, "year").startOf("year"), // 2025-01-01
-    end: moment().subtract(1, "year").endOf("year"),
+    start: moment().subtract(6, "months").startOf("month"),
+    end: moment(),
 };
-
 // Initialize date range pickers
 function initDateRangePickers() {
     const pickerConfig = {
         opens: "left",
         drops: "down",
         showDropdowns: true,
-        autoApply:true, // Auto-apply for instant updates
+        autoApply: true, // Auto-apply for instant updates
         showCustomRangeLabel: true,
         alwaysShowCalendars: true,
         locale: {
@@ -100,8 +99,8 @@ function initDateRangePickers() {
 
                 // Dispatch event to Livewire component
                 if (typeof Livewire !== "undefined") {
-                   Livewire.dispatch("dateRangeChanged", [startDate, endDate]);
-                    console.log("✅ Event dispatched successfully"); // Add this
+                    Livewire.dispatch("dateRangeChanged", [startDate, endDate]);
+                    // console.log("✅ Event dispatched successfully"); // Add this
                 } else {
                     console.error("❌ Livewire not found!"); // Add this
                 }
@@ -129,18 +128,17 @@ document.addEventListener("livewire:initialized", () => {
 
 // Reinitialize after Livewire updates (if needed)
 document.addEventListener("livewire:update", () => {
-    console.log("OWKINGGG KABAAAA");
+    // console.log("OWKINGGG KABAAAA");
     const recordsRangeInput = $("#dateRange");
     if (
         recordsRangeInput.length &&
         !recordsRangeInput.data("daterangepicker")
     ) {
-        console.log(
-            "🔄 Reinitializing records date picker after Livewire update",
-        );
+        // console.log(
+        //     "🔄 Reinitializing records date picker after Livewire update",
+        // );
         initDateRangePickers();
     }
 });
 
 const dateRange = document.getElementById("dateRange");
-

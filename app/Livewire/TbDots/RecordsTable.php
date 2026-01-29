@@ -26,7 +26,7 @@ class RecordsTable extends Component
 
     public function mount()
     {
-        $this->start_date = Carbon::now()->subMonth(6)->format('Y-m-d');;
+        $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
     }
     // dont forget this for changes in the show entries
@@ -88,9 +88,11 @@ class RecordsTable extends Component
         });
 
         $tbRecords->setCollection($sortedCollection);
-       
-        return view('livewire.tb-dots.records-table',
-            ['isActive' => true, 'page' => 'RECORD', 'tbRecords' => $tbRecords]);
+
+        return view(
+            'livewire.tb-dots.records-table',
+            ['isActive' => true, 'page' => 'RECORD', 'tbRecords' => $tbRecords]
+        );
     }
     public function exportPdf()
     {

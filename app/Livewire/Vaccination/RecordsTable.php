@@ -30,10 +30,9 @@ class RecordsTable extends Component
 
     public $start_date;
     public $end_date;
-
     public function mount()
     {
-        $this->start_date = Carbon::now()->subMonth(6)->format('Y-m-d');;
+        $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
     }
 
