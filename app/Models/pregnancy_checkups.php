@@ -13,8 +13,8 @@ class pregnancy_checkups extends Model
         "check_up_time",
         "check_up_blood_pressure",
         "check_up_temperature",
-        "check_up_pulse_rate" .
-            "check_up_respiratory_rate",
+        "check_up_pulse_rate" ,
+        "check_up_respiratory_rate",
         "check_up_height",
         "check_up_weight",
         "abdomen_question",

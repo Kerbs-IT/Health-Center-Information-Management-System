@@ -706,7 +706,7 @@ class PrenatalController extends Controller
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
                 'nationality' => $data['nationality'] ?? '',
                 'date_of_registration' => $data['date_of_registration'] ?? $prenatalRecord->patient->date_of_registration,
-                'place_of_birth' => $data['place_of_birth'] ?? $prenatalRecord->patient->place_of_birth,
+                'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? '',
             ]);
 
@@ -736,12 +736,12 @@ class PrenatalController extends Controller
             ]);
 
             $prenatalRecord->prenatal_medical_record->update([
-                'family_head_name' => $data['family_head'] ?? $prenatalRecord->prenatal_medical_record->family_head_name,
-                'blood_type' => $data['blood_type'] ?? $prenatalRecord->prenatal_medical_record->blood_type,
-                'religion' => $data['religion'] ?? $prenatalRecord->prenatal_medical_record->religion,
-                'philHealth_number' => $data['philhealth_number'] ?? $prenatalRecord->prenatal_medical_record->philHealth_number,
-                'family_serial_no' => $data['family_serial_no'] ?? $prenatalRecord->prenatal_medical_record->family_serial_no,
-                'family_planning_decision' => $data['family_planning'] ?? $prenatalRecord->prenatal_medical_record->family_planning_decision,
+                'family_head_name' => $data['family_head'] ?? null,
+                'blood_type' => $data['blood_type'] ?? null,
+                'religion' => $data['religion'] ?? null,
+                'philHealth_number' => $data['philhealth_number'] ?? null,
+                'family_serial_no' => $data['family_serial_no'] ?? null,
+                'family_planning_decision' => $data['family_planning'] ?? null,
                 'health_worker_id' => $data['handled_by'] ?? $prenatalRecord->prenatal_medical_record->health_worker_id,
             ]);
             // update the case info
@@ -761,16 +761,16 @@ class PrenatalController extends Controller
             // update the pregnancy history
             $pregnancyHistory = pregnancy_history_questions::where('prenatal_case_record_id', $prenatalCaseRecord->id)->firstOrfail();
             $pregnancyHistory->update([
-                'number_of_children' => $data['number_of_children'] ?? $pregnancyHistory->number_of_children,
-                'answer_1' => $data['answer_1'] ?? $pregnancyHistory->answer_1,
-                'answer_2' => $data['answer_2'] ?? $pregnancyHistory->answer_2,
-                'answer_3' => $data['answer_3'] ?? $pregnancyHistory->answer_3,
-                'answer_4' => $data['answer_4'] ?? $pregnancyHistory->answer_4,
-                'q2_answer1' => $data['q2_answer1'] ?? $pregnancyHistory->q2_answer1,
-                'q2_answer2' => $data['q2_answer2'] ?? $pregnancyHistory->q2_answer2,
-                'q2_answer3' => $data['q2_answer3'] ?? $pregnancyHistory->q2_answer3,
-                'q2_answer4' => $data['q2_answer4'] ?? $pregnancyHistory->q2_answer4,
-                'q2_answer5' => $data['q2_answer5'] ?? $pregnancyHistory->q2_answer5,
+                'number_of_children' => $data['number_of_children'] ?? null,
+                'answer_1' => $data['answer_1'] ?? null,
+                'answer_2' => $data['answer_2'] ?? null,
+                'answer_3' => $data['answer_3'] ?? null,
+                'answer_4' => $data['answer_4'] ?? null,
+                'q2_answer1' => $data['q2_answer1'] ?? null,
+                'q2_answer2' => $data['q2_answer2'] ?? null,
+                'q2_answer3' => $data['q2_answer3'] ?? null,
+                'q2_answer4' => $data['q2_answer4'] ?? null,
+                'q2_answer5' => $data['q2_answer5'] ?? null,
             ]);
 
             // update the case
@@ -1722,46 +1722,48 @@ class PrenatalController extends Controller
                 ]
             );
 
+            // dd($request->edit_check_up_pulse_rate);
+
             // data insertion
             $checkUp->update([
                 'patient_name'              => $request->edit_check_up_full_name ?? $checkUp->patient_name,
                 'health_worker_id'          => $request->edit_health_worker_id ?? $checkUp->health_worker_id,
-                'check_up_time'             => $request->edit_check_up_time ?? $checkUp->check_up_time,
-                'check_up_blood_pressure'   => $request->edit_check_up_blood_pressure ?? $checkUp->check_up_blood_pressure,
-                'check_up_temperature'      => $request->edit_check_up_temperature ?? $checkUp->check_up_temperature,
-                'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? $checkUp->check_up_pulse_rate,
-                'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate ?? $checkUp->check_up_respiratory_rate,
-                'check_up_height'           => $request->edit_check_up_height ?? $checkUp->check_up_height,
-                'check_up_weight'               => $request->edit_check_up_weight ?? $checkUp->check_up_weight,
+                'check_up_time'             => $request->edit_check_up_time ?? null,
+                'check_up_blood_pressure'   => $request->edit_check_up_blood_pressure ?? null,
+                'check_up_temperature'      => $request->edit_check_up_temperature ?? null,
+                'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? null,
+                'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate ?? null,
+                'check_up_height'           => $request->edit_check_up_height ?? null,
+                'check_up_weight'               => $request->edit_check_up_weight ?? null,
 
-                'abdomen_question'              => $request->edit_abdomen_question ?? $checkUp->abdomen_question,
-                'abdomen_question_remarks'      => $request->edit_abdomen_question_remarks ?? $checkUp->abdomen_question_remarks,
+                'abdomen_question'              => $request->edit_abdomen_question ?? null,
+                'abdomen_question_remarks'      => $request->edit_abdomen_question_remarks ?? null,
 
-                'vaginal_question'              => $request->edit_vaginal_question ?? $checkUp->vaginal_question,
-                'vaginal_question_remarks'      => $request->edit_vaginal_question_remarks ?? $checkUp->vaginal_question_remarks,
+                'vaginal_question'              => $request->edit_vaginal_question ?? null,
+                'vaginal_question_remarks'      => $request->edit_vaginal_question_remarks ?? null,
 
-                'headache_question'             => $request->edit_headache_question ?? $checkUp->headache_question,
-                'headache_question_remarks'     => $request->edit_headache_question_remarks ?? $checkUp->headache_question_remarks,
+                'headache_question'             => $request->edit_headache_question ?? null,
+                'headache_question_remarks'     => $request->edit_headache_question_remarks ?? null,
 
-                'swelling_question'             => $request->edit_swelling_question ?? $checkUp->swelling_question,
-                'swelling_question_remarks'     => $request->edit_swelling_question_remarks ?? $checkUp->swelling_question_remarks,
+                'swelling_question'             => $request->edit_swelling_question ?? null,
+                'swelling_question_remarks'     => $request->edit_swelling_question_remarks ?? null,
 
-                'blurry_vission_question'       => $request->edit_blurry_vission_question ?? $checkUp->blurry_vission_question,
-                'blurry_vission_question_remarks' => $request->edit_blurry_vission_question_remarks ?? $checkUp->blurry_vission_question_remarks,
+                'blurry_vission_question'       => $request->edit_blurry_vission_question ?? null,
+                'blurry_vission_question_remarks' => $request->edit_blurry_vission_question_remarks ?? null,
 
-                'urination_question'            => $request->edit_urination_question ?? $checkUp->urination_question,
-                'urination_question_remarks'    => $request->edit_urination_question_remarks ?? $checkUp->urination_question_remarks,
+                'urination_question'            => $request->edit_urination_question ?? null,
+                'urination_question_remarks'    => $request->edit_urination_question_remarks ?? null,
 
-                'baby_move_question'            => $request->edit_baby_move_question ?? $checkUp->baby_move_question,
-                'baby_move_question_remarks'    => $request->edit_baby_move_question_remarks ?? $checkUp->baby_move_question_remarks,
+                'baby_move_question'            => $request->edit_baby_move_question ?? null,
+                'baby_move_question_remarks'    => $request->edit_baby_move_question_remarks ?? null,
 
-                'decreased_baby_movement'       => $request->edit_decreased_baby_movement ?? $checkUp->decreased_baby_movement,
-                'decreased_baby_movement_remarks' => $request->edit_decreased_baby_movement_remarks ?? $checkUp->decreased_baby_movement_remarks,
+                'decreased_baby_movement'       => $request->edit_decreased_baby_movement ?? null,
+                'decreased_baby_movement_remarks' => $request->edit_decreased_baby_movement_remarks ?? null,
 
-                'other_symptoms_question'       => $request->edit_other_symptoms_question ?? $checkUp->other_symptoms_question,
-                'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? $checkUp->other_symptoms_question_remarks,
+                'other_symptoms_question'       => $request->edit_other_symptoms_question ?? null,
+                'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? null,
 
-                'overall_remarks'               => $request->edit_overall_remarks ?? $checkUp->overall_remarks,
+                'overall_remarks'               => $request->edit_overall_remarks ?? null,
                 'status' => 'Done',
                 'date_of_comeback' => $request->edit_date_of_comeback
             ]);

@@ -1,7 +1,7 @@
 <div class="d-flex p-md-4 p-2 flex-column">
     <div class="contents bottom-border">
         <div class="mb-3">
-            <label for="">Patient Name<span class="text-danger">*</span></label>
+            <label for="">Patient Name</label>
             <input type="text" id="senior_patient_name" class="form-control" disabled>
         </div>
         <h5>MEDICAL INFORMATION</h5>

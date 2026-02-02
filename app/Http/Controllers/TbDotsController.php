@@ -263,12 +263,12 @@ class TbDotsController extends Controller
                 'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
                 'sex' => $sex ? ucfirst($sex) : null,
-                'civil_status' => $data['civil_status'] ?? $tbDotsRecord->patient->civil_status,
+                'civil_status' => $data['civil_status'] ??null,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? $tbDotsRecord->patient->nationality,
+                'nationality' => $data['nationality'] ?? null,
                 'date_of_registration' => $data['date_of_registration'] ?? $tbDotsRecord->patient->date_of_registration,
-                'place_of_birth' => $data['place_of_birth'] ?? $tbDotsRecord->patient->place_of_birth,
+                'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? ''
 
             ]);
@@ -286,13 +286,13 @@ class TbDotsController extends Controller
             $tbDotsRecord->tb_dots_medical_record->update([
                 'health_worker_id' => $data['handled_by'] ?? $tbDotsRecord->tb_dots_medical_record->health_worker_id,
                 'patient_name' => $tbDotsRecord->patient->full_name,
-                'philhealth_id_no' => $data['philheath_id'] ?? $tbDotsRecord->tb_dots_medical_record->philheath_id_no,
-                'blood_pressure' => $data['blood_pressure'] ?? $tbDotsRecord->tb_dots_medical_record->blood_pressure,
-                'temperature' => $data['temperature'] ?? $tbDotsRecord->tb_dots_medical_record->temperature,
-                'pulse_rate' => $data['pulse_rate'] ?? $tbDotsRecord->tb_dots_medical_record->pulse_rate,
-                'respiratory_rate' => $data['respiratory_rate'] ?? $tbDotsRecord->tb_dots_medical_record->respiratory_rate,
-                'height' => $data['height'] ?? $tbDotsRecord->tb_dots_medical_record->height,
-                'weight' => $data['weight'] ?? $tbDotsRecord->tb_dots_medical_record->weight,
+                'philhealth_id_no' => $data['philheath_id'] ?? null,
+                'blood_pressure' => $data['blood_pressure'] ?? null,
+                'temperature' => $data['temperature'] ?? null,
+                'pulse_rate' => $data['pulse_rate'] ?? null,
+                'respiratory_rate' => $data['respiratory_rate'] ?? null,
+                'height' => $data['height'] ?? null,
+                'weight' => $data['weight'] ?? null,
             ]);
 
             // update each case patient name
@@ -363,16 +363,16 @@ class TbDotsController extends Controller
             ]);
 
             $caseRecord->update([
-                'type_of_tuberculosis' => $data['edit_type_of_tuberculosis'] ?? $caseRecord->type_of_tuberculosis,
-                'type_of_tb_case' => $data['edit_type_of_tb_case'] ?? $caseRecord->type_of_tb_case,
-                'date_of_diagnosis' => $data['edit_date_of_diagnosis'] ?? $caseRecord->date_of_diagnosis,
-                'name_of_physician' => $data['edit_name_of_physician'] ?? $caseRecord->name_of_physician,
-                'sputum_test_results' => $data['edit_sputum_test_results'] ?? $caseRecord->sputum_test_results,
-                'treatment_category' => $data['edit_treatment_category'] ?? $caseRecord->treatment_categorym,
-                'date_administered' => $data['edit_date_administered'] ?? $caseRecord->date_administered,
-                'side_effect' =>  $data['edit_side_effect'] ?? $caseRecord->side_effect,
-                'remarks' => $data['edit_tb_remarks'] ?? $caseRecord->remarks,
-                'outcome' => $data['edit_tb_outcome'] ?? $caseRecord->outcome,
+                'type_of_tuberculosis' => $data['edit_type_of_tuberculosis'] ?? null,
+                'type_of_tb_case' => $data['edit_type_of_tb_case'] ?? null,
+                'date_of_diagnosis' => $data['edit_date_of_diagnosis'] ?? null,
+                'name_of_physician' => $data['edit_name_of_physician'] ?? null,
+                'sputum_test_results' => $data['edit_sputum_test_results'] ?? null,
+                'treatment_category' => $data['edit_treatment_category'] ?? null,
+                'date_administered' => $data['edit_date_administered'] ?? null,
+                'side_effect' =>  $data['edit_side_effect'] ?? null,
+                'remarks' => $data['edit_tb_remarks'] ?? null,
+                'outcome' => $data['edit_tb_outcome'] ?? null,
                 'status' => 'Done',
             ]);
 
@@ -508,18 +508,18 @@ class TbDotsController extends Controller
 
             $checkUpRecord->update([
                 'date_of_visit' => $data['edit_checkup_date_of_visit'] ?? $checkUpRecord->date_of_visit,
-                'blood_pressure' => $data['edit_checkup_blood_pressure'] ?? $checkUpRecord->blood_pressure,
-                'temperature' => $data['edit_checkup_temperature'] ?? $checkUpRecord->temperature,
-                'pulse_rate' => $data['edit_checkup_pulse_rate'] ?? $checkUpRecord->pulse_rate,
-                'respiratory_rate' => $data['edit_checkup_respiratory_rate'] ?? $checkUpRecord->respiratory_rate,
-                'height' => $data['edit_checkup_height'] ?? $checkUpRecord->height,
-                'weight' => $data['edit_checkup_weight'] ?? $checkUpRecord->weight,
-                'adherence_of_treatment' => $data['edit_checkup_adherence_of_treatment'] ?? $checkUpRecord->adherence_of_treatment,
-                'side_effect' => $data['edit_checkup_side_effect'] ?? $checkUpRecord->side_effect,
-                'progress_note' => $data['edit_checkup_progress_note'] ?? $checkUpRecord->progress_note,
-                'sputum_test_result' => $data['edit_checkup_sputum_test_result'] ?? $checkUpRecord->sputum_test_result,
-                'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? $checkUpRecord->treatment_phase,
-                'outcome' => $data['edit_checkup_outcome'] ?? $checkUpRecord->outcome,
+                'blood_pressure' => $data['edit_checkup_blood_pressure'] ?? null,
+                'temperature' => $data['edit_checkup_temperature'] ?? null,
+                'pulse_rate' => $data['edit_checkup_pulse_rate'] ?? null,
+                'respiratory_rate' => $data['edit_checkup_respiratory_rate'] ?? null,
+                'height' => $data['edit_checkup_height'] ?? null,
+                'weight' => $data['edit_checkup_weight'] ?? null,
+                'adherence_of_treatment' => $data['edit_checkup_adherence_of_treatment'] ?? null,
+                'side_effect' => $data['edit_checkup_side_effect'] ?? null,
+                'progress_note' => $data['edit_checkup_progress_note'] ?? null,
+                'sputum_test_result' => $data['edit_checkup_sputum_test_result'] ?? null,
+                'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? null,
+                'outcome' => $data['edit_checkup_outcome'] ?? null,
                 'status' => 'Active',
                 'date_of_comeback' => $data['edit_date_of_comeback']
             ]);

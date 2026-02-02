@@ -103,6 +103,7 @@ export default defineConfig({
                 "resources/js/tb_dots/checkup.js",
                 "resources/js/tb_dots/editDetails.js",
                 "resources/js/vaccination/vaccinationCase.js",
+                "resources/js/vitalSign.js",
             ],
             refresh: true,
         }),

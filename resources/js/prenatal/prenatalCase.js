@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import changeLmp from "../LMP/lmp";
 import initSignatureCapture from "../signature/signature";
+import { vitalSignInputMask } from "../vitalSign";
 // load the existing info
 
 document.addEventListener("click", async (e) => {
@@ -489,6 +490,24 @@ document.addEventListener("click", async (e) => {
         pulse_rate: getElement("edit_case_pulse_rate"),
     };
 
+    if (
+        vitalSign.blood_pressure &&
+        vitalSign.temperature &&
+        vitalSign.height &&
+        vitalSign.weight &&
+        vitalSign.respiratory_rate &&
+        vitalSign.pulse_rate
+    ) {
+        vitalSignInputMask(
+            vitalSign.blood_pressure,
+            vitalSign.temperature,
+            vitalSign.pulse_rate,
+            vitalSign.respiratory_rate,
+            vitalSign.height,
+            vitalSign.weight,
+        );
+    }
+
     if (vitalSign.blood_pressure) vitalSign.blood_pressure.value = data.caseInfo.blood_pressure ?? null;
     if (vitalSign.height) vitalSign.height.value = data.caseInfo.height ?? null;
     if (vitalSign.weight)
@@ -926,6 +945,32 @@ prentalCheckUpBTN.addEventListener("click", async (e) => {
     handled_by.value = data.healthWorker.full_name ?? "";
     healthworkerId.value = data.healthWorker.user_id;
     hiddenPatientName.value = data.prenatalRecord.patient.full_name;
+
+    // vital sign
+    const checkup_blood_pressure = document.getElementById("check_up_blood_pressure");
+    const checkup_temperature = document.getElementById("check_up_temperature");
+    const checkup_respiratory_rate = document.getElementById("check_up_respiratory_rate");
+    const checkup_pulse_rate = document.getElementById("check_up_pulse_rate");
+    const checkup_height = document.getElementById("check_up_height");
+    const checkup_weight = document.getElementById("check_up_weight");
+
+    if (
+        checkup_blood_pressure &&
+        checkup_temperature &&
+        checkup_height &&
+        checkup_weight &&
+        checkup_respiratory_rate &&
+        checkup_pulse_rate
+    ) {
+        vitalSignInputMask(
+            checkup_blood_pressure,
+            checkup_temperature,
+            checkup_pulse_rate,
+            checkup_respiratory_rate,
+            checkup_height,
+            checkup_weight,
+        );
+    }
 });
 
 // upload the information to the database

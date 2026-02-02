@@ -242,7 +242,7 @@
                                 </div>
                                 <!-- contact -->
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="contact_number" class="">Contact Number</label>
+                                    <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
                                     <input type="number" placeholder="Enter your contact number" class="form-control" id="contact_num" name="contact_number" value="">
                                     <small class="text-danger edit-healthworker-info" id="contact-error"></small>
                                 </div>
@@ -372,11 +372,11 @@
                                     <input type="text" placeholder="Enter First Name" id="add_first_name_healthworker" name="first_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('first_name')}}">
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <label for="add_middle_name_healthworker" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <label for="add_middle_name_healthworker" class="">Middle Name</label>
                                     <input type="text" placeholder="Enter Middle Name" id="add_middle_name_healthworker" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('middle_initial')}}">
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <label for="add_last_name_healthworker" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <label for="add_last_name_healthworker" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" placeholder="Enter Last Name" id="add_last_name_healthworker" name="last_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('last_name')}}">
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
@@ -412,7 +412,7 @@
                         <!-- contact number -->
                         <div class="mb-2 w-100">
                             <label for="add_contact_number" class="mb-1 responsive-label">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" placeholder="Enter your contact number" id="add_contact_number" name="add_contact_number" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('contact_number')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
+                            <input type="number" placeholder="Enter your contact number" id="add_contact_number" name="add_contact_number" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('contact_number')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                             <small class="text-danger add_contact_number-error add-healthworker-error" id="add_contact_number_error"></small>
                         </div>
                         <!-- Password -->

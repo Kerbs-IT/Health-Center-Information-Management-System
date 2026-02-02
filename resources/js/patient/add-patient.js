@@ -168,6 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeSelect.value === "prenatal") {
             displayVitalSign();
         }
+        if (typeSelect.value === "family-planning") {
+            familyPlanVitalSign();
+        }
 
         window.currentStep++;
         window.showStep(window.currentStep);
@@ -547,6 +550,79 @@ if (LMP) {
     });
 }
 
+// ==================================== input mask for the vital sign ======================
+
+const add_patient_blood_pressure = document.getElementById(
+    "add_patient_blood_pressure",
+);
+const add_patient_temperature = document.getElementById(
+    "add_patient_temperature",
+);
+const add_patient_pulse_rate = document.getElementById(
+    "add_patient_pulse_rate",
+);
+const add_patient_respiratory_rate = document.getElementById(
+    "add_patient_respiratory_rate",
+);
+const add_patient_height = document.getElementById("add_patient_height");
+const add_patient_weight = document.getElementById("add_patient_weight");
+
+if (
+    add_patient_blood_pressure &&
+    add_patient_height &&
+    add_patient_weight &&
+    add_patient_pulse_rate &&
+    add_patient_respiratory_rate &&
+    add_patient_temperature
+) {
+    Inputmask({
+        mask: "999/999",
+        placeholder: "",
+        clearIncomplete: false,
+    }).mask(add_patient_blood_pressure);
+    // Temperature (e.g., 36.5)
+    Inputmask({
+        alias: "decimal",
+        digits: 2,
+        min: 0,
+        max: 59.99,
+        rightAlign: false,
+    }).mask(add_patient_temperature);
+
+    // Pulse Rate (e.g., 60-100 or just 72)
+    Inputmask({
+        mask: "999", // allows "72" or "60-100"
+        placeholder: "",
+        clearIncomplete: false,
+    }).mask(add_patient_pulse_rate);
+
+    // Respiratory Rate (e.g., 16)
+    Inputmask({
+        mask: "99",
+        placeholder: "",
+        min: 0,
+        max: 60,
+    }).mask(add_patient_respiratory_rate);
+
+    // Height in cm (e.g., 175.5)
+    Inputmask({
+        alias: "decimal",
+        digits: 2,
+        min: 0,
+        max: 300,
+        rightAlign: false,
+    }).mask(add_patient_height);
+
+    // Weight in kg (e.g., 65.5)
+    Inputmask({
+        alias: "decimal",
+        digits: 2,
+        min: 0,
+        max: 500,
+        rightAlign: false,
+    }).mask(add_patient_weight);
+}
+
 //  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
 const healthWorkerElement = document.getElementById("handled_by");
 const brgyElement = document.getElementById("brgy");
@@ -770,14 +846,8 @@ function disableSubmitBtn(typeOfPatient) {
 // function for the prenatal objective views (readd only)
 
 function displayVitalSign() {
-    console.log("is it triggeed");
-    // add vital sign
-    // const bp = document.getElementById("add_patient_blood_pressure");
-    // const temperature = document.getElementById("add_patient_temperature");
-    // const pulse_rate = document.getElementById("add_patient_pulse_rate");
-    // const respiratory_rate = document.getElementById("add_patient_respiratory_rate");
-    // const height = document.getElementById("add_patient_height");
-    // const weight = document.getElementById("add_patient_weight");
+    // console.log("is it triggeed");
+    
 
     const addVitalSign = [
         "blood_pressure",
@@ -788,22 +858,44 @@ function displayVitalSign() {
         "weight",
     ];
 
-    addVitalSign.forEach(
-        (element) =>
-             {
-                if (document.getElementById(`add_patient_${element}`)) {
-                    const value = document.getElementById(
-                        `add_patient_${element}`,
-                    ).value;
+    addVitalSign.forEach((element) => {
+        if (document.getElementById(`add_patient_${element}`)) {
+            const value = document.getElementById(
+                `add_patient_${element}`,
+            ).value;
 
-                    // populate the value of view only
-                    const viewElement = document.getElementById(
-                        `prenatal_view_${element}`,
-                    );
-                    if (viewElement) {
-                        viewElement.value = value;
-                    }
-                }
-            },
-    );
+            // populate the value of view only
+            const viewElement = document.getElementById(
+                `prenatal_view_${element}`,
+            );
+            if (viewElement) {
+                viewElement.value = value;
+            }
+        }
+    });
+}
+
+function familyPlanVitalSign() {
+    const addVitalSign = [
+        "blood_pressure",
+        "pulse_rate",
+        "height",
+        "weight",
+    ];
+
+    addVitalSign.forEach((element) => {
+        if (document.getElementById(`add_patient_${element}`)) {
+            const value = document.getElementById(
+                `add_patient_${element}`,
+            ).value;
+
+            // populate the value of view only
+            const viewElement = document.getElementById(
+                `family_planning_view_${element}`,
+            );
+            if (viewElement) {
+                viewElement.value = value;
+            }
+        }
+    });
 }

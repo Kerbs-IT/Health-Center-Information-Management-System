@@ -107,7 +107,7 @@
 
                                         <!-- age -->
                                         <div class="input-field w-50">
-                                            <label for="age">Age<span class="text-danger">*</span></label>
+                                            <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="Enter the age" disabled class="form-control">
                                             <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -454,7 +454,7 @@
                                             </div>
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="text" class="form-control w-100" placeholder="Enter the birth weight" name="vaccination_weight">
+                                                <input type="number" class="form-control w-100" placeholder="Enter the birth weight" name="vaccination_weight">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>
@@ -473,19 +473,14 @@
                             <div class="vaccination-content">
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">Patient Name<span class="text-danger">*</span></label>
+                                        <label for="patient_name">Patient Name</label>
                                         <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
+                                
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">Administered By<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control w-100 bg-light" disabled placeholder="Nurse">
-                                    </div>
-                                </div>
-                                <div class="mb-md-2 mb-1 w-100">
-                                    <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">handled By<span class="text-danger">*</span></label>
+                                        <label for="patient_name">handled By</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
                                     </div>
                                 </div>

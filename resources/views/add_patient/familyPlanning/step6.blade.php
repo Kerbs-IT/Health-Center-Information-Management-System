@@ -5,31 +5,25 @@
         <div class="mb-md-2 mb-0 input-field d-flex gap-md-3 gap-1 w-100 first-row flex-wrap flex-xl-nowrap flex-md-row flex-column">
             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                 <label for="BP">Blood Pressure:</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the blood pressure" disabled>
+                <input type="text" class="form-control w-100" id="family_planning_view_blood_pressure" placeholder="Enter the blood pressure" disabled>
             </div>
-            <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
-                <label for="BP">Temperature:</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the temperature" disabled>
-            </div>
+
             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                 <label for="BP">Pulse Rate(Bpm):</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" disabled>
+                <input type="text" class="form-control w-100" id="family_planning_view_pulse_rate" placeholder="Enter the pulse rate" disabled>
             </div>
 
         </div>
         <!-- 2nd row -->
         <div class="mb-md-2 mb-0 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-wrap flex-xl-nowrap flex-md-row flex-column">
-            <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
-                <label for="BP">Respiratory Rate (breaths/min):</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the respiratory rate" disabled>
-            </div>
+
             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                 <label for="BP">Height(cm):</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the height" name="height" disabled>
+                <input type="text" class="form-control w-100" id="family_planning_view_height" placeholder="Enter the height" name="height" disabled>
             </div>
             <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                 <label for="BP">Weight(kg):</label>
-                <input type="text" class="form-control w-100" placeholder="Enter the weight" name="weight" disabled>
+                <input type="text" class="form-control w-100" id="family_planning_view_weight" placeholder="Enter the weight" name="weight" disabled>
             </div>
         </div>
     </div>

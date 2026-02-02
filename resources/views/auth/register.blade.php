@@ -51,7 +51,7 @@
                                     <input type="text" placeholder="Enter First Name" name="first_name" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('first_name')}}">
                                 </div>
                                 <div class="col-lg-6 col-md-6">
-                                    <label for="" class="">Middle Name<span class="text-danger">*</span></label>
+                                    <label for="" class="">Middle Name</label>
                                     <input type="text" placeholder="Enter Middle Name" name="middle_initial" class="form-control py-1 px-2 bg-light" autocomplete="off" value="{{old('middle_initial')}}">
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="items">
-                                        <label for="brgy" class="text-muted">Puroks<span class="text-danger">*</span></label>
+                                        <label for="brgy" class="text-muted">Purok<span class="text-danger">*</span></label>
                                         <select id="brgy" class="form-select" name="brgy" required>
                                             <option value="" selected disabled>Select a purok</option>
                                         </select>

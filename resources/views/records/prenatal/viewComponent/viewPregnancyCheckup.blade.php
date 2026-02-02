@@ -24,21 +24,21 @@
             <tbody>
                 <tr>
                     <th>Blood Pressure</th>
-                    <td id="check_up_blood_pressure">120/80</td>
+                    <td id="view_check_up_blood_pressure"></td>
                     <th>Temperature(°C)</th>
-                    <td id="check_up_temperature">36.5 °C</td>
+                    <td id="view_check_up_temperature"></td>
                 </tr>
                 <tr>
                     <th>Pulse Rate</th>
-                    <td id="check_up_pulse_rate">78 bpm</td>
+                    <td id="view_check_up_pulse_rate"></td>
                     <th>Respiratory Rate</th>
-                    <td id="check_up_respiratory_rate">20</td>
+                    <td id="view_check_up_respiratory_rate"></td>
                 </tr>
                 <tr>
                     <th>Height</th>
-                    <td id="check_up_height">160 cm</td>
+                    <td id="view_check_up_height"></td>
                     <th>Weight</th>
-                    <td id="check_up_weight">55 kg</td>
+                    <td id="view_check_up_weight"></td>
                 </tr>
             </tbody>
         </table>

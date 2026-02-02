@@ -83,7 +83,7 @@
 
                         <!-- age -->
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="side_A_add_client_age">Age<span class="text-danger">*</span></label>
+                            <label for="side_A_add_client_age">Age</label>
                             <input type="number" id="side_A_add_client_age" placeholder="20" class="form-control" disabled>
                             <input type="hidden" id="hiddenAddAge" name="side_A_add_client_age">
                             <small class="text-danger error-text" id="side_A_add_client_age_error"></small>

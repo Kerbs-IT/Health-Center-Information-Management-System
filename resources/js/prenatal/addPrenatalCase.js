@@ -1,5 +1,5 @@
 import changeLmp from "../LMP/lmp";
-
+import { vitalSignInputMask } from "../vitalSign";
 const addPrenatalCase =
     document.getElementById("add_case_record_add_btn") ?? null;
 
@@ -18,7 +18,7 @@ if (addPrenatalCase) {
         // add value to the hidden inputs
         const medicalRecordElement =
             document.getElementById(
-                "add_prenatal_case_medical_record_case_id"
+                "add_prenatal_case_medical_record_case_id",
             ) ?? null;
 
         const healthWorkerId =
@@ -26,7 +26,7 @@ if (addPrenatalCase) {
             null;
 
         const patientName = document.getElementById(
-            "add_prenatal_case_patient_name"
+            "add_prenatal_case_patient_name",
         );
         if (medicalRecordElement && healthWorkerId && patientName) {
             medicalRecordElement.value = patientInfo.id;
@@ -38,7 +38,7 @@ if (addPrenatalCase) {
         }
 
         const addBtn = document.getElementById(
-            "add-prenatal-case-pregnancy-history-btn"
+            "add-prenatal-case-pregnancy-history-btn",
         );
         const year = document.getElementById("add_pregnancy_year") ?? null;
         const typeOfDelivery =
@@ -55,13 +55,13 @@ if (addPrenatalCase) {
 
         const yearError = document.getElementById("add_pregnancy_year_error");
         const typeOfDeliveryError = document.getElementById(
-            "add_type_of_delivery_error"
+            "add_type_of_delivery_error",
         );
         const placeOfDeliveryError = document.getElementById(
-            "add_place_of_delivery_error"
+            "add_place_of_delivery_error",
         );
         const birthAttendantError = document.getElementById(
-            "add_birth_attendant_error"
+            "add_birth_attendant_error",
         );
         const outcomeError = document.getElementById("add_outcome_error");
 
@@ -183,6 +183,40 @@ if (addPrenatalCase) {
                 }
             }
         });
+
+        // handle the vital sign
+        const checkup_blood_pressure = document.getElementById(
+            "add_case_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "add_case_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "add_case_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "add_case_pulse_rate",
+        );
+        const checkup_height = document.getElementById("add_case_height");
+        const checkup_weight = document.getElementById("add_case_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
+        }
     });
 }
 
@@ -190,7 +224,9 @@ if (addPrenatalCase) {
 const LMP = document.getElementById("add_LMP_input") ?? null;
 
 if (LMP) {
-    const expectedDelivery = document.getElementById("add_expected_delivery_input");
+    const expectedDelivery = document.getElementById(
+        "add_expected_delivery_input",
+    );
 
     LMP.addEventListener("change", () => {
         changeLmp(LMP, expectedDelivery);
@@ -200,7 +236,7 @@ const addCaseSaveBtn = document.getElementById("add-case-record-save-btn");
 
 addCaseSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    
+
     const form = document.getElementById("add-prenatal-case-record-form");
     const formData = new FormData(form);
 
@@ -209,19 +245,16 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
     // }
 
     try {
-        const response = await fetch(
-            `/prenatal/add-prenatal-case-record`,
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content,
-                    Accept: "application/json",
-                },
-                body: formData,
-            }
-        );
+        const response = await fetch(`/prenatal/add-prenatal-case-record`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
 
         const data = await response.json();
 
@@ -232,9 +265,9 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
-             if (typeof Livewire !== "undefined") {
-                 Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
-             }
+            if (typeof Livewire !== "undefined") {
+                Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+            }
             Swal.fire({
                 title: "Add Prenatal Case",
                 text: data.message, // this will make the text capitalize each word
@@ -244,11 +277,11 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("addPrenatalCaseRecordModal")
+                        document.getElementById("addPrenatalCaseRecordModal"),
                     );
-                   if (modal) {
-                       modal.hide();
-                   }
+                    if (modal) {
+                        modal.hide();
+                    }
                     form.reset();
                 }
             });

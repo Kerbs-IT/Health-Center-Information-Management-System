@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { vitalSignInputMask } from "../vitalSign";
 
 // View Pregnancy Checkup Handler
 document.addEventListener("click", async function (e) {
@@ -33,7 +34,7 @@ document.addEventListener("click", async function (e) {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -87,6 +88,8 @@ function safeSetContent(elementId, value, defaultValue = "N/A") {
         // console.warn(`Element not found: ${elementId}`);
         return false;
     }
+
+   
 
     // Handle null/undefined values
     if (value === null || value === undefined || value === "") {
@@ -144,9 +147,9 @@ function formatTime(timeString) {
  */
 function populateCheckupInfo(checkupInfo) {
     if (!checkupInfo || typeof checkupInfo !== "object") {
-        // console.warn("Invalid checkup info provided");
         return;
     }
+    console.log("Populating with data:", checkupInfo); // ← ADD THIS DEBUG
 
     Object.entries(checkupInfo).forEach(([key, value]) => {
         try {
@@ -157,27 +160,61 @@ function populateCheckupInfo(checkupInfo) {
                 return;
             }
 
-            // Special handling for patient name (populate multiple fields)
+            // Special handling for patient name
             if (key === "patient_name") {
                 safeSetContent("patient_name", value);
                 safeSetContent("checkup_patient_name", value);
                 return;
             }
 
-            // Special handling for date fields
-            if (key.includes("date") && value) {
+            // Special handling for SPECIFIC date field (not all date fields!)
+            if (key === "date_of_comeback" && value) {
+                // ← Changed from key.includes("date")
                 try {
-                    
                     const date = new Date(value);
                     const formatted = date.toISOString().split("T")[0];
                     document.getElementById("view_date_of_comeback").innerHTML =
                         formatted;
+                    return;
                 } catch (dateError) {
                     // console.warn(
                     //     `Error formatting date for ${key}:`,
-                    //     dateError
+                    //     dateError,
                     // );
                 }
+            }
+            // Special handling for vital signs with units
+            if (key === "check_up_blood_pressure") {
+                safeSetContent(`view_${key}`, value ? `${value}` : null);
+                return;
+            }
+
+            if (key === "check_up_temperature") {
+                safeSetContent(`view_${key}`, value ? `${value}°C` : null);
+                return;
+            }
+
+            if (key === "check_up_pulse_rate") {
+                safeSetContent(`view_${key}`, value ? `${value} bpm` : null);
+                return;
+            }
+
+            if (key === "check_up_respiratory_rate") {
+                safeSetContent(
+                    `view_${key}`,
+                    value ? `${value} breaths/min` : null,
+                );
+                return;
+            }
+
+            if (key === "check_up_height") {
+                safeSetContent(`view_${key}`, value ? `${value} cm` : null);
+                return;
+            }
+
+            if (key === "check_up_weight") {
+                safeSetContent(`view_${key}`, value ? `${value} kg` : null);
+                return;
             }
 
             // Default: set content as-is
@@ -218,12 +255,12 @@ function clearCheckupModalData() {
         "patient_name",
         "checkup_patient_name",
         "health_worker_name",
-        "blood_pressure",
-        "weight",
-        "height",
-        "temperature",
-        "pulse_rate",
-        "respiratory_rate",
+        "check_up_blood_pressure",
+        "check_up_weight",
+        "check_up_height",
+        "check_up_temperature",
+        "check_up_pulse_rate",
+        "check_up_respiratory_rate",
         "nutritional_status",
         "laboratory_tests_done",
         "hemoglobin_count",
@@ -349,7 +386,7 @@ document.addEventListener("click", async function (e) {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -373,7 +410,7 @@ document.addEventListener("click", async function (e) {
                     try {
                         if (key === "check_up_time") {
                             const element = document.getElementById(
-                                `edit_${key}`
+                                `edit_${key}`,
                             );
                             if (element) {
                                 element.value = value || "";
@@ -384,7 +421,7 @@ document.addEventListener("click", async function (e) {
                             const nameElement =
                                 document.getElementById("edit_patient_name");
                             const hiddenElement = document.getElementById(
-                                "edit_check_up_full_name"
+                                "edit_check_up_full_name",
                             );
 
                             if (nameElement) {
@@ -406,7 +443,7 @@ document.addEventListener("click", async function (e) {
                             }
                         } else if (value === "Yes" || value === "No") {
                             const element = document.getElementById(
-                                `edit_${key}_${value}`
+                                `edit_${key}_${value}`,
                             );
                             if (element) {
                                 element.checked = true;
@@ -417,7 +454,7 @@ document.addEventListener("click", async function (e) {
                             }
                         } else if (key == "date_of_comeback") {
                             const element = document.getElementById(
-                                `edit_${key}`
+                                `edit_${key}`,
                             );
                             if (element && value) {
                                 const date = value.split("T")[0]; // Gets "2025-12-24"
@@ -425,7 +462,7 @@ document.addEventListener("click", async function (e) {
                             }
                         } else {
                             const element = document.getElementById(
-                                `edit_${key}`
+                                `edit_${key}`,
                             );
                             if (element) {
                                 element.value = value ?? "";
@@ -436,10 +473,10 @@ document.addEventListener("click", async function (e) {
                     } catch (fieldError) {
                         console.error(
                             `Error setting field ${key}:`,
-                            fieldError
+                            fieldError,
                         );
                     }
-                }
+                },
             );
         } else {
             // console.warn("No pregnancy_checkup_info in response");
@@ -448,7 +485,7 @@ document.addEventListener("click", async function (e) {
         // Safely set health worker data
         if (data.healthWorker && typeof data.healthWorker === "object") {
             const handledByElement = document.getElementById(
-                "edit_check_up_handled_by"
+                "edit_check_up_handled_by",
             );
             if (handledByElement) {
                 handledByElement.value = data.healthWorker.full_name ?? "";
@@ -457,7 +494,7 @@ document.addEventListener("click", async function (e) {
             }
 
             const workerIdElement = document.getElementById(
-                "edit_health_worker_id"
+                "edit_health_worker_id",
             );
             if (workerIdElement) {
                 workerIdElement.value = data.healthWorker.user_id || "";
@@ -466,6 +503,39 @@ document.addEventListener("click", async function (e) {
             }
         } else {
             // console.warn("No healthWorker info in response");
+        }
+
+        const checkup_blood_pressure = document.getElementById(
+            "edit_check_up_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "edit_check_up_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "edit_check_up_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "edit_check_up_pulse_rate",
+        );
+        const checkup_height = document.getElementById("edit_check_up_height");
+        const checkup_weight = document.getElementById("edit_check_up_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
         }
 
         // Store the ID for update
@@ -601,7 +671,7 @@ document.addEventListener("click", async function (e) {
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(
-                data.message || `HTTP error! status: ${response.status}`
+                data.message || `HTTP error! status: ${response.status}`,
             );
         }
 

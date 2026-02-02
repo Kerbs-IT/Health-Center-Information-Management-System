@@ -342,8 +342,8 @@ class RecordsController extends Controller
                 'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
                 'mother_name' => $data['mother_name'] ? ucwords($data['mother_name']) : '',
                 'father_name' => $data['father_name'] ? ucwords($data['father_name']) : '',
-                'birth_height' => $data['vaccination_height'] ?? $medical_record_case->birth_height,
-                'birth_weight' => $data['vaccination_weight'] ?? $medical_record_case->birth_weight,
+                'birth_height' => $data['vaccination_height'] ?? null,
+                'birth_weight' => $data['vaccination_weight'] ?? null,
             ]);
             $blk_n_street = explode(',', $data['street']);
             $patient_address->update([

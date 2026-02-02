@@ -16,7 +16,8 @@
     'resources/js/header.js',
     'resources/css/profile.css',
     'resources/css/patient/record.css',
-    'resources/js/prenatal/editPrenatalDetails.js'])
+    'resources/js/prenatal/editPrenatalDetails.js',
+    'resources/js/vitalSign.js'])
 
     @include('sweetalert::alert')
     <div class="patient-details vh-100 d-flex ">
@@ -108,7 +109,7 @@
 
                                         <!-- age -->
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="age">Age<span class="text-danger">*</span></label>
+                                            <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="20" class="form-control bg-light border-dark" disabled value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <input type="hidden" id="hiddenAge" name="age" value="{{optional($prenatalRecord)->patient?->age??''}}">
                                             <small class="text-danger error-text" id="age_error"></small>
@@ -134,7 +135,7 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
-                                            <input type="text" placeholder="Enter your phone number" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
+                                            <input type="number" placeholder="Enter your phone number" class="form-control bg-light border-dark" name="contact_number" value="{{optional($prenatalRecord)->patient?->contact_number??''}}">
 
                                             <small class="text-danger error-text" id="contact_number_error"></small>
 
@@ -294,17 +295,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 first-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Blood Pressure:</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" placeholder="Enter the blood pressure" value="{{ optional($caseRecord)-> blood_pressure?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="blood_pressure" id="blood_pressure" placeholder="Enter the blood pressure" value="{{ optional($caseRecord)-> blood_pressure?? '' }}">
                                                 <small class="text-danger error-text" id="blood_pressure_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Temperature(°C):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="temperature" placeholder="Enter the temperature" value="{{ optional($caseRecord)-> temperature?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="temperature" id="temperature" placeholder="Enter the temperature" value="{{ optional($caseRecord)-> temperature?? '' }}">
                                                 <small class="text-danger error-text" id="temperature_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Pulse Rate(Bpm):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" placeholder="Enter the pulse rate" value="{{ optional($caseRecord)-> pulse_rate?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="pulse_rate" id="pulse_rate" placeholder="Enter the pulse rate" value="{{ optional($caseRecord)-> pulse_rate?? '' }}">
                                                 <small class="text-danger error-text" id="pulse_rate_error"></small>
                                             </div>
 
@@ -313,17 +314,17 @@
                                         <div class="mb-2 input-field d-flex gap-3 w-100 second-row flex-xl-nowrap flex-wrap">
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Respiratory Rate (breaths/min):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" placeholder="Enter the respiratory rate" value="{{ optional($caseRecord)-> respiratory_rate?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" name="respiratory_rate" id="respiratory_rate" placeholder="Enter the respiratory rate" value="{{ optional($caseRecord)-> respiratory_rate?? '' }}">
                                                 <small class="text-danger error-text" id="respiratory_rate_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Height(cm):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the height" name="height" value="{{ optional($caseRecord)-> height?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the height" name="height" id="height" value="{{ optional($caseRecord)-> height?? '' }}">
                                                 <small class="text-danger error-text" id="height_error"></small>
                                             </div>
                                             <div class="mb-2 flex-fill xl:w-[50%]">
                                                 <label for="BP">Weight(kg):</label>
-                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the weight" name="weight" value="{{ optional($caseRecord)-> weight?? '' }}">
+                                                <input type="text" class="form-control w-100 bg-light border-dark" placeholder="Enter the weight" name="weight" id="weight" value="{{ optional($caseRecord)-> weight?? '' }}">
                                                 <small class="text-danger error-text" id="weight_error"></small>
                                             </div>
                                         </div>

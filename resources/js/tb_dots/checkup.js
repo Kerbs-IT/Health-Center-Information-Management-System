@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { vitalSignInputMask } from "../vitalSign";
 
 const saveBtn = document.getElementById("add-check-up-save-btn");
 
@@ -9,6 +10,42 @@ if (addCheckup) {
         const errors = document.querySelectorAll(".error-text");
         if (errors) {
             errors.forEach((error) => (error.innerHTML = ""));
+        }
+        const form = document.getElementById("add-check-up-form");
+
+        form.reset();
+        // handle the vital sign
+        const checkup_blood_pressure = document.getElementById(
+            "add_checkup_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "add_checkup_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "add_checkup_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "add_checkup_pulse_rate",
+        );
+        const checkup_height = document.getElementById("add_checkup_height");
+        const checkup_weight = document.getElementById("add_checkup_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
         }
     })
 }
@@ -152,13 +189,47 @@ document.addEventListener("click", async (e) => {
                 document.getElementById(`edit_checkup_${key}`).value =
                     value ?? "";
             }
-            if (key == 'date_of_comeback' && value !=null) {
+            if (key == "date_of_comeback" && value != null) {
                 const date = new Date(value);
                 document.getElementById(`edit_${key}`).value = date
                     .toISOString()
                     .split("T")[0];
             }
         });
+
+        // handle the vital sign
+        const checkup_blood_pressure = document.getElementById(
+            "edit_checkup_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "edit_checkup_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "edit_checkup_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "edit_checkup_pulse_rate",
+        );
+        const checkup_height = document.getElementById("edit_checkup_height");
+        const checkup_weight = document.getElementById("edit_checkup_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
+        }
     }
 });
 

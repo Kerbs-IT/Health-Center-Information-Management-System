@@ -19,8 +19,10 @@
     'resources/css/app.css',
     'resources/js/app.js',
     'resources/css/homepage.css',
-    'resources/js/homepage.js'
-    ])
+    'resources/js/homepage.js',
+    'resources/css/navbar.css',
+    'resources/js/navbar.js'])
+
 </head>
 
 @include('layout.navbar')

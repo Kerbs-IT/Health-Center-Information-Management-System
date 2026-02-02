@@ -407,7 +407,7 @@ class FamilyPlanningController extends Controller
                 'blood_pressure' => $medicalData['blood_pressure'] ?? null,
                 'pulse_rate' => $medicalData['pulse_rate'] ?? null,
                 'height' => $medicalData['height'] ?? null,
-                'weight' => $medicalData['height'] ?? null,
+                'weight' => $medicalData['weight'] ?? null,
 
                 'skin_type' => $physicalExaminationData['physical_examination_skin_type'] ?? null,
                 'conjuctiva_type' => $physicalExaminationData['physical_examination_conjuctiva_type'] ?? null,
@@ -620,12 +620,12 @@ class FamilyPlanningController extends Controller
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
                 'sex' => $sex ? ucfirst($sex) : null,
-                'civil_status' => $data['civil_status'] ?? $familyPlanningRecord->patient->civil_status,
+                'civil_status' => $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
-                'date_of_birth' => $data['date_of_birth'] ?? $familyPlanningRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? $familyPlanningRecord->patient->nationality,
+                'date_of_birth' => $data['date_of_birth'] ?? null,
+                'nationality' => $data['nationality'] ?? null,
                 'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration,
-                'place_of_birth' => $data['place_of_birth'] ?? $familyPlanningRecord->patient->place_of_birth,
+                'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? ''
             ]);
             // update the address
@@ -653,15 +653,15 @@ class FamilyPlanningController extends Controller
             $familyPlanningMedicalRecord->update([
                 'health_worker_id' => $data['handled_by'] ?? $familyPlanningMedicalRecord->health_worker_id,
                 'patient_name' => $familyPlanningRecord->patient->full_name,
-                'occupation' => $data['occupation'] ?? $familyPlanningMedicalRecord->occupation,
-                'religion' => $data['religion'] ?? $familyPlanningMedicalRecord->religion,
-                'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningMedicalRecord->philhealth_no,
-                'blood_pressure' => $data['blood_pressure'] ?? $familyPlanningMedicalRecord->blood_pressure,
-                'temperature' => $data['temperature'] ?? $familyPlanningMedicalRecord->temperature,
-                'pulse_rate' => $data['pulse_rate'] ?? $familyPlanningMedicalRecord->pulse_rate,
-                'respiratory_rate' => $data['respiratory_rate'] ?? $familyPlanningMedicalRecord->respiratory_rate,
-                'height' => $data['height'] ?? $familyPlanningMedicalRecord->height,
-                'weight' => $data['weight'] ?? $familyPlanningMedicalRecord->weight
+                'occupation' => $data['occupation'] ?? null,
+                'religion' => $data['religion'] ?? null,
+                'philhealth_no' => $data['philhealth_no'] ?? null,
+                'blood_pressure' => $data['blood_pressure'] ?? null,
+                'temperature' => $data['temperature'] ?? null,
+                'pulse_rate' => $data['pulse_rate'] ?? null,
+                'respiratory_rate' => $data['respiratory_rate'] ?? null,
+                'height' => $data['height'] ?? null,
+                'weight' => $data['weight'] ?? null
             ]);
             // update case record
 
@@ -669,16 +669,16 @@ class FamilyPlanningController extends Controller
                 $familyPlanningCaseRecord->update([
                     'client_name' => $familyPlanningRecord->patient->full_name,
                     'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
-                    'philhealth_no' => $data['philhealth_no'] ?? $familyPlanningCaseRecord->philhealth_no,
-                    'NHTS' => $data['NHTS'] ?? $familyPlanningCaseRecord->NHTS,
+                    'philhealth_no' => $data['philhealth_no'] ?? null,
+                    'NHTS' => $data['NHTS'] ?? null,
                     'client_address' =>  $fullAddress ?? '',
                     'client_date_of_birth' => $data['date_of_birth'] ?? $familyPlanningCaseRecord->client_date_of_birth,
                     'client_age' => $data['age'] ?? $familyPlanningCaseRecord->client_age,
-                    'occupation' => $data['occupation'] ?? $familyPlanningCaseRecord->occupation,
+                    'occupation' => $data['occupation'] ?? null,
                     'client_suffix' => $data['suffix'] ?? '',
                     'client_contact_number' => $data['contact_number'] ?? $familyPlanningCaseRecord->client_contact_number,
-                    'client_civil_status' => $data['civil_status'] ?? $familyPlanningCaseRecord->client_civil_status,
-                    'client_religion' => $data['religion'] ?? $familyPlanningCaseRecord->client_religion
+                    'client_civil_status' => $data['civil_status'] ?? null,
+                    'client_religion' => $data['religion'] ?? null
                 ]);
             }
 
@@ -994,7 +994,7 @@ class FamilyPlanningController extends Controller
                 'blood_pressure' => $medicalData['side_A_add_blood_pressure'] ?? null,
                 'pulse_rate' => $medicalData['side_A_add_pulse_rate'] ?? null,
                 'height' => $medicalData['side_A_add_height'] ?? null,
-                'weight' => $medicalData['side_A_add_height'] ?? null,
+                'weight' => $medicalData['side_A_add_weight'] ?? null,
 
                 'skin_type' => $physicalExaminationData['side_A_add_skin_type'] ?? null,
                 'conjuctiva_type' => $physicalExaminationData['side_A_add_conjuctiva_type'] ?? null,
@@ -1315,9 +1315,9 @@ class FamilyPlanningController extends Controller
                 'last_name' => $patientData['edit_client_lname'] ?? $medical_case_record->patient->last_name,
                 'full_name' => $fullName,
                 'age' => $patientData['edit_client_age'] ?? $medical_case_record->patient->age,
-                'contact_number' => $patientData['edit_client_contact_number'] ?? $medical_case_record->patient->contact_number,
+                'contact_number' => $patientData['edit_client_contact_number'] ?? null,
                 'date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $medical_case_record->patient->date_of_birth,
-                'civil_status' => $patientData['edit_client_civil_status'] ?? $medical_case_record->patient->civil_status,
+                'civil_status' => $patientData['edit_client_civil_status'] ?? null,
                 'suffix' => $patientData['edit_client_suffix'] ?? ''
             ]);
             $address = patient_addresses::where('patient_id',  $medical_case_record->patient->id)->firstOrFail();
@@ -1335,12 +1335,12 @@ class FamilyPlanningController extends Controller
 
             $medical_case_record->family_planning_medical_record->update([
                 'patient_name' => trim(($patientData['edit_client_fname'] . ' ' . $patientData['edit_client_MI'] . ' ' . $patientData['edit_client_lname'])) ?? $medical_case_record->patient->full_name,
-                'occupation' => $patientData['edit_occupation'] ?? $medical_case_record->family_planning_medical_record->occupation,
-                'blood_pressure' => $physicalExaminationData['edit_blood_pressure'] ?? $medical_case_record->family_planning_medical_record->blood_pressure,
-                'pulse_rate' => $physicalExaminationData['edit_pulse_rate'] ?? $medical_case_record->family_planning_medical_record->pulse_rate,
-                'height' => $physicalExaminationData['edit_height'] ?? $medical_case_record->family_planning_medical_record->height,
-                'weight' => $physicalExaminationData['edit_weight'] ?? $medical_case_record->family_planning_medical_record->weight,
-                'religion' => $patientData['edit_client_religion'] ?? $medical_case_record->family_planning_medical_record->religion
+                'occupation' => $patientData['edit_occupation'] ?? null,
+                'blood_pressure' => $physicalExaminationData['edit_blood_pressure'] ?? null,
+                'pulse_rate' => $physicalExaminationData['edit_pulse_rate'] ?? null,
+                'height' => $physicalExaminationData['edit_height'] ?? null,
+                'weight' => $physicalExaminationData['edit_weight'] ?? null,
+                'religion' => $patientData['edit_client_religion'] ?? null
             ]);
 
             // refresh
@@ -1399,111 +1399,111 @@ class FamilyPlanningController extends Controller
 
             // update the case
             $familyPlanCaseInfo->update([
-                'client_id' => $caseData['edit_client_id'] ?? $familyPlanCaseInfo->client_id,
-                'philhealth_no' => $caseData['edit_philhealth_no'] ?? $familyPlanCaseInfo->philhealth_no,
-                'NHTS' => $caseData['edit_NHTS'] ?? $familyPlanCaseInfo->NHTS,
+                'client_id' => $caseData['edit_client_id'] ?? null,
+                'philhealth_no' => $caseData['edit_philhealth_no'] ??null,
+                'NHTS' => $caseData['edit_NHTS'] ?? null,
                 'client_name' => $medical_case_record->patient->full_name,
                 'client_address' =>  $newAddress,
                 'client_date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $familyPlanCaseInfo->client_date_of_birth,
                 'client_age' => $patientData['edit_client_age'] ?? $familyPlanCaseInfo->client_age,
-                'occupation' => $patientData['edit_occupation'] ?? $familyPlanCaseInfo->occupation,
+                'occupation' => $patientData['edit_occupation'] ?? null,
                 'client_contact_number' => $patientData['edit_client_contact_number'] ?? $familyPlanCaseInfo->client_contact_number,
-                'client_civil_status' => $patientData['edit_client_civil_status'] ?? $familyPlanCaseInfo->client_civil_status,
-                'client_religion' => $patientData['edit_client_religion'] ?? $familyPlanCaseInfo->client_religion,
+                'client_civil_status' => $patientData['edit_client_civil_status'] ?? null,
+                'client_religion' => $patientData['edit_client_religion'] ??null,
                 'client_suffix' => $patientData['edit_client_suffix'] ?? '',
-                'spouse_lname' => $caseData['edit_spouse_lname'] ?? $familyPlanCaseInfo->spouse_lname,
-                'spouse_fname' => $caseData['edit_spouse_fname'] ?? $familyPlanCaseInfo->spouse_fname,
-                'spouse_MI' => $caseData['edit_spouse_MI'] ?? $familyPlanCaseInfo->spouse_MI,
+                'spouse_lname' => $caseData['edit_spouse_lname'] ?? null,
+                'spouse_fname' => $caseData['edit_spouse_fname'] ?? null,
+                'spouse_MI' => $caseData['edit_spouse_MI'] ?? null,
                 'spouse_suffix' => $caseData['edit_spouse_suffix'] ?? '',
-                'spouse_date_of_birth' => $caseData['edit_spouse_date_of_birth'] ?? $familyPlanCaseInfo->spouse_date_of_birth,
-                'spouse_age' => $caseData['edit_spouse_age'] ?? $familyPlanCaseInfo->spouse_age,
-                'spouse_occupation' => $caseData['edit_spouse_occupation'] ?? $familyPlanCaseInfo->spouse_occupation,
-                'number_of_living_children' => $caseData['edit_number_of_living_children'] ?? $familyPlanCaseInfo->number_of_living_children,
-                'plan_to_have_more_children' => $caseData['edit_plan_to_have_more_children'] ?? $familyPlanCaseInfo->plan_to_have_more_children,
+                'spouse_date_of_birth' => $caseData['edit_spouse_date_of_birth'] ?? null,
+                'spouse_age' => $caseData['edit_spouse_age'] ?? null,
+                'spouse_occupation' => $caseData['edit_spouse_occupation'] ?? null,
+                'number_of_living_children' => $caseData['edit_number_of_living_children'] ?? null,
+                'plan_to_have_more_children' => $caseData['edit_plan_to_have_more_children'] ?? null,
 
-                'average_montly_income' => $caseData['edit_average_montly_income'] ?? $familyPlanCaseInfo->average_montly_income,
-                'type_of_patient' => $caseData['edit_type_of_patient'] ?? $familyPlanCaseInfo->type_of_patient,
-                'new_acceptor_reason_for_FP' => $caseData['edit_new_acceptor_reason_for_FP'] ?? $familyPlanCaseInfo->new_acceptor_reason_for_FP,
-                'current_user_reason_for_FP' => $currentReason ?? $familyPlanCaseInfo->current_user_reason_for_FP,
-                'current_method_reason' => $caseData['edit_current_method_reason'] ?? $familyPlanCaseInfo->current_method_reason,
+                'average_montly_income' => $caseData['edit_average_montly_income'] ?? null,
+                'type_of_patient' => $caseData['edit_type_of_patient'] ?? null,
+                'new_acceptor_reason_for_FP' => $caseData['edit_new_acceptor_reason_for_FP'] ?? null,
+                'current_user_reason_for_FP' => $currentReason ?? null,
+                'current_method_reason' => $caseData['edit_current_method_reason'] ?? null,
                 'previously_used_method' => $previoulyMethod ?? $familyPlanCaseInfo->previously_used_method ?? null,
-                'choosen_method' => $caseData['edit_choosen_method'] ?? $familyPlanCaseInfo->choosen_method,
+                'choosen_method' => $caseData['edit_choosen_method'] ?? null,
                 'signature_image' => $signaturePath ?? $familyPlanCaseInfo->signature_image,
-                'date_of_acknowledgement' => $caseData['edit_date_of_acknowledgement'] ?? $familyPlanCaseInfo->date_of_acknowledgement,
+                'date_of_acknowledgement' => $caseData['edit_date_of_acknowledgement'] ?? null,
                 'acknowledgement_consent_signature_image' =>  $consentSignaturePath ?? $familyPlanCaseInfo->acknowledgement_consent_signature_image,
-                'date_of_acknowledgement_consent' => $caseData['edit_date_of_acknowledgement_consent'] ?? $familyPlanCaseInfo->date_of_acknowledgement_consent,
+                'date_of_acknowledgement_consent' => $caseData['edit_date_of_acknowledgement_consent'] ?? null,
                 'current_user_type' => $caseData['edit_current_user_type'] ?? $familyPlanCaseInfo->current_user_type,
                 'status' => 'Active'
             ]);
 
             $familyPlanCaseInfo->medical_history->update([
-                'severe_headaches_migraine' => $medicalHistoryData['edit_severe_headaches_migraine'] ?? $familyPlanCaseInfo->medical_history->severe_headaches_migraine,
-                'history_of_stroke' => $medicalHistoryData['edit_history_of_stroke'] ?? $familyPlanCaseInfo->medical_history->history_of_stroke,
-                'non_traumatic_hemtoma' => $medicalHistoryData['edit_non_traumatic_hemtoma'] ?? $familyPlanCaseInfo->medical_history->non_traumatic_hemtoma,
-                'history_of_breast_cancer' => $medicalHistoryData['edit_history_of_breast_cancer'] ?? $familyPlanCaseInfo->medical_history->history_of_breast_cancer,
-                'severe_chest_pain' => $medicalHistoryData['edit_severe_chest_pain'] ?? $familyPlanCaseInfo->medical_history->severe_chest_pain,
-                'cough' => $medicalHistoryData['edit_cough'] ?? $familyPlanCaseInfo->medical_history->cough,
-                'jaundice' => $medicalHistoryData['edit_jaundice'] ?? $familyPlanCaseInfo->medical_history->jaundice,
-                'unexplained_vaginal_bleeding' => $medicalHistoryData['edit_unexplained_vaginal_bleeding'] ?? $familyPlanCaseInfo->medical_history->unexplained_vaginal_bleeding,
-                'abnormal_vaginal_discharge' => $medicalHistoryData['edit_abnormal_vaginal_discharge'] ?? $familyPlanCaseInfo->medical_history->abnormal_vaginal_discharge,
-                'abnormal_phenobarbital' => $medicalHistoryData['edit_abnormal_phenobarbital'] ?? $familyPlanCaseInfo->medical_history->abnormal_phenobarbital,
-                'smoker' => $medicalHistoryData['edit_smoker'] ?? $familyPlanCaseInfo->medical_history->smoker,
-                'with_dissability' => $medicalHistoryData['edit_with_dissability'] ?? $familyPlanCaseInfo->medical_history->with_dissability,
-                'if_with_dissability_specification' => $medicalHistoryData['edit_if_with_dissability_specification'] ?? $familyPlanCaseInfo->medical_history->if_with_dissability_specification,
+                'severe_headaches_migraine' => $medicalHistoryData['edit_severe_headaches_migraine'] ?? null,
+                'history_of_stroke' => $medicalHistoryData['edit_history_of_stroke'] ?? null,
+                'non_traumatic_hemtoma' => $medicalHistoryData['edit_non_traumatic_hemtoma'] ?? null,
+                'history_of_breast_cancer' => $medicalHistoryData['edit_history_of_breast_cancer'] ?? null,
+                'severe_chest_pain' => $medicalHistoryData['edit_severe_chest_pain'] ?? null,
+                'cough' => $medicalHistoryData['edit_cough'] ?? null,
+                'jaundice' => $medicalHistoryData['edit_jaundice'] ?? null,
+                'unexplained_vaginal_bleeding' => $medicalHistoryData['edit_unexplained_vaginal_bleeding'] ?? null,
+                'abnormal_vaginal_discharge' => $medicalHistoryData['edit_abnormal_vaginal_discharge'] ?? null,
+                'abnormal_phenobarbital' => $medicalHistoryData['edit_abnormal_phenobarbital'] ?? null,
+                'smoker' => $medicalHistoryData['edit_smoker'] ?? null,
+                'with_dissability' => $medicalHistoryData['edit_with_dissability'] ?? null,
+                'if_with_dissability_specification' => $medicalHistoryData['edit_if_with_dissability_specification'] ?? null,
             ]);
 
             $familyPlanCaseInfo->obsterical_history->update([
-                'G' => $obstericalHistoryData['edit_G'] ?? $familyPlanCaseInfo->obsterical_history->G,
-                'P' => $obstericalHistoryData['edit_P'] ?? $familyPlanCaseInfo->obsterical_history->P,
-                'full_term' => $obstericalHistoryData['edit_full_term'] ?? $familyPlanCaseInfo->obsterical_history->full_term,
-                'abortion' => $obstericalHistoryData['edit_abortion'] ?? $familyPlanCaseInfo->obsterical_history->abortion,
-                'premature' => $obstericalHistoryData['edit_premature'] ?? $familyPlanCaseInfo->obsterical_history->premature,
-                'living_children' => $obstericalHistoryData['edit_living_children'] ?? $familyPlanCaseInfo->obsterical_history->living_children,
-                'date_of_last_delivery' => $obstericalHistoryData['edit_date_of_last_delivery'] ?? $familyPlanCaseInfo->obsterical_history->date_of_last_delivery,
-                'type_of_last_delivery' => $obstericalHistoryData['edit_type_of_last_delivery'] ?? $familyPlanCaseInfo->obsterical_history->type_of_last_delivery,
-                'date_of_last_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_last_delivery_menstrual_period'] ?? $familyPlanCaseInfo->obsterical_history->date_of_last_delivery_menstrual_period,
-                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_previous_delivery_menstrual_period'] ?? $familyPlanCaseInfo->obsterical_history->date_of_previous_delivery_menstrual_period,
-                'type_of_menstrual' => $obstericalHistoryData['edit_type_of_menstrual'] ?? $familyPlanCaseInfo->obsterical_history->type_of_menstrual,
-                'Dysmenorrhea' => $obstericalHistoryData['edit_Dysmenorrhea'] ?? $familyPlanCaseInfo->obsterical_history->Dysmenorrhea,
-                'hydatidiform_mole' => $obstericalHistoryData['edit_hydatidiform_mole'] ?? $familyPlanCaseInfo->obsterical_history->hydatidiform_mole,
-                'ectopic_pregnancy' => $obstericalHistoryData['edit_ectopic_pregnancy'] ?? $familyPlanCaseInfo->obsterical_history->ectopic_pregnancy,
+                'G' => $obstericalHistoryData['edit_G'] ?? null,
+                'P' => $obstericalHistoryData['edit_P'] ?? null,
+                'full_term' => $obstericalHistoryData['edit_full_term'] ?? null,
+                'abortion' => $obstericalHistoryData['edit_abortion'] ?? null,
+                'premature' => $obstericalHistoryData['edit_premature'] ?? null,
+                'living_children' => $obstericalHistoryData['edit_living_children'] ?? null,
+                'date_of_last_delivery' => $obstericalHistoryData['edit_date_of_last_delivery'] ?? null,
+                'type_of_last_delivery' => $obstericalHistoryData['edit_type_of_last_delivery'] ?? null,
+                'date_of_last_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_last_delivery_menstrual_period'] ?? null,
+                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['edit_date_of_previous_delivery_menstrual_period'] ?? null,
+                'type_of_menstrual' => $obstericalHistoryData['edit_type_of_menstrual'] ?? null,
+                'Dysmenorrhea' => $obstericalHistoryData['edit_Dysmenorrhea'] ?? null,
+                'hydatidiform_mole' => $obstericalHistoryData['edit_hydatidiform_mole'] ?? null,
+                'ectopic_pregnancy' => $obstericalHistoryData['edit_ectopic_pregnancy'] ?? null,
             ]);
 
             // risk for sexuall transmitted update
             $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->update([
-                'infection_abnormal_discharge_from_genital_area' => $riskData['edit_infection_abnormal_discharge_from_genital_area'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->infection_abnormal_discharge_from_genital_area,
-                'origin_of_abnormal_discharge' => $riskData['edit_origin_of_abnormal_discharge'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->origin_of_abnormal_discharge,
-                'scores_or_ulcer' => $riskData['edit_scores_or_ulcer'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->scores_or_ulcer,
-                'pain_or_burning_sensation' => $riskData['edit_pain_or_burning_sensation'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->pain_or_burning_sensation,
-                'history_of_sexually_transmitted_infection' => $riskData['edit_history_of_sexually_transmitted_infection'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->history_of_sexually_transmitted_infection,
-                'sexually_transmitted_disease' => $riskData['edit_sexually_transmitted_disease'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->sexually_transmitted_disease,
-                'history_of_domestic_violence_of_VAW' => $riskData['edit_history_of_domestic_violence_of_VAW'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->history_of_domestic_violence_of_VAW,
-                'unpleasant_relationship_with_partner' => $riskData['edit_unpleasant_relationship_with_partner'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->unpleasant_relationship_with_partner,
-                'partner_does_not_approve' => $riskData['edit_partner_does_not_approve'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->partner_does_not_approve,
-                'referred_to' => $riskData['edit_referred_to'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->referred_to,
-                'reffered_to_others' => $riskData['edit_reffered_to_others'] ??  $familyPlanCaseInfo->risk_for_sexually_transmitted_infection->reffered_to_others,
+                'infection_abnormal_discharge_from_genital_area' => $riskData['edit_infection_abnormal_discharge_from_genital_area'] ??  null,
+                'origin_of_abnormal_discharge' => $riskData['edit_origin_of_abnormal_discharge'] ??  null,
+                'scores_or_ulcer' => $riskData['edit_scores_or_ulcer'] ??  null,
+                'pain_or_burning_sensation' => $riskData['edit_pain_or_burning_sensation'] ??  null,
+                'history_of_sexually_transmitted_infection' => $riskData['edit_history_of_sexually_transmitted_infection'] ??  null,
+                'sexually_transmitted_disease' => $riskData['edit_sexually_transmitted_disease'] ??  null,
+                'history_of_domestic_violence_of_VAW' => $riskData['edit_history_of_domestic_violence_of_VAW'] ??  null,
+                'unpleasant_relationship_with_partner' => $riskData['edit_unpleasant_relationship_with_partner'] ??  null,
+                'partner_does_not_approve' => $riskData['edit_partner_does_not_approve'] ??  null,
+                'referred_to' => $riskData['edit_referred_to'] ??  null,
+                'reffered_to_others' => $riskData['edit_reffered_to_others'] ??  null,
             ]);
 
             // update physical examination
 
 
             $familyPlanCaseInfo->physical_examinations->update([
-                'blood_pressure' => $physicalExaminationData['edit_blood_pressure'] ?? $familyPlanCaseInfo->physical_examinations->blood_pressure,
-                'pulse_rate' => $physicalExaminationData['edit_pulse_rate'] ?? $familyPlanCaseInfo->physical_examinations->pulse_rate,
-                'height' => $physicalExaminationData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->height,
-                'weight' => $physicalExaminationData['edit_height'] ?? $familyPlanCaseInfo->physical_examinations->weight,
+                'blood_pressure' => $physicalExaminationData['edit_blood_pressure'] ?? null,
+                'pulse_rate' => $physicalExaminationData['edit_pulse_rate'] ?? null,
+                'height' => $physicalExaminationData['edit_height'] ?? null,
+                'weight' => $physicalExaminationData['edit_weight'] ?? null,
 
-                'skin_type' => $physicalExaminationData['edit_skin_type'] ?? $familyPlanCaseInfo->physical_examinations->skin_type,
-                'conjuctiva_type' => $physicalExaminationData['edit_conjuctiva_type'] ?? $familyPlanCaseInfo->physical_examinations->conjuctiva_type,
-                'breast_type' => $physicalExaminationData['edit_breast_type'] ?? $familyPlanCaseInfo->physical_examinations->breast_type,
-                'abdomen_type' => $physicalExaminationData['edit_abdomen_type'] ?? $familyPlanCaseInfo->physical_examinations->abdomen_type,
-                'extremites_type' => $physicalExaminationData['edit_extremites_type'] ?? $familyPlanCaseInfo->physical_examinations->extremites_type,
-                'extremites_UID_type' => $physicalExaminationData['edit_extremites_UID_type'] ?? $familyPlanCaseInfo->physical_examinations->extremites_UID_type,
-                'cervical_abnormalities_type' => $physicalExaminationData['edit_cervical_abnormalities_type'] ?? $familyPlanCaseInfo->physical_examinations->cervical_abnormalities_type,
-                'cervical_consistency_type' => $physicalExaminationData['edit_cervical_consistency_type'] ?? $familyPlanCaseInfo->physical_examinations->cervical_consistency_type,
-                'uterine_position_type' => $physicalExaminationData['edit_uterine_position_type'] ?? $familyPlanCaseInfo->physical_examinations->uterine_position_type,
-                'uterine_depth_text' => $physicalExaminationData['edit_uterine_depth_text'] ?? $familyPlanCaseInfo->physical_examinations->uterine_depth_text,
-                'neck_type' => $physicalExaminationData['edit_neck_type'] ?? $familyPlanCaseInfo->physical_examinations->neck_type
+                'skin_type' => $physicalExaminationData['edit_skin_type'] ?? null,
+                'conjuctiva_type' => $physicalExaminationData['edit_conjuctiva_type'] ?? null,
+                'breast_type' => $physicalExaminationData['edit_breast_type'] ?? null,
+                'abdomen_type' => $physicalExaminationData['edit_abdomen_type'] ?? null,
+                'extremites_type' => $physicalExaminationData['edit_extremites_type'] ?? null,
+                'extremites_UID_type' => $physicalExaminationData['edit_extremites_UID_type'] ?? null,
+                'cervical_abnormalities_type' => $physicalExaminationData['edit_cervical_abnormalities_type'] ?? null,
+                'cervical_consistency_type' => $physicalExaminationData['edit_cervical_consistency_type'] ?? null,
+                'uterine_position_type' => $physicalExaminationData['edit_uterine_position_type'] ?? null,
+                'uterine_depth_text' => $physicalExaminationData['edit_uterine_depth_text'] ?? null,
+                'neck_type' => $physicalExaminationData['edit_neck_type'] ?? null
             ]);
 
             // update the wra masterlist
@@ -1721,16 +1721,16 @@ class FamilyPlanningController extends Controller
                 'medical_record_case_id' => $data['edit_side_b_medical_record_case_id'],
                 'health_worker_id' => $data['edit_side_b_health_worker_id'],
                 'date_of_visit' => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
-                'medical_findings' => $data['edit_side_b_medical_findings'] ?? $sideBrecord->medical_findings,
-                'method_accepted' => $data['edit_side_b_method_accepted'] ?? $sideBrecord->method_accepted,
+                'medical_findings' => $data['edit_side_b_medical_findings'] ?? null,
+                'method_accepted' => $data['edit_side_b_method_accepted'] ?? null,
                 'signature_of_the_provider' => $signaturePath ?? $sideBrecord->signature_of_the_provider,
-                'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? $sideBrecord->date_of_follow_up_visit,
-                'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? $sideBrecord->baby_Less_than_six_months_question,
-                'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? $sideBrecord->sexual_intercouse_or_mesntrual_period_question,
-                'baby_last_4_weeks_question' => $data['edit_baby_last_4_weeks_question'] ?? $sideBrecord->baby_last_4_weeks_question,
-                'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? $sideBrecord->menstrual_period_in_seven_days_question,
-                'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? $sideBrecord->miscarriage_or_abortion_question,
-                'contraceptive_question' => $data['edit_contraceptive_question'] ?? $sideBrecord->contraceptive_question,
+                'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question' => $data['edit_baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question' => $data['edit_contraceptive_question'] ?? null,
                 'status' => 'Active'
             ]);
 

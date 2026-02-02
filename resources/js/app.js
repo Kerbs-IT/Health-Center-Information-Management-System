@@ -20,9 +20,8 @@ window.moment = moment;
 import Chart from "chart.js/auto";
 window.Chart = Chart;
 
-// ❌ REMOVE THESE LINES - Move to inventory-report.js
-// import 'daterangepicker';
-// import 'daterangepicker/daterangepicker.css';
+// import the input mask
+import Inputmask from "inputmask";
 
 import "./inventory-report.js";
 

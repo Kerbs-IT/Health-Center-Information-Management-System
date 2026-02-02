@@ -124,7 +124,7 @@
                                     <small class="text-danger error-text" id="date_of_birth_error"></small>
                                 </div>
                                 <div class="input-field flex-grow-1 ">
-                                    <label for="age">Age<span class=" text-danger">*</span></label>
+                                    <label for="age">Age</label>
                                     <input type="number" id="age" placeholder="Enter the age" class="form-control" disabled value="">
                                     <input type="hidden" id="hiddenAge" name="age">
                                     <small class="text-danger error-text" id="age_error"></small>

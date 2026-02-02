@@ -42,8 +42,8 @@
                         : (optional(Auth::user()->staff)->profile_image
                             ? asset(optional(Auth::user()->staff)->profile_image)
                             : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
-                            <h3 class="text-black">
-                                {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none') . ' ' . (optional(Auth::user()->staff)->suffix ?? optional(Auth::user()->nurses)->suffix ?? '')) }}
+                            <h3 class="text-black text-center">
+                                {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none')) }}
                             </h3>
                             <h5 class="mb-3 text-muted text-capitalize fw-normal">{{ optional(Auth::user()) -> role ?? 'none'}}</h5>
                             <div class="upload-image d-flex flex-column">
@@ -99,7 +99,7 @@
                                     @endphp
                                     <label for="edit_suffix" class="">Suffix</label>
                                     <select name="suffix" id="edit_suffix" class="form-select responsive-input py-2">
-                                        <option value="" disabled {{ !$currentSuffix ? 'selected' : '' }}>Select Suffix</option>
+                                        <option value="" {{ !$currentSuffix ? 'selected' : '' }}>Select Suffix</option>
                                         <option value="Jr." {{ $currentSuffix == 'Jr.' ? 'selected' : '' }}>Jr</option>
                                         <option value="Sr." {{ $currentSuffix == 'Sr.' ? 'selected' : '' }}>Sr</option>
                                         <option value="II." {{ $currentSuffix == 'II.' ? 'selected' : '' }}>II</option>

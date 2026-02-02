@@ -325,7 +325,7 @@ document.addEventListener("click", async (e) => {
                 headers: {
                     Accept: "application/json",
                 },
-            }
+            },
         );
 
         if (response.ok) {
@@ -335,23 +335,24 @@ document.addEventListener("click", async (e) => {
             Object.entries(data.caseInfo).forEach(([key, value]) => {
                 if (key == "plan_to_have_more_children") {
                     const plan = document.querySelectorAll(
-                        'input[name="edit_plan_to_have_more_children"]'
+                        'input[name="edit_plan_to_have_more_children"]',
                     );
                     if (plan) {
                         plan.forEach((element) => {
                             element.checked = element.value == value;
                         });
                     }
-                } else if (key == 'client_age') {
+                } else if (key == "client_age") {
                     const hiddenAge = document.getElementById("hiddenEditAge");
-                    const clientAage = document.getElementById("edit_client_age");
+                    const clientAage =
+                        document.getElementById("edit_client_age");
                     if (hiddenAge) {
                         hiddenAge.value = value;
                         clientAage.value = value;
                     }
                 } else if (key == "type_of_patient") {
                     const plan = document.querySelectorAll(
-                        'input[name="edit_type_of_patient"]'
+                        'input[name="edit_type_of_patient"]',
                     );
                     if (plan) {
                         plan.forEach((element) => {
@@ -361,7 +362,7 @@ document.addEventListener("click", async (e) => {
                     // this condition is for the radio buttons if the 'other' radio is selected
                     if (value == "new acceptor") {
                         const elements = document.querySelectorAll(
-                            'input[name="edit_new_acceptor_reason_for_FP"]'
+                            'input[name="edit_new_acceptor_reason_for_FP"]',
                         );
                         if (
                             data.caseInfo.new_acceptor_reason_for_FP !=
@@ -370,10 +371,10 @@ document.addEventListener("click", async (e) => {
                                 "spacing"
                         ) {
                             document.getElementById(
-                                "edit_new_acceptor_reason_for_FP_others"
+                                "edit_new_acceptor_reason_for_FP_others",
                             ).checked = true;
                             document.getElementById(
-                                "edit_new_acceptor_reason_text"
+                                "edit_new_acceptor_reason_text",
                             ).value = data.caseInfo.new_acceptor_reason_for_FP;
                         } else {
                             elements.forEach((element) => {
@@ -384,7 +385,7 @@ document.addEventListener("click", async (e) => {
                         }
                     } else if (value == "current user") {
                         const elements = document.querySelectorAll(
-                            'input[name="edit_current_user_reason_for_FP"]'
+                            'input[name="edit_current_user_reason_for_FP"]',
                         );
 
                         if (
@@ -394,10 +395,10 @@ document.addEventListener("click", async (e) => {
                                 "spacing"
                         ) {
                             document.getElementById(
-                                "edit_current_user_reason_for_FP_others"
+                                "edit_current_user_reason_for_FP_others",
                             ).checked = true;
                             document.getElementById(
-                                "edit_current_user_reason_text"
+                                "edit_current_user_reason_text",
                             ).value = data.caseInfo.current_user_reason_for_FP;
                         } else {
                             elements.forEach((element) => {
@@ -409,13 +410,13 @@ document.addEventListener("click", async (e) => {
 
                         // types of current user
                         const current_user_type = document.querySelectorAll(
-                            "edit_current_user_type"
+                            "edit_current_user_type",
                         );
 
                         if (current_user_type == "current method") {
                             const current_method_reason =
                                 document.querySelectorAll(
-                                    "edit_current_method_reason"
+                                    "edit_current_method_reason",
                                 );
 
                             if (
@@ -423,10 +424,10 @@ document.addEventListener("click", async (e) => {
                                 "medical condition"
                             ) {
                                 document.getElementById(
-                                    "edit_current_method_reason_side_effect"
+                                    "edit_current_method_reason_side_effect",
                                 ).checked = true;
                                 document.getElementById(
-                                    "edit_side_effects_text"
+                                    "edit_side_effects_text",
                                 ).value == data.caseInfo.current_method_reason;
                             }
                         } else {
@@ -440,7 +441,7 @@ document.addEventListener("click", async (e) => {
                 } else if (key == "previously_used_method") {
                     // this condition is for spliting the selected used method then populate the checkbox
                     const methods = document.querySelectorAll(
-                        "input[name='edit_previously_used_method[]']"
+                        "input[name='edit_previously_used_method[]']",
                     );
                     let used_method = "";
 
@@ -477,7 +478,7 @@ document.addEventListener("click", async (e) => {
                     document.getElementById("edit_street").value = addressText;
                     puroks(
                         document.getElementById("edit_brgy"),
-                        data.address.purok
+                        data.address.purok,
                     );
                 } else {
                     if (document.getElementById(`edit_${key}`)) {
@@ -491,7 +492,7 @@ document.addEventListener("click", async (e) => {
             Object.entries(data.caseInfo.medical_history).forEach(
                 ([key, value]) => {
                     inputPicker(key, value);
-                }
+                },
             );
             // obsterical histories
             Object.entries(data.caseInfo.obsterical_history).forEach(
@@ -508,7 +509,7 @@ document.addEventListener("click", async (e) => {
                         ) {
                             //  console.log("gumagana boy", key, "value: ", value);
                             const element = document.querySelector(
-                                `input[name="edit_${key}"]`
+                                `input[name="edit_${key}"]`,
                             );
                             //  handles both checkbox and text type of input
                             if (element.type != "checkbox") {
@@ -518,17 +519,17 @@ document.addEventListener("click", async (e) => {
                             }
                         }
                     }
-                }
+                },
             );
 
             // risk for sexually transmitted
             Object.entries(
-                data.caseInfo.risk_for_sexually_transmitted_infection
+                data.caseInfo.risk_for_sexually_transmitted_infection,
             ).forEach(([key, value]) => {
                 //  this condition is for the element with 2 or more same name
                 if (key == "reffered_to_others") {
                     document.querySelector(
-                        'input[name="edit_reffered_to_others"]'
+                        'input[name="edit_reffered_to_others"]',
                     ).value = value;
                 }
 
@@ -539,7 +540,7 @@ document.addEventListener("click", async (e) => {
                 ([key, value]) => {
                     //  this condition is for the element with 2 or more same name
                     const element = document.querySelector(
-                        `input[name='edit_${key}']`
+                        `input[name='edit_${key}']`,
                     );
 
                     // skip if no matching element found
@@ -549,23 +550,23 @@ document.addEventListener("click", async (e) => {
                         element.value = value ?? "";
                     } else if (key == "cervical_abnormalities_type") {
                         const physical_types = document.querySelectorAll(
-                            `input[name="edit_cervical_abnormalities_type"]`
+                            `input[name="edit_cervical_abnormalities_type"]`,
                         );
                         radioValuePopulator(physical_types, value);
                     } else if (key == "cervical_consistency_type") {
                         const physical_types = document.querySelectorAll(
-                            `input[name="edit_cervical_consistency_type"]`
+                            `input[name="edit_cervical_consistency_type"]`,
                         );
                         radioValuePopulator(physical_types, value);
                     } else if (key == "uterine_position_type") {
                         const physical_types = document.querySelectorAll(
-                            `input[name="edit_uterine_position_type"]`
+                            `input[name="edit_uterine_position_type"]`,
                         );
                         radioValuePopulator(physical_types, value);
                     } else if (key == "uterine_depth_text") {
                         if (value != "") {
                             const text_element = document.getElementById(
-                                "edit_uterine_depth_text"
+                                "edit_uterine_depth_text",
                             );
                             if (text_element) {
                                 text_element.value = value;
@@ -574,8 +575,48 @@ document.addEventListener("click", async (e) => {
                     } else {
                         inputPicker(key, value);
                     }
-                }
+                },
             );
+        }
+
+        // handle the input mask of vital sign
+        const blood_pressure = document.getElementById(
+            "edit_blood_pressure",
+        );
+        const pulse_rate = document.getElementById("edit_pulse_rate");
+        const height = document.getElementById("edit_height");
+        const weight = document.getElementById("edit_weight");
+
+        if (blood_pressure && pulse_rate && height && weight) {
+            Inputmask({
+                mask: "999/999",
+                placeholder: "",
+                clearIncomplete: false,
+            }).mask(blood_pressure);
+
+            // Pulse Rate (e.g., 60-100 or just 72)
+            Inputmask({
+                mask: "999",
+                placeholder: "",
+                clearIncomplete: false,
+            }).mask(pulse_rate);
+            // Height in cm (e.g., 175.5)
+            Inputmask({
+                alias: "decimal",
+                digits: 2,
+                min: 0,
+                max: 300,
+                rightAlign: false,
+            }).mask(height);
+
+            // Weight in kg (e.g., 65.5)
+            Inputmask({
+                alias: "decimal",
+                digits: 2,
+                min: 0,
+                max: 500,
+                rightAlign: false,
+            }).mask(weight);
         }
 
         // ==========================================
@@ -1024,6 +1065,45 @@ add_side_A_BTN.addEventListener("click", () => {
             }
         });
     }
+
+    // handle the input mask of vital sign
+    const blood_pressure = document.getElementById("side_A_add_blood_pressure");
+    const pulse_rate = document.getElementById("side_A_add_pulse_rate");
+    const height = document.getElementById("side_A_add_height");
+    const weight = document.getElementById("side_A_add_weight");
+
+    if (blood_pressure && pulse_rate && height && weight) {
+        Inputmask({
+            mask: "999/999",
+            placeholder: "",
+            clearIncomplete: false,
+        }).mask(blood_pressure);
+
+        // Pulse Rate (e.g., 60-100 or just 72)
+        Inputmask({
+            mask: "999",
+            placeholder: "",
+            clearIncomplete: false,
+        }).mask(pulse_rate);
+        // Height in cm (e.g., 175.5)
+        Inputmask({
+            alias: "decimal",
+            digits: 2,
+            min: 0,
+            max: 300,
+            rightAlign: false,
+        }).mask(height);
+
+        // Weight in kg (e.g., 65.5)
+        Inputmask({
+            alias: "decimal",
+            digits: 2,
+            min: 0,
+            max: 500,
+            rightAlign: false,
+        }).mask(weight);
+    }
+   
 });
 
 // upload the record
