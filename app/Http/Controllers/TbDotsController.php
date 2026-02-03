@@ -44,6 +44,28 @@ class TbDotsController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'suffix' => 'sometimes|nullable|string'
             ]);
+            $caseData = $request->validate([
+                'tb_type' => 'required|string',
+                'tb_case_type' => 'required|string',
+                'tb_date_of_diagnosis' => 'required|date',
+                'name_of_physician' => 'sometimes|nullable|string',
+                'sputum_result' => 'sometimes|nullable|string',
+                'treatment_medicine_name' => 'sometimes|nullable|string',
+                'tb_date_of_medication_administered' => 'required|date',
+                'treatment_side_effect' => 'sometimes|nullable|string',
+                'tb_outcome' => 'sometimes|nullable|string',
+                'tb_remarks' => 'sometimes|nullable|string',
+            ]);
+
+            // insert in the maintenance medication
+            $maintenanceMedicationData = $request->validate([
+                'medicines' => 'sometimes|nullable|array',
+                'dosage_n_frequencies' => 'sometimes|nullable|array',
+                'medicine_quantity' => 'sometimes|nullable|array',
+                'start_date' => 'sometimes|nullable|array',
+                'end_date' => 'sometimes|nullable|array'
+            ]);
+
 
             // validate for medical
             $patientMedicalRecord = $request->validate([
@@ -132,20 +154,7 @@ class TbDotsController extends Controller
 
             // case information
 
-            $caseData = $request->validate([
-                'tb_type' => 'required|string',
-                'tb_case_type' => 'required|string',
-                'tb_date_of_diagnosis' => 'required|date',
-                'name_of_physician' => 'sometimes|nullable|string',
-                'sputum_result' => 'sometimes|nullable|string',
-                'treatment_medicine_name' => 'sometimes|nullable|string',
-                'tb_date_of_medication_administered' => 'required|date',
-                'treatment_side_effect' => 'sometimes|nullable|string',
-                'tb_outcome' => 'sometimes|nullable|string',
-                'tb_remarks' => 'sometimes|nullable|string',
-                'date_of_comeback' => 'required|date'
-            ]);
-
+            
             // create the case info
             $tbDotsCaseRecord = tb_dots_case_records::create([
                 'medical_record_case_id' => $medicalCaseId,
@@ -162,19 +171,12 @@ class TbDotsController extends Controller
                 'remarks' => $caseData['tb_remarks'] ?? null,
                 'outcome' => $caseData['tb_outcome'] ?? null,
                 'type_of_record' => 'Case Record',
-                'date_of_comeback' => $caseData['date_of_comeback']
+                
             ]);
 
             // case id
             $caseId = $tbDotsCaseRecord->id;
-            // insert in the maintenance medication
-            $maintenanceMedicationData = $request->validate([
-                'medicines' => 'sometimes|nullable|array',
-                'dosage_n_frequencies' => 'sometimes|nullable|array',
-                'medicine_quantity' => 'sometimes|nullable|array',
-                'start_date' => 'sometimes|nullable|array',
-                'end_date' => 'sometimes|nullable|array'
-            ]);
+            
 
             if (!empty($maintenanceMedicationData['medicines'])) {
                 // insert each record

@@ -23,6 +23,7 @@
                 <option value="Xdr">Drug-Resistant TB - XDR-TB</option>
                 <option value="Rr">Drug-Resistant TB - RR-TB</option>
             </select>
+            <small class="text-danger error-text" id="tb_type_error"></small>
         </div>
         <div class="mb-md-2 mb-0 flex-fill">
             <label for="tb-case-type">Type of TB Case:</label>
@@ -37,20 +38,24 @@
                 <option value="Previously Treated">Previously Treated</option>
                 <option value="Unknown">Unknown</option>
             </select>
+            <small class="text-danger error-text" id="tb_case_type_error"></small>
         </div>
         <div class="mb-md-2 mb-0 flex-fill">
             <label for="date_of_diagnosis">Date of Diagnosis</label>
             <input type="date" class="form-control" name="tb_date_of_diagnosis">
+            <small class="text-danger error-text" id="tb_date_of_diagnosis_error"></small>
         </div>
     </div>
     <div class="mb-md-2 mb-2 d-flex gap-2 flex-wrap flex-column flex-md-row">
         <div class="mb-md-2 mb-0 flex-fill">
             <label for="name-of-physician">Name of Physician</label>
             <input type="text" class="form-control" name="name_of_physician">
+            <small class="text-danger error-text" id="name_of_physician_error"></small>
         </div>
         <div class="mb-md-2 mb-0 flex-fill">
             <label for="sputum">Sputum Test Results</label>
             <input type="text" class="form-control" name="sputum_result">
+            <small class="text-danger error-text" id="sputum_error"></small>
         </div>
     </div>
     <h3>Medication</h3>
@@ -79,6 +84,7 @@
                 <option value="amikacin">Amikacin (AMK)</option>
                 <option value="kanamycin">Kanamycin (KM)</option>
             </select>
+            <small class="text-danger error-text" id="tb_medicine_error"></small>
         </div>
         <div class="mb-2 d-flex gap-2 w-100 flex-column flex-md-row">
             <div class="mb-0 mb-md-2 flex-fill">
@@ -101,6 +107,10 @@
                 <label for="" class="text-white">e</label>
                 <button type="button" class="btn btn-success px-4" id="tb_medicine_add_btn">Add</button>
             </div>
+            <small class="text-danger error-text" id="tb_dosage_n_frequency_error"></small>
+            <small class="text-danger error-text" id="tb_quantity_error"></small>
+            <small class="text-danger error-text" id="tb_start_error"></small>
+            <small class="text-danger error-text" id="tb_end_error"></small>
         </div>
     </div>
     <div class="mb-2 table-responsive">
@@ -160,6 +170,7 @@
                     <option value="amikacin">Amikacin (AMK)</option>
                     <option value="kanamycin">Kanamycin (KM)</option>
                 </select>
+                <small class="text-danger error-text" id="treatment_medicine_name_error"></small>
             </div>
         </div>
 
@@ -170,19 +181,23 @@
         <div class="mb-2 flex-fill">
             <label for="date_of_diagnosis">Date of Medication Administered</label>
             <input type="date" class="form-control" name="tb_date_of_medication_administered">
+            <small class="text-danger error-text" id="tb_date_of_medication_administered_error"></small>
         </div>
         <div class="mb-2 flex-fill">
             <label for="date_of_diagnosis">Side effect(if any)</label>
             <input type="text" class="form-control" name="treatment_side_effect">
+            <small class="text-danger error-text" id="treatmet_side_effect_error"></small>
         </div>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Remarks</label>
         <input type="text" class="form-control" name="tb_remarks">
+        <small class="text-danger error-text" id="tb_remarks_error"></small>
     </div>
     <div class="mb-2" id="w-100">
         <label for="">Outcome</label>
         <input type="text" class="form-control" name="tb_outcome">
+        <small class="text-danger error-text" id="tb_outcome_error"></small>
     </div>
     <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
         <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
