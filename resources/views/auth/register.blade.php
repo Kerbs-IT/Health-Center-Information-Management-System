@@ -277,10 +277,10 @@
                         <h3>8. Termination</h3>
                         <p>We reserve the right to terminate or suspend your account if:</p>
                         <ul>
-                            <li>You provide false, inaccurate, or misleading information that affects the integrity of health records.  <br>
-                                You misuse the system or attempt to access restricted or unauthorized information.  <br>
-                                You violate any part of these Terms and Conditions, including privacy and data protection provisions.  <br>
-                                Your actions compromise the security, confidentiality, or proper operation of the system.  <br>
+                            <li>You provide false, inaccurate, or misleading information that affects the integrity of health records. <br>
+                                You misuse the system or attempt to access restricted or unauthorized information. <br>
+                                You violate any part of these Terms and Conditions, including privacy and data protection provisions. <br>
+                                Your actions compromise the security, confidentiality, or proper operation of the system. <br>
                                 Account access is no longer necessary for the intended purpose of the system, such as record maintenance or administrative requirements.</li>
                         </ul>
 
@@ -316,15 +316,21 @@
         const Retypepassword = document.getElementById('re-type-pass');
 
         function passwordToggle(eyeIcon, passwordInput) {
-            eyeIcon.addEventListener('mousedown', () => {
-                passwordInput.type = 'text';
-            })
-            eyeIcon.addEventListener('mouseup', () => {
-                passwordInput.type = 'password';
-            })
-            eyeIcon.addEventListener('mouseout', () => {
-                passwordInput.type = 'password';
-            })
+            if (!eyeIcon || !passwordInput) {
+                // console.warn("passwordToggle: eyeIcon or passwordInput is null");
+                return;
+            }
+
+            eyeIcon.addEventListener("click", () => {
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+
+                const icon = eyeIcon.querySelector("i");
+                if (icon) {
+                    icon.classList.toggle("fa-eye");
+                    icon.classList.toggle("fa-eye-slash");
+                }
+            });
         }
 
         passwordToggle(eyeIcon, password);
@@ -359,7 +365,10 @@
                 termsCheckbox.focus();
 
                 // Scroll to the checkbox
-                termsCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                termsCheckbox.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             }
         });
 
