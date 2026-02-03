@@ -887,7 +887,7 @@ class HealthCenterDashboard extends Controller
                 })
                 ->join('medical_record_cases as mrc', 'mrc.id', '=', 'fpsbr.medical_record_case_id')
                 ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-                ->whereDate('fpsbr.date_of_follow_up_visit', '<=', $today)
+                ->whereDate('fpsbr.date_of_follow_up_visit', '<', $today)
                 ->where('p.status', '!=', 'Archived');
 
             if ($isStaff) {
