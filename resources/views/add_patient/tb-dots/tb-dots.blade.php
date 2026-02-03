@@ -6,7 +6,7 @@
     <h4>MEDICAL INFORMATION</h4>
     <div class="mb-2 d-flex gap-2 w-100 flex-wrap flex-md-row flex-column">
         <div class="mb-md-2 mb-0 flex-fill">
-            <label for="tb-type">Type of Tuberculosis(TB):</label>
+            <label for="tb-type">Type of Tuberculosis(TB)<span class="text-danger">*</span></label>
             <select id="tb-type" name="tb_type" class="form-select">
                 <option value="">-- Select Type --</option>
                 <option value="pulmonary">Pulmonary TB</option>
@@ -41,7 +41,7 @@
             <small class="text-danger error-text" id="tb_case_type_error"></small>
         </div>
         <div class="mb-md-2 mb-0 flex-fill">
-            <label for="date_of_diagnosis">Date of Diagnosis</label>
+            <label for="date_of_diagnosis">Date of Diagnosis<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="tb_date_of_diagnosis">
             <small class="text-danger error-text" id="tb_date_of_diagnosis_error"></small>
         </div>
@@ -179,7 +179,7 @@
     <!-- monitoring progress -->
     <div class="mb-2 d-flex gap-2 flex-wrap flex-column flex-md-row">
         <div class="mb-2 flex-fill">
-            <label for="date_of_diagnosis">Date of Medication Administered</label>
+            <label for="date_of_diagnosis">Date of Medication Administered<span class="text-danger">*</span></label>
             <input type="date" class="form-control" name="tb_date_of_medication_administered">
             <small class="text-danger error-text" id="tb_date_of_medication_administered_error"></small>
         </div>
