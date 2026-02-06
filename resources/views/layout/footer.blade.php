@@ -4,7 +4,7 @@
 
             {{-- Logo & Tagline --}}
             <div class="col-md-4 mb-4 home">
-                <h5 class="text-info fw-bold">SmartHealth</h5>
+                <h5 class="text-info fw-bold">Health Center IMS</h5>
                 <p class="small">Empowering health centers with secure, digital record-keeping and smart tools.</p>
             </div>
 

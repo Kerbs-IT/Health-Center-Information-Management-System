@@ -154,7 +154,8 @@ class SeniorCitizenController extends Controller
                 'prescribe_by_nurse' => $patientCase['prescribe_by_nurse'],
                 'remarks' => $patientCase['medication_maintenance_remarks'],
                 'type_of_record' => 'Case Record',
-                'date_of_comeback' => $patientCase['senior_citizen_date_of_comeback']
+                'date_of_comeback' => $patientCase['senior_citizen_date_of_comeback'],
+                'status' => 'Active'
             ]);
 
             $caseId = $seniorCitizenCase->id;
@@ -356,7 +357,6 @@ class SeniorCitizenController extends Controller
                 'alergies' =>$data['edit_alergies']??'',
                 'prescribe_by_nurse' =>$data['edit_prescribe_by_nurse']?ucwords($data['edit_prescribe_by_nurse']):'',
                 'remarks' =>$data['edit_medication_maintenance_remarks']??'',
-                'status' => 'Done',
                 'date_of_comeback' => $data['edit_date_of_comeback']
             ]);
 
