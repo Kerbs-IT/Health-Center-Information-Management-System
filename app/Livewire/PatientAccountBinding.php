@@ -25,12 +25,14 @@ class PatientAccountBinding extends Component
     public $selectedRecordId = null;
 
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['manageUserRefreshTable'=> 'refresh'];
 
     public function render()
     {
         // Build the base query
         $query = User::where('role', 'patient')
-            ->where('status', '!=', 'archived');
+                ->orderBy('status','asc');
+            
 
         // Add restriction if the user is staff
         if (Auth::user()->role == 'staff') {
@@ -55,16 +57,16 @@ class PatientAccountBinding extends Component
         });
 
         // Apply status filters
-        $query->when($this->filterStatus === 'bound', function ($q) {
-            $q->whereNotNull('patient_record_id');
+        $query->when($this->filterStatus === 'active', function ($q) {
+            $q->where("status",'active');
         });
 
-        $query->when($this->filterStatus === 'unbound', function ($q) {
-            $q->whereNull('patient_record_id');
+        $query->when($this->filterStatus === 'archived', function ($q) {
+            $q->where('status', 'archived');
         });
 
         // Execute the query with pagination
-        $users = $query->orderBy('users.created_at', 'desc')
+        $users = $query->orderBy('users.created_at', 'asc')
             ->paginate(15);
 
         // Count unbound patients (apply same staff restriction)
@@ -170,66 +172,66 @@ class PatientAccountBinding extends Component
         $this->patientRecords = $baseQuery->limit(20)->get();
     }
 
-    public function bind()
-    {
-        if (!$this->selectedRecordId) {
-            session()->flash('error', 'Please select a patient record.');
-            return;
-        }
+    // public function bind()
+    // {
+    //     if (!$this->selectedRecordId) {
+    //         session()->flash('error', 'Please select a patient record.');
+    //         return;
+    //     }
 
-        try {
-            DB::beginTransaction();
+    //     try {
+    //         DB::beginTransaction();
 
-            $record = patients::find($this->selectedRecordId);
+    //         $record = patients::find($this->selectedRecordId);
 
-            // Double check not already bound
-            if ($record->user_id) {
-                session()->flash('error', 'This record is already bound to another account.');
-                DB::rollBack();
-                return;
-            }
+    //         // Double check not already bound
+    //         if ($record->user_id) {
+    //             session()->flash('error', 'This record is already bound to another account.');
+    //             DB::rollBack();
+    //             return;
+    //         }
 
-            // Bind both ways
-            $this->selectedUser->patient_record_id = $this->selectedRecordId;
-            $this->selectedUser->save();
+    //         // Bind both ways
+    //         $this->selectedUser->patient_record_id = $this->selectedRecordId;
+    //         $this->selectedUser->save();
 
-            $record->user_id = $this->selectedUser->id;
-            $record->save();
+    //         $record->user_id = $this->selectedUser->id;
+    //         $record->save();
 
-            DB::commit();
+    //         DB::commit();
 
-            session()->flash('success', 'Account successfully bound to patient record!');
-            $this->closeModal();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            session()->flash('error', 'Binding failed: ' . $e->getMessage());
-        }
-    }
+    //         session()->flash('success', 'Account successfully bound to patient record!');
+    //         $this->closeModal();
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         session()->flash('error', 'Binding failed: ' . $e->getMessage());
+    //     }
+    // }
 
-    public function unbind($userId)
-    {
-        try {
-            DB::beginTransaction();
+    // public function unbind($userId)
+    // {
+    //     try {
+    //         DB::beginTransaction();
 
-            $user = User::find($userId);
-            if ($user->patient_record_id) {
-                $record = patients::find($user->patient_record_id);
-                if ($record) {
-                    $record->user_id = null;
-                    $record->save();
-                }
+    //         $user = User::find($userId);
+    //         if ($user->patient_record_id) {
+    //             $record = patients::find($user->patient_record_id);
+    //             if ($record) {
+    //                 $record->user_id = null;
+    //                 $record->save();
+    //             }
 
-                $user->patient_record_id = null;
-                $user->save();
-            }
+    //             $user->patient_record_id = null;
+    //             $user->save();
+    //         }
 
-            DB::commit();
-            session()->flash('success', 'Account unbound successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            session()->flash('error', 'Unbind failed: ' . $e->getMessage());
-        }
-    }
+    //         DB::commit();
+    //         session()->flash('success', 'Account unbound successfully.');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         session()->flash('error', 'Unbind failed: ' . $e->getMessage());
+    //     }
+    // }
 
     public function closeModal()
     {

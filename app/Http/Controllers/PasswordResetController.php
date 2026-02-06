@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordResetMail;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class PasswordResetController extends Controller
 {
     //
 
-    public function reset($id){
-        try{
+    public function reset($id)
+    {
+        try {
             $user = User::findOrFail($id);
             $newPassword = $this->generateSecurePassword();
 
@@ -22,19 +25,35 @@ class PasswordResetController extends Controller
                 'password' => $hashPassword
             ]);
 
-            return response()->json([
-                'success'=> true,
-                'newPassword' => $newPassword
-            ],200);
+            // Send password via email
+            try {
+                Mail::to($user->email)->send(new PasswordResetMail($user, $newPassword));
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password reset successfully. New password has been sent to user\'s email.'
+                ], 200);
+            } catch (\Exception $mailException) {
+                // Log the mail error but still return success since password was updated
+                // \Log::error('Failed to send password reset email: ' . $mailException->getMessage());
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password reset successfully, but failed to send email. Please contact user directly.',
+                    'email_sent' => false
+                ], 200);
+            }
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'User not found'
             ], 404);
-        }catch(\Exception $e){
-            return json_encode(['success' => false, 'message' => 'Failed to update password'],400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update password'
+            ], 400);
         }
-        
     }
 
     private function generateSecurePassword($length = 12){

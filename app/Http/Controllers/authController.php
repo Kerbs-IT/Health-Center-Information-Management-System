@@ -133,7 +133,7 @@ class authController extends Controller
                 'brgy' => $data['brgy'],
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
                 'street' => $blk_n_street[1] ?? null,
-                'suffix' => $data['suffix']
+                'suffix' => $data['suffix']??''
             ],
             'verification_user_id' => $tempUser->id
         ]);
@@ -247,7 +247,7 @@ class authController extends Controller
             strtolower($data['first_name']),
             $middle,
             strtolower($data['last_name']),
-            $data['suffix'] ?? null,
+            $data['suffix'] ?? '',
         ];
 
         $fullName = ucwords(trim(implode(' ', array_filter($parts))));

@@ -3,7 +3,6 @@ import Swal from "sweetalert2";
 import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
 import resetPasswordManually from "../passwordReset";
-import { copyPassword } from "../passwordReset";
 
 fetch("/showBrgyUnit")
     .then((response) => response.json())
@@ -49,6 +48,9 @@ const addPatientSubmitBtn = document.getElementById("add-patient-submit-btn");
 
 // add new account btn
 const addModalBtn = document.getElementById("add-patient-account-modal-btn");
+
+// Reset password element
+const resetPasswordElement = document.getElementById("reset_password");
 
 if (addModalBtn) {
     addModalBtn.addEventListener("click", () => {
@@ -152,6 +154,12 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
+            // dispatch the livewire
+            if (typeof Livewire !== "undefined") {
+                Livewire.dispatch("manageUserRefreshTable");
+            } else {
+                // console.warn("Livewire is not available");
+            }
         }
     } catch (error) {
         console.log(error);
@@ -167,6 +175,13 @@ document.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".edit-user-profile");
     if (!editBtn) return;
     const id = editBtn.dataset.id;
+
+    // first, we need to reset the form to avoid wrong data
+    const editProfileForm = document.getElementById("profile-form");
+
+    if (editProfileForm) {
+        editProfileForm.reset();
+    }
 
     // set the id of the submit btn
     submitBtn.dataset.user = id;
@@ -196,6 +211,7 @@ document.addEventListener("click", async (e) => {
 
         if (resetPassword) {
             resetPassword.dataset.id = data.info.id ?? null;
+            resetPassword.dataset.email = data.info.email ?? null;
         }
 
         Object.entries(data.info).forEach(([key, value]) => {
@@ -223,6 +239,7 @@ document.addEventListener("click", async (e) => {
             data.info?.first_name,
             data.info?.middle_initial,
             data.info?.last_name,
+            data.info?.suffix
         ]
             .filter(Boolean)
             .join(" ");
@@ -274,6 +291,12 @@ if (submitBtn) {
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
                 });
+                // dispatch the livewire
+                if (typeof Livewire !== "undefined") {
+                    Livewire.dispatch("manageUserRefreshTable");
+                } else {
+                    // console.warn("Livewire is not available");
+                }
             } else {
                 displayErrors(data.errors);
 
@@ -373,12 +396,12 @@ const errorFieldMap = {
     barangayKey: "brgy-error",
 };
 
-// Reset password
-const resetPasswordElement = document.getElementById("reset_password");
+
 
 if (resetPasswordElement) {
     resetPasswordElement.addEventListener("click", (e) => {
         const id = e.target.dataset.id;
+        const userEmail = e.target.dataset.email; // Add email to dataset
 
         const profileModalEl = document.getElementById("edit-user-profile");
         const profileModal =
@@ -392,31 +415,29 @@ if (resetPasswordElement) {
                 title: "User ID not found",
                 text: "This user has no data.",
                 icon: "warning",
-                showCancelButton: true,
-                showDenyButton: true,
                 confirmButtonText: "Ok",
             });
         } else {
             Swal.fire({
                 title: "Reset Password",
-                text: `Are you sure to reset the password?`,
+                html: `Are you sure you want to reset the password for this user?<br><br>
+                       <small>A new password will be sent to: <strong>${userEmail || "user's email"}</strong></small>`,
                 icon: "question",
                 confirmButtonColor: "#198754",
                 showCancelButton: true,
-                confirmButtonText: "Yes, show Password Here!",
+                confirmButtonText: "Yes, Reset & Send Email",
                 cancelButtonText: "Cancel",
             }).then((result) => {
                 if (result.isConfirmed) {
                     resetPasswordManually(
                         id,
-                        "/patient-account/reset-password/"
+                        "/patient-account/reset-password/",
                     );
                 }
             });
         }
     });
 }
-
 function displayErrors(errors) {
     if (!errors) return;
 
