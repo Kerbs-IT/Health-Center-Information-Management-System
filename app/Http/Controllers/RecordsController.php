@@ -345,10 +345,11 @@ class RecordsController extends Controller
                 'birth_height' => $data['vaccination_height'] ?? null,
                 'birth_weight' => $data['vaccination_weight'] ?? null,
             ]);
-            $blk_n_street = explode(',', $data['street']);
+            $blk_n_street = explode(',', $data['street'], 2); // Limit to 2 parts
+
             $patient_address->update([
                 'house_number' => $blk_n_street[0] ?? $data['blk_n_street'],
-                'street' => $blk_n_street[1] ? trim($blk_n_street[1]) : null,
+                'street' => isset($blk_n_street[1]) ? trim($blk_n_street[1]) : null,
                 'purok' => $data['brgy'] ?? $patient_address->purok
             ]);
             // refresh the record
@@ -386,7 +387,10 @@ class RecordsController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Patient information is not successfully updated',
-                'errors' => $e->getMessage()
+                'errors' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()  // Full stack trace
             ], 422);
         }
     }

@@ -76,7 +76,7 @@
                         </div>
 
                         <div class="form-group mb-3 w-95">
-                            <p class="text-center">Already have an account? <a href="{{route('register')}}">Sign-up</a></p>
+                            <p class="text-center fs-5">Already have an account? <a href="{{route('register')}}">Sign-up</a></p>
                         </div>
                     </form>
                 </div>

@@ -52,7 +52,7 @@
                     <tr class="table-header">
                         <th>Maintenance Medication</th>
                         <th>Dosage & Frequency</th>
-                        <th>Duration</th>
+                        <th>Quantity</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Action</th>
