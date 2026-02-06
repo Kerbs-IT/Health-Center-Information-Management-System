@@ -52,7 +52,7 @@
                             <!-- <select id="purok-filter" class="filter-select">
                                 <option value="{{ $handledBrgy }}" selected>{{ $handledBrgy }}</option>
                             </select> -->
-                            <input type="text"  class="filter-select" value="{{$handledBrgy}}" disabled>
+                            <input type="text" class="filter-select" value="{{$handledBrgy}}" disabled>
                             <input type="hidden" id="purok-filter" class="filter-select" value="{{$handledBrgy}}">
                             @endif
                         </div>
@@ -82,9 +82,13 @@
                             <span class="stat-label">Current View:</span>
                             <span class="stat-value" id="current-filter">All Areas, All Types</span>
                         </div>
-                        <div class="stat-item online-status">
-                            <span class="status-indicator" id="status-indicator"></span>
-                            <span class="stat-label" id="status-text">Active</span>
+                        <div class="stat-item">
+                            <span class="stat-label">Type of Patient: </span>
+                            <div class="stat-item online-status">
+                                <span class="status-indicator" id="status-indicator"></span>
+                                <span class="stat-label fw-bold fs-4 text-dark" id="status-text">Active</span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -94,22 +98,26 @@
                     <!-- Legend -->
                     <!-- Legend -->
                     <div class="map-legend-content ">
-                        <h3>Patient Density(Per Purok)</h3>
+                        <h3>Type of Patient</h3>
                         <div class="legend-item">
-                            <span class="legend-color" style="background: rgba(0, 255, 0, 0.6);"></span>
-                            <span>Low (0-500)</span>
+                            <span class="legend-color" style="background: #2E7D32;"></span>
+                            <span>Vaccination</span>
                         </div>
                         <div class="legend-item">
-                            <span class="legend-color" style="background: rgba(255, 255, 0, 0.7);"></span>
-                            <span>Moderate (501-1K)</span>
+                            <span class="legend-color" style="background: #E91E63;"></span>
+                            <span>Pre-natal</span>
                         </div>
                         <div class="legend-item">
-                            <span class="legend-color" style="background: rgba(255, 165, 0, 0.8);"></span>
-                            <span>High (1K-5K)</span>
+                            <span class="legend-color" style="background: #FF9800;"></span>
+                            <span>Senior-citizen</span>
                         </div>
                         <div class="legend-item">
-                            <span class="legend-color" style="background: rgba(255, 0, 0, 0.9);"></span>
-                            <span>Very High (5K-10K)</span>
+                            <span class="legend-color" style="background: #D32F2F;"></span>
+                            <span>tb-dots</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #1976D2;"></span>
+                            <span>family-planning</span>
                         </div>
                     </div>
                     <div class="map-legend cursor-pointer bg-success d-flex align-items-center justify-content-center" style="width:20px;height:20px;border-radius:50%;">

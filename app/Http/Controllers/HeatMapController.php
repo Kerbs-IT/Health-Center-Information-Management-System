@@ -9,22 +9,29 @@ use App\Models\staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class HeatMapController extends Controller
 {
+    // Cache duration in minutes
+    const CACHE_DURATION = 10;
+
+    // Maximum points to return (prevent overwhelming frontend)
+    const MAX_POINTS = 5000;
+
     /**
      * Display the health map page
      */
     public function index()
     {
-        //check if staff
+        // Check if staff
         $handled_area = '';
-        if(Auth::user()->role == 'staff'){
+        if (Auth::user()->role == 'staff') {
             $staffInfo = staff::findOrFail(Auth::user()->id);
             $brgyHandled = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-
-            $handled_area = $brgyHandled-> brgy_unit;
+            $handled_area = $brgyHandled->brgy_unit;
         }
+
         // Get all unique puroks for dropdown
         $puroks = $this->getPuroks();
 
@@ -37,27 +44,86 @@ class HeatMapController extends Controller
             'family-planning'
         ];
 
-        return view('heatmap.heat-map', compact('puroks', 'caseTypes'),
-        ['page'=> 'Health Map - Barangay Hugo Perez',
-        'isActive'=>true,
-        'handledBrgy' => $handled_area??null ]);
+        return view(
+            'heatmap.heat-map',
+            compact('puroks', 'caseTypes'),
+            [
+                'page' => 'HeatMap - Barangay Hugo Perez',
+                'isActive' => true,
+                'handledBrgy' => $handled_area ?? null
+            ]
+        );
     }
 
+    /**
+     * Get heatmap data with caching and optimization
+     */
     public function getHeatmapData(Request $request)
     {
         $purok = $request->input('purok', 'all');
         $caseType = $request->input('case_type', 'all');
 
-        // Get patient counts per purok
-        $patientCounts = $this->getPatientCountsByPurok($purok, $caseType);
+        // Create cache key based on filters
+        $cacheKey = "heatmap_{$purok}_{$caseType}";
 
-        // Get individual patient addresses with coordinates for heatmap
+        // Try to get cached data
+        $result = Cache::remember($cacheKey, self::CACHE_DURATION * 60, function () use ($purok, $caseType) {
+            return $this->buildHeatmapData($purok, $caseType);
+        });
+
+        return response()->json($result);
+    }
+
+    /**
+     * Build heatmap data (called when cache misses)
+     */
+    private function buildHeatmapData($purok, $caseType)
+    {
+        // Build optimized query
+        $query = $this->buildBaseQuery($purok, $caseType);
+
+        // Get addresses with case types
+        $addresses = $query->get();
+
+        // Process data
+        $heatmapData = $this->processAddresses($addresses);
+
+        // Get statistics
+        $stats = $this->calculateStatistics($addresses);
+
+        // Load purok coordinates
+        $purokCoordinates = config('coordinates.hugo_perez.puroks');
+
+        // Calculate center
+        $center = $this->calculateCenter($purok, $purokCoordinates);
+
+        return [
+            'success' => true,
+            'data' => $heatmapData,
+            'stats' => $stats,
+            'center' => $center,
+            'total_available' => count($heatmapData),
+            'cached_at' => now()->toISOString()
+        ];
+    }
+
+    /**
+     * Build optimized base query
+     */
+    private function buildBaseQuery($purok, $caseType)
+    {
         $query = patient_addresses::query()
-            ->select('patient_addresses.latitude', 'patient_addresses.longitude', 'patient_addresses.purok')
+            ->select(
+                'patient_addresses.latitude',
+                'patient_addresses.longitude',
+                'patient_addresses.purok',
+                'medical_record_cases.type_of_case'
+            )
             ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
             ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
             ->where('patient_addresses.barangay', 'Hugo Perez')
             ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', '!=', 'Archived')
             ->whereNotNull('patient_addresses.purok')
             ->whereNotNull('patient_addresses.latitude')
             ->whereNotNull('patient_addresses.longitude');
@@ -72,146 +138,105 @@ class HeatMapController extends Controller
             $query->where('medical_record_cases.type_of_case', $caseType);
         }
 
-        // Get all geocoded addresses
-        $addresses = $query->get();
+        return $query;
+    }
 
-        // Map to heatmap format - directly use stored coordinates
-        $heatmapData = $addresses->map(function ($address) {
-            return [
-                'lat' => (float) $address->latitude,
-                'lng' => (float) $address->longitude,
+    /**
+     * Process addresses into heatmap format with optimization
+     */
+    private function processAddresses($addresses)
+    {
+        $heatmapData = [];
+
+        foreach ($addresses as $address) {
+            // Add small random jitter to prevent exact overlaps
+            // This prevents color blending while keeping accuracy
+            $lat = (float) $address->latitude + (mt_rand(-5, 5) / 1000000);
+            $lng = (float) $address->longitude + (mt_rand(-5, 5) / 1000000);
+
+            $heatmapData[] = [
+                'lat' => round($lat, 6),
+                'lng' => round($lng, 6),
                 'purok' => $address->purok,
+                'case_type' => $address->type_of_case,
             ];
-        })->toArray();
+        }
 
-        // Get statistics - count patients per purok
-        $patientCounts = $addresses->groupBy('purok')
-            ->map(function ($group) {
-                return $group->count();
-            })
-            ->toArray();
-       
-        // Get statistics
-        $stats = $this->getStatistics($purok, $caseType, $patientCounts);
-        // Load purok coordinates from config
-        $purokCoordinates = config('coordinates.hugo_perez.puroks');
-        // Calculate center point
-        $center = $this->calculateCenter($purok, $purokCoordinates);
+        // If data exceeds max points, sample it intelligently
+        if (count($heatmapData) > self::MAX_POINTS) {
+            $heatmapData = $this->stratifiedSample($heatmapData, self::MAX_POINTS);
+        }
 
-        return response()->json([
-            'success' => true,
-            'data' => $heatmapData,
-            'stats' => $stats,
-            'center' => $center
-        ]);
+        return $heatmapData;
     }
 
     /**
-     * Get patient counts grouped by purok
+     * Stratified sampling to maintain distribution
      */
-    private function getPatientCountsByPurok($purok, $caseType)
+    private function stratifiedSample($data, $maxPoints)
     {
-        $query = patient_addresses::query()
-            ->select('patient_addresses.purok', DB::raw('count(*) as count'))
-            ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
-            ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
-            ->where('medical_record_cases.status', '!=', 'Archived')
-            ->where('patient_addresses.barangay', 'Hugo Perez')
-            ->where('patients.status','!=','Archived')
-            ->whereNotNull('patient_addresses.purok');
-
-        // Filter by purok
-        if ($purok !== 'all') {
-            $query->where('patient_addresses.purok', $purok);
+        // Group by case type
+        $grouped = [];
+        foreach ($data as $point) {
+            $caseType = $point['case_type'];
+            if (!isset($grouped[$caseType])) {
+                $grouped[$caseType] = [];
+            }
+            $grouped[$caseType][] = $point;
         }
 
-        // Filter by case type
-        if ($caseType !== 'all') {
-            $query->where('medical_record_cases.type_of_case', $caseType);
-        }
+        // Calculate points per case type (proportional)
+        $total = count($data);
+        $sampled = [];
 
-        $results = $query->groupBy('patient_addresses.purok')->get();
+        foreach ($grouped as $caseType => $points) {
+            $proportion = count($points) / $total;
+            $sampleSize = max(1, (int)($maxPoints * $proportion));
 
-        // Convert to associative array
-        $counts = [];
-        foreach ($results as $result) {
-            $counts[$result->purok] = $result->count;
-        }
-
-        return $counts;
-    }
-
-    /**
-     * Generate jittered point within boundary polygon
-     */
-    private function generateBoundedPoint($centerLat, $centerLng, $boundary, $maxAttempts = 50)
-    {
-        // Calculate bounding box
-        $minLat = min(array_column($boundary, 0));
-        $maxLat = max(array_column($boundary, 0));
-        $minLng = min(array_column($boundary, 1));
-        $maxLng = max(array_column($boundary, 1));
-
-        // Try to generate point within boundary
-        for ($i = 0; $i < $maxAttempts; $i++) {
-            $randomLat = $minLat + mt_rand() / mt_getrandmax() * ($maxLat - $minLat);
-            $randomLng = $minLng + mt_rand() / mt_getrandmax() * ($maxLng - $minLng);
-
-            if ($this->isPointInPolygon($randomLat, $randomLng, $boundary)) {
-                return [
-                    'latitude' => round($randomLat, 6),
-                    'longitude' => round($randomLng, 6)
-                ];
+            // Sample from this case type
+            $step = max(1, (int)(count($points) / $sampleSize));
+            for ($i = 0; $i < count($points); $i += $step) {
+                if (count($sampled) < $maxPoints) {
+                    $sampled[] = $points[$i];
+                }
             }
         }
 
-        // Fallback to center with small offset
-        return [
-            'latitude' => round($centerLat + (mt_rand(-20, 20) / 100000), 6),
-            'longitude' => round($centerLng + (mt_rand(-20, 20) / 100000), 6)
-        ];
+        return $sampled;
     }
 
     /**
-     * Generate simple jittered point
+     * Calculate statistics efficiently
      */
-    private function generateJitteredPoint($lat, $lng, $minOffset, $maxOffset)
+    private function calculateStatistics($addresses)
     {
-        $latOffset = $minOffset + mt_rand() / mt_getrandmax() * ($maxOffset - $minOffset);
-        $lngOffset = $minOffset + mt_rand() / mt_getrandmax() * ($maxOffset - $minOffset);
+        $total = $addresses->count();
 
-        $latOffset *= (mt_rand(0, 1) ? 1 : -1);
-        $lngOffset *= (mt_rand(0, 1) ? 1 : -1);
-
-        return [
-            'latitude' => round($lat + $latOffset, 6),
-            'longitude' => round($lng + $lngOffset, 6)
-        ];
-    }
-
-    /**
-     * Check if point is inside polygon (Ray casting algorithm)
-     */
-    private function isPointInPolygon($lat, $lng, $polygon)
-    {
-        $numVertices = count($polygon);
-        $inside = false;
-
-        for ($i = 0, $j = $numVertices - 1; $i < $numVertices; $j = $i++) {
-            $xi = $polygon[$i][0];
-            $yi = $polygon[$i][1];
-            $xj = $polygon[$j][0];
-            $yj = $polygon[$j][1];
-
-            $intersect = (($yi > $lng) != ($yj > $lng))
-                && ($lat < ($xj - $xi) * ($lng - $yi) / ($yj - $yi) + $xi);
-
-            if ($intersect) {
-                $inside = !$inside;
+        // Group by purok
+        $byPurok = [];
+        foreach ($addresses as $address) {
+            $purok = $address->purok;
+            if (!isset($byPurok[$purok])) {
+                $byPurok[$purok] = 0;
             }
+            $byPurok[$purok]++;
         }
 
-        return $inside;
+        // Group by case type
+        $byCaseType = [];
+        foreach ($addresses as $address) {
+            $caseType = $address->type_of_case;
+            if (!isset($byCaseType[$caseType])) {
+                $byCaseType[$caseType] = 0;
+            }
+            $byCaseType[$caseType]++;
+        }
+
+        return [
+            'total' => $total,
+            'by_purok' => $byPurok,
+            'by_case_type' => $byCaseType
+        ];
     }
 
     /**
@@ -220,7 +245,6 @@ class HeatMapController extends Controller
     private function calculateCenter($purok, $purokCoordinates)
     {
         if ($purok !== 'all' && isset($purokCoordinates[$purok])) {
-            // Center on selected purok
             return [
                 'lat' => $purokCoordinates[$purok]['latitude'],
                 'lng' => $purokCoordinates[$purok]['longitude'],
@@ -237,24 +261,20 @@ class HeatMapController extends Controller
     }
 
     /**
-     * Get statistics for current filters
-     */
-    private function getStatistics($purok, $caseType, $patientCounts)
-    {
-        $total = array_sum($patientCounts);
-
-        return [
-            'total' => $total,
-            'by_purok' => $patientCounts
-        ];
-    }
-
-    /**
      * Get list of puroks from config
      */
     private function getPuroks()
     {
         $purokCoordinates = config('coordinates.hugo_perez.puroks');
         return array_keys($purokCoordinates);
+    }
+
+    /**
+     * Clear cache (can be called from admin panel if needed)
+     */
+    public function clearCache()
+    {
+        Cache::flush();
+        return response()->json(['success' => true, 'message' => 'Cache cleared']);
     }
 }

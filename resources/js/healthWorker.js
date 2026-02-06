@@ -5,7 +5,6 @@ import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
 import { automateAge } from "./automateAge";
 import resetPasswordManually from "./passwordReset";
-import { copyPassword } from "./passwordReset";
 // import the address function
 // Archived
 document.addEventListener("DOMContentLoaded", () => {
@@ -519,7 +518,7 @@ if (resetPasswordElement) {
                 icon: "question",
                 confirmButtonColor: "#198754",
                 showCancelButton: true,
-                confirmButtonText: "Yes, show Password Here!",
+                confirmButtonText: "Yes, send the new password to the email",
                 cancelButtonText: "Cancel",
             }).then((result) => {
                 if (result.isConfirmed) {
