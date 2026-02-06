@@ -24,8 +24,7 @@ class healthWorkerController extends Controller
     {
 
         $healthWorker = user::where('status', 'active')->where('role', 'staff')->orderBy('id', 'ASC')->paginate(10);
-        $pendingAccounts = user::where('status', 'pending')->where('role', 'staff')->orderBy('id', 'ASC')->get();
-        $pendingAccountsCount = user::where('status', 'pending')->count();
+   
         // get occupied areas
         $occupiedAreas = \Illuminate\Support\Facades\DB::table('users')
             ->join('staff', 'users.id', '=', 'staff.user_id')
@@ -36,8 +35,6 @@ class healthWorkerController extends Controller
         return view('dashboard.healthWorker', [
             'isActive' => true,
             'healthWorker' => $healthWorker,
-            'pendingAccounts' => $pendingAccounts,
-            'pendingAccountsCount' => $pendingAccountsCount,
             'occupied_assigned_areas' => $occupiedAreas,
             'page' => 'Health worker'
         ]);

@@ -127,7 +127,7 @@
                                         <small class="text-danger" id="fname-error"></small>
                                     </div>
                                     <div class="col-12 col-md-3">
-                                        <label for="edit_middle_initial" class="w-100">Middle Name<span class="text-danger">*</span></label>
+                                        <label for="edit_middle_initial" class="w-100">Middle Name</label>
                                         <input type="text" id="edit_middle_initial" placeholder="Enter Middle Name" class="form-control" name="middle_initial" value="">
                                         <small class="text-danger" id="middle-initial-error"></small>
                                     </div>
@@ -166,7 +166,7 @@
 
                                     <div class="col-12 col-md-12">
                                         <label for="contact_num" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                                        <input type="number" placeholder="Enter your contact number" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
+                                        <input type="number" placeholder="Enter the contact number" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
                                         <small class="text-danger" id="contact-error"></small>
                                     </div>
 
@@ -177,7 +177,7 @@
 
                                     <div class="col-12 col-md-12">
                                         <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
-                                        <input type="email" placeholder="ex. yato@example.com" id="edit_email" class="form-control" name="email" value="">
+                                        <input type="email" placeholder="Enter the email" id="edit_email" class="form-control" name="email" value="">
                                         <small class="text-danger" id="email-error"></small>
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@
 
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end gap-2 mt-4">
-                                    <button type="button" class="btn btn-secondary px-4" id="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger px-4" id="cancel-btn" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-success px-4" id="edit-user-submit-btn">Save</button>
                                 </div>
                             </div>
@@ -249,7 +249,7 @@
                                     <input type="text" placeholder="Enter First Name" id="manage-user-first-name" name="first_name" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('first_name')}}">
                                 </div>
                                 <div class="input-group">
-                                    <label for="manage-user-middle-name" class="w-100">Middle Name<span class="text-danger">*</span></label>
+                                    <label for="manage-user-middle-name" class="w-100">Middle Name</label>
                                     <input type="text" placeholder="Enter Middle Name" id="manage-user-middle-name" name="middle_initial" class="py-2 px-2 fs-5 bg-light flex-fill xl:w-[50%]" autocomplete="off" style="width:200px;" value="{{old('middle_initial')}}">
                                 </div>
                                 <div class="input-group">
@@ -277,19 +277,19 @@
                         <!-- email -->
                         <div class="mb-2 w-100">
                             <label for="email" class="mb-1 ">Email<span class="text-danger">*</span></label>
-                            <input type="email" placeholder="Enter your email" name="email" class="py-2 px-2 w-100 fs-5 bg-light" value="{{old('email')}}">
+                            <input type="email" placeholder="Enter the email" name="email" class="py-2 px-2 w-100 fs-5 bg-light" value="{{old('email')}}">
                             <small class="text-danger error-element email-error"></small>
                         </div>
                         <div class="mb-2 w-100">
                             <label for="date_of_birth" class="mb-1 ">Date of Birth<span class="text-danger">*</span></label>
-                            <input type="date" placeholder="Enter your email" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
+                            <input type="date"  name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                             <small class="text-danger error-element date_of_birth_error"></small>
 
                         </div>
                         <div class="mb-2 w-100">
                             <label for="contact_number" class="mb-1 ">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" placeholder="Enter your contact number" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
+                            <input type="text" placeholder="Enter the contact number" name="contact_number" class=" form-control py-1 px-2 bg-light w-100" value="{{old('contact_number')}}">
 
                             <small class="text-danger error-element contact_number_error"></small>
 
@@ -298,7 +298,7 @@
                         <div class="mb-3 w-100">
                             <label for="password" class="mb-1 w-100">Password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
-                                <input type="password" placeholder="Enter your password" name="password" class="py-2 px-2 w-100 fs-5 bg-light" id="password" autocomplete="off" value="{{old('password')}}">
+                                <input type="password" placeholder="Enter the password" name="password" class="py-2 px-2 w-100 fs-5 bg-light" id="password" autocomplete="off" value="{{old('password')}}">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white" id="eye-icon"></i>
                             </div>
                             <small class="text-danger error-element password-error"></small>
@@ -307,7 +307,7 @@
                         <div class="mb-3 w-100">
                             <label for="re-type-pass" class="mb-1 font-weight-normal ">Retype password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
-                                <input type="password" placeholder="Re-type-pass" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="re-type-pass">
+                                <input type="password" placeholder="Confirm the password" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white" id="Retype-eye-icon"></i>
                             </div>
                             <small class="text-danger"></small>
@@ -315,7 +315,7 @@
                         <!-- hidden input -->
                         <input type="text" name="role" value="patient" hidden>
                         <div class="mb-3 roles w-100">
-                            <label for="patient_type" class="">Type of User<span class="text-danger">*</span></label>
+                            <label for="patient_type" class="">Type of Patient<span class="text-danger">*</span></label>
                             <select name="patient_type" id="patient_type" class="form-select text-center w-100">
                                 <option value="" selected disabled>Select the type of patient</option>
                                 <option value="vaccination">Vaccination</option>
@@ -333,7 +333,7 @@
                             <div class=" w-100 d-flex gap-2 flex-wrap flex-lg-nowrap">
                                 <div class="items w-full lg:w-[50%]">
                                     <label for="patient_street" class="w-100 text-muted">Blk & lot,Street<span class="text-danger">*</span></label>
-                                    <input type="text" id="blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
+                                    <input type="text" id="blk_n_street" name="blk_n_street" placeholder="Enter the blk & lot & street seperated by ','" class="w-100 form-control">
                                     <small class="text-danger error-element blk-n-street-error"></small>
                                 </div>
                                 <div class="items w-full lg:w-[50%]">

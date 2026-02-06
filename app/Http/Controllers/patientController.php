@@ -297,9 +297,26 @@ class patientController extends Controller
             $blk_n_street = explode(',', $data['blk_n_street'], 2);
             $house_number = trim($blk_n_street[0] ?? '');
             $street = trim($blk_n_street[1] ?? null);
-            if(!$hasPatient){
+            if(!$hasPatient && $address){
                 
                 $address->update([
+                    'house_number' => $house_number,
+                    'street' => $street,
+                    'purok' => $data['patient_purok_dropdown']
+                ]);
+
+                $address->refresh();
+                $fullAddress = collect([
+                    $address->house_number,
+                    $address->street,
+                    $address->purok,
+                    $address->barangay ?? null,
+                    $address->city ?? null,
+                    $address->province ?? null,
+                ])->filter()->join(', ');
+            }else{
+                $address = users_address::create([
+                    'user_id' => $user->id,
                     'house_number' => $house_number,
                     'street' => $street,
                     'purok' => $data['patient_purok_dropdown']
