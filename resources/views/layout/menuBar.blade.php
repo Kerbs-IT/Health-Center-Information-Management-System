@@ -105,28 +105,32 @@
                 <i class="fa-solid fs-5 fa-chevron-right ms-auto dropdown-arrow"></i>
             </a>
             <div class="sub-menu  patient-menu w-75 align-self-end">
+                <a href="{{ route('record.all')}}" class="menu-items sub-menu-bar-item  d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_all">
+                    <i class="fa-solid fs-5 fa-list"></i>
+                    <h5 class="mb-0">All records</h5>
+                </a>
 
-                <a href="{{ route('record.vaccination')}}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
+                <a href="{{ route('record.vaccination')}}" class="menu-items sub-menu-bar-item d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
                     <i class="fa-solid fs-5 fa-syringe"></i>
                     <h5 class="mb-0">Vaccination</h5>
                 </a>
                 <!-- prenatal -->
-                <a href=" {{ route('records.prenatal') }}" class="menu-items d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_prenatal">
+                <a href=" {{ route('records.prenatal') }}" class="menu-items sub-menu-bar-item d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_prenatal">
                     <i class="fa-solid fs-5 fa-person-pregnant"></i>
                     <h5 class="mb-0">Prenatal</h5>
                 </a>
                 <!-- senior citizen -->
-                <a href="{{ route('record.senior.citizen')}}" class="menu-items d-flex gap-3 text-decoration-none   w-100 px-3 py-2" id="record_senior_citizen">
+                <a href="{{ route('record.senior.citizen')}}" class="menu-items sub-menu-bar-item d-flex gap-3 text-decoration-none   w-100 px-3 py-2" id="record_senior_citizen">
                     <i class="fa-solid fs-5 fa-person-cane"></i>
                     <h5 class="mb-0">Senior Citizen</h5>
                 </a>
                 <!-- TB dots -->
-                <a href=" {{ route('record.tb-dots')}}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="record_tb_dots">
+                <a href=" {{ route('record.tb-dots')}}" class="menu-items sub-menu-bar-item d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="record_tb_dots">
                     <i class="fa-solid fs-5 fa-lungs"></i>
                     <h5 class="mb-0">TB Dots</h5>
                 </a>
                 <!-- family planning -->
-                <a href="{{ route('record.family.planning') }}" class="menu-items d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="record_family_planning">
+                <a href="{{ route('record.family.planning') }}" class="menu-items sub-menu-bar-item d-flex gap-3 text-decoration-none  w-100 px-3 py-2" id="record_family_planning">
                     <i class="fa-solid fs-5 fa-people-roof"></i>
                     <h5 class="mb-0">Family Planning</h5>
                 </a>
@@ -253,3 +257,4 @@
 <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
 
 <!-- test for medicine -->
+ 

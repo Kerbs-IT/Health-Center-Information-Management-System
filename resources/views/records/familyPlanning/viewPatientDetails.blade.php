@@ -40,7 +40,15 @@
                     </div>
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-5 px-md-3 px-2 shadow-lg">
-                        <a href="{{route('record.family.planning')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
+                        @php
+                        $backUrl = route('record.family.planning') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                        @endphp
+
+                        <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                            Back
+                        </a>
+                      
                         <div class="info bg-white overflow-hidden">
                             <!-- patient Info -->
                             <div class="patient-info">

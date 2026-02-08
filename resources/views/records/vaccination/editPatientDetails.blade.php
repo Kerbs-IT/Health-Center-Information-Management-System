@@ -44,7 +44,14 @@
                     </div>
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-5 px-md-3 px-1 bg-white mx-lg-3 mx-0 mt-2 rounded shadow-xl">
-                        <a href="{{route('record.vaccination')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
+                        @php
+                        $backUrl = route('record.vaccination') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+                        
+                        @endphp
+
+                        <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                            Back
+                        </a>
                         <form action="" method="post" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden" id="update-form">
                             @method('PUT')
                             @csrf

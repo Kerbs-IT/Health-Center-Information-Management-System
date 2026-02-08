@@ -43,6 +43,9 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            const subMenuElement = document.querySelectorAll(".sub-menu-bar-item");
+
+            subMenuElement.forEach(element => element.classList.remove('active'));
             const con = document.getElementById('record_vaccination');
 
             if (con) {

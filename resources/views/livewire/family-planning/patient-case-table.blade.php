@@ -2,7 +2,15 @@
     <div class="tables d-flex flex-column  p-md-3 p-0">
         <div class="add-btn mb-3 d-flex justify-content-between">
             <div>
-                <a href="{{route('record.family.planning')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
+                @php
+                $backUrl = route('record.family.planning') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                @endphp
+
+                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                    Back
+                </a>
+                
             </div>
             <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-2">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-a-add-record" data-patient-info='@json($patientInfo)' data-patient-address='@json($address)' data-medical-case-record-id="{{$patientInfo->id}}" id="side-a-add-record-btn">Add Side A Record</button>

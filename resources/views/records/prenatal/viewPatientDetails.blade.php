@@ -39,7 +39,14 @@
                     </div>
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-5 px-md-3 px-2 shadow-lg">
-                        <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
+                        @php
+                        $backUrl = route('records.prenatal') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                        @endphp
+
+                        <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                            Back
+                        </a>
                         <!-- patient Info -->
                         <div class="info bg-white rounded overflow-hidden">
                             <div class="patient-info">

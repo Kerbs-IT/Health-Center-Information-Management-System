@@ -24,9 +24,11 @@ class RecordsTable extends Component
     // new property for searching
     public $search = '';
 
+    public $patient_id = null; // its for when the user is in all record and want to redirect
+
   
 
-    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
 
     public $start_date;
     public $end_date;
@@ -34,6 +36,11 @@ class RecordsTable extends Component
     {
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
+
+        // Get patient_id from URL
+        $this->patient_id = request()->get('patient_id');
+
+        $this->search = request()->get('search', '');
     }
 
     // dont forget this for changes in the show entries
@@ -56,6 +63,12 @@ class RecordsTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+    public function clearFilter()
+    {
+        $this->patient_id = null;
+        $this->search = '';
+        $this->resetPage();
+    }
     #[On('dateRangeChanged')]
     public function updateDateRange($start_date, $end_date)
     {
@@ -74,6 +87,9 @@ class RecordsTable extends Component
             ->where('type_of_case', 'vaccination')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
+            ->when($this->patient_id, function ($query) {
+                $query->where('patients.id', $this->patient_id);
+            })
             ->when(Auth::user()->role == 'staff', function ($query) {
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());

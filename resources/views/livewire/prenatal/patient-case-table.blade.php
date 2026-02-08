@@ -2,7 +2,15 @@
     <div class="tables d-flex flex-column p-md-3 p-1">
         <div class="add-btn mb-3 d-flex justify-content-between">
             <div>
-                <a href="{{route('records.prenatal')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
+                @php
+                $backUrl = route('records.prenatal') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                @endphp
+
+                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                    Back
+                </a>
+                
             </div>
             <div>
                 <div class="add-buttons d-flex justify-content-end gap-2 flex-wrap">
@@ -136,10 +144,10 @@
                 @endforeach
             </tbody>
 
-            </table>
-        </div>
-        <div class="mt-3">
-            {{ $allRecords->links() }}
-        </div>
+        </table>
     </div>
+    <div class="mt-3">
+        {{ $allRecords->links() }}
+    </div>
+</div>
 </div>

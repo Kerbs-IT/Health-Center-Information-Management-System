@@ -1,7 +1,14 @@
 <div>
     <div class="tables d-flex flex-column p-md-3 p-0">
         <div class="add-btn mb-3 d-flex justify-content-between">
-            <a href="{{route('record.senior.citizen')}}" class="btn btn-danger px-4 fs-5 ">Back</a>
+            @php
+            $backUrl = route('record.senior.citizen') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+            @endphp
+
+            <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                Back
+            </a>
             <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add_record_btn">Add Record</button>
         </div>
         <div class="table-responsive">
@@ -10,7 +17,7 @@
                     <tr>
                         <th>Case No.</th>
                         <th>Type of Record</th>
-                       
+
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                             Date
                             @if ($sortField === 'created_at')

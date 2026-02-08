@@ -33,7 +33,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
-                            <a href="{{ route('record.vaccination') }}" class="text-decoration-none fs-5 text-muted">Tuberculosis</a>
+                            <a href="{{ route('record.tb-dots') }}" class="text-decoration-none fs-5 text-muted">Tuberculosis</a>
                             <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
@@ -42,7 +42,15 @@
                     </div>
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-5 mx-md-3 mx-2 px-2 shadow-lg">
-                        <a href="{{route('record.tb-dots')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
+
+                        @php
+                        $backUrl = route('record.tb-dots') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                        @endphp
+
+                        <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                            Back
+                        </a>
                         <form action="" method="POST" class="d-flex flex-column align-items-center  justify-content-center rounded overflow-hidden bg-white py-2" id="edit-tb-dots-patient-details-form">
                             @csrf
                             <div class="step d-flex flex-column w-100 rounded  px-2">

@@ -39,7 +39,15 @@
                     </div>
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-5 px-md-3 p-2 mx-2 shadow-lg">
-                        <a href="{{route('record.tb-dots')}}" class="btn btn-danger px-4 fs-5 mb-3">Back</a>
+                        @php
+                        $backUrl = route('record.tb-dots') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
+
+                        @endphp
+
+                        <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                            Back
+                        </a>
+                        
                         <!-- patient Info -->
                         <div class="info bg-white overflow-hidden">
                             <div class="patient-info">
@@ -107,7 +115,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                           </div>
+                            </div>
                             <h3 class="text-start mb-3 fs-2 w-100">Address</h3>
                             <table class="table table-bordered table-light">
                                 <tbody>

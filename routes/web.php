@@ -249,7 +249,7 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     Route::get('/add-patients', [addPatientController::class, 'dashboard'])->name('add-patient');
 
     // --------------------------------------------VACCINATION RECORDS --------------------------------------------------------------------
-    Route::get('/patient-record/vaccination', [RecordsController::class, 'vaccinationRecord'])->name('record.vaccination');
+    Route::get('/patient-record/vaccination/view-records', [RecordsController::class, 'vaccinationRecord'])->name('record.vaccination');
     Route::get('/patient-record/vaccination/view-details/{id}', [RecordsController::class, 'viewDetails'])->name('view.details');
     Route::get('/patient-record/vaccination/edit-details/{id}', [RecordsController::class, 'vaccinationEditDetails'])->name('record.vaccination.edit');
     Route::get('/patient-record/vaccination/case/{id}', [RecordsController::class, 'vaccinationCase'])->name('record.vaccination.case');
@@ -366,7 +366,7 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
 
     // -------------------------------------------- ALL RECORDS ---------------------------------------------------
-    Route::get('/record/all-records', [RecordsController::class, 'allRecords'])->name('all.record');
+    Route::get('/record/all-records', [RecordsController::class, 'allRecords'])->name('record.all');
     Route::get('/patient-record/all-record/view-detail/id', [RecordsController::class, 'allRecordPatientDetails'])->name('record.allRecord.view');
     Route::get('/patient-record/all-record/edit-case/id', [RecordsController::class, 'allRecordsCase'])->name('record.allRecords.case');
     Route::get('/patient-record/all-record/edit-details/id', [RecordsController::class, 'allRecord_editPatientDetails'])->name('allRecord.edit');

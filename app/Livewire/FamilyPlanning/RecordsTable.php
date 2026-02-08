@@ -20,7 +20,10 @@ class RecordsTable extends Component
     // new property for searching
     public $search = '';
 
-    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
+    // for redirect to specific page
+    public $patient_id = null;
+
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
     public $start_date;
     public $end_date;
 
@@ -28,6 +31,9 @@ class RecordsTable extends Component
     {
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
+        $this->patient_id = request()->get('patient_id');
+
+        $this->search = request()->get('search', '');
     }
     // dont forget this for changes in the show entries
     public function updatingEntries()
@@ -57,6 +63,12 @@ class RecordsTable extends Component
         $this->end_date = $end_date;
         $this->resetPage(); // Reset to first page when filtering
     }
+    public function clearFilter()
+    {
+        $this->patient_id = null;
+        $this->search = '';
+        $this->resetPage();
+    }
     public function render()
     {
         $familyPlanning = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
@@ -64,6 +76,9 @@ class RecordsTable extends Component
             ->where('type_of_case', 'family-planning')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
+            ->when($this->patient_id,function($query){
+                $query -> where('patients.id', $this->patient_id);
+            })
             ->when(Auth::user()->role == 'staff', function ($query) {
                 // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('family_planning_medical_records', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
