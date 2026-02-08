@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PatientAccountCreated;
 use App\Models\medical_record_cases;
 use App\Models\nurses;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\staff;
 use App\Models\User;
+use App\Models\users_address;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str as SupportStr;
 use Illuminate\Validation\Rule as ValidationRule;
 use Illuminate\Validation\Rules\Password;
@@ -38,6 +43,31 @@ class addPatientController extends Controller
         'healthworkers' => $healthworkers, 
         'vaccines'=> $vaccines,
         'healthWorkerFullName'=> $staffFullName]);
+    }
+
+    // Function to generate secure password
+    public function generateSecurePassword($length = 8)
+    {
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $symbols = '!@#$%^&*';
+
+        // Ensure at least one character from each set
+        $password = '';
+        $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+        $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+        $password .= $numbers[random_int(0, strlen($numbers) - 1)];
+        $password .= $symbols[random_int(0, strlen($symbols) - 1)];
+
+        // Fill the rest randomly
+        $allChars = $uppercase . $lowercase . $numbers . $symbols;
+        for ($i = 4; $i < $length; $i++) {
+            $password .= $allChars[random_int(0, strlen($allChars) - 1)];
+        }
+
+        // Shuffle the password to randomize character positions
+        return str_shuffle($password);
     }
 
     public function addVaccinationPatient(Request $request){
@@ -64,7 +94,7 @@ class addPatientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy'=> 'required',
-                'vaccination_height' => ['required', 'numeric', 'min:30', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_height' => ['required', 'numeric', 'min:20', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:300', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination' => 'required|date',
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
@@ -87,9 +117,12 @@ class addPatientController extends Controller
                     'between:35,42'       // °C
                 ],
                 'date_of_comeback' => 'required|date',
-                'suffix' => 'sometimes|nullable|string'
+                'suffix' => 'sometimes|nullable|string',
+                'user_account' => 'sometimes|nullable|numeric',
+                'email' => 'required|email'
 
             ]);
+            
 
             // create the patient information record
 
@@ -102,6 +135,61 @@ class addPatientController extends Controller
                 strtolower($data['last_name']),
                 $data['suffix']??null,
             ];
+            // blk & street
+            $blk_n_street = explode(',', $data['street']);
+
+            // Check if the user account matches the credentials
+            if ($data['user_account']) {
+                $errors = [];
+
+                try {
+                    $user = User::with('user_address')->findOrFail((int)$data['user_account']);
+
+                    // Validate email
+                    if ($user->email != $data['email']) {
+                        $errors['email'] = ["Patient Account email doesn't match the email input value."];
+                    }
+
+                    // Validate house number (required)
+                    if (isset($blk_n_street[0]) && $blk_n_street[0] != $user->user_address->house_number) {
+                        $errors['street'] = ["House number doesn't match the patient account records."];
+                    }
+
+                    // Validate street (optional - only if provided)
+                    if (isset($blk_n_street[1]) && !empty(trim($blk_n_street[1]))) {
+                        if (trim($blk_n_street[1]) != $user->user_address->street) {
+                            if (!isset($errors['street'])) {
+                                $errors['street'] = [];
+                            }
+                            $errors['street'][] = "Street doesn't match the patient account records.";
+                        }
+                    }
+
+                    // Validate barangay/purok
+                    if ($data['brgy'] != $user->user_address->purok) {
+                        $errors['brgy'] = ["Barangay doesn't match the patient account records."];
+                    }
+
+                    // If there are errors, return JSON response
+                    if (!empty($errors)) {
+                        return response()->json([
+                            'message' => 'The given data does not match our records.',
+                            'errors' => $errors
+                        ], 422);
+                    }
+
+                    // If validation passes, continue with your logic...
+
+                } catch (ModelNotFoundException $e) {
+                    return response()->json([
+                        'message' => 'Patient account not found.',
+                        'errors' => [
+                            'user_account' => ['The selected patient account does not exist.']
+                        ]
+                    ], 404);
+                }
+            }
+
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             $ageInYears = Carbon::parse($data['date_of_birth'])->age;
@@ -124,13 +212,113 @@ class addPatientController extends Controller
                 'suffix' => $data['suffix']??null
             ]);
 
+            
+            // Insert user data or update only
+            if ($data['user_account']) {
+                try {
+                    $user = User::with('user_address')->findOrFail((int)$data['user_account']);
+
+                    // Update existing user
+                    $user->update([
+                        'patient_record_id' => $vaccinationPatient->id,
+                        'first_name' => ucwords(strtolower($data['first_name'])),
+                        'middle_initial' => $middleInitial,
+                        'last_name' => ucwords(strtolower($data['last_name'])),
+                        'full_name' => $fullName,
+                        'email' => $data['email'],
+                        'contact_number' => $data['contact_number'] ?? null,
+                        'date_of_birth' => $data['date_of_birth'] ?? null,
+                        'suffix' => $data['suffix'] ?? null,
+                        'patient_type' => $data['type_of_patient'],
+                        'role' => 'patient',
+                        'status' => 'active'
+                    ]);
+
+                    // Update or create user address
+                    if ($user->user_address) {
+                        $user->user_address->update([
+                            'patient_id' => $vaccinationPatient->id,
+                            'house_number' => $blk_n_street[0],
+                            'street' => $blk_n_street[1] ?? null,
+                            'purok' => $data['brgy']
+                        ]);
+                    } else {
+                        // Create address if it doesn't exist
+                        $user->user_address()->create([
+                            'patient_id' => $vaccinationPatient->id,
+                            'house_number' => $blk_n_street[0],
+                            'street' => $blk_n_street[1] ?? null,
+                            'purok' => $data['brgy']
+                        ]);
+                    }
+                } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                    // User account not found, but this shouldn't happen if validation passed
+                    return response()->json([
+                        'message' => 'Patient account not found.',
+                        'errors' => [
+                            'user_account' => ['The selected patient account does not exist.']
+                        ]
+                    ], 404);
+                } catch (\Exception $e) {
+                    // Log the error
+                    // \Log::error('Error updating user account: ' . $e->getMessage());
+
+                    return response()->json([
+                        'message' => 'An error occurred while updating patient information.',
+                        'errors' => [
+                            'server' => ['Please try again or contact support.']
+                        ]
+                    ], 500);
+                }
+            } else {
+                // Create new user account
+                $temporaryPassword = $this -> generateSecurePassword(8);
+                try {
+                    // Create user
+                    $user = User::create([
+                        'patient_record_id' => $vaccinationPatient->id,
+                        'first_name' => ucwords(strtolower($data['first_name'])),
+                        'middle_initial' => $middleInitial,
+                        'last_name' => ucwords(strtolower($data['last_name'])),
+                        'full_name' => $fullName,
+                        'email' => $data['email'],
+                        'contact_number' => $data['contact_number'] ?? null,
+                        'date_of_birth' => $data['date_of_birth'] ?? null,
+                        'suffix' => $data['suffix'] ?? null,
+                        'patient_type' => $data['type_of_patient'],
+                        'password' => Hash::make($temporaryPassword),
+                        'role' => 'patient',
+                        'status' => 'active',
+                        'password' => bcrypt('default_password_123') // Set a default password or generate one
+                    ]);
+
+                    // Send email with credentials
+                    Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
+                    // Create user address
+                    $user->user_address()->create([
+                        'patient_id' => $vaccinationPatient->id,
+                        'house_number' => $blk_n_street[0],
+                        'street' => $blk_n_street[1] ?? null,
+                        'purok' => $data['brgy']
+                    ]);
+                } catch (\Exception $e) {
+                    // Log the error
+
+                    return response()->json([
+                        'message' => 'An error occurred while creating patient account.',
+                        'errors' => [
+                            'server' => ['Please try again or contact support.']
+                        ]
+                    ], 500);
+                }
+            }
 
             // use the id of the created patient for medical case record
             $vaccinationPatientId = $vaccinationPatient->id;
 
             // add the patient address
             // dd($patient->id);
-            $blk_n_street = explode(',', $data['street']);
+            
             // dd($blk_n_street);
             $patientAddress = patient_addresses::create([
                 'patient_id' => $vaccinationPatientId,
@@ -278,4 +466,7 @@ class addPatientController extends Controller
 
         return $dob->diffInMonths($now);
     }
+
+
+   
 }

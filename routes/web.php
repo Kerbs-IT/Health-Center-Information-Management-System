@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
 use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\PatientAccountController;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -428,6 +429,9 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
     Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
+
+    // get the user list for the add patient search bar
+    Route::get('/get-user-list',[PatientAccountController::class,'search'])->name('users.search');
 });
 // ---------------------------- home page
 // Route to homepage

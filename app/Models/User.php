@@ -28,6 +28,7 @@ class User extends Authenticatable implements CanResetPassword
         'first_name',
         'last_name',
         'middle_initial',
+        'full_name',
         'date_of_birth',
         'contact_number',
         'address',
@@ -75,22 +76,28 @@ class User extends Authenticatable implements CanResetPassword
         ];
     }
 
-    public function nurses(){
-        return $this-> hasOne(nurses::class,'user_id','id');
+    public function nurses()
+    {
+        return $this->hasOne(nurses::class, 'user_id', 'id');
     }
-    public function addresses(){
-        return $this-> hasOne(addresses::class,'user_id','id');
+    public function addresses()
+    {
+        return $this->hasOne(addresses::class, 'user_id', 'id');
     }
-    public function admin_details(){
-        return $this-> hasOne(admin_details::class,'user_id','id');
+    public function admin_details()
+    {
+        return $this->hasOne(admin_details::class, 'user_id', 'id');
     }
-    public function staff(){
-        return $this -> hasOne(staff::class,'user_id','id');
+    public function staff()
+    {
+        return $this->hasOne(staff::class, 'user_id', 'id');
     }
-    public function patient(){
+    public function patient()
+    {
         return $this->hasOne(patients::class, 'user_id', 'id');
     }
-    public function medicineRequest(){
+    public function medicineRequest()
+    {
         return $this->hasMany(MedicineRequest::class, 'user_id', 'id');
     }
 
@@ -103,12 +110,13 @@ class User extends Authenticatable implements CanResetPassword
     public function getFullNameAttribute()
     {
         $mi = $this->middle_initial ? substr($this->middle_initial, 0, 1) . '. ' : '';
-        $suffix = $this->suffix ? $this->suffix:'';
+        $suffix = $this->suffix ? $this->suffix : '';
         return "{$this->first_name} {$mi}{$this->last_name} {$suffix}";
     }
 
     // users address
-    public function user_address (){
-        return $this->hasOne(users_address::class,'user_id','id');
+    public function user_address()
+    {
+        return $this->hasOne(users_address::class, 'user_id', 'id');
     }
 }

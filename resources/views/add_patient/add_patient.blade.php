@@ -22,7 +22,8 @@
     'resources/js/prenatal/addPrenatalPatient.js',
     'resources/js/senior_citizen/addPatient.js',
     'resources/js/tb_dots/add_patient.js',
-    'resources/js/family_planning/add_patient.js'
+    'resources/js/family_planning/add_patient.js',
+    'resources/js/add_patient/searchUser.js'
     ])
     @include('sweetalert::alert')
     <div class="add-patient d-flex min-vh-100">
@@ -48,6 +49,34 @@
                                     </span>
                                 </div>
                                 <div class="user-info w-100">
+                                    <div class="mb-3 position-relative">
+                                        <label for="searchInput" class="form-label">Search Patient Account:</label>
+                                        <input
+                                            type="text"
+                                            id="searchInput"
+                                            class="form-control"
+                                            placeholder="Search by full name..."
+                                            autocomplete="off">
+
+
+                                        <div id="resultsContainer"
+                                            class="position-absolute w-100 shadow-lg"
+                                            style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
+                                            <div class="list-group list-group-flush" id="searchResults">
+                                                <!-- Results will be populated here -->
+                                            </div>
+                                        </div>
+
+                                        <div id="loadingSpinner" class="mt-2" style="display: none;">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+
+                                        <div id="noResults" class="mt-2" style="display: none;">
+                                            <small class="text-muted">No results found</small>
+                                        </div>
+                                    </div>
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient<span class="text-danger">*</span></label>
                                         <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
@@ -60,6 +89,13 @@
                                         </select>
                                     </div>
                                     <h4>Personal Info</h4>
+                                    <!-- add hidden input, if it has a user -->
+                                     <input type="hidden" name="user_account" id="user_account">
+                                    <div class="mb-2">
+                                        <label for="email" class="">Email<span class="text-danger">*</span></label>
+                                        <input type="email" id="email" placeholder="Enter First Name" class="form-control" name="email" value="">
+                                        <small class="text-danger error-text" id="email_error"></small>
+                                    </div>
                                     <div class="mb-2 d-flex gap-1">
                                         <div class="input-field w-25">
                                             <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
@@ -79,7 +115,7 @@
                                         <div class="input-field w-25">
                                             <label for="add_suffix" class="">Suffix</label>
                                             <select name="suffix" id="add_suffix" class="form-select py-2">
-                                                <option value="" disabled selected>Select Suffix</option>
+                                                <option value=""  selected>Select Suffix</option>
                                                 <option value="Jr.">Jr</option>
                                                 <option value="Sr.">Sr</option>
                                                 <option value="II.">II</option>
@@ -133,7 +169,7 @@
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>
-                                            <input type="number" placeholder="Enter your phone number" class="form-control" name="contact_number" value="">
+                                            <input type="number" placeholder="Enter your phone number" class="form-control" id="contact_number" name="contact_number" value="">
                                             <small class="text-danger error-text" id="contact_number_error"></small>
                                         </div>
                                         <div class="input-field flex-fill xl:w-[50%]">
@@ -386,7 +422,7 @@
                                                 $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID
                                                 @endphp
                                                 <select name="brgy" id="brgy" class="form-select py-2">
-                                                    <option value="" disabled selected>Select a brgy</option>
+                                                    <option value=""  selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
                                                     @if($isStaff)
                                                     {{-- Staff: only their assigned area is enabled --}}
@@ -477,7 +513,7 @@
                                         <input type="text" class="form-control w-100 bg-light" id="vaccination_patient_name_view" disabled placeholder="Enter the Name">
                                     </div>
                                 </div>
-                                
+
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
                                         <label for="patient_name">handled By</label>

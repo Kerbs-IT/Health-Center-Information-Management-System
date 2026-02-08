@@ -94,6 +94,7 @@ class VerificationController extends Controller
                 'first_name' => ucwords(strtolower($registrationData['first_name'])),
                 'middle_initial' => ucwords(strtolower($registrationData['middle_initial'] ?? '')),
                 'last_name' => ucwords(strtolower($registrationData['last_name'])),
+                'full_name' => $registrationData['full_name'],
                 'patient_type' => $registrationData['patient_type'],
                 'date_of_birth' => $registrationData['date_of_birth'],
                 'contact_number' => $registrationData['contact_number'],

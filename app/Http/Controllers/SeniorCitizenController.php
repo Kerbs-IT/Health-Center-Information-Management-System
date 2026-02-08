@@ -2,20 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PatientAccountCreated;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\senior_citizen_case_records;
 use App\Models\senior_citizen_maintenance_meds;
 use App\Models\senior_citizen_medical_records;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SeniorCitizenController extends Controller
 {
-    //
+    // generate random password
+    public function generateSecurePassword($length = 8)
+    {
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $symbols = '!@#$%^&*';
+
+        // Ensure at least one character from each set
+        $password = '';
+        $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+        $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+        $password .= $numbers[random_int(0, strlen($numbers) - 1)];
+        $password .= $symbols[random_int(0, strlen($symbols) - 1)];
+
+        // Fill the rest randomly
+        $allChars = $uppercase . $lowercase . $numbers . $symbols;
+        for ($i = 4; $i < $length; $i++) {
+            $password .= $allChars[random_int(0, strlen($allChars) - 1)];
+        }
+
+        // Shuffle the password to randomize character positions
+        return str_shuffle($password);
+    }
 
     public function addPatient(Request $request){
 
@@ -39,7 +66,9 @@ class SeniorCitizenController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
-                'suffix' => 'sometimes|nullable|string'
+                'suffix' => 'sometimes|nullable|string',
+                'email' => 'required|email',
+                'user_account' => 'sometimes|nullable|numeric'
             ]);
 
             // validate for medical
@@ -79,6 +108,62 @@ class SeniorCitizenController extends Controller
                 $patientData['suffix']??null
             ];
 
+            // address blk & lot
+            $blk_n_street = explode(',', $patientData['street']);
+
+            // check if the email is valid
+            if ($patientData['user_account']) {
+                $errors = [];
+
+                try {
+                    $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
+
+                    // Validate email
+                    if ($user->email != $patientData['email']) {
+                        $errors['email'] = ["Patient Account email doesn't match the email input value."];
+                    }
+
+                    // Validate house number (required)
+                    if (isset($blk_n_street[0]) && $blk_n_street[0] != $user->user_address->house_number) {
+                        $errors['street'] = ["House number doesn't match the patient account records."];
+                    }
+
+                    // Validate street (optional - only if provided)
+                    if (isset($blk_n_street[1]) && !empty(trim($blk_n_street[1]))) {
+                        if (trim($blk_n_street[1]) != $user->user_address->street) {
+                            if (!isset($errors['street'])) {
+                                $errors['street'] = [];
+                            }
+                            $errors['street'][] = "Street doesn't match the patient account records.";
+                        }
+                    }
+
+                    // Validate barangay/purok
+                    if ($patientData['brgy'] != $user->user_address->purok) {
+                        $errors['brgy'] = ["Barangay doesn't match the patient account records."];
+                    }
+
+                    // If there are errors, return JSON response
+                    if (!empty($errors)) {
+                        return response()->json([
+                            'message' => 'The given data does not match our records.',
+                            'errors' => $errors
+                        ], 422);
+                    }
+
+                    // If validation passes, continue with your logic...
+
+                } catch (ModelNotFoundException $e) {
+                    return response()->json([
+                        'message' => 'Patient account not found.',
+                        'errors' => [
+                            'user_account' => ['The selected patient account does not exist.']
+                        ]
+                    ], 404);
+                }
+            }
+            // ==================================================================================================================================
+
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             $age = isset($patientData['sex'])? ucfirst($patientData['sex']):null;
 
@@ -100,13 +185,113 @@ class SeniorCitizenController extends Controller
                 'suffix' => $patientData['suffix']??''
             ]);
 
+            // create a patient account if not existing
+            // Insert user data or update only
+            if ($patientData['user_account']) {
+                try {
+                    $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
+
+                    // Update existing user
+                    $user->update([
+                        'patient_record_id' =>$seniorCitizenPatient->id,
+                        'first_name' => ucwords(strtolower($patientData['first_name'])),
+                        'middle_initial' => $middleName,
+                        'last_name' => ucwords(strtolower($patientData['last_name'])),
+                        'full_name' => $fullName,
+                        'email' => $patientData['email'],
+                        'contact_number' => $patientData['contact_number'] ?? null,
+                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                        'suffix' => $patientData['suffix'] ?? null,
+                        'patient_type' => $patientData['type_of_patient'],
+                        'role' => 'patient',
+                        'status' => 'active'
+                    ]);
+
+                    // Update or create user address
+                    if ($user->user_address) {
+                        $user->user_address->update([
+                            'patient_id' =>$seniorCitizenPatient->id,
+                            'house_number' => $blk_n_street[0],
+                            'street' => $blk_n_street[1] ?? null,
+                            'purok' => $patientData['brgy']
+                        ]);
+                    } else {
+                        // Create address if it doesn't exist
+                        $user->user_address()->create([
+                            'patient_id' =>$seniorCitizenPatient->id,
+                            'house_number' => $blk_n_street[0],
+                            'street' => $blk_n_street[1] ?? null,
+                            'purok' => $patientData['brgy']
+                        ]);
+                    }
+                } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                    // User account not found, but this shouldn't happen if validation passed
+                    return response()->json([
+                        'message' => 'Patient account not found.',
+                        'errors' => [
+                            'user_account' => ['The selected patient account does not exist.']
+                        ]
+                    ], 404);
+                } catch (\Exception $e) {
+                    // Log the error
+                    // \Log::error('Error updating user account: ' . $e->getMessage());
+
+                    return response()->json([
+                        'message' => 'An error occurred while updating patient information.',
+                        'errors' => [
+                            'server' => ['Please try again or contact support.']
+                        ]
+                    ], 500);
+                }
+            } else {
+                // Create new user account
+                $temporaryPassword = $this->generateSecurePassword(8);
+                try {
+                    // Create user
+                    $user = User::create([
+                        'patient_record_id' => $seniorCitizenPatient->id,
+                        'first_name' => ucwords(strtolower($patientData['first_name'])),
+                        'middle_initial' => $middleName,
+                        'last_name' => ucwords(strtolower($patientData['last_name'])),
+                        'full_name' => $fullName,
+                        'email' => $patientData['email'],
+                        'contact_number' => $patientData['contact_number'] ?? null,
+                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                        'suffix' => $patientData['suffix'] ?? null,
+                        'patient_type' => $patientData['type_of_patient'],
+                        'password' => Hash::make($temporaryPassword),
+                        'role' => 'patient',
+                        'status' => 'active',
+                        'password' => bcrypt('default_password_123') // Set a default password or generate one
+                    ]);
+
+                    // Send email with credentials
+                    Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
+                    // Create user address
+                    $user->user_address()->create([
+                        'patient_id' =>$seniorCitizenPatient->id,
+                        'house_number' => $blk_n_street[0],
+                        'street' => $blk_n_street[1] ?? null,
+                        'purok' => $patientData['brgy']
+                    ]);
+                } catch (\Exception $e) {
+                    // Log the error
+
+                    return response()->json([
+                        'message' => 'An error occurred while creating patient account.',
+                        'errors' => [
+                            'server' => ['Please try again or contact support.']
+                        ]
+                    ], 500);
+                }
+            }
+            //  =================================================================================================================================
+
             // use the id of the created patient for medical case record
             $seniorCitizenPatientId = $seniorCitizenPatient->id;
 
             // add the patient address
-            // dd($patient->id);
-            $blk_n_street = explode(',', $patientData['street']);
-            // dd($blk_n_street);
+            
             patient_addresses::create([
                 'patient_id' => $seniorCitizenPatientId,
                 'house_number' => $blk_n_street[0] ?? $patientData['blk_n_street'],
@@ -188,10 +373,7 @@ class SeniorCitizenController extends Controller
             return response()->json([
                 'errors' => $e->errors()
             ], 422);
-        }
-        
-        
-        
+        }   
     }
 
     public function updateDetails(Request $request,$id){

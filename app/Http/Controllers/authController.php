@@ -100,6 +100,19 @@ class authController extends Controller
 
         $data['full_address'] = $fullAddress;
 
+        // full name
+        $middle = substr($data['middle_initial'] ?? '', 0, 1);
+        $middle = $middle ? strtoupper($middle) . '.' : null;
+        $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
+        $parts = [
+            strtolower($data['first_name']),
+            $middle,
+            strtolower($data['last_name']),
+            $data['suffix'] ?? null
+        ];
+
+        $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
         // Parse street address
         $blk_n_street = explode(',', $data['blk_n_street']);
 
@@ -110,6 +123,7 @@ class authController extends Controller
             'first_name' =>ucwords(strtolower($data['first_name'])) ,
             'middle_initial' => $middleName,
             'last_name' => ucwords(strtolower($data['last_name'])),
+            'full_name' => $fullName,
             'patient_type' => $data['patient_type'],
             'email' => $data['email'],
             'password' => $data['password'],
@@ -125,6 +139,7 @@ class authController extends Controller
                 'first_name' => $data['first_name'],
                 'middle_initial' => $middleName,
                 'last_name' => $data['last_name'],
+                'full_name' => $fullName,
                 'patient_type' => $data['patient_type'],
                 'date_of_birth' => $data['date_of_birth'],
                 'contact_number' => $data['contact_number'],
@@ -240,6 +255,7 @@ class authController extends Controller
 
         $staff = $user->staff;
         $nurse = $user->nurses;
+        // full name
         $middle = substr($data['middle_initial'] ?? '', 0, 1);
         $middle = $middle ? strtoupper($middle) . '.' : null;
         $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
@@ -260,6 +276,7 @@ class authController extends Controller
                     'first_name' => ucwords(strtolower($data['first_name'])),
                     'middle_initial' => $middleName,
                     'last_name' => ucwords(strtolower($data['last_name'])),
+                    'full_name' => $fullName,
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'] ?? $user->contact_number,
                 ]);
@@ -284,6 +301,7 @@ class authController extends Controller
                     'first_name' => ucwords(strtolower($data['first_name'])),
                     'middle_initial' => $middleName,
                     'last_name' => ucwords(strtolower($data['last_name'])),
+                    'full_name' => $fullName,
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'] ?? $user->contact_number,
                 ]);
@@ -406,7 +424,19 @@ class authController extends Controller
             'Trece Martires City,',
             'Cavite'
         ]));
+
+        // full name
+        $middle = substr($data['middle_initial'] ?? '', 0, 1);
+        $middle = $middle ? strtoupper($middle) . '.' : null;
         $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
+        $parts = [
+            strtolower($data['first_name']),
+            $middle,
+            strtolower($data['last_name']),
+            $data['suffix'] ?? '',
+        ];
+
+        $fullName = ucwords(trim(implode(' ', array_filter($parts))));
         // Create user directly (NO verification needed for staff/nurse)
         $newUser = User::create([
            
@@ -414,6 +444,7 @@ class authController extends Controller
             'first_name' => ucwords(strtolower($data['first_name'])),
             'middle_initial' => $middleName,
             'last_name' => ucwords(strtolower($data['last_name'])),
+            'full_name' => $fullName,
             'date_of_birth' => $data['date_of_birth'],
             'contact_number' => $data['contact_number'],
             'address' => $fullAddress,

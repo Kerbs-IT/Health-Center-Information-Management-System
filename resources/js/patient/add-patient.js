@@ -657,10 +657,21 @@ if (brgyElement && isHealthWorker == true) {
     brgyElement.addEventListener("change", async (e) => {
         const purok = e.target.value;
 
+        // Check if purok is empty - don't make API call
+        if (!purok || purok.trim() === "") {
+            // console.log("No barangay selected, skipping health worker fetch");
+
+            // ✅ Clear the health worker dropdown when no brgy is selected
+            if (healthWorkerElement) {
+                healthWorkerElement.value = "";
+            }
+            return; // Exit early
+        }
+
         try {
             // get the assigned area
             const response = await fetch(
-                `/get-health-worker?assigned_area=${purok}`,
+                `/get-health-worker?assigned_area=${encodeURIComponent(purok)}`,
                 {
                     method: "POST",
                     headers: {
@@ -668,7 +679,7 @@ if (brgyElement && isHealthWorker == true) {
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": document
                             .querySelector('meta[name="csrf-token"]')
-                            .getAttribute("content"), // Important for Laravel POST
+                            .getAttribute("content"),
                     },
                 },
             );
@@ -676,6 +687,8 @@ if (brgyElement && isHealthWorker == true) {
             const data = await response.json();
             if (response.ok) {
                 healthWorkerElement.value = data.health_worker_id;
+            } else {
+                console.error("Failed to fetch health worker:", data);
             }
         } catch (error) {
             console.log("Error happened:", error);

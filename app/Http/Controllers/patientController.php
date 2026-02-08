@@ -267,7 +267,6 @@ class patientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'sometimes|nullable|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                
                 'email' => ['required', 'email'],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
@@ -442,6 +441,7 @@ class patientController extends Controller
                     'email' => $data['email'] ?? $user->email,
                     'first_name' => $data['first_name'] ?? $user->first_name,
                     'last_name' => $data['last_name'] ?? $user->last_name,
+                    'full_name' => $fullName,
                     'middle_initial' => $data['middle_initial'] ?? '',
                     'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
                     'contact_number' => $data['contact_number'],
