@@ -10,7 +10,7 @@
                 <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
                     Back
                 </a>
-                
+
             </div>
             <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-2">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-a-add-record" data-patient-info='@json($patientInfo)' data-patient-address='@json($address)' data-medical-case-record-id="{{$patientInfo->id}}" id="side-a-add-record-btn">Add Side A Record</button>
@@ -55,7 +55,7 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button type="button" class="delete-record-icon text-danger fw-bold fs-3 archive-family-plan-side-A" data-case-id="{{$record['id']}}">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <i class="fa-solid fa-box-archive text-danger"></i>
                                 </button>
                                 <!-- export btn -->
                                 <button type="button" data-case-id="{{$record['id']}}" wire:click="exportPdf({{$record['id']}},'a')">
@@ -73,7 +73,7 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button type="button" class="delete-record-icon text-danger fw-bold fs-3 delete-side-b-record" data-case-id="{{$record['id']}}">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <i class="fa-solid fa-box-archive text-danger"></i>
                                 </button>
                                 <button type="button" wire:click="exportPdf({{$record['id']}},'b')">
                                     <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->

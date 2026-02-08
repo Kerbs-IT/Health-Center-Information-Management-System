@@ -49,7 +49,7 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button type="button" class="fs-3 delete-record-icon text-danger fw-bold  senior-citizen-archive-icon" data-bs-case-id="{{$record->id}}">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <i class="fa-solid fa-box-archive fs-2 text-danger"></i>
                                 </button>
                                 <button type="button" wire:click="exportPdf({{$record->id}})">
                                     <svg xmlns="http://www.w3.org/2000/svg" style="width: 30px; height:30px; fill:green" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->

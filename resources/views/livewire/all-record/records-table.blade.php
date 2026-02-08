@@ -97,17 +97,15 @@
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">
                             <a href="/patient-record/{{$case->type_of_case}}/view-records?patient_id={{ $record->id }}"
-                                class="btn btn-sm btn-primary">
-                                <i class="fa-solid fa-folder-open"></i> View Record
+                                class="">
+                                <i class="fa-solid fs-3 text-warning fa-folder-open"></i> 
                             </a>
 
                             <a href="#"
                                 class="delete-record-icon"
                                 data-bs-patient-id="{{ $record->id }}"
                                 data-record-type="{{ $case->type_of_case }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 448 512">
-                                    <path d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z" fill='red' />
-                                </svg>
+                                <i class="fa-solid fa-box-archive fs-3 text-danger"></i>
                             </a>
 
                         </div>

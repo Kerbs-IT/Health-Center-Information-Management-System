@@ -46,11 +46,7 @@
                     </svg>
                     <p class="mb-0" style="font-size: 0.875rem;">Download</p>
                 </button>
-                <div class="print d-flex align-items-center ms-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="print-icon h-8 w-8" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                        <path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
-                    </svg>
-                </div>
+                
             </div>
         </div>
         <div class="tables table-responsive">
@@ -147,10 +143,8 @@
                                 <a href="/patient-record/tb-dots/edit-details/{{ $record->id }}?{{$backParams}}" class="text-success fw-bold fs-2">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <a href="" class="delete-record-icon-tbDots" data-bs-patient-id="{{ $record->patient->id }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="view-icon" viewBox="0 0 448 512">
-                                        <path d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z" fill='red' />
-                                    </svg>
+                                <a href="" class="delete-record-icon-tbDots fs-2" data-bs-patient-id="{{ $record->patient->id }}">
+                                    <i class="fa-solid fa-box-archive text-danger"></i>
                                 </a>
 
 

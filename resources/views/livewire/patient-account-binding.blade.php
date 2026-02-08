@@ -100,7 +100,7 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
                             <button type="button" class="btn btn-sm btn-danger text-white delete-user" data-id="{{$user->id}}">
-                                <i class="fa-solid fa-trash"></i>
+                                <i class="fa-solid fa-box-archive"></i>
                             </button>
                         </td>
                     </tr>
