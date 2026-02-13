@@ -1918,4 +1918,29 @@ class PdfController extends Controller
 
         return $mapping[$typeOfCase] ?? null;
     }
+
+    public function generateOverallPatientList(){
+        $rows    = session('pdf_rows');
+        $filters = session('pdf_filters');
+
+        // Guard: if someone hits the route directly without data
+        if (! $rows) {
+            abort(404, 'No PDF data found. Please generate from the patient list.');
+        }
+
+        $pdf = Pdf::loadView('pdf.allRecords.patient-list', [
+            'rows'    => $rows,
+            'filters' => $filters,
+            'generatedAt' => now()->format('F d, Y  h:i A'),
+        ])->setPaper('a4', 'portrait')
+            ->setOption('enable-local-file-access', true)
+            ->setOption('javascript-delay', 500)
+            ->setOption('margin-top', 5)      // Reduce margins
+            ->setOption('margin-bottom', 5)
+            ->setOption('margin-left', 10)
+            ->setOption('margin-right', 10)
+            ->setOption('zoom', 0.85);
+
+        return $pdf->download('patient-list-' . now()->format('Ymd-His') . '.pdf');
+    }
 }

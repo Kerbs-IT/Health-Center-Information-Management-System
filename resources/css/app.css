@@ -55,6 +55,11 @@ html body {
     background-color: var(--primaryColor) !important;
 }
 
+.bg-light-pink {
+    background-color: #e471ba !important;
+    /* soft light pink */
+}
+
 
 html body
 {

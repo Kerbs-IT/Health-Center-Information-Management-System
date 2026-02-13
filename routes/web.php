@@ -582,6 +582,9 @@ Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
 Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
     ->name('family-planning.pdf');
 
+// overall records
+Route::get('/patient-list/pdf',[PdfController::class, 'generateOverallPatientList'])->name('patients.pdf');
+
 
 // LOUIE'S CHANGES
 

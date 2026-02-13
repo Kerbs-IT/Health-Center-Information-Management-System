@@ -18,7 +18,8 @@
     'resources/js/header.js',
     'resources/css/healthWorker.css',
     'resources/css/profile.css',
-    'resources/css/patient-list.css'
+    'resources/css/patient-list.css',
+    'resources/js/datePicker/record.js'
     ])
     @include('sweetalert::alert')
     <div class="ms-0 ps-0 d-flex w-100 min-vh-100">
@@ -35,7 +36,7 @@
 
 
                     <div class="records">
-                        <livewire:patient-list/>
+                        <livewire:patient-list />
                     </div>
                 </main>
 

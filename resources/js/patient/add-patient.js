@@ -576,7 +576,7 @@ if (
     add_patient_temperature
 ) {
     Inputmask({
-        mask: "999/999",
+        mask: "99[9]/99[9]",
         placeholder: "",
         clearIncomplete: false,
     }).mask(add_patient_blood_pressure);
@@ -609,7 +609,7 @@ if (
         alias: "decimal",
         digits: 2,
         min: 0,
-        max: 300,
+        max: 250,
         rightAlign: false,
     }).mask(add_patient_height);
 
@@ -618,7 +618,7 @@ if (
         alias: "decimal",
         digits: 2,
         min: 0,
-        max: 500,
+        max: 250,
         rightAlign: false,
     }).mask(add_patient_weight);
 }

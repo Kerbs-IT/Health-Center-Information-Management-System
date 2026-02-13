@@ -21,7 +21,7 @@ if (
     temperature
 ) {
     Inputmask({
-        mask: "999/999",
+        mask: "99[9]/99[9]",
         placeholder:"",
         clearIncomplete:false
     }).mask(blood_pressure);
@@ -71,7 +71,7 @@ if (
 
 export function vitalSignInputMask(blood_pressure,temperature,pulse_rate,respiratory_rate,height,weight) {
     Inputmask({
-        mask: "999/999",
+        mask: "99[9]/99[9]",
         placeholder: " ",
     }).mask(blood_pressure);
     // Temperature (e.g., 36.5)
@@ -103,7 +103,7 @@ export function vitalSignInputMask(blood_pressure,temperature,pulse_rate,respira
         alias: "decimal",
         digits: 2,
         min: 0,
-        max: 300,
+        max: 250,
         rightAlign: false,
     }).mask(height);
 
@@ -112,7 +112,7 @@ export function vitalSignInputMask(blood_pressure,temperature,pulse_rate,respira
         alias: "decimal",
         digits: 2,
         min: 0,
-        max: 500,
+        max: 250,
         rightAlign: false,
     }).mask(weight);
 }
