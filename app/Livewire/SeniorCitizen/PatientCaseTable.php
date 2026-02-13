@@ -17,6 +17,7 @@ class PatientCaseTable extends Component
 
     // Optional: listen to events for add/edit/archive
     protected $listeners = ['seniorCitizenRefreshTable' => '$refresh'];
+    protected $paginationTheme = 'bootstrap';
     public function mount($caseId)
     {
         $this->caseId = $caseId; // THIS catches the ID from URL
@@ -30,6 +31,7 @@ class PatientCaseTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+
 
 
     public function render()

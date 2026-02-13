@@ -12,9 +12,12 @@
                 </a>
 
             </div>
-            <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-2">
+            <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-1">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-a-add-record" data-patient-info='@json($patientInfo)' data-patient-address='@json($address)' data-medical-case-record-id="{{$patientInfo->id}}" id="side-a-add-record-btn">Add Side A Record</button>
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-b-add-record" data-patient-info='@json($patientInfo)' id="side-b-add-record-btn">Add Side B Record</button>
+                <a href="{{route('family.planning.case.record.archive')}}?medical_record_id={{$this->medicalRecordCaseId}}" class="btn btn-danger">
+                    <i class="fa-solid fa-box-archive"></i> Archive
+                </a>
             </div>
         </div>
         <div class="table-responsive">

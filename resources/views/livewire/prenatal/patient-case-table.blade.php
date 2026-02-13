@@ -13,10 +13,13 @@
 
             </div>
             <div>
-                <div class="add-buttons d-flex justify-content-end gap-2 flex-wrap">
+                <div class="add-buttons d-flex justify-content-end gap-1 flex-wrap">
                     <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
                     <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
                     <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
+                    <a href="{{route('prenatal.case.record.archive')}}?medical_record_id={{$this->medicalRecordCase->id}}" class="btn btn-danger">
+                        <i class="fa-solid fa-box-archive"></i> Archive
+                    </a>
                 </div>
             </div>
 

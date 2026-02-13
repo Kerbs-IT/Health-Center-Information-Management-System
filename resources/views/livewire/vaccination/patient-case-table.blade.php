@@ -13,7 +13,11 @@
             <button type="button" class="btn btn-info text-white px-3 py-2" onclick="loadImmunizationCard('{{ $medicalRecordId }}')">
                 View Card
             </button>
+            <a href="{{route('vaccination.case.record.archive')}}?medical_record_id={{$this->medicalRecordCase->id}}" class="btn btn-danger">
+                <i class="fa-solid fa-box-archive"></i> Archive
+            </a>
         </div>
+
     </div>
     <div class="table-responsive">
         <table class="w-100 table ">
@@ -22,7 +26,7 @@
                     <th>Case No.</th>
                     <th>Vaccine Type/s</th>
                     <th>Dosage</th>
-                    <th>Nurse</th>
+
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                         Date
                         @if ($sortField === 'created_at')
@@ -44,7 +48,7 @@
                     <td>{{$record->id}}</td>
                     <td>{{$record->vaccine_type}}</td>
                     <td>{{$record->dose_number}}{{$record->dose_number == 1 ? 'st':'th'}} Dose</td>
-                    <td>Nurse Joy</td>
+
                     <td>{{ \Carbon\Carbon::parse($record->date_of_vaccination)->format('M j, Y') }}</td>
                     <td>Done</td>
 
@@ -79,6 +83,9 @@
             </tbody>
 
         </table>
+    </div>
+    <div class="mt-3">
+        {{ $vaccination_case_record->links() }}
     </div>
 
 

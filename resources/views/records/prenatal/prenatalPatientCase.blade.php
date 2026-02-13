@@ -51,7 +51,7 @@
                     <!-- main content -->
                     <div class="flex-grow-1 py-3 px-lg-4 px-md-3 px-0  min-h-[75vh]">
 
-                        <livewire:prenatal.patient-case-table caseId="{{$caseId}}">
+                        <livewire:prenatal.patient-case-table caseId="{{$caseId}}" :medicalRecordCase="$medical_record_case">
 
 
                             <!-- view family planning -->

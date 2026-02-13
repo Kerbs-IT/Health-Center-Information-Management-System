@@ -21,13 +21,16 @@
 
         </div>
 
-        <div class="button-con d-flex align-items-center mt-1 justify-content-end">
+        <div class="button-con d-flex align-items-center gap-1 mt-1 justify-content-end">
             <button wire:click="exportPdf" type="button" class="btn btn-success d-flex  justify-content-center align-items-center gap-2 px-3 py-2" style="height: auto;">
                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height:20px" viewBox="0 0 512 512">
                     <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" fill="white" />
                 </svg>
                 <p class="mb-0" style="font-size: 0.875rem;">Download</p>
             </button>
+            <a href="{{ route('record.archive') }}?showAllTypes=true" class="btn btn-danger">
+                <i class="fa-solid fa-box-archive"></i> Archive
+            </a>
         </div>
     </div>
     <div class="tables table-responsive">
@@ -95,10 +98,10 @@
                     <td>{{ $case->created_at ? $case->created_at->format('M j, Y') : 'N/A' }}</td>
 
                     <td>
-                        <div class="actions d-flex gap-2 justify-content-center align-items-center">
+                        <div class="actions d-flex gap-1 justify-content-center align-items-center">
                             <a href="/patient-record/{{$case->type_of_case}}/view-records?patient_id={{ $record->id }}"
                                 class="">
-                                <i class="fa-solid fs-3 text-warning fa-folder-open"></i> 
+                                <i class="fa-solid fs-3 text-warning fa-folder-open"></i>
                             </a>
 
                             <a href="#"

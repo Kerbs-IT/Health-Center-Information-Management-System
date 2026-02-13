@@ -52,6 +52,7 @@ use App\Livewire\MedicineRequestComponent;
 use App\Livewire\MedicineRequestLogComponent;
 use Illuminate\Support\Facades\Artisan;
 use Knp\Snappy\Pdf;
+use Termwind\Components\Raw;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -432,6 +433,35 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // get the user list for the add patient search bar
     Route::get('/get-user-list',[PatientAccountController::class,'search'])->name('users.search');
+
+    // for archived record
+    Route::get('/archive-records',function(){
+        return view('records.archivedRecord.archive-record',['page'=>'Archive Records', 'isActive' => true]);
+    })->name('record.archive');
+
+    // ============================================ case record =====================================================================
+
+    Route::get('/vaccination-case/archive-records', function () {
+        return view('records.archivedRecord.vaccination-case-archive-record', ['page' => 'Archive Records', 'isActive' => true]);
+    })->name('vaccination.case.record.archive');
+
+    Route::get('/prenatal-case/archive-records', function (){
+        return view('records.archivedRecord.prenatal-case-archive-record', ['page' => 'Archive Records', 'isActive' => true]);
+    })-> name('prenatal.case.record.archive');
+    Route::get('/senior-citizen-case/archive-records', function () {
+        $caseId = request()->get('medical_record_id');
+        return view('records.archivedRecord.senior-citizen-case-archive', ['page' => 'Archive Records', 'isActive' => true, 'caseId' => $caseId]);
+    })->name('senior.citizen.case.record.archive');
+    Route::get('/tb-dots-case/archive-records', function () {
+        $caseId = request()->get('medical_record_id');
+        return view('records.archivedRecord.tb-dots-case-archive', ['page' => 'Archive Records', 'isActive' => true, 'medicalRecordCaseId' => $caseId]);
+    })->name('tbDots.case.record.archive');
+
+    Route::get('/family-planning-case/archive-records', function () {
+        $caseId = request()->get('medical_record_id');
+        return view('records.archivedRecord.family-planning-case-archive', ['page' => 'Archive Records', 'isActive' => true, 'medicalRecordCaseId' => $caseId]);
+    })->name('family.planning.case.record.archive');
+
 });
 // ---------------------------- home page
 // Route to homepage

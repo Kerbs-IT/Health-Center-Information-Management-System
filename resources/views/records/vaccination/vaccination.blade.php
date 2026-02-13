@@ -43,6 +43,13 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            // ✅ Clear old localStorage so record_all doesn't stay active
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
             const subMenuElement = document.querySelectorAll(".sub-menu-bar-item");
 
             subMenuElement.forEach(element => element.classList.remove('active'));

@@ -14,17 +14,28 @@ use Livewire\WithPagination;
 class PatientCaseTable extends Component
 {
     use WithPagination;
-    public $caseId;
-    // for sorting
-    public $sortField = 'created_at';
-    public $sortDirection = 'asc';
 
-    // Optional: listen to events for add/edit/archive
+    protected $paginationTheme = 'bootstrap'; // Add this if you're using Bootstrap
+
+    public $caseId;
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc'; // Changed to desc as default (most recent first)
+    public $medicalRecordCase;
+
     protected $listeners = ['prenatalRefreshTable' => '$refresh'];
-    public function mount($caseId)
+
+    public function mount($caseId, $medicalRecordCase = null)
     {
-        $this->caseId = $caseId; // THIS catches the ID from URL
+        // Fetch the medical record case if not provided
+        if ($medicalRecordCase === null) {
+            $this->medicalRecordCase = medical_record_cases::findOrFail($caseId);
+        } else {
+            $this->medicalRecordCase = $medicalRecordCase;
+        }
+        $this->caseId = $caseId;
+        $this->medicalRecordCase = $medicalRecordCase;
     }
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -33,8 +44,10 @@ class PatientCaseTable extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
-    }
 
+        // Reset to page 1 when sorting
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -146,20 +159,24 @@ class PatientCaseTable extends Component
 
         // Sort the collection
         if ($this->sortDirection === 'asc') {
-            $allRecords = $allRecords->sortBy('created_at');
+            $allRecords = $allRecords->sortBy('created_at')->values();
         } else {
-            $allRecords = $allRecords->sortByDesc('created_at');
+            $allRecords = $allRecords->sortByDesc('created_at')->values();
         }
 
-        // Manual pagination
-        $perPage = 15;
-        $currentPage = request()->get('page', 1);
+        // Use Livewire's pagination - FIXED
+        $perPage = 10;
+        $currentPage = $this->getPage(); // Use Livewire's page tracker
+
         $paginatedRecords = new \Illuminate\Pagination\LengthAwarePaginator(
-            $allRecords->forPage($currentPage, $perPage),
+            $allRecords->forPage($currentPage, $perPage)->values(),
             $allRecords->count(),
             $perPage,
             $currentPage,
-            ['path' => request()->url(), 'query' => request()->query()]
+            [
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'pageName' => 'page'
+            ]
         );
 
         $patientInfo = medical_record_cases::with(['patient', 'prenatal_medical_record'])
@@ -175,25 +192,32 @@ class PatientCaseTable extends Component
             'allRecords' => $paginatedRecords,
         ]);
     }
-    public function exportPdf($caseId){
+
+    public function exportPdf($caseId)
+    {
         return redirect()->route('prenatal-case.pdf', [
-            'caseId' => $caseId,              // Sends "Maria"
+            'caseId' => $caseId,
         ]);
     }
-    public function exportPregnancyPlan($planId){
+
+    public function exportPregnancyPlan($planId)
+    {
         return redirect()->route('pregnancy-plan.pdf', [
-            'planId' => $planId,              // Sends "Maria"
+            'planId' => $planId,
         ]);
     }
+
     public function exportFamilyPlanPdf($caseId, $type)
     {
         return redirect()->route("family-planning-side-$type.pdf", [
-            'caseId' => $caseId, // Sends "desc"
+            'caseId' => $caseId,
         ]);
     }
-    public function exportCheckupPdf($caseId){
+
+    public function exportCheckupPdf($caseId)
+    {
         return redirect()->route("prenatal-checkup.pdf", [
-            'caseId' => $caseId, // Sends "desc"
+            'caseId' => $caseId,
         ]);
     }
 }

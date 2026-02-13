@@ -11,10 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str as SupportStr;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Psy\Util\Str;
 
 class PatientCase extends Component
 {
+
+    use WithPagination;
+
     public $case_record_id;
     public $update_handled_by;
     public $date_of_vaccination;
@@ -30,6 +34,8 @@ class PatientCase extends Component
 
     // Optional: listen to events for add/edit/archive
     protected $listeners = ['refreshTable' => '$refresh'];
+
+    protected $paginationTheme = 'bootstrap';
 
     public function archiveRecord($recordId)
     {
@@ -64,7 +70,7 @@ class PatientCase extends Component
             'vaccination_case_record' => vaccination_case_records::where('medical_record_case_id', $this->medicalRecordCase->id)->where('status', '!=', 'Archived')
                 ->orderBy($this->sortField, $this->sortDirection)
                 ->latest()
-                ->get(),
+                ->paginate(10),
             'healthWorkerName'=> $healthWorkerName,
             'medicalRecordId' =>   $this->medicalRecordCase->id
         ]);

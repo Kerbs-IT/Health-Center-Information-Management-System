@@ -9,7 +9,13 @@
             <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
                 Back
             </a>
-            <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add_record_btn">Add Record</button>
+            <div class="end-btn d-flex gap-1">
+                <button type="button" class="btn btn-success px-3 py-1" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add_record_btn">Add Record</button>
+                <a href="{{ route('senior.citizen.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger">
+                    <i class="fa-solid fa-box-archive"></i> Archive
+                </a>
+            </div>
+
         </div>
         <div class="table-responsive">
             <table class="w-100 table ">
@@ -31,7 +37,7 @@
                 <!-- data of patient -->
                 <tbody>
                     @forelse($seniorCaseRecords as $record)
-                    <tr class="px-">
+                    <tr class="px-1">
                         <td>{{$record->id}}</td>
                         <td>{{$record->type_of_record}}</td>
                         <td>{{$record->created_at->format('M d Y')}}</td>

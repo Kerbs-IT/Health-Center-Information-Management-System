@@ -120,7 +120,7 @@
         Swal.fire({
             icon: 'success',
             title: 'Archived!',
-            text: 'Patient has been archived successfully.',
+            text: 'Patient Record has been archived successfully.',
             timer: 2000,
             showConfirmButton: false
         });
@@ -130,7 +130,7 @@
         Swal.fire({
             icon: 'success',
             title: 'Activated!',
-            text: 'Patient has been activated successfully.',
+            text: 'Patient Record has been activated successfully.',
             timer: 2000,
             showConfirmButton: false
         });

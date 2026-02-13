@@ -315,6 +315,11 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            const allRecordCon = document.getElementById('record_all_records');
+            
+            if(allRecordCon){
+                allRecordCon.classList.remove('active');
+            }
             const con = document.getElementById('record_senior_citizen');
 
             if (con) {

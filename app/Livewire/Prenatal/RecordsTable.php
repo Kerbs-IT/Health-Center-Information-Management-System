@@ -25,6 +25,7 @@ class RecordsTable extends Component
     public $patient_id = null;
 
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
+    protected $paginationTheme = 'bootstrap';
     public function mount()
     {
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');

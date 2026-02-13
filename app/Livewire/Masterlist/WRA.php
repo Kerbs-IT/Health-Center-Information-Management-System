@@ -18,6 +18,7 @@ class WRA extends Component
     // Sorting
     public $sortField = 'created_at';
     public $sortDirection = 'asc';
+    protected $paginationTheme = 'bootstrap';
 
     // Filters
     public $search = '';

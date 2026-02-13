@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\family_planning_case_records;
 use App\Models\family_planning_side_b_records;
 use App\Models\medical_record_cases;
+use App\Models\nurses;
 use App\Models\patient_addresses;
 use App\Models\patients;
 use App\Models\pregnancy_plans;
@@ -13,6 +14,7 @@ use App\Models\senior_citizen_case_records;
 use App\Models\staff;
 use App\Models\tb_dots_case_records;
 use App\Models\tb_dots_check_ups;
+use App\Models\User;
 use App\Models\vaccination_case_records;
 use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
@@ -413,7 +415,8 @@ class RecordsController extends Controller
             'page' => 'RECORD',
             'vaccination_case_record' => $vaccination_case_record,
             'medical_record_case' => $medical_record_case,
-            'healthWorkerName' => $healthWorkerName
+            'healthWorkerName' => $healthWorkerName,
+            'medical_record_id' => $id
         ]);
     }
     public function vaccinationViewCase($id)
@@ -455,12 +458,12 @@ class RecordsController extends Controller
             ], 500);
         }
     }
-    public function deletePatient($typeOfPatient, $id,)
+    public function deletePatient($typeOfPatient, $id)
     {
         try {
             $patient = patients::findOrFail($id);
 
-            // if(!$patient)return;
+            if(!$patient)return;
 
             $patient->update([
                 'status' => 'Archived'
@@ -468,9 +471,14 @@ class RecordsController extends Controller
 
             if ($typeOfPatient === 'vaccination') {
                 $vaccinationMasterlistRecord = vaccination_masterlists::where("patient_id", $id)->first();
-                $vaccinationMasterlistRecord->update([
-                    'status' => 'Archived'
-                ]);
+
+                
+                if($vaccinationMasterlistRecord){
+                    $vaccinationMasterlistRecord->update([
+                        'status' => 'Archived'
+                    ]);
+                }
+               
             }
             if ($typeOfPatient == 'prenatal' || $typeOfPatient == 'family-planning') {
                 $wraMasterlistRecord = wra_masterlists::where("patient_id", $id)->first();
@@ -740,7 +748,8 @@ class RecordsController extends Controller
                 'patientInfo' => $patientInfo,
                 'caseId' => $caseId,
                 'prenatal_case_record' => $prenatal_case_record,
-                'pregnancy_plan' => $pregnancy_plan
+                'pregnancy_plan' => $pregnancy_plan,
+                'medical_record_case' => $prenatalCaseRecords
             ]
         );
     }

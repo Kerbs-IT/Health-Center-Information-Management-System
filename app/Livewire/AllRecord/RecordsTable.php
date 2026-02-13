@@ -19,6 +19,8 @@ class RecordsTable extends Component
 
     public $start_date;
     public $end_date;
+    
+    protected $paginationTheme = 'bootstrap';
 
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search'];
 

@@ -18,6 +18,7 @@ class PatientCaseTable extends Component
 
     // Optional: listen to events for add/edit/archive
     protected $listeners = ['tbRefreshTable' => '$refresh'];
+    protected $paginationTheme = 'bootstrap';
     public function mount($medicalRecordCaseId)
     {
         $this->$medicalRecordCaseId = $medicalRecordCaseId; // THIS catches the ID from URL

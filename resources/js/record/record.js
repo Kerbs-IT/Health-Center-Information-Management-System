@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Delete handler loaded"); // Debug log
+    // console.log("Delete handler loaded"); // Debug log
 
     // Universal delete handler using event delegation
     document.addEventListener("click", async (e) => {
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const patientId = deleteIcon.dataset.bsPatientId;
         const recordType = deleteIcon.dataset.recordType;
 
-        console.log("Patient ID:", patientId, "Record Type:", recordType); // Debug log
+        // console.log("Patient ID:", patientId, "Record Type:", recordType); // Debug log
 
         if (!recordType || !patientId) {
             console.error("Missing recordType or patientId");

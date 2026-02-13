@@ -5,13 +5,7 @@
             <!-- spouse info-->
             <div class="family-inputs mb-md-2 mb-1 d-flex flex-column gap-1 w-100">
                 <div class="client-info mb-2">
-                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
-                        <span class="fs-6">
-                            <strong>Note:</strong>
-                            <span class="text-danger">*</span>
-                            <span class="fw-light"> indicates a required field.</span>
-                        </span>
-                    </div>
+                   
                     <h5>Client Information</h5>
                     <div class="family-planning-inputs d-flex gap-1 flex-wrap flex-lg-nowrap">
                         <div class="input-field flex-fill lg:w-[50%]">

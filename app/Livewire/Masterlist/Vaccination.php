@@ -27,6 +27,7 @@ class Vaccination extends Component
     public $filterMonth = '';
     public $filterYear = '';
     public $selectedRange = '0-59 Months';
+    protected $paginationTheme = 'bootstrap';
 
     // ADDED: Force component re-render on filter changes
     public $refreshKey = 0;

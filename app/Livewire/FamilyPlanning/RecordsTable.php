@@ -24,6 +24,7 @@ class RecordsTable extends Component
     public $patient_id = null;
 
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
+    protected $paginationTheme = 'bootstrap';
     public $start_date;
     public $end_date;
 
