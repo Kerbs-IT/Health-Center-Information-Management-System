@@ -73,10 +73,11 @@ class authController extends Controller
                 Rule::unique('users')->where(function ($query) use ($request) {
                     return $query->where('first_name', $request->first_name)
                         ->where('last_name', $request->last_name);
-                })
+                }),
+                'string'
             ],
             'middle_initial' => ['sometimes','nullable', 'string'],
-            'last_name' => ['required'],
+            'last_name' => ['required', 'string'],
             'patient_type' => 'required',
             'date_of_birth' => 'required|date|before_or_equal:today',
             'contact_number' => 'required|digits_between:7,12',
@@ -403,9 +404,9 @@ class authController extends Controller
             
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'first_name' => 'required',
+            'first_name' => 'required|string',
             'middle_initial' => ['required', 'string'],
-            'last_name' => ['required'],
+            'last_name' => ['required', 'string'],
             'date_of_birth' => [
                 'required',
                 'date',

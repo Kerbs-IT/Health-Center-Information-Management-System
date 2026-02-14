@@ -33,14 +33,15 @@ class manageUserController extends Controller
                     Rule::unique('users')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
-                    })
+                    }),
+                    'string'
                 ],
                 'middle_initial' => 'sometimes|nullable|string',
-                'last_name' => ['required'],
+                'last_name' => ['required', 'string'],
                 'contact_number' => 'required|digits_between:7,12',
                 'date_of_birth' => 'required|date|before_or_equal:today',
-                'patient_type' => 'required',
-                'blk_n_street' => 'required',
+                'patient_type' => 'required|string',
+                'blk_n_street' => 'required|string',
                 'patient_purok_dropdown' => 'required',
                 'add_suffix' => 'sometimes|nullable|string'
 
@@ -131,8 +132,8 @@ class manageUserController extends Controller
         try {
             $user = User::findOrFail($id);
             $data = $request->validate([
-                'first_name' => 'sometimes|nullable|string',
-                'last_name' => 'sometimes|nullable|string',
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'age' => 'sometimes|nullable|numeric',
                 'date_of_birth' => 'required|date|before_or_equal:today',
