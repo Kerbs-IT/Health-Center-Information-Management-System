@@ -165,6 +165,27 @@ document.addEventListener("DOMContentLoaded", () => {
             insertNameValue(fname, MI, lname, tb_dots_patient_name, suffix);
         }
 
+        if (typeSelect.value === "vaccination") {
+            const vaccination_birth_height = document.getElementById(
+                "vaccination_birth_height",
+            );
+            const vaccination_birth_weight = document.getElementById(
+                "vaccination_birth_weight",
+            );
+
+            const current_height = document.getElementById("current_height");
+            const current_weight = document.getElementById("current_weight");
+            if (vaccination_birth_height.value !== 0) {
+                current_height.value = vaccination_birth_height.value;
+            }
+
+            if (vaccination_birth_weight.value !== 0) {
+                current_weight.value = vaccination_birth_weight.value;
+            }
+
+
+        }
+
         if (typeSelect.value === "prenatal") {
             displayVitalSign();
         }
@@ -219,6 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".third-row")
                 .classList.replace("d-none", "d-flex");
+            
+             setTimeout(function () {
+                 initializeVaccinationMasks();
+             }, 2000);
         } else if (dropdownValue == "prenatal") {
             // hide the vaccination
             document
@@ -374,6 +399,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     typeSelect.addEventListener("change", function () {
         disableSubmitBtn(typeSelect.value);
+
+       
     });
 
     // handle adding the vaccine
@@ -567,13 +594,21 @@ const add_patient_respiratory_rate = document.getElementById(
 const add_patient_height = document.getElementById("add_patient_height");
 const add_patient_weight = document.getElementById("add_patient_weight");
 
+// const vaccination birth height and weight
+const vaccination_birth_height = document.getElementById(
+    "vaccination_birth_height",
+);
+const vaccination_birth_weight = document.getElementById(
+    "vaccination_birth_weight",
+);
+
 if (
-    add_patient_blood_pressure &&
-    add_patient_height &&
-    add_patient_weight &&
-    add_patient_pulse_rate &&
-    add_patient_respiratory_rate &&
-    add_patient_temperature
+    (add_patient_blood_pressure &&
+        add_patient_height &&
+        add_patient_weight &&
+        add_patient_pulse_rate &&
+        add_patient_respiratory_rate &&
+        add_patient_temperature) 
 ) {
     Inputmask({
         mask: "99[9]/99[9]",
@@ -621,6 +656,8 @@ if (
         max: 250,
         rightAlign: false,
     }).mask(add_patient_weight);
+
+   
 }
 
 //  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
@@ -860,7 +897,6 @@ function disableSubmitBtn(typeOfPatient) {
 
 function displayVitalSign() {
     // console.log("is it triggeed");
-    
 
     const addVitalSign = [
         "blood_pressure",
@@ -889,12 +925,7 @@ function displayVitalSign() {
 }
 
 function familyPlanVitalSign() {
-    const addVitalSign = [
-        "blood_pressure",
-        "pulse_rate",
-        "height",
-        "weight",
-    ];
+    const addVitalSign = ["blood_pressure", "pulse_rate", "height", "weight"];
 
     addVitalSign.forEach((element) => {
         if (document.getElementById(`add_patient_${element}`)) {
@@ -911,4 +942,23 @@ function familyPlanVitalSign() {
             }
         }
     });
+}
+
+function initializeVaccinationMasks() {
+    console.log("running kaba");
+    Inputmask({
+        alias: "decimal",
+        digits: 2,
+        min: 0,
+        max: 250,
+        rightAlign: false,
+    }).mask(document.getElementById("vaccination_birth_height"));
+
+    Inputmask({
+        alias: "decimal",
+        digits: 2,
+        min: 0,
+        max: 250,
+        rightAlign: false,
+    }).mask(document.getElementById("vaccination_birth_weight"));
 }

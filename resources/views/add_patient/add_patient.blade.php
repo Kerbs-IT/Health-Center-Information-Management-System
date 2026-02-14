@@ -90,7 +90,7 @@
                                     </div>
                                     <h4>Personal Info</h4>
                                     <!-- add hidden input, if it has a user -->
-                                     <input type="hidden" name="user_account" id="user_account">
+                                    <input type="hidden" name="user_account" id="user_account">
                                     <div class="mb-2">
                                         <label for="email" class="">Email<span class="text-danger">*</span></label>
                                         <input type="email" id="email" placeholder="Enter First Name" class="form-control" name="email" value="">
@@ -115,7 +115,7 @@
                                         <div class="input-field w-25">
                                             <label for="add_suffix" class="">Suffix</label>
                                             <select name="suffix" id="add_suffix" class="form-select py-2">
-                                                <option value=""  selected>Select Suffix</option>
+                                                <option value="" selected>Select Suffix</option>
                                                 <option value="Jr.">Jr</option>
                                                 <option value="Sr.">Sr</option>
                                                 <option value="II.">II</option>
@@ -422,7 +422,7 @@
                                                 $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID
                                                 @endphp
                                                 <select name="brgy" id="brgy" class="form-select py-2">
-                                                    <option value=""  selected>Select a brgy</option>
+                                                    <option value="" selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
                                                     @if($isStaff)
                                                     {{-- Staff: only their assigned area is enabled --}}
@@ -485,12 +485,12 @@
                                         <div class="vitals mb-2 input-field d-none gap-3 w-100 third-row">
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Height(cm):</label>
-                                                <input type="number" class="form-control w-100" placeholder="Enter the birth height" name="vaccination_height">
+                                                <input type="number" class="form-control w-100" id="vaccination_birth_height" placeholder="Enter the birth height" name="vaccination_height">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="vaccination-vitals mb-2">
                                                 <label for="BP">Birth Weight(kg):</label>
-                                                <input type="number" class="form-control w-100" placeholder="Enter the birth weight" name="vaccination_weight">
+                                                <input type="number" class="form-control w-100" id="vaccination_birth_weight" placeholder="Enter the birth weight" name="vaccination_weight">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>
                                         </div>
@@ -536,18 +536,18 @@
                                 </div>
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="current_weight">Weight</label>
-                                        <input type="text" class="form-control" name="current_weight" id="current_weight" required>
+                                        <label for="current_weight">Weight(kg)</label>
+                                        <input type="number" class="form-control" name="current_weight" id="current_weight" required>
                                         <small class="text-danger error-text" id="current_weight_error"></small>
                                     </div>
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="time">Height</label>
-                                        <input type="text" class="form-control" name="current_height" id="current_height" required>
+                                        <label for="time">Height(cm)</label>
+                                        <input type="number" class="form-control" name="current_height" id="current_height" required>
                                         <small class="text-danger error-text" id="current_height_error"></small>
                                     </div>
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="current_temperature">Temperature</label>
-                                        <input type="text" class="form-control" name="current_temperature" id="current_temperature" required>
+                                        <label for="current_temperature">Temperature(°C)</label>
+                                        <input type="number" class="form-control" name="current_temperature" id="current_temperature" required>
                                         <small class="text-danger error-text" id="current_temperature_error"></small>
                                     </div>
                                 </div>

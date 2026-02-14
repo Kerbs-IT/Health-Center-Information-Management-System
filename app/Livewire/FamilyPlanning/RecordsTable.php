@@ -77,6 +77,7 @@ class RecordsTable extends Component
             ->where('type_of_case', 'family-planning')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status','Active')
             ->when($this->patient_id,function($query){
                 $query -> where('patients.id', $this->patient_id);
             })

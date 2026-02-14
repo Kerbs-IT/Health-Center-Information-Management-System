@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
@@ -206,6 +206,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- <div class="mb-3">
+                                    <div class="mb-3 roles w-100">
+                                        <label for="edit_patient_type" class="">Type of Patient<span class="text-danger">*</span></label>
+                                        <select name="edit_patient_type" id="edit_patient_type" class="form-select text-center w-100">
+                                            <option value="" selected >Select the type of patient</option>
+                                            <option value="vaccination">Vaccination</option>
+                                            <option value="prenatal">PRE-NATAL</option>
+                                            <option value="tb-dots">Tb-dots</option>
+                                            <option value="senior-citizen">Senior Citizen</option>
+                                            <option value="family-planning">Family Planning</option>
+                                        </select>
+                                        <small class="text-danger error-element patient-type-error"></small>
+                                    </div>
+                                </div> -->
 
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end gap-2 mt-4">
@@ -283,7 +297,7 @@
                         </div>
                         <div class="mb-2 w-100">
                             <label for="date_of_birth" class="mb-1 ">Date of Birth<span class="text-danger">*</span></label>
-                            <input type="date"  name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
+                            <input type="date" name="date_of_birth" class=" form-control py-1 px-2 bg-light" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d')}}">
 
                             <small class="text-danger error-element date_of_birth_error"></small>
 
