@@ -87,6 +87,33 @@ class PrenatalController extends Controller
                 'suffix' => 'sometimes|nullable|string',
                 'email' => 'required|email',
                 'user_account' => 'sometimes|nullable|numeric'
+            ], [
+                // Custom messages with friendly attribute names
+                'type_of_patient.required' => 'The type of patient field is required.',
+
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'user_account.numeric' => 'The user account must be a number.',
             ]);
 
             $medicalCaseData = $request->validate([
@@ -96,6 +123,10 @@ class PrenatalController extends Controller
                 'religion' => 'sometimes|nullable|string',
                 'philHealth_number' => 'sometimes|nullable|string',
                 'family_planning' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'family_serial_no.numeric' => 'The family serial number must be a number.',
+                'philHealth_number.string' => 'The PhilHealth number must be a string.',
             ]);
 
             // case record
@@ -126,13 +157,34 @@ class PrenatalController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,500',
                 'add_prenatal_planning' => 'nullable|string:max:2000'
+            ], [
+                // Custom messages with friendly attribute names
+                'G.numeric' => 'The G (gravida) must be a number.',
+                'P.numeric' => 'The P (para) must be a number.',
+                'T.numeric' => 'The T (term) must be a number.',
 
+                'LMP.required' => 'The LMP (Last Menstrual Period) field is required.',
+                'LMP.date' => 'The LMP must be a valid date.',
+
+                'expected_delivery.required' => 'The expected delivery field is required.',
+                'expected_delivery.date' => 'The expected delivery must be a valid date.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+
+                'add_prenatal_planning.max' => 'The prenatal planning may not be greater than :max characters.',
             ]);
 
             // assessment validation
@@ -146,6 +198,15 @@ class PrenatalController extends Controller
                 'hx_of_smoking' => 'sometimes|nullable|string',
                 'alcohol_drinker' => 'sometimes|nullable|string',
                 'drug_intake' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'severe_headache.string' => 'The severe headache field must be a string.',
+                'blumming_of_vission.string' => 'The blurring of vision field must be a string.',
+                'watery_discharge.string' => 'The watery discharge field must be a string.',
+                'severe_vomiting.string' => 'The severe vomiting field must be a string.',
+                'hx_of_smoking.string' => 'The history of smoking field must be a string.',
+                'alcohol_drinker.string' => 'The alcohol drinker field must be a string.',
+                'drug_intake.string' => 'The drug intake field must be a string.',
             ]);
 
             // pregnancy history questions validation
@@ -160,10 +221,12 @@ class PrenatalController extends Controller
                 'q2_answer3' => 'sometimes|nullable|string',
                 'q2_answer4' => 'sometimes|nullable|string',
                 'q2_answer5' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'number_of_children.numeric' => 'The number of children must be a number.',
             ]);
 
             // pregnancy plan validation
-
             $pregnancy_plan = $request->validate([
                 'midwife_name' => 'sometimes|nullable|string',
                 'place_of_pregnancy' => 'sometimes|nullable|string',
@@ -180,6 +243,20 @@ class PrenatalController extends Controller
                 'signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'signature_data' => 'sometimes|nullable|string',
                 'names_of_donor' => 'sometimes|nullable|array'
+            ], [
+                // Custom messages with friendly attribute names
+                'place_of_pregnancy.string' => 'The place of pregnancy must be a string.',
+                'authorized_by_philhealth.string' => 'The authorized by PhilHealth field must be a string.',
+                'cost_of_pregnancy.number' => 'The cost of pregnancy must be a number.',
+                'accompany_person_to_hospital.string' => 'The accompany person to hospital field must be a string.',
+                'accompany_through_pregnancy.string' => 'The accompany through pregnancy field must be a string.',
+                'emergency_person_name.string' => 'The emergency person name must be a string.',
+                'emergency_person_residency.string' => 'The emergency person residency must be a string.',
+                'emergency_person_contact_number.string' => 'The emergency person contact number must be a string.',
+
+                'signature_image.image' => 'The signature must be an image.',
+                'signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'signature_image.max' => 'The signature may not be greater than :max kilobytes.',
             ]);
 
             // Check if the user account matches the credentials
@@ -813,7 +890,6 @@ class PrenatalController extends Controller
             $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
             $address = patient_addresses::where('patient_id', $prenatalRecord->patient->id)->firstOrFail();
             $caseRecord = prenatal_case_records::where('medical_record_case_id', $prenatalRecord->id)->firstOrFail();
-
             $data = $request->validate([
                 'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
                     return $query->where('first_name', $request->first_name)
@@ -843,11 +919,11 @@ class PrenatalController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,500',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,500',
                 'number_of_children' => 'sometimes|nullable|numeric',
                 'answer_1' => 'sometimes|nullable|string',
                 'answer_2' => 'sometimes|nullable|string',
@@ -861,7 +937,49 @@ class PrenatalController extends Controller
                 'family_serial_no' => 'sometimes|nullable|numeric',
                 'nurse_decision' => 'sometimes|nullable|numeric',
                 'suffix' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'family_head.string' => 'The family head must be a string.',
+
+                'philhealth_number.string' => 'The PhilHealth number must be a string.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+
+                'number_of_children.numeric' => 'The number of children must be a number.',
+
+                'family_serial_no.numeric' => 'The family serial number must be a number.',
+                'nurse_decision.numeric' => 'The nurse decision must be a number.',
             ]);
+           
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
@@ -1598,6 +1716,27 @@ class PrenatalController extends Controller
                 'edit_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'edit_signature_data' => 'sometimes|nullable|string',
                 'donor_names' => 'sometimes|nullable|array'
+            ], [
+                // Custom messages with friendly attribute names
+                'place_of_pregnancy.string' => 'The place of pregnancy must be a string.',
+
+                'authorized_by_philhealth.string' => 'The authorized by PhilHealth field must be a string.',
+
+                'cost_of_pregnancy.numeric' => 'The cost of pregnancy must be a number.',
+
+                'accompany_person_to_hospital.string' => 'The accompany person to hospital field must be a string.',
+
+                'accompany_through_pregnancy.string' => 'The accompany through pregnancy field must be a string.',
+
+                'emergency_person_name.string' => 'The emergency person name must be a string.',
+
+                'emergency_person_residency.string' => 'The emergency person residency must be a string.',
+
+                'emergency_person_contact_number.string' => 'The emergency person contact number must be a string.',
+
+                'edit_signature_image.image' => 'The signature must be an image.',
+                'edit_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'edit_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
             ]);
 
             // update

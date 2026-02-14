@@ -74,7 +74,33 @@ class TbDotsController extends Controller
                 'suffix' => 'sometimes|nullable|string',
                 'email' => 'required|email',
                 'user_account' => 'sometimes|nullable|numeric'
+            ], [
+                // Custom messages with friendly attribute names
+                'type_of_patient.required' => 'The type of patient field is required.',
+
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
+
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'age.numeric' => 'The age must be a number.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'user_account.numeric' => 'The user account must be a number.',
             ]);
+
             $caseData = $request->validate([
                 'tb_type' => 'required|string',
                 'tb_case_type' => 'required|string',
@@ -86,6 +112,19 @@ class TbDotsController extends Controller
                 'treatment_side_effect' => 'sometimes|nullable|string',
                 'tb_outcome' => 'sometimes|nullable|string',
                 'tb_remarks' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'tb_type.required' => 'The TB type field is required.',
+                'tb_type.string' => 'The TB type must be a string.',
+
+                'tb_case_type.required' => 'The TB case type field is required.',
+                'tb_case_type.string' => 'The TB case type must be a string.',
+
+                'tb_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
+                'tb_date_of_diagnosis.date' => 'The date of diagnosis must be a valid date.',
+
+                'tb_date_of_medication_administered.required' => 'The date of medication administered field is required.',
+                'tb_date_of_medication_administered.date' => 'The date of medication administered must be a valid date.',
             ]);
 
             // insert in the maintenance medication
@@ -95,8 +134,11 @@ class TbDotsController extends Controller
                 'medicine_quantity' => 'sometimes|nullable|array',
                 'start_date' => 'sometimes|nullable|array',
                 'end_date' => 'sometimes|nullable|array'
+            ], [
+                // Custom messages with friendly attribute names
+                'dosage_n_frequencies.array' => 'The dosage and frequencies must be an array.',
+                'medicine_quantity.array' => 'The medicine quantity must be an array.',
             ]);
-
 
             // validate for medical
             $patientMedicalRecord = $request->validate([
@@ -106,11 +148,23 @@ class TbDotsController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
+            ], [
+                // Custom messages with friendly attribute names
+                'philhealth_id.string' => 'The PhilHealth ID must be a string.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
             ]);
 
             // check if the email is valid
@@ -423,14 +477,47 @@ class TbDotsController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
                 'philheath_id' => 'sometimes|nullable|string',
                 'suffix' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
 
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+
+                'philheath_id.string' => 'The PhilHealth ID must be a string.',
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
@@ -610,11 +697,11 @@ class TbDotsController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
                 'adherence_of_treatment' => 'required|string',
                 'side_effect' => 'sometimes|nullable|string',
                 'progress_note' => 'sometimes|nullable|string',
@@ -623,6 +710,30 @@ class TbDotsController extends Controller
                 'outcome' => 'sometimes|nullable|string',
                 'handled_by' => 'required',
                 'add_date_of_comeback' => 'required|date'
+            ], [
+                // Custom messages with friendly attribute names
+                'patient_name.required' => 'The patient name field is required.',
+                'patient_name.string' => 'The patient name must be a string.',
+
+                'date_of_visit.required' => 'The date of visit field is required.',
+                'date_of_visit.date' => 'The date of visit must be a valid date.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+
+                'adherence_of_treatment.required' => 'The adherence of treatment field is required.',
+                'adherence_of_treatment.string' => 'The adherence of treatment must be a string.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'add_date_of_comeback.required' => 'The date of comeback field is required.',
+                'add_date_of_comeback.date' => 'The date of comeback must be a valid date.',
             ]);
 
             // create the record
@@ -682,11 +793,11 @@ class TbDotsController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'edit_checkup_temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'edit_checkup_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'edit_checkup_respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'edit_checkup_height'            => 'nullable|numeric|between:30,300', // cm range
-                'edit_checkup_weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'edit_checkup_temperature'       => 'nullable|numeric|between:30,45',
+                'edit_checkup_pulse_rate'        => 'nullable|string|max:20',
+                'edit_checkup_respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'edit_checkup_height'            => 'nullable|numeric|between:30,300',
+                'edit_checkup_weight'            => 'nullable|numeric|between:1,300',
                 'edit_checkup_adherence_of_treatment' => 'required|string',
                 'edit_checkup_side_effect' => 'sometimes|nullable|string',
                 'edit_checkup_progress_note' => 'sometimes|nullable|string',
@@ -694,6 +805,36 @@ class TbDotsController extends Controller
                 'edit_checkup_treatment_phase' => 'sometimes|nullable|string',
                 'edit_checkup_outcome' => 'sometimes|nullable|string',
                 'edit_date_of_comeback' => 'required|date'
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_checkup_date_of_visit.required' => 'The date of visit field is required.',
+                'edit_checkup_date_of_visit.date' => 'The date of visit must be a valid date.',
+
+                'edit_checkup_blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'edit_checkup_temperature.numeric' => 'The temperature must be a number.',
+                'edit_checkup_temperature.between' => 'The temperature must be between :min and :max °C.',
+
+                'edit_checkup_pulse_rate.string' => 'The pulse rate must be a string.',
+                'edit_checkup_pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'edit_checkup_respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'edit_checkup_respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'edit_checkup_respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+
+                'edit_checkup_height.numeric' => 'The height must be a number.',
+                'edit_checkup_height.between' => 'The height must be between :min and :max cm.',
+
+                'edit_checkup_weight.numeric' => 'The weight must be a number.',
+                'edit_checkup_weight.between' => 'The weight must be between :min and :max kg.',
+
+                'edit_checkup_adherence_of_treatment.required' => 'The adherence of treatment field is required.',
+                'edit_checkup_adherence_of_treatment.string' => 'The adherence of treatment must be a string.',
+
+                'edit_checkup_sputum_test_result.string' => 'The sputum test result must be a string.',
+
+                'edit_date_of_comeback.required' => 'The date of comeback field is required.',
+                'edit_date_of_comeback.date' => 'The date of comeback must be a valid date.',
             ]);
 
             $checkUpRecord->update([

@@ -83,7 +83,38 @@ class FamilyPlanningController extends Controller
                 'email' => 'required|email',
                 'user_account' => 'sometimes|nullable|numeric'
             ], [
+                // Custom messages with friendly attribute names
+                'type_of_patient.required' => 'The type of patient field is required.',
+
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
                 'first_name.unique' => 'This patient already exists.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'middle_initial.string' => 'The middle initial must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'place_of_birth.string' => 'The place of birth must be a string.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+                'age.min' => 'The age must be at least :min.',
+                'age.max' => 'The age may not be greater than :max.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'user_account.numeric' => 'The user account must be a number.',
             ]);
 
             $medicalData = $request->validate([
@@ -99,12 +130,27 @@ class FamilyPlanningController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
+            ], [
+                // Custom messages with friendly attribute names
+                'family_plan_occupation.string' => 'The family plan occupation must be a string.',
+
+                'philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
             ]);
+
             $caseData = $request->validate([
                 'client_id' => 'sometimes|nullable|string',
                 'philhealth_no' => [
@@ -139,8 +185,48 @@ class FamilyPlanningController extends Controller
                 'add_family_planning_consent_signature_data' => 'sometimes|nullable|string',
                 'family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'current_user_type' => 'sometimes|nullable|string'
-            ]);
+            ], [
+                // Custom messages with friendly attribute names
+                'client_id.string' => 'The client ID must be a string.',
 
+                'philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
+
+                'spouse_lname.string' => 'The spouse last name must be a string.',
+
+                'spouse_fname.string' => 'The spouse first name must be a string.',
+
+                'spouse_MI.string' => 'The spouse middle initial must be a string.',
+                'spouse_MI.max' => 'The spouse middle initial may not be greater than :max characters.',
+
+                'spouse_date_of_birth.date' => 'The spouse date of birth must be a valid date.',
+                'spouse_date_of_birth.before_or_equal' => 'The spouse date of birth must be today or earlier.',
+
+                'spouse_age.numeric' => 'The spouse age must be a number.',
+                'spouse_age.max' => 'The spouse age may not be greater than :max.',
+
+                'number_of_living_children.numeric' => 'The number of living children must be a number.',
+                'number_of_living_children.max' => 'The number of living children may not be greater than :max.',
+
+                'average_montly_income.numeric' => 'The average monthly income must be a number.',
+
+                'family_planning_type_of_patient.string' => 'The family planning type of patient must be a string.',
+
+                'new_acceptor_reason_for_FP.string' => 'The new acceptor reason for FP must be a string.',
+
+                'current_user_reason_for_FP.string' => 'The current user reason for FP must be a string.',
+
+                'add_family_planning_signature_image.image' => 'The signature must be an image.',
+                'add_family_planning_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'add_family_planning_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
+
+                'family_planning_date_of_acknowledgement.date' => 'The date of acknowledgement must be a valid date.',
+
+                'add_family_planning_consent_signature_image.image' => 'The consent signature must be an image.',
+                'add_family_planning_consent_signature_image.mimes' => 'The consent signature must be a file of type: jpg, jpeg, png.',
+                'add_family_planning_consent_signature_image.max' => 'The consent signature may not be greater than :max kilobytes.',
+
+                'family_planning_date_of_acknowledgement_consent.date' => 'The date of acknowledgement consent must be a valid date.',
+            ]);
 
             // medical history
             $medicalHistoryData = $request->validate([
@@ -157,6 +243,18 @@ class FamilyPlanningController extends Controller
                 'medical_history_smoker' => 'sometimes|nullable|string',
                 'medical_history_with_dissability' => 'sometimes|nullable|string',
                 'if_with_dissability_specification' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'medical_history_severe_headaches_migraine.string' => 'The severe headaches/migraine field must be a string.',
+                'medical_history_history_of_stroke.string' => 'The history of stroke field must be a string.',
+                'medical_history_non_traumatic_hemtoma.string' => 'The non-traumatic hematoma field must be a string.',
+                'medical_history_history_of_breast_cancer.string' => 'The history of breast cancer field must be a string.',
+                'medical_history_severe_chest_pain.string' => 'The severe chest pain field must be a string.',
+                'medical_history_unexplained_vaginal_bleeding.string' => 'The unexplained vaginal bleeding field must be a string.',
+                'medical_history_abnormal_vaginal_discharge.string' => 'The abnormal vaginal discharge field must be a string.',
+                'medical_history_abnormal_phenobarbital.string' => 'The abnormal phenobarbital field must be a string.',
+                'medical_history_with_dissability.string' => 'The with disability field must be a string.',
+                'if_with_dissability_specification.string' => 'The disability specification field must be a string.',
             ]);
 
             // Obsterical history
@@ -175,6 +273,33 @@ class FamilyPlanningController extends Controller
                 'family_planning_Dysmenorrhea' => 'sometimes|nullable|string',
                 'family_planning_hydatidiform_mole' => 'sometimes|nullable|string',
                 'family_planning_ectopic_pregnancy' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'family_planning_G.numeric' => 'The G (gravida) must be a number.',
+                'family_planning_G.max' => 'The G (gravida) may not be greater than :max.',
+
+                'family_planning_P.numeric' => 'The P (para) must be a number.',
+                'family_planning_P.max' => 'The P (para) may not be greater than :max.',
+
+                'family_planning_full_term.numeric' => 'The full term must be a number.',
+                'family_planning_full_term.max' => 'The full term may not be greater than :max.',
+
+                'family_planning_abortion.numeric' => 'The abortion must be a number.',
+                'family_planning_abortion.max' => 'The abortion may not be greater than :max.',
+
+                'family_planning_premature.numeric' => 'The premature must be a number.',
+                'family_planning_premature.max' => 'The premature may not be greater than :max.',
+
+                'family_planning_living_children.numeric' => 'The living children must be a number.',
+                'family_planning_living_children.max' => 'The living children may not be greater than :max.',
+
+                'family_planning_date_of_last_delivery.date' => 'The date of last delivery must be a valid date.',
+
+                'family_planning_date_of_last_delivery_menstrual_period.date' => 'The date of last delivery menstrual period must be a valid date.',
+
+                'family_planning_date_of_previous_delivery_menstrual_period.date' => 'The date of previous delivery menstrual period must be a valid date.',
+
+                'family_planning_type_of_menstrual.string' => 'The type of menstrual must be a string.',
             ]);
 
             //  RISK FOR SEXUALLY TRANSMITTED INFECTIONS & RISKS FOR VIOLENCE AGAINTS WOMEN (VAW)
@@ -191,6 +316,18 @@ class FamilyPlanningController extends Controller
                 'partner_does_not_approve' => 'sometimes|nullable|string',
                 'referred_to' => 'sometimes|nullable|string',
                 'reffered_to_others' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'infection_abnormal_discharge_from_genital_area.string' => 'The abnormal discharge from genital area field must be a string.',
+                'origin_of_abnormal_discharge.string' => 'The origin of abnormal discharge field must be a string.',
+                'scores_or_ulcer.string' => 'The sores or ulcer field must be a string.',
+                'pain_or_burning_sensation.string' => 'The pain or burning sensation field must be a string.',
+                'history_of_sexually_transmitted_infection.string' => 'The history of sexually transmitted infection field must be a string.',
+                'sexually_transmitted_disease.string' => 'The sexually transmitted disease field must be a string.',
+                'history_of_domestic_violence_of_VAW.string' => 'The history of domestic violence of VAW field must be a string.',
+                'unpleasant_relationship_with_partner.string' => 'The unpleasant relationship with partner field must be a string.',
+                'partner_does_not_approve.string' => 'The partner does not approve field must be a string.',
+                'reffered_to_others.string' => 'The referred to others field must be a string.',
             ]);
 
             // physical examination
@@ -206,6 +343,19 @@ class FamilyPlanningController extends Controller
                 'uterine_position_type' => 'sometimes|nullable|string',
                 'uterine_depth_text' => 'sometimes|nullable|numeric',
                 'physical_examination_neck_type' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'physical_examination_skin_type.string' => 'The skin type field must be a string.',
+                'physical_examination_conjuctiva_type.string' => 'The conjunctiva type field must be a string.',
+                'physical_examination_breast_type.string' => 'The breast type field must be a string.',
+                'physical_examination_abdomen_type.string' => 'The abdomen type field must be a string.',
+                'physical_examination_extremites_type.string' => 'The extremities type field must be a string.',
+                'physical_examination_extremites_UID_type.string' => 'The extremities UID type field must be a string.',
+                'cervical_abnormalities_type.string' => 'The cervical abnormalities type field must be a string.',
+                'cervical_consistency_type.string' => 'The cervical consistency type field must be a string.',
+                'uterine_position_type.string' => 'The uterine position type field must be a string.',
+                'uterine_depth_text.numeric' => 'The uterine depth must be a number.',
+                'physical_examination_neck_type.string' => 'The neck type field must be a string.',
             ]);
 
             // side b info
@@ -222,6 +372,26 @@ class FamilyPlanningController extends Controller
                 'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
                 'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
                 'contraceptive_question' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'side_b_date_of_visit.required' => 'The date of visit field is required.',
+                'side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
+
+                'side_b_medical_findings.string' => 'The medical findings field must be a string.',
+                'side_b_method_accepted.string' => 'The method accepted field must be a string.',
+
+                'add_side_b_name_n_signature_image.image' => 'The signature must be an image.',
+                'add_side_b_name_n_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'add_side_b_name_n_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
+
+                'side_b_date_of_follow_up_visit.required' => 'The date of follow up visit field is required.',
+                'side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
+
+                'baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
+                'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
+                'baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
+                'menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
+                'miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
             ]);
 
             // check if the email is valid
@@ -931,7 +1101,6 @@ class FamilyPlanningController extends Controller
             if (count($familyPlanCaseInfo) > 0) {
                 return response()->json(['message' => "Unable to create the record. A record already exists!"], 422);
             }
-
             $patientData = $request->validate([
                 'side_A_add_client_fname' => 'required|string',
                 'side_A_add_client_MI' => 'sometimes|nullable|string|max:2',
@@ -944,6 +1113,26 @@ class FamilyPlanningController extends Controller
                 'add_street' => 'required',
                 'add_brgy' => 'required',
                 'side_A_add_client_suffix' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_client_fname.required' => 'The client first name field is required.',
+                'side_A_add_client_fname.string' => 'The client first name must be a string.',
+
+                'side_A_add_client_MI.string' => 'The client middle initial must be a string.',
+                'side_A_add_client_MI.max' => 'The client middle initial may not be greater than :max characters.',
+
+                'side_A_add_client_lname.required' => 'The client last name field is required.',
+                'side_A_add_client_lname.string' => 'The client last name must be a string.',
+
+                'side_A_add_client_date_of_birth.required' => 'The client date of birth field is required.',
+                'side_A_add_client_date_of_birth.date' => 'The client date of birth must be a valid date.',
+                'side_A_add_client_date_of_birth.before_or_equal' => 'The client date of birth must be today or earlier.',
+
+                'side_A_add_client_age.numeric' => 'The client age must be a number.',
+                'side_A_add_client_age.max' => 'The client age may not be greater than :max.',
+
+                'add_street.required' => 'The street field is required.',
+                'add_brgy.required' => 'The barangay field is required.',
             ]);
 
             $caseData = $request->validate([
@@ -985,6 +1174,42 @@ class FamilyPlanningController extends Controller
                 'side_A_add_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
                 'side_A_add_current_user_type' => 'sometimes|nullable|string',
                 'side_A_add_health_worker_id' => 'required'
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_client_id.string' => 'The client ID must be a string.',
+
+                'side_A_add_philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
+
+                'side_A_add_spouse_lname.string' => 'The spouse last name must be a string.',
+                'side_A_add_spouse_fname.string' => 'The spouse first name must be a string.',
+
+                'side_A_add_spouse_MI.string' => 'The spouse middle initial must be a string.',
+                'side_A_add_spouse_MI.max' => 'The spouse middle initial may not be greater than :max characters.',
+
+                'side_A_add_spouse_date_of_birth.date' => 'The spouse date of birth must be a valid date.',
+                'side_A_add_spouse_date_of_birth.before_or_equal' => 'The spouse date of birth must be today or earlier.',
+
+                'side_A_add_spouse_age.numeric' => 'The spouse age must be a number.',
+                'side_A_add_spouse_age.max' => 'The spouse age may not be greater than :max.',
+
+                'side_A_add_number_of_living_children.numeric' => 'The number of living children must be a number.',
+                'side_A_add_number_of_living_children.max' => 'The number of living children may not be greater than :max.',
+
+                'side_A_add_average_montly_income.numeric' => 'The average monthly income must be a number.',
+
+                'side_A_add_family_planning_acknowledgement_signature_image.image' => 'The acknowledgement signature must be an image.',
+                'side_A_add_family_planning_acknowledgement_signature_image.mimes' => 'The acknowledgement signature must be a file of type: jpg, jpeg, png.',
+                'side_A_add_family_planning_acknowledgement_signature_image.max' => 'The acknowledgement signature may not be greater than :max kilobytes.',
+
+                'side_A_add_family_planning_date_of_acknowledgement.date' => 'The date of acknowledgement must be a valid date.',
+
+                'side_A_add_family_planning_consent_signature_image.image' => 'The consent signature must be an image.',
+                'side_A_add_family_planning_consent_signature_image.mimes' => 'The consent signature must be a file of type: jpg, jpeg, png.',
+                'side_A_add_family_planning_consent_signature_image.max' => 'The consent signature may not be greater than :max kilobytes.',
+
+                'side_A_add_family_planning_date_of_acknowledgement_consent.date' => 'The date of acknowledgement consent must be a valid date.',
+
+                'side_A_add_health_worker_id.required' => 'The health worker ID field is required.',
             ]);
 
             // medical history
@@ -1002,6 +1227,18 @@ class FamilyPlanningController extends Controller
                 'side_A_add_smoker' => 'sometimes|nullable|string',
                 'side_A_add_with_dissability' => 'sometimes|nullable|string',
                 'side_A_add_if_with_dissability_specification' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_severe_headaches_migraine.string' => 'The severe headaches/migraine field must be a string.',
+                'side_A_add_history_of_stroke.string' => 'The history of stroke field must be a string.',
+                'side_A_add_non_traumatic_hemtoma.string' => 'The non-traumatic hematoma field must be a string.',
+                'side_A_add_history_of_breast_cancer.string' => 'The history of breast cancer field must be a string.',
+                'side_A_add_severe_chest_pain.string' => 'The severe chest pain field must be a string.',
+                'side_A_add_unexplained_vaginal_bleeding.string' => 'The unexplained vaginal bleeding field must be a string.',
+                'side_A_add_abnormal_vaginal_discharge.string' => 'The abnormal vaginal discharge field must be a string.',
+                'side_A_add_abnormal_phenobarbital.string' => 'The abnormal phenobarbital field must be a string.',
+                'side_A_add_with_dissability.string' => 'The with disability field must be a string.',
+                'side_A_add_if_with_dissability_specification.string' => 'The disability specification field must be a string.',
             ]);
 
             // Obsterical history
@@ -1020,6 +1257,29 @@ class FamilyPlanningController extends Controller
                 'side_A_add_Dysmenorrhea' => 'sometimes|nullable|string',
                 'side_A_add_hydatidiform_mole' => 'sometimes|nullable|string',
                 'side_A_add_ectopic_pregnancy' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_G.numeric' => 'The G (gravida) must be a number.',
+                'side_A_add_G.max' => 'The G (gravida) may not be greater than :max.',
+
+                'side_A_add_P.numeric' => 'The P (para) must be a number.',
+                'side_A_add_P.max' => 'The P (para) may not be greater than :max.',
+
+                'side_A_add_full_term.numeric' => 'The full term must be a number.',
+                'side_A_add_full_term.max' => 'The full term may not be greater than :max.',
+
+                'side_A_add_abortion.numeric' => 'The abortion must be a number.',
+                'side_A_add_abortion.max' => 'The abortion may not be greater than :max.',
+
+                'side_A_add_premature.numeric' => 'The premature must be a number.',
+                'side_A_add_premature.max' => 'The premature may not be greater than :max.',
+
+                'side_A_add_living_children.numeric' => 'The living children must be a number.',
+                'side_A_add_living_children.max' => 'The living children may not be greater than :max.',
+
+                'side_A_add_date_of_last_delivery.date' => 'The date of last delivery must be a valid date.',
+                'side_A_add_date_of_last_delivery_menstrual_period.date' => 'The date of last delivery menstrual period must be a valid date.',
+                'side_A_add_date_of_previous_delivery_menstrual_period.date' => 'The date of previous delivery menstrual period must be a valid date.',
             ]);
 
             //  RISK FOR SEXUALLY TRANSMITTED INFECTIONS & RISKS FOR VIOLENCE AGAINTS WOMEN (VAW)
@@ -1036,6 +1296,18 @@ class FamilyPlanningController extends Controller
                 'side_A_add_partner_does_not_approve' => 'sometimes|nullable|string',
                 'side_A_add_referred_to' => 'sometimes|nullable|string',
                 'side_A_add_reffered_to_others' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_infection_abnormal_discharge_from_genital_area.string' => 'The abnormal discharge from genital area field must be a string.',
+                'side_A_add_origin_of_abnormal_discharge.string' => 'The origin of abnormal discharge field must be a string.',
+                'side_A_add_scores_or_ulcer.string' => 'The sores or ulcer field must be a string.',
+                'side_A_add_pain_or_burning_sensation.string' => 'The pain or burning sensation field must be a string.',
+                'side_A_add_history_of_sexually_transmitted_infection.string' => 'The history of sexually transmitted infection field must be a string.',
+                'side_A_add_sexually_transmitted_disease.string' => 'The sexually transmitted disease field must be a string.',
+                'side_A_add_history_of_domestic_violence_of_VAW.string' => 'The history of domestic violence of VAW field must be a string.',
+                'side_A_add_unpleasant_relationship_with_partner.string' => 'The unpleasant relationship with partner field must be a string.',
+                'side_A_add_partner_does_not_approve.string' => 'The partner does not approve field must be a string.',
+                'side_A_add_reffered_to_others.string' => 'The referred to others field must be a string.',
             ]);
 
             // physical examination
@@ -1045,9 +1317,9 @@ class FamilyPlanningController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'side_A_add_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'side_A_add_height'            => 'nullable|numeric|between:30,300', // cm range
-                'side_A_add_weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'side_A_add_pulse_rate'        => 'nullable|string|max:20',
+                'side_A_add_height'            => 'nullable|numeric|between:30,300',
+                'side_A_add_weight'            => 'nullable|numeric|between:1,300',
                 'side_A_add_skin_type' => 'sometimes|nullable|string',
                 'side_A_add_conjuctiva_type' => 'sometimes|nullable|string',
                 'side_A_add_breast_type' => 'sometimes|nullable|string',
@@ -1059,8 +1331,32 @@ class FamilyPlanningController extends Controller
                 'side_A_add_uterine_position_type' => 'sometimes|nullable|string',
                 'side_A_add_uterine_depth_text' => 'sometimes|nullable|numeric',
                 'side_A_add_neck_type' => 'sometimes|nullable|string',
-            ]);
+            ], [
+                // Custom messages with friendly attribute names
+                'side_A_add_blood_pressure.regex' => 'The blood pressure format is invalid.',
 
+                'side_A_add_pulse_rate.string' => 'The pulse rate must be a string.',
+                'side_A_add_pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'side_A_add_height.numeric' => 'The height must be a number.',
+                'side_A_add_height.between' => 'The height must be between :min and :max cm.',
+
+                'side_A_add_weight.numeric' => 'The weight must be a number.',
+                'side_A_add_weight.between' => 'The weight must be between :min and :max kg.',
+
+                'side_A_add_skin_type.string' => 'The skin type field must be a string.',
+                'side_A_add_conjuctiva_type.string' => 'The conjunctiva type field must be a string.',
+                'side_A_add_breast_type.string' => 'The breast type field must be a string.',
+                'side_A_add_abdomen_type.string' => 'The abdomen type field must be a string.',
+                'side_A_add_extremites_type.string' => 'The extremities type field must be a string.',
+                'side_A_add_extremites_UID_type.string' => 'The extremities UID type field must be a string.',
+                'side_A_add_cervical_abnormalities_type.string' => 'The cervical abnormalities type field must be a string.',
+                'side_A_add_cervical_consistency_type.string' => 'The cervical consistency type field must be a string.',
+                'side_A_add_uterine_position_type.string' => 'The uterine position type field must be a string.',
+                'side_A_add_uterine_depth_text.numeric' => 'The uterine depth must be a number.',
+                'side_A_add_neck_type.string' => 'The neck type field must be a string.',
+            ]);
+            
             // update patient info first
             $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method'] ?? []);
 
@@ -1427,6 +1723,18 @@ class FamilyPlanningController extends Controller
                 'edit_smoker' => 'sometimes|nullable|string',
                 'edit_with_dissability' => 'sometimes|nullable|string',
                 'edit_if_with_dissability_specification' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_severe_headaches_migraine.string' => 'The severe headaches/migraine field must be a string.',
+                'edit_history_of_stroke.string' => 'The history of stroke field must be a string.',
+                'edit_non_traumatic_hemtoma.string' => 'The non-traumatic hematoma field must be a string.',
+                'edit_history_of_breast_cancer.string' => 'The history of breast cancer field must be a string.',
+                'edit_severe_chest_pain.string' => 'The severe chest pain field must be a string.',
+                'edit_unexplained_vaginal_bleeding.string' => 'The unexplained vaginal bleeding field must be a string.',
+                'edit_abnormal_vaginal_discharge.string' => 'The abnormal vaginal discharge field must be a string.',
+                'edit_abnormal_phenobarbital.string' => 'The abnormal phenobarbital field must be a string.',
+                'edit_with_dissability.string' => 'The with disability field must be a string.',
+                'edit_if_with_dissability_specification.string' => 'The disability specification field must be a string.',
             ]);
 
             // Obsterical history
@@ -1445,6 +1753,29 @@ class FamilyPlanningController extends Controller
                 'edit_Dysmenorrhea' => 'sometimes|nullable|string',
                 'edit_hydatidiform_mole' => 'sometimes|nullable|string',
                 'edit_ectopic_pregnancy' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_G.numeric' => 'The G (gravida) must be a number.',
+                'edit_G.max' => 'The G (gravida) may not be greater than :max.',
+
+                'edit_P.numeric' => 'The P (para) must be a number.',
+                'edit_P.max' => 'The P (para) may not be greater than :max.',
+
+                'edit_full_term.numeric' => 'The full term must be a number.',
+                'edit_full_term.max' => 'The full term may not be greater than :max.',
+
+                'edit_abortion.numeric' => 'The abortion must be a number.',
+                'edit_abortion.max' => 'The abortion may not be greater than :max.',
+
+                'edit_premature.numeric' => 'The premature must be a number.',
+                'edit_premature.max' => 'The premature may not be greater than :max.',
+
+                'edit_living_children.numeric' => 'The living children must be a number.',
+                'edit_living_children.max' => 'The living children may not be greater than :max.',
+
+                'edit_date_of_last_delivery.date' => 'The date of last delivery must be a valid date.',
+                'edit_date_of_last_delivery_menstrual_period.date' => 'The date of last delivery menstrual period must be a valid date.',
+                'edit_date_of_previous_delivery_menstrual_period.date' => 'The date of previous delivery menstrual period must be a valid date.',
             ]);
 
             //  RISK FOR SEXUALLY TRANSMITTED INFECTIONS & RISKS FOR VIOLENCE AGAINTS WOMEN (VAW)
@@ -1461,6 +1792,18 @@ class FamilyPlanningController extends Controller
                 'edit_partner_does_not_approve' => 'sometimes|nullable|string',
                 'edit_referred_to' => 'sometimes|nullable|string',
                 'edit_reffered_to_others' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_infection_abnormal_discharge_from_genital_area.string' => 'The abnormal discharge from genital area field must be a string.',
+                'edit_origin_of_abnormal_discharge.string' => 'The origin of abnormal discharge field must be a string.',
+                'edit_scores_or_ulcer.string' => 'The sores or ulcer field must be a string.',
+                'edit_pain_or_burning_sensation.string' => 'The pain or burning sensation field must be a string.',
+                'edit_history_of_sexually_transmitted_infection.string' => 'The history of sexually transmitted infection field must be a string.',
+                'edit_sexually_transmitted_disease.string' => 'The sexually transmitted disease field must be a string.',
+                'edit_history_of_domestic_violence_of_VAW.string' => 'The history of domestic violence of VAW field must be a string.',
+                'edit_unpleasant_relationship_with_partner.string' => 'The unpleasant relationship with partner field must be a string.',
+                'edit_partner_does_not_approve.string' => 'The partner does not approve field must be a string.',
+                'edit_reffered_to_others.string' => 'The referred to others field must be a string.',
             ]);
 
             // physical examination
@@ -1470,9 +1813,9 @@ class FamilyPlanningController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'edit_pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'edit_height'            => 'nullable|numeric|between:30,300', // cm range
-                'edit_weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'edit_pulse_rate'        => 'nullable|string|max:20',
+                'edit_height'            => 'nullable|numeric|between:30,300',
+                'edit_weight'            => 'nullable|numeric|between:1,300',
                 'edit_skin_type' => 'sometimes|nullable|string',
                 'edit_conjuctiva_type' => 'sometimes|nullable|string',
                 'edit_breast_type' => 'sometimes|nullable|string',
@@ -1484,6 +1827,30 @@ class FamilyPlanningController extends Controller
                 'edit_uterine_position_type' => 'sometimes|nullable|string',
                 'edit_uterine_depth_text' => 'sometimes|nullable|numeric',
                 'edit_neck_type' => 'sometimes|nullable|string',
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'edit_pulse_rate.string' => 'The pulse rate must be a string.',
+                'edit_pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'edit_height.numeric' => 'The height must be a number.',
+                'edit_height.between' => 'The height must be between :min and :max cm.',
+
+                'edit_weight.numeric' => 'The weight must be a number.',
+                'edit_weight.between' => 'The weight must be between :min and :max kg.',
+
+                'edit_skin_type.string' => 'The skin type field must be a string.',
+                'edit_conjuctiva_type.string' => 'The conjunctiva type field must be a string.',
+                'edit_breast_type.string' => 'The breast type field must be a string.',
+                'edit_abdomen_type.string' => 'The abdomen type field must be a string.',
+                'edit_extremites_type.string' => 'The extremities type field must be a string.',
+                'edit_extremites_UID_type.string' => 'The extremities UID type field must be a string.',
+                'edit_cervical_abnormalities_type.string' => 'The cervical abnormalities type field must be a string.',
+                'edit_cervical_consistency_type.string' => 'The cervical consistency type field must be a string.',
+                'edit_uterine_position_type.string' => 'The uterine position type field must be a string.',
+                'edit_uterine_depth_text.numeric' => 'The uterine depth must be a number.',
+                'edit_neck_type.string' => 'The neck type field must be a string.',
             ]);
 
             $middle = substr($patientData['edit_client_MI'] ?? '', 0, 1);
@@ -1812,6 +2179,30 @@ class FamilyPlanningController extends Controller
                 'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
                 'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
                 'contraceptive_question' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'side_b_medical_record_case_id.required' => 'The medical record case ID field is required.',
+
+                'side_b_health_worker_id.required' => 'The health worker ID field is required.',
+
+                'side_b_date_of_visit.required' => 'The date of visit field is required.',
+                'side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
+
+                'side_b_method_accepted.required' => 'The method accepted field is required.',
+                'side_b_method_accepted.string' => 'The method accepted must be a string.',
+
+                'add_side_b_signature_image.image' => 'The signature must be an image.',
+                'add_side_b_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'add_side_b_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
+
+                'side_b_date_of_follow_up_visit.required' => 'The date of follow up visit field is required.',
+                'side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
+
+                'baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
+                'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
+                'baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
+                'menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
+                'miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
             ]);
             $sideBsignaturePath = null;
 
@@ -1885,6 +2276,29 @@ class FamilyPlanningController extends Controller
                 'edit_menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
                 'edit_miscarriage_or_abortion_question' => 'sometimes|nullable|string',
                 'edit_contraceptive_question' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'edit_side_b_medical_record_case_id.required' => 'The medical record case ID field is required.',
+
+                'edit_side_b_health_worker_id.required' => 'The health worker ID field is required.',
+
+                'edit_side_b_date_of_visit.required' => 'The date of visit field is required.',
+                'edit_side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
+
+                'edit_side_b_method_accepted.required' => 'The method accepted field is required.',
+                'edit_side_b_method_accepted.string' => 'The method accepted must be a string.',
+
+                'edit_side_b_signature_image.image' => 'The signature must be an image.',
+                'edit_side_b_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
+                'edit_side_b_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
+
+                'edit_side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
+
+                'edit_baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
+                'edit_sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
+                'edit_baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
+                'edit_menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
+                'edit_miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
             ]);
 
             $signaturePath = $sideBrecord->signature_of_the_provider;

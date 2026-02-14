@@ -25,7 +25,6 @@ class manageUserController extends Controller
     {
         try {
             $data = $request->validate([
-                
                 'email' => ['required', 'email'],
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'first_name' => [
@@ -44,7 +43,31 @@ class manageUserController extends Controller
                 'blk_n_street' => 'required|string',
                 'patient_purok_dropdown' => 'required',
                 'add_suffix' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.unique' => 'A user with this first name and last name combination already exists.',
+                'first_name.string' => 'The first name must be a string.',
 
+                'middle_initial.string' => 'The middle initial must be a string.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'patient_type.required' => 'The patient type field is required.',
+                'patient_type.string' => 'The patient type must be a string.',
+
+                'blk_n_street.required' => 'The block and street field is required.',
+                'blk_n_street.string' => 'The block and street must be a string.',
+
+                'patient_purok_dropdown.required' => 'The purok field is required.',
             ]);
            
             $data['password'] = Hash::make($data['password']);
@@ -141,12 +164,39 @@ class manageUserController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                
+
                 'email' => ['required', 'email'],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'middle_initial.string' => 'The middle initial must be a string.',
+                'middle_initial.max' => 'The middle initial may not be greater than :max characters.',
+
+                'age.numeric' => 'The age must be a number.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'blk_n_street.required' => 'The block and street field is required.',
+
+                'patient_purok_dropdown.required' => 'The purok field is required.',
+
+                'profile_image.image' => 'The profile image must be an image.',
+                'profile_image.mimes' => 'The profile image must be a file of type: jpg, jpeg, png.',
+                'profile_image.max' => 'The profile image may not be greater than :max kilobytes.',
             ]);
 
             // check if there is new password

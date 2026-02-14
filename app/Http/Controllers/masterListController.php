@@ -79,8 +79,24 @@ class masterListController extends Controller
                 'date_of_birth' => 'required|date|before_or_equal:today',
                 'SE_status' => 'sometimes|nullable|string',
                 'remarks' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'vaccination_masterlist_fname.required' => 'The first name field is required.',
 
+                'vaccination_masterlist_lname.required' => 'The last name field is required.',
+
+                'vaccination_masterlist_MI.string' => 'The middle initial must be a string.',
+
+                'age.numeric' => 'The age must be a number.',
+                'age.max' => 'The age may not be greater than :max.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'SE_status.string' => 'The SE status must be a string.',
             ]);
+
             // i separated it for easy way of accessing
             $vaccineData = $request->validate([
                 'BCG' => 'sometimes|nullable|date',
@@ -98,6 +114,23 @@ class masterListController extends Controller
                 'IPV_2' => 'sometimes|nullable|date',
                 'MCV_1' => 'sometimes|nullable|date',
                 'MCV_2' => 'sometimes|nullable|date',
+            ], [
+                // Custom messages with friendly attribute names
+                'BCG.date' => 'The BCG must be a valid date.',
+                'Hepatitis_B.date' => 'The Hepatitis B must be a valid date.',
+                'PENTA_1.date' => 'The PENTA 1 must be a valid date.',
+                'PENTA_2.date' => 'The PENTA 2 must be a valid date.',
+                'PENTA_3.date' => 'The PENTA 3 must be a valid date.',
+                'OPV_1.date' => 'The OPV 1 must be a valid date.',
+                'OPV_2.date' => 'The OPV 2 must be a valid date.',
+                'OPV_3.date' => 'The OPV 3 must be a valid date.',
+                'PCV_1.date' => 'The PCV 1 must be a valid date.',
+                'PCV_2.date' => 'The PCV 2 must be a valid date.',
+                'PCV_3.date' => 'The PCV 3 must be a valid date.',
+                'IPV_1.date' => 'The IPV 1 must be a valid date.',
+                'IPV_2.date' => 'The IPV 2 must be a valid date.',
+                'MCV_1.date' => 'The MCV 1 must be a valid date.',
+                'MCV_2.date' => 'The MCV 2 must be a valid date.',
             ]);
 
             // update the dates of the case record

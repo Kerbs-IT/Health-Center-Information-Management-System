@@ -30,13 +30,48 @@ class wraMasterlistController extends Controller
                 'SE_status' => 'sometimes|nullable|string',
                 'plan_to_have_more_children' => 'sometimes|nullable|string',
                 'plan_to_have_more_children_yes' => 'sometimes|nullable|string',
-                'currently_using_any_FP_method'=> 'sometimes|nullable|string',
+                'currently_using_any_FP_method' => 'sometimes|nullable|string',
                 'currently_using_methods' => 'sometimes|nullable|array',
-                'wra_with_MFP_unmet_need'=> 'sometimes|nullable|string',
-                'shift_to_modern_method'=> 'sometimes|nullable|string',
+                'wra_with_MFP_unmet_need' => 'sometimes|nullable|string',
+                'shift_to_modern_method' => 'sometimes|nullable|string',
                 'wra_accept_any_modern_FP_method' => 'sometimes|nullable|string',
                 'date_when_FP_method_accepted' => 'sometimes|required_if:wra_accept_any_modern_FP_method,yes|nullable|string',
                 'selected_modern_FP_method' => 'sometimes|required_if:wra_accept_any_modern_FP_method,yes|nullable|array',
+            ], [
+                // Custom messages with friendly attribute names
+                'house_hold_number.string' => 'The household number must be a string.',
+
+                'wra_masterlist_fname.required' => 'The first name field is required.',
+
+                'wra_masterlist_lname.required' => 'The last name field is required.',
+
+                'wra_masterlist_MI.string' => 'The middle initial must be a string.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+                'age.max' => 'The age may not be greater than :max.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'SE_status.string' => 'The SE status must be a string.',
+
+                'plan_to_have_more_children.string' => 'The plan to have more children field must be a string.',
+
+                'currently_using_any_FP_method.string' => 'The currently using any FP method field must be a string.',
+
+                'wra_with_MFP_unmet_need.string' => 'The WRA with MFP unmet need field must be a string.',
+
+                'shift_to_modern_method.string' => 'The shift to modern method field must be a string.',
+
+                'wra_accept_any_modern_FP_method.string' => 'The accept any modern FP method field must be a string.',
+
+                'date_when_FP_method_accepted.required_if' => 'The date when FP method accepted field is required when accept any modern FP method is yes.',
+                'date_when_FP_method_accepted.string' => 'The date when FP method accepted must be a string.',
+
+                'selected_modern_FP_method.required_if' => 'The selected modern FP method field is required when accept any modern FP method is yes.',
+                'selected_modern_FP_method.array' => 'The selected modern FP method must be an array.',
             ]);
 
             $middle = substr($data['wra_masterlist_MI'] ?? '', 0, 1);

@@ -74,7 +74,7 @@ class addPatientController extends Controller
         try{
             // validates the data
             $data = $request->validate([
-                'type_of_patient' =>'required',
+                'type_of_patient' => 'required',
                 'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
                     return $query->where('first_name', $request->first_name)
                         ->where('last_name', $request->last_name);
@@ -93,7 +93,7 @@ class addPatientController extends Controller
                 'father_name' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
-                'brgy'=> 'required',
+                'brgy' => 'required',
                 'vaccination_height' => ['required', 'numeric', 'min:20', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:300', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination' => 'required|date',
@@ -104,23 +104,44 @@ class addPatientController extends Controller
                 'current_height' => [
                     'nullable',
                     'numeric',
-                    'between:30,250'      // cm
+                    'between:30,250'
                 ],
                 'current_weight' => [
                     'nullable',
                     'numeric',
-                    'between:1,300'       // kg
+                    'between:1,300'
                 ],
                 'current_temperature' => [
                     'nullable',
                     'numeric',
-                    'between:35,42'       // °C
+                    'between:35,42'
                 ],
                 'date_of_comeback' => 'required|date',
                 'suffix' => 'sometimes|nullable|string',
                 'user_account' => 'sometimes|nullable|numeric',
                 'email' => 'required|email'
+            ], [
+                // Custom messages with friendly attribute names
+                'vaccination_height.required' => 'The height field is required.',
+                'vaccination_height.numeric' => 'The height must be a number.',
+                'vaccination_height.min' => 'The height must be at least :min cm.',
+                'vaccination_height.max' => 'The height may not be greater than :max cm.',
+                'vaccination_height.regex' => 'The height format is invalid.',
 
+                'vaccination_weight.required' => 'The weight field is required.',
+                'vaccination_weight.numeric' => 'The weight must be a number.',
+                'vaccination_weight.min' => 'The weight must be at least :min kg.',
+                'vaccination_weight.max' => 'The weight may not be greater than :max kg.',
+                'vaccination_weight.regex' => 'The weight format is invalid.',
+
+                'current_height.numeric' => 'The current height must be a number.',
+                'current_height.between' => 'The current height must be between :min and :max cm.',
+
+                'current_weight.numeric' => 'The current weight must be a number.',
+                'current_weight.between' => 'The current weight must be between :min and :max kg.',
+
+                'current_temperature.numeric' => 'The current temperature must be a number.',
+                'current_temperature.between' => 'The current temperature must be between :min and :max °C.',
             ]);
             
 

@@ -74,6 +74,32 @@ class SeniorCitizenController extends Controller
                 'suffix' => 'sometimes|nullable|string',
                 'email' => 'required|email',
                 'user_account' => 'sometimes|nullable|numeric'
+            ], [
+                // Custom messages with friendly attribute names
+                'type_of_patient.required' => 'The type of patient field is required.',
+
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
+
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'You must be at least 60 years old.',
+
+                'age.numeric' => 'The age must be a number.',
+                'age.min' => 'The age must be at least :min.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'user_account.numeric' => 'The user account must be a number.',
             ]);
 
             // validate for medical
@@ -86,11 +112,21 @@ class SeniorCitizenController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
+            ], [
+                // Custom messages with friendly attribute names
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
             ]);
 
             // validate case info
@@ -100,6 +136,16 @@ class SeniorCitizenController extends Controller
                 'prescribe_by_nurse' => 'sometimes|nullable|string',
                 'medication_maintenance_remarks' => 'sometimes|nullable|string',
                 'senior_citizen_date_of_comeback' => 'required|date'
+            ], [
+                // Custom messages with friendly attribute names
+                'existing_medical_condition.string' => 'The existing medical condition must be a string.',
+
+                'prescribe_by_nurse.string' => 'The prescribe by nurse field must be a string.',
+
+                'medication_maintenance_remarks.string' => 'The medication maintenance remarks must be a string.',
+
+                'senior_citizen_date_of_comeback.required' => 'The date of comeback field is required.',
+                'senior_citizen_date_of_comeback.date' => 'The date of comeback must be a valid date.',
             ]);
 
 
@@ -387,6 +433,7 @@ class SeniorCitizenController extends Controller
             $seniorCitizenCase = senior_citizen_case_records::where('medical_record_case_id', $id)->get();
             // address
             $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
+
             $data = $request->validate([
                 'first_name' => [
                     'required',
@@ -424,15 +471,45 @@ class SeniorCitizenController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'temperature'       => 'nullable|numeric|between:30,45',
+                'pulse_rate'        => 'nullable|string|max:20',
+                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
+                'height'            => 'nullable|numeric|between:30,300',
+                'weight'            => 'nullable|numeric|between:1,300',
                 'suffix' => 'nullable|sometimes|string'
-             
-            ]);
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+                'first_name.unique' => 'This patient already exists.',
 
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'You must be at least 60 years old.',
+
+                'age.required' => 'The age field is required.',
+                'age.numeric' => 'The age must be a number.',
+
+                'contact_number.required' => 'The contact number field is required.',
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'date_of_registration.required' => 'The date of registration field is required.',
+                'date_of_registration.date' => 'The date of registration must be a valid date.',
+
+                'handled_by.required' => 'The handled by field is required.',
+
+                'blood_pressure.regex' => 'The blood pressure format is invalid.',
+
+                'pulse_rate.string' => 'The pulse rate must be a string.',
+                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+
+                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+            ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
             $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';

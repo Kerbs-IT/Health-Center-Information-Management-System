@@ -273,6 +273,27 @@ class patientController extends Controller
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
                 'edit_suffix' => 'sometimes|nullable|string'
+            ], [
+                // Custom messages with friendly attribute names
+                'first_name.required' => 'The first name field is required.',
+                'first_name.string' => 'The first name must be a string.',
+
+                'last_name.required' => 'The last name field is required.',
+                'last_name.string' => 'The last name must be a string.',
+
+                'date_of_birth.required' => 'The date of birth field is required.',
+                'date_of_birth.date' => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+                'blk_n_street.required' => 'The block and street field is required.',
+
+                'patient_purok_dropdown.required' => 'The purok field is required.',
+
+                'profile_image.image' => 'The profile image must be an image.',
+                'profile_image.mimes' => 'The profile image must be a file of type: jpg, jpeg, png.',
+                'profile_image.max' => 'The profile image may not be greater than :max kilobytes.',
             ]);
 
             $additionalData = $request->validate([
@@ -289,6 +310,25 @@ class patientController extends Controller
                 'SSS' => 'sometimes|nullable|string',
                 'philhealth_no' => 'sometimes|nullable|string',
                 'philhealth_id' => 'sometimes|nullable|numeric'
+            ], [
+                // Custom messages with friendly attribute names
+                'vaccination_height.numeric' => 'The height must be a number.',
+                'vaccination_height.min' => 'The height must be at least :min cm.',
+                'vaccination_height.max' => 'The height may not be greater than :max cm.',
+
+                'vaccination_weight.numeric' => 'The weight must be a number.',
+                'vaccination_weight.min' => 'The weight must be at least :min kg.',
+                'vaccination_weight.max' => 'The weight may not be greater than :max kg.',
+
+                'family_head_name.string' => 'The family head name must be a string.',
+
+                'philhealth_number_radio.string' => 'The PhilHealth number radio must be a string.',
+
+                'philHealth_number.string' => 'The PhilHealth number must be a string.',
+
+                'philhealth_no.string' => 'The PhilHealth number must be a string.',
+
+                'philhealth_id.numeric' => 'The PhilHealth ID must be a number.',
             ]);
 
             // Update address

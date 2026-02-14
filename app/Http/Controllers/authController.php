@@ -65,7 +65,6 @@ class authController extends Controller
         }
 
         $data = $request->validate([
-            
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'first_name' => [
@@ -76,7 +75,7 @@ class authController extends Controller
                 }),
                 'string'
             ],
-            'middle_initial' => ['sometimes','nullable', 'string'],
+            'middle_initial' => ['sometimes', 'nullable', 'string'],
             'last_name' => ['required', 'string'],
             'patient_type' => 'required',
             'date_of_birth' => 'required|date|before_or_equal:today',
@@ -84,8 +83,30 @@ class authController extends Controller
             'blk_n_street' => 'required',
             'brgy' => 'required',
             'suffix' => 'sometimes|nullable|string'
-        ]);
+        ], [
+            // Custom messages with friendly attribute names
+            'first_name.required' => 'The first name field is required.',
+            'first_name.unique' => 'A user with this first name and last name combination already exists.',
+            'first_name.string' => 'The first name must be a string.',
 
+            'middle_initial.string' => 'The middle initial must be a string.',
+
+            'last_name.required' => 'The last name field is required.',
+            'last_name.string' => 'The last name must be a string.',
+
+            'patient_type.required' => 'The patient type field is required.',
+
+            'date_of_birth.required' => 'The date of birth field is required.',
+            'date_of_birth.date' => 'The date of birth must be a valid date.',
+            'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+
+            'contact_number.required' => 'The contact number field is required.',
+            'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+            'blk_n_street.required' => 'The block and street field is required.',
+
+            'brgy.required' => 'The barangay field is required.',
+        ]);
         // Hash sensitive data
         $data['password'] = Hash::make($data['password']);
 
@@ -401,10 +422,16 @@ class authController extends Controller
     public function storeStaff(Request $request)
     {
         $data = $request->validate([
-            
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-            'first_name' => 'required|string',
+            'first_name' => [
+                'required',
+                Rule::unique('users')->where(function ($query) use ($request) {
+                    return $query->where('first_name', $request->first_name)
+                        ->where('last_name', $request->last_name);
+                }),
+                'string'
+            ],
             'middle_initial' => ['required', 'string'],
             'last_name' => ['required', 'string'],
             'date_of_birth' => [
@@ -419,6 +446,32 @@ class authController extends Controller
             'role' => 'required|in:nurse,staff',
             'department' => 'required_if:role,nurse',
             'assigned_area' => 'required_if:role,staff',
+        ], [
+            // Custom messages with friendly attribute names
+            'first_name.required' => 'The first name field is required.',
+            'first_name.unique' => 'A user with this first name and last name combination already exists.',
+            'first_name.string' => 'The first name must be a string.',
+
+            'middle_initial.required' => 'The middle initial field is required.',
+            'middle_initial.string' => 'The middle initial must be a string.',
+
+            'last_name.required' => 'The last name field is required.',
+            'last_name.string' => 'The last name must be a string.',
+
+            'date_of_birth.required' => 'The date of birth field is required.',
+            'date_of_birth.date' => 'The date of birth must be a valid date.',
+            'date_of_birth.before_or_equal' => 'You must be at least 18 years old.',
+
+            'contact_number.required' => 'The contact number field is required.',
+            'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
+
+            'blk_n_street.required' => 'The block and street field is required.',
+
+            'brgy.required' => 'The barangay field is required.',
+
+            'department.required_if' => 'The department field is required when role is nurse.',
+
+            'assigned_area.required_if' => 'The assigned area field is required when role is staff.',
         ]);
 
 
