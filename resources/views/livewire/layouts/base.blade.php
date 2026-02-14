@@ -139,7 +139,6 @@
         'resources/js/record/record.js',
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
-        'resources/js/inventory-report-pdf.js',
         'resources/js/manage-medicine.js'
     ])
 
