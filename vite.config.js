@@ -105,6 +105,7 @@ export default defineConfig({
                 "resources/js/vaccination/vaccinationCase.js",
                 "resources/js/vitalSign.js",
                 "resources/js/add_patient/searchUser.js",
+                "resources/js/manage-medicine.js",
             ],
             refresh: true,
         }),
