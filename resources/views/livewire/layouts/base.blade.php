@@ -27,14 +27,11 @@
         'resources/css/app.css',
         'resources/css/profile.css',
         'resources/css/patient/record.css',
-<<<<<<< HEAD
         'resources/js/record/record.js',
         'resources/js/inventory_system/category.js',
         'resources/js/inventory_system/medicineRequest.js',
         'resources/css/inventory_system/inventory-report.css',
-=======
         'resources/css/inventory_system/inventory-report.css'
->>>>>>> 765c71c (inventory-changes)
     ])
 
     @livewireStyles
