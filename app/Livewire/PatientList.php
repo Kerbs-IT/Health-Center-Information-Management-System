@@ -11,6 +11,7 @@ use App\Models\vaccination_masterlists;
 use App\Models\wra_masterlists;
 use App\Models\user_addresses;
 use App\Models\User;
+use App\Models\users_address;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -336,7 +337,7 @@ class PatientList extends Component
                 'address'        => $fullAddress,
             ]);
 
-            $userAddress = user_addresses::where('user_id', $patient->user_id)->first();
+            $userAddress = users_address::where('user_id', $patient->user_id)->first();
             if ($userAddress) {
                 $userAddress->update([
                     'house_number' => $address->house_number,

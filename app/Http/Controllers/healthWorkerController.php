@@ -73,9 +73,9 @@ class healthWorkerController extends Controller
                 'first_name' => ['required', Rule::unique('users')->where(function ($query) use ($request) {
                     return $query->where('first_name', $request->first_name)
                         ->where('last_name', $request->last_name);
-                })],
+                }),'string'],
                 'middle_initial' => 'sometimes|nullable|string',
-                'last_name' => ['required'],
+                'last_name' => ['required','string'],
                 'assigned_area' => 'required',
                 'add_date_of_birth' => 'required|date',
                 'add_contact_number' => 'required|numeric|digits_between:7,12',
