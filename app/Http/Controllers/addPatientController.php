@@ -81,7 +81,7 @@ class addPatientController extends Controller
                 })],
                 'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'required|date',
+                'date_of_birth' => 'required|date|before_or_equal:today',
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'required|numeric',
                 'sex' => 'sometimes|nullable|string',

@@ -26,7 +26,7 @@ class wraMasterlistController extends Controller
                 'brgy' => 'required',
                 'sex' => 'sometimes|nullable|string',
                 'age' => 'required|numeric|max:50',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date|before_or_equal:today',
                 'SE_status' => 'sometimes|nullable|string',
                 'plan_to_have_more_children' => 'sometimes|nullable|string',
                 'plan_to_have_more_children_yes' => 'sometimes|nullable|string',

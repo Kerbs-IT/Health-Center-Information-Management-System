@@ -77,7 +77,12 @@ class healthWorkerController extends Controller
                 'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required','string'],
                 'assigned_area' => 'required',
-                'add_date_of_birth' => 'required|date',
+                'add_date_of_birth' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
+                    'before_or_equal:today',
+                ],
                 'add_contact_number' => 'required|numeric|digits_between:7,12',
                 'add_suffix' => 'sometimes|nullable|string',
 
@@ -168,7 +173,7 @@ class healthWorkerController extends Controller
                 'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric',
-                'date_of_birth' => 'sometimes|nullable|date',
+                'date_of_birth' => 'required|date|before_or_equal:today',
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'required|digits_between:7,12',
