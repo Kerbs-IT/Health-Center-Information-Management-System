@@ -10,6 +10,7 @@ use App\Models\senior_citizen_case_records;
 use App\Models\senior_citizen_maintenance_meds;
 use App\Models\senior_citizen_medical_records;
 use App\Models\User;
+use App\Services\PatientUpdateService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -550,6 +551,11 @@ class SeniorCitizenController extends Controller
                 'place_of_birth' => $data['place_of_birth'] ?? '',
                 'suffix'=> $data['suffix']??'',
             ]);
+
+            $patientUpdateService = new PatientUpdateService();
+            if ($seniorCitizenRecord->patient) {
+                $patientUpdateService->updatePatientDetails($data, $seniorCitizenRecord->patient->id);
+            }
             // update the address
             $blk_n_street = explode(',', $data['street']);
             $address->update([

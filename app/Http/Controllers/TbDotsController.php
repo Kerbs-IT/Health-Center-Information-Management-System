@@ -13,6 +13,7 @@ use App\Models\tb_dots_check_ups;
 use App\Models\tb_dots_maintenance_medicines;
 use App\Models\tb_dots_medical_records;
 use App\Models\User;
+use App\Services\PatientUpdateService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -562,6 +563,11 @@ class TbDotsController extends Controller
                 'suffix' => $data['suffix'] ?? ''
 
             ]);
+
+            $patientUpdateService = new PatientUpdateService();
+            if ($tbDotsRecord->patient) {
+                $patientUpdateService->updatePatientDetails($data, $tbDotsRecord->patient->id);
+            }
             // update the address
             $blk_n_street = explode(',', $data['street']);
             $address->update([

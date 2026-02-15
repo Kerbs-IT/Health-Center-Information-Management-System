@@ -21,6 +21,7 @@ use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
 use App\Models\wra_masterlists;
+use App\Services\PatientUpdateService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -360,6 +361,15 @@ class RecordsController extends Controller
                 'suffix' => $data['suffix'] ?? ''
 
             ]);
+
+            // ========================== SYNC THE INFO =========================================
+            $patientUpdateService = new PatientUpdateService();
+            if ($patient) {
+                $patientUpdateService->updatePatientDetails($data, $patient->id);
+            }
+
+            // ========================= SYNC END ===============================================
+
             // update each record associate to patient vaccination case the vaccination case record
             foreach ($vaccination_case_record as $record) {
                 $record->update([

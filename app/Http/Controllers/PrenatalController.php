@@ -26,6 +26,7 @@ use App\Models\risk_for_sexually_transmitted_infections;
 use App\Models\staff;
 use App\Models\User;
 use App\Models\wra_masterlists;
+use App\Services\PatientUpdateService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
@@ -1032,6 +1033,14 @@ class PrenatalController extends Controller
                 $address->province ?? null,
             ])->filter()->join(', ');
 
+            // ========================== SYNC THE INFO =========================================
+            $patientUpdateService = new PatientUpdateService();
+            if($prenatalRecord){
+                $patientUpdateService->updatePatientDetails($data, $prenatalRecord->patient->id);
+            }
+
+            // ========================= SYNC END ===============================================
+            
             // update the case
             $caseRecord->update([
                 'decision' => $data['nurse_decision'] ?? $caseRecord->decision

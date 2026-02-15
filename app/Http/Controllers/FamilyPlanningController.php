@@ -16,6 +16,7 @@ use App\Models\prenatal_case_records;
 use App\Models\risk_for_sexually_transmitted_infections;
 use App\Models\User;
 use App\Models\wra_masterlists;
+use App\Services\PatientUpdateService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -998,6 +999,11 @@ class FamilyPlanningController extends Controller
                 'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? ''
             ]);
+
+            $patientUpdateService = new PatientUpdateService();
+            if ($familyPlanningRecord->patient) {
+                $patientUpdateService->updatePatientDetails($data, $familyPlanningRecord->patient->id);
+            }
             // update the address
             $blk_n_street = explode(',', $data['street'], 2);
             $address->update([
