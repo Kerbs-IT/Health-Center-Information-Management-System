@@ -29,6 +29,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
@@ -270,8 +271,13 @@ class patientController extends Controller
                 'civil_status'           => 'sometimes|nullable|string',
                 'contact_number'         => 'sometimes|nullable|digits_between:7,12',
                 'nationality'            => 'sometimes|nullable|string',
-                'place_of_birth'         => 'sometimes|nullable|string',        // ++ added
-                'email'                  => ['required', 'email'],
+                'place_of_birth'         => 'sometimes|nullable|string',
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('users', 'email')->ignore($user->id),
+                ],      // ++ added
+                
                 'blk_n_street'           => 'required',
                 'patient_purok_dropdown' => 'required',
                 'password'               => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],

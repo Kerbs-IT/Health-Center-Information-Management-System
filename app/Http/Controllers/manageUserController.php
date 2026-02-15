@@ -165,7 +165,11 @@ class manageUserController extends Controller
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
 
-                'email' => ['required', 'email', 'unique:users,email'],
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('users', 'email')->ignore($user->id),
+                ],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],

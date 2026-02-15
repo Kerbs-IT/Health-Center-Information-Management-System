@@ -198,7 +198,11 @@ class authController extends Controller
             'contact_number' => 'required|digits_between:7,12',
             'nationality' => 'sometimes|nullable|string',
 
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
             'street' => 'sometimes|nullable|string',
             'region' => 'sometimes|nullable|string',
             'province' => 'sometimes|nullable|numeric',
