@@ -108,8 +108,7 @@
 <body>
     <div class="container">
         <div class="email-logo-header">
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}"
-                alt="Barangay Hugo Perez Logo">
+            <img src="https://hugoperezproperbhc.com/images/hugoperez_logo.png" alt="Barangay Hugo Perez Logo">
             <div class="logo-text">
                 <h4>Barangay Hugo Perez Proper —</h4>
                 <h4>Health Center Information Management System</h4>
