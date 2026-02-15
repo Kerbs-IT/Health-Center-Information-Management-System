@@ -242,6 +242,7 @@ class manageUserController extends Controller
                 $user->patient->profile_image = 'images/profile_images/' . $filename;
                 $user->patient->save();
             }
+            
             $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
             // update the patient
             $patient = $user->patient;

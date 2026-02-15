@@ -93,7 +93,7 @@
                                     <input type="hidden" name="user_account" id="user_account">
                                     <div class="mb-2">
                                         <label for="email" class="">Email<span class="text-danger">*</span></label>
-                                        <input type="email" id="email" placeholder="Enter First Name" class="form-control" name="email" value="">
+                                        <input type="email" id="email" placeholder="Enter the email" class="form-control" name="email" value="">
                                         <small class="text-danger error-text" id="email_error"></small>
                                     </div>
                                     <div class="mb-2 d-flex gap-1">
@@ -409,8 +409,8 @@
                                         <h4>Address</h4>
                                         <div class="input-field d-flex gap-2 align-items-center flex-md-row flex-column">
                                             <div class=" mb-2 w-100 w-md-50">
-                                                <label for="street">Street<span class="text-danger">*</span></label>
-                                                <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2" name="street" value="">
+                                                <label for="street">House No., Street,<span class="text-danger">*</span></label>
+                                                <input type="text" id="street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="form-control py-2" name="street" value="">
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
                                             <div class="mb-2 w-100 w-md-50">
@@ -484,12 +484,12 @@
                                         <!-- 3rd row -->
                                         <div class="vitals mb-2 input-field d-none gap-3 w-100 third-row">
                                             <div class="vaccination-vitals mb-2">
-                                                <label for="BP">Birth Height(cm):</label>
+                                                <label for="BP">Birth Height(cm)<span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control w-100" id="vaccination_birth_height" placeholder="Enter the birth height" name="vaccination_height">
                                                 <small class="text-danger error-text" id="vaccination_height_error"></small>
                                             </div>
                                             <div class="vaccination-vitals mb-2">
-                                                <label for="BP">Birth Weight(kg):</label>
+                                                <label for="BP">Birth Weight(kg)<span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control w-100" id="vaccination_birth_weight" placeholder="Enter the birth weight" name="vaccination_weight">
                                                 <small class="text-danger error-text" id="vaccination_weight_error"></small>
                                             </div>

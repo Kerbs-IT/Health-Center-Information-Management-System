@@ -189,8 +189,8 @@
                                     <label class="form-label">Patient Address</label>
                                     <div class="row g-2">
                                         <div class="col-12 col-md-6">
-                                            <label for="edit_blk_n_street" class="form-label text-muted small">Blk & lot, Street<span class="text-danger">*</span></label>
-                                            <input type="text" id="edit_blk_n_street" name="blk_n_street" placeholder="Enter blk & lot & street" class="form-control">
+                                            <label for="edit_blk_n_street" class="form-label text-muted small">House No., Street,<span class="text-danger">*</span></label>
+                                            <input type="text" id="edit_blk_n_street" name="blk_n_street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="form-control">
 
                                             <small class="text-danger"></small>
 
@@ -320,7 +320,7 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3 w-100">
-                            <label for="re-type-pass" class="mb-1 font-weight-normal ">Retype password<span class="text-danger">*</span></label>
+                            <label for="re-type-pass" class="mb-1 font-weight-normal ">Confirm password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Confirm the password" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white" id="Retype-eye-icon"></i>
@@ -347,8 +347,8 @@
 
                             <div class=" w-100 d-flex gap-2 flex-wrap flex-lg-nowrap">
                                 <div class="items w-full lg:w-[50%]">
-                                    <label for="patient_street" class="w-100 text-muted">Blk & lot,Street<span class="text-danger">*</span></label>
-                                    <input type="text" id="blk_n_street" name="blk_n_street" placeholder="Enter the blk & lot & street seperated by ','" class="w-100 form-control">
+                                    <label for="patient_street" class="w-100 text-muted">House No., Street,<span class="text-danger">*</span></label>
+                                    <input type="text" id="blk_n_street" name="blk_n_street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="w-100 form-control">
                                     <small class="text-danger error-element blk-n-street-error"></small>
                                 </div>
                                 <div class="items w-full lg:w-[50%]">

@@ -151,8 +151,8 @@ class TbDotsController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
             ], [
                 // Custom messages with friendly attribute names
                 'philhealth_id.string' => 'The PhilHealth ID must be a string.',
@@ -274,6 +274,12 @@ class TbDotsController extends Controller
                         'role' => 'patient',
                         'status' => 'active'
                     ]);
+                    // update the user_id in patients record
+
+                    $tbDotsPatient->update([
+                        'user_id' => $user->id
+                    ]);
+
 
                     // Update or create user address
                     if ($user->user_address) {
@@ -332,6 +338,13 @@ class TbDotsController extends Controller
                         'status' => 'active',
                         'password' => bcrypt('default_password_123') // Set a default password or generate one
                     ]);
+
+                    // update the user_id in patients record
+
+                    $tbDotsPatient->update([
+                        'user_id' => $user->id
+                    ]);
+
 
                     // Send email with credentials
                     Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
@@ -480,8 +493,8 @@ class TbDotsController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
                 'philheath_id' => 'sometimes|nullable|string',
                 'suffix' => 'sometimes|nullable|string'
             ], [
@@ -700,8 +713,8 @@ class TbDotsController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
                 'adherence_of_treatment' => 'required|string',
                 'side_effect' => 'sometimes|nullable|string',
                 'progress_note' => 'sometimes|nullable|string',
@@ -796,8 +809,8 @@ class TbDotsController extends Controller
                 'edit_checkup_temperature'       => 'nullable|numeric|between:30,45',
                 'edit_checkup_pulse_rate'        => 'nullable|string|max:20',
                 'edit_checkup_respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'edit_checkup_height'            => 'nullable|numeric|between:30,300',
-                'edit_checkup_weight'            => 'nullable|numeric|between:1,300',
+                'edit_checkup_height'            => 'nullable|numeric|between:1,250',
+                'edit_checkup_weight'            => 'nullable|numeric|between:1,250',
                 'edit_checkup_adherence_of_treatment' => 'required|string',
                 'edit_checkup_side_effect' => 'sometimes|nullable|string',
                 'edit_checkup_progress_note' => 'sometimes|nullable|string',

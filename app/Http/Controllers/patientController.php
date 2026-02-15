@@ -21,10 +21,13 @@ use App\Models\tb_dots_medical_records;
 use App\Models\User;
 use App\Models\users_address;
 use App\Models\vaccination_case_records;
+use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
+use App\Models\wra_masterlists;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -259,130 +262,102 @@ class patientController extends Controller
             $hasPatient = $user->patient()->exists();
 
             $data = $request->validate([
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'required|date|before_or_equal:today',
-                'sex' => 'sometimes|nullable|string',
-                'civil_status' => 'sometimes|nullable|string',
-                'contact_number' => 'sometimes|nullable|digits_between:7,12',
-                'nationality' => 'sometimes|nullable|string',
-                'email' => ['required', 'email'],
-                'blk_n_street' => 'required',
+                'first_name'             => 'required|string',
+                'last_name'              => 'required|string',
+                'middle_initial'         => 'sometimes|nullable|string',
+                'date_of_birth'          => 'required|date|before_or_equal:today',
+                'sex'                    => 'sometimes|nullable|string',
+                'civil_status'           => 'sometimes|nullable|string',
+                'contact_number'         => 'sometimes|nullable|digits_between:7,12',
+                'nationality'            => 'sometimes|nullable|string',
+                'place_of_birth'         => 'sometimes|nullable|string',        // ++ added
+                'email'                  => ['required', 'email'],
+                'blk_n_street'           => 'required',
                 'patient_purok_dropdown' => 'required',
-                'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
-                'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-                'edit_suffix' => 'sometimes|nullable|string'
+                'password'               => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+                'profile_image'          => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+                'edit_suffix'            => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'first_name.required' => 'The first name field is required.',
-                'first_name.string' => 'The first name must be a string.',
-
-                'last_name.required' => 'The last name field is required.',
-                'last_name.string' => 'The last name must be a string.',
-
-                'date_of_birth.required' => 'The date of birth field is required.',
-                'date_of_birth.date' => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
-
-                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
-
-                'blk_n_street.required' => 'The block and street field is required.',
-
+                'first_name.required'             => 'The first name field is required.',
+                'first_name.string'               => 'The first name must be a string.',
+                'last_name.required'              => 'The last name field is required.',
+                'last_name.string'                => 'The last name must be a string.',
+                'date_of_birth.required'          => 'The date of birth field is required.',
+                'date_of_birth.date'              => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal'   => 'The date of birth must be today or earlier.',
+                'contact_number.digits_between'   => 'The contact number must be between :min and :max digits.',
+                'blk_n_street.required'           => 'The block and street field is required.',
                 'patient_purok_dropdown.required' => 'The purok field is required.',
-
-                'profile_image.image' => 'The profile image must be an image.',
-                'profile_image.mimes' => 'The profile image must be a file of type: jpg, jpeg, png.',
-                'profile_image.max' => 'The profile image may not be greater than :max kilobytes.',
+                'profile_image.image'             => 'The profile image must be an image.',
+                'profile_image.mimes'             => 'The profile image must be a file of type: jpg, jpeg, png.',
+                'profile_image.max'               => 'The profile image may not be greater than :max kilobytes.',
             ]);
 
             $additionalData = $request->validate([
-                'mother_name' => 'sometimes|nullable|string',
-                'father_name' => 'sometimes|nullable|string',
-                'vaccination_height' => ['nullable', 'numeric', 'min:30', 'max:250'],
-                'vaccination_weight' => ['nullable', 'numeric', 'min:1', 'max:300'],
-                'family_head_name' => 'sometimes|nullable|string',
-                'blood_type' => 'sometimes|nullable|string',
-                'religion' => 'sometimes|nullable|string',
+                'mother_name'             => 'sometimes|nullable|string',
+                'father_name'             => 'sometimes|nullable|string',
+                'vaccination_height'      => ['nullable', 'numeric', 'min:1', 'max:250'],
+                'vaccination_weight'      => ['nullable', 'numeric', 'min:1', 'max:250'],
+                'family_head_name'        => 'sometimes|nullable|string',
+                'blood_type'              => 'sometimes|nullable|string',
+                'religion'                => 'sometimes|nullable|string',
                 'philhealth_number_radio' => 'sometimes|nullable|string',
-                'philHealth_number' => 'sometimes|nullable|string',
-                'occupation' => 'sometimes|nullable|string',
-                'SSS' => 'sometimes|nullable|string',
-                'philhealth_no' => 'sometimes|nullable|string',
-                'philhealth_id' => 'sometimes|nullable|numeric'
+                'philHealth_number'       => 'sometimes|nullable|string',
+                'occupation'              => 'sometimes|nullable|string',
+                'SSS'                     => 'sometimes|nullable|string',
+                'philhealth_no'           => 'sometimes|nullable|string',
+                'philhealth_id'           => 'sometimes|nullable|numeric',
             ], [
-                // Custom messages with friendly attribute names
-                'vaccination_height.numeric' => 'The height must be a number.',
-                'vaccination_height.min' => 'The height must be at least :min cm.',
-                'vaccination_height.max' => 'The height may not be greater than :max cm.',
-
-                'vaccination_weight.numeric' => 'The weight must be a number.',
-                'vaccination_weight.min' => 'The weight must be at least :min kg.',
-                'vaccination_weight.max' => 'The weight may not be greater than :max kg.',
-
-                'family_head_name.string' => 'The family head name must be a string.',
-
-                'philhealth_number_radio.string' => 'The PhilHealth number radio must be a string.',
-
-                'philHealth_number.string' => 'The PhilHealth number must be a string.',
-
-                'philhealth_no.string' => 'The PhilHealth number must be a string.',
-
-                'philhealth_id.numeric' => 'The PhilHealth ID must be a number.',
+                'vaccination_height.numeric'        => 'The height must be a number.',
+                'vaccination_height.min'            => 'The height must be at least :min cm.',
+                'vaccination_height.max'            => 'The height may not be greater than :max cm.',
+                'vaccination_weight.numeric'        => 'The weight must be a number.',
+                'vaccination_weight.min'            => 'The weight must be at least :min kg.',
+                'vaccination_weight.max'            => 'The weight may not be greater than :max kg.',
+                'family_head_name.string'           => 'The family head name must be a string.',
+                'philhealth_number_radio.string'    => 'The PhilHealth number radio must be a string.',
+                'philHealth_number.string'          => 'The PhilHealth number must be a string.',
+                'philhealth_no.string'              => 'The PhilHealth number must be a string.',
+                'philhealth_id.numeric'             => 'The PhilHealth ID must be a number.',
             ]);
 
-            // Update address
-            $address = users_address::where('user_id', $user->id)->first();
+            // ── Address ───────────────────────────────────────────────────────
+            $address      = users_address::where('user_id', $user->id)->first();
             $blk_n_street = explode(',', $data['blk_n_street'], 2);
             $house_number = trim($blk_n_street[0] ?? '');
-            $street = trim($blk_n_street[1] ?? null);
-            if(!$hasPatient && $address){
-                
+            $street       = trim($blk_n_street[1] ?? null);
+
+            if (!$hasPatient && $address) {
                 $address->update([
                     'house_number' => $house_number,
-                    'street' => $street,
-                    'purok' => $data['patient_purok_dropdown']
+                    'street'       => $street,
+                    'purok'        => $data['patient_purok_dropdown'],
                 ]);
-
-                $address->refresh();
-                $fullAddress = collect([
-                    $address->house_number,
-                    $address->street,
-                    $address->purok,
-                    $address->barangay ?? null,
-                    $address->city ?? null,
-                    $address->province ?? null,
-                ])->filter()->join(', ');
-            }else{
+            } else {
                 $address = users_address::create([
-                    'user_id' => $user->id,
+                    'user_id'      => $user->id,
                     'house_number' => $house_number,
-                    'street' => $street,
-                    'purok' => $data['patient_purok_dropdown']
+                    'street'       => $street,
+                    'purok'        => $data['patient_purok_dropdown'],
                 ]);
-
-                $address->refresh();
-                $fullAddress = collect([
-                    $address->house_number,
-                    $address->street,
-                    $address->purok,
-                    $address->barangay ?? null,
-                    $address->city ?? null,
-                    $address->province ?? null,
-                ])->filter()->join(', ');
             }
-          
 
-            
+            $address->refresh();
+            $fullAddress = collect([
+                $address->house_number,
+                $address->street,
+                $address->purok,
+                $address->barangay ?? null,
+                $address->city     ?? null,
+                $address->province ?? null,
+            ])->filter()->join(', ');
 
-            // Handle profile image upload
-            $profileImagePath = null;
+            // ── Profile image ─────────────────────────────────────────────────
             if ($request->hasFile('profile_image')) {
-                // Delete old profile image from all possible locations
                 $this->deleteOldProfileImage($user);
 
-                $file = $request->file('profile_image');
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $file            = $request->file('profile_image');
+                $filename        = time() . '_' . $file->getClientOriginalName();
                 $destinationPath = public_path('images/profile_images');
 
                 if (!file_exists($destinationPath)) {
@@ -392,49 +367,49 @@ class patientController extends Controller
                 $file->move($destinationPath, $filename);
                 $profileImagePath = 'images/profile_images/' . $filename;
 
-                // Update profile image across all related tables
                 $this->updateProfileImageAcrossAllTables($user, $profileImagePath);
             }
 
-            // Prepare name components
-            $middle = substr($data['middle_initial'] ?? '', 0, 1);
-            $middle = $middle ? strtoupper($middle) . '.' : null;
-            $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
-            $parts = [
+            // ── Name components ───────────────────────────────────────────────
+            $middle     = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle     = $middle ? strtoupper($middle) . '.' : null;
+            $middleName = !empty($data['middle_initial'])
+                ? ucwords(strtolower($data['middle_initial']))
+                : '';
+            $parts    = array_filter([
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['edit_suffix']??null
-            ];
-            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+                $data['edit_suffix'] ?? null,
+            ]);
+            $fullName  = ucwords(trim(implode(' ', $parts)));
 
-            $patient = $user->patient ?? null;
-
-            $age = Carbon::parse($data['date_of_birth'])->age;
+            $patient   = $user->patient ?? null;
+            $age       = Carbon::parse($data['date_of_birth'])->age;
+            $ageMonths = Carbon::parse($data['date_of_birth'])->diffInMonths(now());
 
             if ($patient) {
-                // Patient exists - only update patient and related records
-
-
-                // Update patient information
+                // ── Update patient record ─────────────────────────────────────
                 $patient->update([
-                    'first_name' => ucwords($data['first_name']) ?? null,
+                    'first_name'     => ucwords(strtolower($data['first_name'])),  // ++ fixed casing
                     'middle_initial' => $middleName,
-                    'last_name' => ucwords($data['last_name']) ?? null,
-                    'full_name' => $fullName,
-                    'age' => $age ,
-                    'date_of_birth' => $data['date_of_birth'] ?? null,
-                    'sex' => $data['sex']?? null,
-                    'civil_status' => $data['civil_status'] ?? null,
+                    'last_name'      => ucwords(strtolower($data['last_name'])),   // ++ fixed casing
+                    'full_name'      => $fullName,                                 // ++ added
+                    'age'            => $age,
+                    'age_in_months'  => $ageMonths,                                // ++ added
+                    'date_of_birth'  => $data['date_of_birth']  ?? null,
+                    'sex'            => $data['sex']             ?? null,
+                    'civil_status'   => $data['civil_status']   ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
-                    'nationality' => $data['nationality'] ?? null,
-                    'suffix' => $data['edit_suffix'] ?? ''
+                    'nationality'    => $data['nationality']    ?? null,
+                    'place_of_birth' => $data['place_of_birth'] ?? null,           // ++ added
+                    'suffix'         => $data['edit_suffix']    ?? '',
                 ]);
 
                 $patient->address->update([
                     'house_number' => $house_number,
-                    'street' => $street,
-                    'purok' => $data['patient_purok_dropdown']
+                    'street'       => $street,
+                    'purok'        => $data['patient_purok_dropdown'],
                 ]);
 
                 $patient->address->refresh();
@@ -443,27 +418,89 @@ class patientController extends Controller
                     $patient->address->street,
                     $patient->address->purok,
                     $patient->address->barangay ?? null,
-                    $patient->address->city ?? null,
+                    $patient->address->city     ?? null,
                     $patient->address->province ?? null,
                 ])->filter()->join(', ');
 
+                // ── Sync users_address to match patient address ───────────────
+                $userAddress = users_address::where('user_id', $user->id)->first();  // ++ added
+                if ($userAddress) {                                                   // ++ added
+                    $userAddress->update([                                            // ++ added
+                        'house_number' => $house_number,                              // ++ added
+                        'street'       => $street,                                    // ++ added
+                        'purok'        => $data['patient_purok_dropdown'],            // ++ added
+                    ]);                                                               // ++ added
+                }                                                                     // ++ added
 
-                // also update the account
+                // ── Sync to patients table via patient_record_id ──────────────
+                if (!empty($user->patient_record_id)) {
+                    $patientRecord = patients::findOrFail($user->patient_record_id);
+
+                    $patientRecord->update([
+                        'first_name'     => ucwords(strtolower($data['first_name'])),
+                        'middle_initial' => $middleName,
+                        'last_name'      => ucwords(strtolower($data['last_name'])),
+                        'full_name'      => $fullName,
+                        'age'            => $age,
+                        'age_in_months'  => $ageMonths,
+                        'date_of_birth'  => $data['date_of_birth']  ?? null,
+                        'sex'            => $data['sex']             ?? null,
+                        'civil_status'   => $data['civil_status']   ?? null,
+                        'contact_number' => $data['contact_number'] ?? null,
+                        'nationality'    => $data['nationality']    ?? null,
+                        'place_of_birth' => $data['place_of_birth'] ?? null,
+                        'suffix'         => $data['edit_suffix']    ?? null,
+                    ]);
+
+                    $patientAddress = patient_addresses::where('patient_id', $patientRecord->id)->first();
+                    if ($patientAddress) {
+                        $patientAddress->update([
+                            'house_number' => $house_number,
+                            'street'       => $street,
+                            'purok'        => $data['patient_purok_dropdown'],
+                        ]);
+                        $patientAddress->refresh();
+
+                        $fullAddress = collect([
+                            $patientAddress->house_number,
+                            $patientAddress->street,
+                            $patientAddress->purok,
+                            $patientAddress->barangay ?? null,
+                            $patientAddress->city     ?? null,
+                            $patientAddress->province ?? null,
+                        ])->filter()->join(', ');
+                    }
+
+                    $this->cascadePatientUpdate(
+                        $patientRecord,
+                        $fullName,
+                        $fullAddress,
+                        $age,
+                        $ageMonths,
+                        $data
+                    );
+                }
+
+                // ── Update user account ───────────────────────────────────────
                 $userUpdateData = [
-                    
-                    'email' => $data['email'] ?? $user->email,
-                    'first_name' => $data['first_name'] ?? $user->first_name,
-                    'last_name' => $data['last_name'] ?? $user->last_name,
+                    'email'          => $data['email']          ?? $user->email,
+                    'first_name'     => ucwords(strtolower($data['first_name'])),
+                    'last_name'      => ucwords(strtolower($data['last_name'])),
                     'middle_initial' => $data['middle_initial'] ?? '',
-                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
-                    'contact_number' => $data['contact_number'],
-                    'address' => $fullAddress,
-                    'suffix' => $data['edit_suffix'] ?? ''
+                    'full_name'      => $fullName,
+                    'date_of_birth'  => $data['date_of_birth']  ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'] ?? null,
+                    'address'        => $fullAddress,
+                    'suffix'         => $data['edit_suffix']    ?? '',
                 ];
-                // update the user account
+
+                if (!empty($data['password'])) {
+                    $userUpdateData['password'] = Hash::make($data['password']);
+                }
+
                 $user->update($userUpdateData);
 
-                // Update medical record cases
+                // ── Update medical record cases ───────────────────────────────
                 $medicalRecordCases = medical_record_cases::where('patient_id', $patient->id)
                     ->where('status', '!=', 'Archived')
                     ->get();
@@ -474,22 +511,19 @@ class patientController extends Controller
 
                 $this->updateMedicalRecordByType($request, $medicalRecordCases, $additionalData);
             } else {
-                // No patient - update user table
-
+                // ── No patient — update user table only ───────────────────────
                 $userUpdateData = [
-                    
-                    'email' => $data['email'] ?? $user->email,
-                    'first_name' => $data['first_name'] ?? $user->first_name,
-                    'last_name' => $data['last_name'] ?? $user->last_name,
-                    'full_name' => $fullName,
+                    'email'          => $data['email']          ?? $user->email,
+                    'first_name'     => ucwords(strtolower($data['first_name'])),
+                    'last_name'      => ucwords(strtolower($data['last_name'])),
+                    'full_name'      => $fullName,
                     'middle_initial' => $data['middle_initial'] ?? '',
-                    'date_of_birth' => $data['date_of_birth'] ?? $user->date_of_birth,
-                    'contact_number' => $data['contact_number'],
-                    'address' => $fullAddress,
-                    'suffix' => $data['edit_suffix'] ?? ''
+                    'date_of_birth'  => $data['date_of_birth']  ?? $user->date_of_birth,
+                    'contact_number' => $data['contact_number'] ?? null,
+                    'address'        => $fullAddress,
+                    'suffix'         => $data['edit_suffix']    ?? '',
                 ];
 
-                // Add password to update if provided
                 if (!empty($data['password'])) {
                     $userUpdateData['password'] = Hash::make($data['password']);
                 }
@@ -499,9 +533,171 @@ class patientController extends Controller
 
             return response()->json(['success' => 'Information has been updated successfully']);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+    }
+
+    // ── Cascade private method ────────────────────────────────────────────────────
+    private function cascadePatientUpdate(
+        $patient,
+        string $fullName,
+        string $fullAddress,
+        int $age,
+        int $ageMonths,
+        array $data
+    ): void {
+        $cases = medical_record_cases::where('patient_id', $patient->id)->get();
+
+        foreach ($cases as $case) {
+            switch ($case->type_of_case) {
+
+                case 'family-planning':
+                    if (DB::table('family_planning_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('family_planning_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update([
+                                'client_name'           => $fullName,
+                                'client_date_of_birth'  => $data['date_of_birth'],
+                                'client_age'            => $age,
+                                'client_address'        => $fullAddress,
+                                'client_contact_number' => $data['contact_number'] ?? null,
+                                'client_civil_status'   => $data['civil_status']   ?? null,
+                                'client_suffix'         => $data['edit_suffix']    ?? null,
+                            ]);
+                    }
+
+                    if (DB::table('family_planning_medical_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('family_planning_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (wra_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        wra_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_wra'   => $fullName,
+                                'address'       => $fullAddress,
+                                'date_of_birth' => $data['date_of_birth'],
+                            ]);
+                    }
+                    break;
+
+                case 'prenatal':
+                    if (DB::table('pregnancy_checkups')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('pregnancy_checkups')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('pregnancy_plans')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('pregnancy_plans')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('prenatal_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('prenatal_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (wra_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        wra_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_wra'   => $fullName,
+                                'address'       => $fullAddress,
+                                'date_of_birth' => $data['date_of_birth'],
+                            ]);
+                    }
+                    break;
+
+                case 'senior-citizen':
+                    if (DB::table('senior_citizen_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('senior_citizen_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('senior_citizen_medical_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('senior_citizen_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+                    break;
+
+                case 'tb-dots':
+                    if (DB::table('tb_dots_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('tb_dots_check_ups')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_check_ups')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('tb_dots_medical_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+                    break;
+
+                case 'vaccination':
+                    if (DB::table('vaccination_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('vaccination_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (vaccination_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        vaccination_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_child' => $fullName,
+                                'Address'       => $fullAddress,
+                                'sex'           => $data['sex']          ?? null,
+                                'date_of_birth' => $data['date_of_birth'],
+                                'age'           => $age,
+                                'age_in_months' => $age === 0 ? $ageMonths : null,
+                            ]);
+                    }
+                    break;
+            }
         }
     }
 

@@ -94,8 +94,8 @@ class addPatientController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
-                'vaccination_height' => ['required', 'numeric', 'min:20', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
-                'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:300', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_height' => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
+                'vaccination_weight' => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination' => 'required|date',
                 'time_of_vaccination' => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines' => 'required|string',
@@ -104,7 +104,7 @@ class addPatientController extends Controller
                 'current_height' => [
                     'nullable',
                     'numeric',
-                    'between:30,250'
+                    'between:1,250'
                 ],
                 'current_weight' => [
                     'nullable',
@@ -255,6 +255,11 @@ class addPatientController extends Controller
                         'status' => 'active'
                     ]);
 
+                    // update the patient record
+                    $vaccinationPatient->update([
+                        'user_id' => $user->id
+                    ]);
+
                     // Update or create user address
                     if ($user->user_address) {
                         $user->user_address->update([
@@ -310,7 +315,10 @@ class addPatientController extends Controller
                         'password' => Hash::make($temporaryPassword),
                         'role' => 'patient',
                         'status' => 'active',
-                        'password' => bcrypt('default_password_123') // Set a default password or generate one
+                    ]);
+
+                    $vaccinationPatient->update([
+                        'user_id' => $user->id
                     ]);
 
                     // Send email with credentials

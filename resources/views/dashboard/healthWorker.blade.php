@@ -359,7 +359,7 @@
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3 w-100">
-                            <label for="re-type-pass" class="mb-1 font-weight-normal">Retype password<span class="text-danger">*</span></label>
+                            <label for="re-type-pass" class="mb-1 font-weight-normal">Confirm password<span class="text-danger">*</span></label>
                             <div class="input-pass d-flex align-items-center">
                                 <input type="password" placeholder="Confirm the password" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="add_re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white transition transform hover:scale-110 duration-200 rounded hover:shadow-lg" id="Retype-eye-icon"></i>

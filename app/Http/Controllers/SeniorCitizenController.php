@@ -115,8 +115,8 @@ class SeniorCitizenController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
             ], [
                 // Custom messages with friendly attribute names
                 'blood_pressure.regex' => 'The blood pressure format is invalid.',
@@ -257,6 +257,11 @@ class SeniorCitizenController extends Controller
                         'role' => 'patient',
                         'status' => 'active'
                     ]);
+                    // update the user_id in patients record
+
+                    $seniorCitizenPatient->update([
+                        'user_id' => $user->id
+                    ]);
 
                     // Update or create user address
                     if ($user->user_address) {
@@ -315,6 +320,13 @@ class SeniorCitizenController extends Controller
                         'status' => 'active',
                         'password' => bcrypt('default_password_123') // Set a default password or generate one
                     ]);
+
+                    // update the user_id in patients record
+
+                    $seniorCitizenPatient->update([
+                        'user_id' => $user->id
+                    ]);
+
 
                     // Send email with credentials
                     Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
@@ -474,8 +486,8 @@ class SeniorCitizenController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
                 'suffix' => 'nullable|sometimes|string'
             ], [
                 // Custom messages with friendly attribute names

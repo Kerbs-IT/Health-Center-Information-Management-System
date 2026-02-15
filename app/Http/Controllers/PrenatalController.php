@@ -160,8 +160,8 @@ class PrenatalController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,500',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
                 'add_prenatal_planning' => 'nullable|string:max:2000'
             ], [
                 // Custom messages with friendly attribute names
@@ -349,6 +349,7 @@ class PrenatalController extends Controller
             ]);
 
             // Insert user data or update only
+            // Insert user data or update only
             if ($patientData['user_account']) {
                 try {
                     $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
@@ -356,51 +357,51 @@ class PrenatalController extends Controller
                     // Update existing user
                     $user->update([
                         'patient_record_id' => $prenatalPatient->id,
-                        'first_name' => ucwords(strtolower($patientData['first_name'])),
-                        'middle_initial' => $middleName,
-                        'last_name' => ucwords(strtolower($patientData['last_name'])),
-                        'full_name' => $fullName,
-                        'email' => $patientData['email'],
-                        'contact_number' => $patientData['contact_number'] ?? null,
-                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                        'suffix' => $patientData['suffix'] ?? null,
-                        'patient_type' => $patientData['type_of_patient'],
-                        'role' => 'patient',
-                        'status' => 'active'
+                        'first_name'        => ucwords(strtolower($patientData['first_name'])),
+                        'middle_initial'    => $middleName,
+                        'last_name'         => ucwords(strtolower($patientData['last_name'])),
+                        'full_name'         => $fullName,
+                        'email'             => $patientData['email'],
+                        'contact_number'    => $patientData['contact_number'] ?? null,
+                        'date_of_birth'     => $patientData['date_of_birth'] ?? null,
+                        'suffix'            => $patientData['suffix'] ?? null,
+                        'patient_type'      => $patientData['type_of_patient'],
+                        'role'              => 'patient',
+                        'status'            => 'active'
                     ]);
+
+                    // ++ sync user_id back to patient record
+                    $prenatalPatient->update(['user_id' => $user->id]);
 
                     // Update or create user address
                     if ($user->user_address) {
                         $user->user_address->update([
-                            'patient_id' => $prenatalPatient->id,
+                            'patient_id'   => $prenatalPatient->id,
                             'house_number' => $blk_n_street[0],
-                            'street' => $blk_n_street[1] ?? null,
-                            'purok' => $patientData['brgy']
+                            'street'       => $blk_n_street[1] ?? null,
+                            'purok'        => $patientData['brgy']
                         ]);
                     } else {
                         // Create address if it doesn't exist
                         $user->user_address()->create([
-                            'patient_id' => $prenatalPatient->id,
+                            'patient_id'   => $prenatalPatient->id,
                             'house_number' => $blk_n_street[0],
-                            'street' => $blk_n_street[1] ?? null,
-                            'purok' => $patientData['brgy']
+                            'street'       => $blk_n_street[1] ?? null,
+                            'purok'        => $patientData['brgy']
                         ]);
                     }
                 } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-                    // User account not found, but this shouldn't happen if validation passed
                     return response()->json([
                         'message' => 'Patient account not found.',
-                        'errors' => [
+                        'errors'  => [
                             'user_account' => ['The selected patient account does not exist.']
                         ]
                     ], 404);
                 } catch (\Exception $e) {
-                    // Log the error
                     // \Log::error('Error updating user account: ' . $e->getMessage());
-
                     return response()->json([
                         'message' => 'An error occurred while updating patient information.',
-                        'errors' => [
+                        'errors'  => [
                             'server' => ['Please try again or contact support.']
                         ]
                     ], 500);
@@ -412,36 +413,37 @@ class PrenatalController extends Controller
                     // Create user
                     $user = User::create([
                         'patient_record_id' => $prenatalPatient->id,
-                        'first_name' => ucwords(strtolower($patientData['first_name'])),
-                        'middle_initial' => $middleName,
-                        'last_name' => ucwords(strtolower($patientData['last_name'])),
-                        'full_name' => $fullName,
-                        'email' => $patientData['email'],
-                        'contact_number' => $patientData['contact_number'] ?? null,
-                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                        'suffix' => $patientData['suffix'] ?? null,
-                        'patient_type' => $patientData['type_of_patient'],
-                        'password' => Hash::make($temporaryPassword),
-                        'role' => 'patient',
-                        'status' => 'active',
-                        'password' => bcrypt('default_password_123') // Set a default password or generate one
+                        'first_name'        => ucwords(strtolower($patientData['first_name'])),
+                        'middle_initial'    => $middleName,
+                        'last_name'         => ucwords(strtolower($patientData['last_name'])),
+                        'full_name'         => $fullName,
+                        'email'             => $patientData['email'],
+                        'contact_number'    => $patientData['contact_number'] ?? null,
+                        'date_of_birth'     => $patientData['date_of_birth'] ?? null,
+                        'suffix'            => $patientData['suffix'] ?? null,
+                        'patient_type'      => $patientData['type_of_patient'],
+                        'password'          => Hash::make($temporaryPassword), // ++ removed duplicate bcrypt line
+                        'role'              => 'patient',
+                        'status'            => 'active',
                     ]);
+
+                    // ++ sync user_id back to patient record
+                    $prenatalPatient->update(['user_id' => $user->id]);
 
                     // Send email with credentials
                     Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
+
                     // Create user address
                     $user->user_address()->create([
-                        'patient_id' => $prenatalPatient->id,
+                        'patient_id'   => $prenatalPatient->id,
                         'house_number' => $blk_n_street[0],
-                        'street' => $blk_n_street[1] ?? null,
-                        'purok' => $patientData['brgy']
+                        'street'       => $blk_n_street[1] ?? null,
+                        'purok'        => $patientData['brgy']
                     ]);
                 } catch (\Exception $e) {
-                    // Log the error
-
                     return response()->json([
                         'message' => 'An error occurred while creating patient account.',
-                        'errors' => [
+                        'errors'  => [
                             'server' => ['Please try again or contact support.']
                         ]
                     ], 500);
@@ -922,8 +924,8 @@ class PrenatalController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,500',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
                 'number_of_children' => 'sometimes|nullable|numeric',
                 'answer_1' => 'sometimes|nullable|string',
                 'answer_2' => 'sometimes|nullable|string',
@@ -1534,8 +1536,8 @@ class PrenatalController extends Controller
                 'edit_case_temperature' => 'nullable|numeric|between:30,45',
                 'edit_case_pulse_rate' => 'nullable|string|max:20',
                 'edit_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
-                'edit_case_height' => 'nullable|numeric|between:30,300',
-                'edit_case_weight' => 'nullable|numeric|between:1,500',
+                'edit_case_height' => 'nullable|numeric|between:1,250',
+                'edit_case_weight' => 'nullable|numeric|between:1,250',
                 'edit_case_planning' => 'nullable|string|max:2000',
             ], [
                 // Required fields
@@ -1849,8 +1851,8 @@ class PrenatalController extends Controller
                     'check_up_temperature'     => 'nullable|numeric|min:20|max:100',
                     'check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'check_up_height'          => 'nullable|numeric|between:30,250',
-                    'check_up_weight'          => 'nullable|numeric|min:1|between:1,300',
+                    'check_up_height'          => 'nullable|numeric|between:1,250',
+                    'check_up_weight'          => 'nullable|numeric|min:1|between:1,250',
 
                     // Symptom questions (all optional but strings)
                     'abdomen_question'                 => 'nullable|string|max:255',
@@ -1983,8 +1985,8 @@ class PrenatalController extends Controller
                     'edit_check_up_temperature'     => 'nullable|numeric|min:20|max:45',
                     'edit_check_up_pulse_rate'      => 'nullable|integer|min:30|max:250',
                     'edit_check_up_respiratory_rate' => 'nullable|integer|min:5|max:80',
-                    'edit_check_up_height'          => 'nullable|numeric|between:30,250',
-                    'edit_check_up_weight'          => 'nullable|numeric|between:1,300',
+                    'edit_check_up_height'          => 'nullable|numeric|between:1,250',
+                    'edit_check_up_weight'          => 'nullable|numeric|between:1,250',
 
                     // Symptom questions (all optional but strings)
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
@@ -2146,8 +2148,8 @@ class PrenatalController extends Controller
                 'add_case_temperature' => 'nullable|numeric|between:30,45',
                 'add_case_pulse_rate' => 'nullable|string|max:20',
                 'add_case_respiratory_rate' => 'nullable|integer|min:5|max:60',
-                'add_case_height' => 'nullable|numeric|between:30,300',
-                'add_case_weight' => 'nullable|numeric|between:1,500',
+                'add_case_height' => 'nullable|numeric|between:1,250',
+                'add_case_weight' => 'nullable|numeric|between:1,250',
                 'add_case_planning' => 'nullable|string|max:2000',
             ], [
                 // Required fields

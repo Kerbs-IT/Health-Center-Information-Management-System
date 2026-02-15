@@ -126,11 +126,11 @@
             <div class="mb-2 d-flex w-100 gap-2">
                 <div class="mb-2 w-100 ">
                     <label for="LMP">LMP<span class="text-danger">*</span></label>
-                    <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP">
+                    <input type="date" name="LMP" class="form-control w-100" placeholder="trece" id="LMP" min="1950-01-01" max="{{date('Y-m-d')}}">
                 </div>
                 <div class="mb-2 w-100">
                     <label for="expected_delivery">Expected Delivery<span class="text-danger">*</span></label>
-                    <input type="date" name="expected_delivery" class="form-control w-100" id="add_patient_expected_delivery" placeholder="trece">
+                    <input type="date" name="expected_delivery" class="form-control w-100" id="add_patient_expected_delivery" placeholder="trece" min="1950-01-01" max="{{date('Y-m-d',strtotime('+2 years'))}}">
                 </div>
                 <div class="mb-2 w-100">
                     <label for="menarche">Menarche</label>

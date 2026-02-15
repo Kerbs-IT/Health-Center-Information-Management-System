@@ -227,10 +227,10 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Middle Initial</label>
+                            <label class="form-label fw-bold">Middle Name</label>
                             <input type="text" wire:model="edit_middle_initial"
                                 class="form-control"
-                                placeholder="M.I.">
+                                placeholder="Middle Name">
                         </div>
 
                         <div class="col-md-4">

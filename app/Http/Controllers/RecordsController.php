@@ -69,13 +69,13 @@ class RecordsController extends Controller
                 'height' => [
                     'nullable',
                     'numeric',
-                    'between:30,250'      // cm
+                    'between:1,250'      // cm
                 ],
 
                 'weight' => [
                     'nullable',
                     'numeric',
-                    'between:1,300'       // kg
+                    'between:1,250'       // kg
                 ],
 
                 'temperature' => [
@@ -547,12 +547,12 @@ class RecordsController extends Controller
                 'add_height' => [
                     'nullable',
                     'numeric',
-                    'between:30,250'
+                    'between:1,250'
                 ],
                 'add_weight' => [
                     'nullable',
                     'numeric',
-                    'between:1,300'
+                    'between:1,250'
                 ],
                 'add_temperature' => [
                     'nullable',

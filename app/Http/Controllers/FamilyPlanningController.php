@@ -133,8 +133,8 @@ class FamilyPlanningController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45',
                 'pulse_rate'        => 'nullable|string|max:20',
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:30,300',
-                'weight'            => 'nullable|numeric|between:1,300',
+                'height'            => 'nullable|numeric|between:1,250',
+                'weight'            => 'nullable|numeric|between:1,250',
             ], [
                 // Custom messages with friendly attribute names
                 'family_plan_occupation.string' => 'The family plan occupation must be a string.',
@@ -505,6 +505,12 @@ class FamilyPlanningController extends Controller
                         'status' => 'active'
                     ]);
 
+                    // update the user_id in patients record
+
+                    $familPlanningPatient->update([
+                        'user_id' => $user->id
+                    ]);
+
                     // Update or create user address
                     if ($user->user_address) {
                         $user->user_address->update([
@@ -560,7 +566,12 @@ class FamilyPlanningController extends Controller
                         'password' => Hash::make($temporaryPassword),
                         'role' => 'patient',
                         'status' => 'active',
-                        'password' => bcrypt('default_password_123') // Set a default password or generate one
+                    ]);
+
+                    // update the user_id in patients record
+
+                    $familPlanningPatient->update([
+                        'user_id' => $user->id
                     ]);
 
                     // Send email with credentials
@@ -947,8 +958,8 @@ class FamilyPlanningController extends Controller
                 'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
                 'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
                 'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:30,300', // cm range
-                'weight'            => 'nullable|numeric|between:1,300',  // kg range
+                'height'            => 'nullable|numeric|between:1,250', // cm range
+                'weight'            => 'nullable|numeric|between:1,250',  // kg range
                 'client_id' =>  'sometimes|nullable|numeric',
                 'philhealth_no' => [
                     'sometimes',
@@ -1318,8 +1329,8 @@ class FamilyPlanningController extends Controller
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
                 'side_A_add_pulse_rate'        => 'nullable|string|max:20',
-                'side_A_add_height'            => 'nullable|numeric|between:30,300',
-                'side_A_add_weight'            => 'nullable|numeric|between:1,300',
+                'side_A_add_height'            => 'nullable|numeric|between:1,250',
+                'side_A_add_weight'            => 'nullable|numeric|between:1,250',
                 'side_A_add_skin_type' => 'sometimes|nullable|string',
                 'side_A_add_conjuctiva_type' => 'sometimes|nullable|string',
                 'side_A_add_breast_type' => 'sometimes|nullable|string',
@@ -1814,8 +1825,8 @@ class FamilyPlanningController extends Controller
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
                 'edit_pulse_rate'        => 'nullable|string|max:20',
-                'edit_height'            => 'nullable|numeric|between:30,300',
-                'edit_weight'            => 'nullable|numeric|between:1,300',
+                'edit_height'            => 'nullable|numeric|between:1,250',
+                'edit_weight'            => 'nullable|numeric|between:1,250',
                 'edit_skin_type' => 'sometimes|nullable|string',
                 'edit_conjuctiva_type' => 'sometimes|nullable|string',
                 'edit_breast_type' => 'sometimes|nullable|string',

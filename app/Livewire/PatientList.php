@@ -360,83 +360,150 @@ class PatientList extends Component
             switch ($case->type_of_case) {
 
                 case 'family-planning':
-                    DB::table('family_planning_case_records')
+                    if (DB::table('family_planning_case_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update([
-                            'client_name'           => $fullName,
-                            'client_date_of_birth'  => $this->edit_date_of_birth,
-                            'client_age'            => $age,
-                            'client_address'        => $fullAddress,
-                            'client_contact_number' => $this->edit_contact_number,
-                            'client_civil_status'   => $this->edit_civil_status,
-                            'client_suffix'         => $this->edit_suffix,
-                        ]);
-                    DB::table('family_planning_medical_records')
-                        ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
+                        ->exists()
+                    ) {
+                        DB::table('family_planning_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update([
+                                'client_name'           => $fullName,
+                                'client_date_of_birth'  => $this->edit_date_of_birth,
+                                'client_age'            => $age,
+                                'client_address'        => $fullAddress,
+                                'client_contact_number' => $this->edit_contact_number,
+                                'client_civil_status'   => $this->edit_civil_status,
+                                'client_suffix'         => $this->edit_suffix,
+                            ]);
+                    }
 
-                    wra_masterlists::where('medical_record_case_id', $case->id)
-                        ->update([
-                            'name_of_wra'   => $fullName,
-                            'address'       => $fullAddress,
-                            'date_of_birth' => $this->edit_date_of_birth,
-                        ]);
+                    if (DB::table('family_planning_medical_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('family_planning_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (wra_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        wra_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_wra'   => $fullName,
+                                'address'       => $fullAddress,
+                                'date_of_birth' => $this->edit_date_of_birth,
+                            ]);
+                    }
                     break;
 
                 case 'prenatal':
-                    DB::table('pregnancy_checkups')
+                    if (DB::table('pregnancy_checkups')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
-                    DB::table('pregnancy_plans')
-                        ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
-                    DB::table('prenatal_case_records')
-                        ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
+                        ->exists()
+                    ) {
+                        DB::table('pregnancy_checkups')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
 
-                    wra_masterlists::where('medical_record_case_id', $case->id)
-                        ->update([
-                            'name_of_wra'   => $fullName,
-                            'address'       => $fullAddress,
-                            'date_of_birth' => $this->edit_date_of_birth,
-                        ]);
+                    if (DB::table('pregnancy_plans')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('pregnancy_plans')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('prenatal_case_records')
+                        ->where('medical_record_case_id', $case->id)
+                        ->exists()
+                    ) {
+                        DB::table('prenatal_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (wra_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        wra_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_wra'   => $fullName,
+                                'address'       => $fullAddress,
+                                'date_of_birth' => $this->edit_date_of_birth,
+                            ]);
+                    }
                     break;
 
                 case 'senior-citizen':
-                    DB::table('senior_citizen_case_records')
+                    if (DB::table('senior_citizen_case_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
-                    DB::table('senior_citizen_medical_records')
+                        ->exists()
+                    ) {
+                        DB::table('senior_citizen_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('senior_citizen_medical_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
+                        ->exists()
+                    ) {
+                        DB::table('senior_citizen_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
                     break;
 
                 case 'tb-dots':
-                    DB::table('tb_dots_case_records')
+                    if (DB::table('tb_dots_case_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
-                    DB::table('tb_dots_check_ups')
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('tb_dots_check_ups')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
-                    DB::table('tb_dots_medical_records')
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_check_ups')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
+
+                    if (DB::table('tb_dots_medical_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
+                        ->exists()
+                    ) {
+                        DB::table('tb_dots_medical_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
                     break;
 
                 case 'vaccination':
-                    DB::table('vaccination_case_records')
+                    if (DB::table('vaccination_case_records')
                         ->where('medical_record_case_id', $case->id)
-                        ->update(['patient_name' => $fullName]);
+                        ->exists()
+                    ) {
+                        DB::table('vaccination_case_records')
+                            ->where('medical_record_case_id', $case->id)
+                            ->update(['patient_name' => $fullName]);
+                    }
 
-                    vaccination_masterlists::where('medical_record_case_id', $case->id)
-                        ->update([
-                            'name_of_child' => $fullName,
-                            'Address'       => $fullAddress,
-                            'sex'           => $this->edit_sex,
-                            'date_of_birth' => $this->edit_date_of_birth,
-                            'age'           => $age,
-                            'age_in_months' => $age === 0 ? $ageMonths : null,
-                        ]);
+                    if (vaccination_masterlists::where('medical_record_case_id', $case->id)->exists()) {
+                        vaccination_masterlists::where('medical_record_case_id', $case->id)
+                            ->update([
+                                'name_of_child' => $fullName,
+                                'Address'       => $fullAddress,
+                                'sex'           => $this->edit_sex,
+                                'date_of_birth' => $this->edit_date_of_birth,
+                                'age'           => $age,
+                                'age_in_months' => $age === 0 ? $ageMonths : null,
+                            ]);
+                    }
                     break;
             }
         }
