@@ -73,7 +73,11 @@ class SeniorCitizenController extends Controller
                 'brgy' => 'required',
                 'civil_status' => 'sometimes|nullable|string',
                 'suffix' => 'sometimes|nullable|string',
-                'email' => 'required|email',
+                'email' => array_filter([
+                    'required',
+                    'email',
+                    !$request->user_account ? Rule::unique('users', 'email') : null,
+                ]),
                 'user_account' => 'sometimes|nullable|numeric'
             ], [
                 // Custom messages with friendly attribute names

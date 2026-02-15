@@ -25,7 +25,7 @@ class manageUserController extends Controller
     {
         try {
             $data = $request->validate([
-                'email' => ['required', 'email'],
+                'email' => ['required', 'email', 'unique:users,email'],
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'first_name' => [
                     'required',
@@ -165,7 +165,7 @@ class manageUserController extends Controller
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
 
-                'email' => ['required', 'email'],
+                'email' => ['required', 'email', 'unique:users,email'],
                 'blk_n_street' => 'required',
                 'patient_purok_dropdown' => 'required',
                 'password' => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],

@@ -118,8 +118,12 @@ class addPatientController extends Controller
                 ],
                 'date_of_comeback' => 'required|date',
                 'suffix' => 'sometimes|nullable|string',
-                'user_account' => 'sometimes|nullable|numeric',
-                'email' => 'required|email'
+                'email' => array_filter([
+                    'required',
+                    'email',
+                    !$request->user_account ? Rule::unique('users', 'email') : null,
+                ]),
+                'user_account' => 'sometimes|nullable|numeric'
             ], [
                 // Custom messages with friendly attribute names
                 'vaccination_height.required' => 'The height field is required.',

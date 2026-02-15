@@ -197,8 +197,8 @@ class authController extends Controller
             'civil_status' => 'sometimes|nullable|string',
             'contact_number' => 'required|digits_between:7,12',
             'nationality' => 'sometimes|nullable|string',
-            
-            'email' => ['required', 'email'],
+
+            'email' => ['required', 'email', 'unique:users,email'],
             'street' => 'sometimes|nullable|string',
             'region' => 'sometimes|nullable|string',
             'province' => 'sometimes|nullable|numeric',

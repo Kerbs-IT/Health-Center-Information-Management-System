@@ -86,7 +86,11 @@ class PrenatalController extends Controller
                 'street' => 'required',
                 'brgy' => 'required',
                 'suffix' => 'sometimes|nullable|string',
-                'email' => 'required|email',
+                'email' => array_filter([
+                    'required',
+                    'email',
+                    !$request->user_account ? Rule::unique('users', 'email') : null,
+                ]),
                 'user_account' => 'sometimes|nullable|numeric'
             ], [
                 // Custom messages with friendly attribute names
