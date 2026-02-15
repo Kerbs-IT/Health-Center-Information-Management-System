@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentReminderMail;
 use App\Models\notifications;
+use App\Models\NotificationSchedule;
 
 class SendAppointmentReminders extends Command
 {
@@ -71,6 +72,11 @@ class SendAppointmentReminders extends Command
      */
     private function processReminder($reminder, $type)
     {
+        if (!NotificationSchedule::shouldRun('appointment-reminder')) {
+            return;
+        }
+
+
         $appointmentType = $this->getAppointmentTypeName($type);
 
         // For vaccination, determine if it's a completion checkup or next dose
@@ -110,9 +116,9 @@ class SendAppointmentReminders extends Command
                 $emailData['dose_number'] = ($reminder->dose_number ?? 0) + 1;
             }
 
-            if (date('H') == '22') {
+            
                 Mail::to($reminder->email)->send(new AppointmentReminderMail($emailData));
-            }
+            
 
             $this->info("✓ Email sent to: {$reminder->full_name} ({$reminder->email}) - {$appointmentType}");
         } catch (\Exception $e) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\notifications;
+use App\Models\NotificationSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,7 +25,10 @@ class NotificationController extends Controller
             ->unread()
             ->count();
 
-        return view('notifications.index', compact('notifications', 'unreadCount', 'page', 'isActive'));
+        // Add this — pass schedules only (nurse will see the modal, others won't)
+        $notificationSchedules = NotificationSchedule::orderBy('id')->get();
+
+        return view('notifications.index', compact('notifications', 'unreadCount', 'page', 'isActive', 'notificationSchedules'));
     }
 
     /**

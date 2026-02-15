@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OverdueAppointmentsMail;
 use App\Models\Notification;
 use App\Models\notifications;
+use App\Models\NotificationSchedule;
 use App\Models\User;
 
 class SendOverdueNotifications extends Command
@@ -64,7 +65,7 @@ class SendOverdueNotifications extends Command
             return;
         }
 
-        if (date('H') == '9') {
+        if (NotificationSchedule::shouldRun('overdue-notifications')) {
             // 1. Send consolidated email with all overdue appointment types
             $this->sendOverdueEmail($staff, $overdueData, $totalOverdue);
 

@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png'); }}">
     <title>Health Center Information Management System</title>
-
 </head>
 
 <body>
@@ -17,29 +16,37 @@
     'resources/js/notification/notification.js'])
 
     <div class="ms-0 ps-0 d-flex w-100">
-        <!-- aside contains the sidebar menu -->
         <div class="d-flex w-100 min-vh-100">
             <aside>
                 @include('layout.menuBar')
             </aside>
-            <!-- the main content -->
-            <!-- we use flex-grow-1 to take the remaining space of the right side -->
-            <div class=" d-flex flex-column flex-grow-1 ">
+            <div class="d-flex flex-column flex-grow-1">
                 @include('layout.header')
-                <main class="pt-3 w-100 overflow-y-auto flex-grow-1 ">
+                <main class="pt-3 w-100 overflow-y-auto flex-grow-1">
                     <div class="container py-4">
                         <div class="row">
                             <div class="col-12">
+
+                                <!-- Header -->
                                 <div class="nofication-header d-flex justify-content-between align-items-center mb-4 flex-wrap">
-                                    <h2><strong>📬</strong>Notifications</h2>
+                                    <h2><strong>📬</strong> Notifications</h2>
                                     <div class="d-flex flex-wrap ms-auto gap-1">
                                         <button type="button" class="btn btn-outline-primary btn-sm mark-all-as-read-btn">
                                             ✓ Mark All as Read
                                         </button>
-
                                         <button type="button" class="btn btn-outline-danger btn-sm delete-all-notification-record">
                                             🗑️ Delete All Read
                                         </button>
+
+                                        {{-- Only nurses can see the schedule settings button --}}
+                                        @if(Auth::user()->role === 'nurse')
+                                        <button type="button"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#notificationScheduleModal">
+                                            ⚙️ Notification Schedule
+                                        </button>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -94,12 +101,17 @@
                                                         <!-- Actions -->
                                                         <div class="btn-group btn-group-sm">
                                                             @if(!$notification->is_read)
-                                                            <button type="button" class="btn btn-outline-success btn-sm notification-mark-as-read-btn" data-notification-id="{{ $notification->id}}" title="Mark as Read">
+                                                            <button type="button"
+                                                                class="btn btn-outline-success btn-sm notification-mark-as-read-btn"
+                                                                data-notification-id="{{ $notification->id }}"
+                                                                title="Mark as Read">
                                                                 ✓
                                                             </button>
                                                             @endif
-
-                                                            <button type="button" class="btn btn-outline-danger btn-sm notification-delete-btn" data-notification-id="{{ $notification->id}}" title="Delete">
+                                                            <button type="button"
+                                                                class="btn btn-outline-danger btn-sm notification-delete-btn"
+                                                                data-notification-id="{{ $notification->id }}"
+                                                                title="Delete">
                                                                 🗑️
                                                             </button>
                                                         </div>
@@ -121,9 +133,97 @@
                                 <div class="mt-4">
                                     {{ $notifications->links() }}
                                 </div>
+
                             </div>
                         </div>
                     </div>
+
+                    {{-- ============================================================ --}}
+                    {{-- NOTIFICATION SCHEDULE MODAL (nurse only)                     --}}
+                    {{-- ============================================================ --}}
+                    @if(Auth::user()->role === 'nurse')
+                    <div class="modal fade" id="notificationScheduleModal" tabindex="-1"
+                        aria-labelledby="notificationScheduleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="notificationScheduleModalLabel">
+                                        ⚙️ Notification Schedule Settings
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p class="text-muted small mb-3">
+                                        Set the time each notification will be sent daily. Changes take effect on the next scheduled run.
+                                    </p>
+
+                                    {{-- Alert placeholder - managed entirely by JS, no Bootstrap dismiss --}}
+                                    <div id="scheduleAlertBox" style="display:none;"></div>
+
+                                    {{-- Schedule rows --}}
+                                    @foreach($notificationSchedules as $schedule)
+                                    <div class="card mb-3 border-0 bg-light rounded-3">
+                                        <div class="card-body py-3 px-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <span class="fw-semibold">
+                                                        @switch($schedule->label)
+                                                        @case('appointment-reminder') 📅 Appointment Reminder Notification @break
+                                                        @case('overdue-notifications') ⚠️ Overdue Appointment Notification @break
+                                                        @case('staff-daily-schedule') 🗓️ Staff Daily Schedule Notification @break
+                                                        @default {{ $schedule->label }}
+                                                        @endswitch
+                                                    </span>
+                                                </div>
+
+                                                {{-- Active toggle --}}
+                                                <div class="form-check form-switch mb-0">
+                                                    <input class="form-check-input schedule-active-toggle"
+                                                        type="checkbox"
+                                                        role="switch"
+                                                        id="active_{{ $schedule->id }}"
+                                                        data-id="{{ $schedule->id }}"
+                                                        {{ $schedule->is_active ? 'checked' : '' }}>
+                                                    <label class="form-check-label small text-muted"
+                                                        for="active_{{ $schedule->id }}">
+                                                        {{ $schedule->is_active ? 'Active' : 'Inactive' }}
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {{-- Time input --}}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label class="small text-muted mb-0" style="min-width:80px;">Send time:</label>
+                                                <input type="time"
+                                                    class="form-control form-control-sm schedule-time-input"
+                                                    id="time_{{ $schedule->id }}"
+                                                    data-id="{{ $schedule->id }}"
+                                                    value="{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('H:i') }}">
+                                                <button type="button"
+                                                    class="btn btn-primary btn-sm schedule-save-btn"
+                                                    data-id="{{ $schedule->id }}"
+                                                    data-url="{{ route('notification-schedules.update', $schedule->id) }}">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                                        Close
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    {{-- ============================================================ --}}
 
                     <style>
                         .notification-item {
@@ -170,38 +270,141 @@
                         }
                     </style>
 
-
                 </main>
             </div>
         </div>
     </div>
-    @if(Auth::user()-> role !='patient')
+
+    {{-- Schedule modal JS (nurse only) --}}
+    @if(Auth::user()->role === 'nurse')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const alertBox = document.getElementById('scheduleAlertBox');
+            let alertTimer = null;
+
+            function hideAlert() {
+                if (alertTimer) {
+                    clearTimeout(alertTimer);
+                    alertTimer = null;
+                }
+                alertBox.style.display = 'none';
+            }
+
+            function showAlert(message, type = 'success') {
+                if (alertTimer) {
+                    clearTimeout(alertTimer);
+                    alertTimer = null;
+                }
+
+                const bgColor = type === 'success' ? '#d1e7dd' : (type === 'danger' ? '#f8d7da' : '#fff3cd');
+                const txtColor = type === 'success' ? '#0f5132' : (type === 'danger' ? '#842029' : '#664d03');
+
+                alertBox.removeAttribute('class');
+                alertBox.style.cssText = [
+                    'display:flex',
+                    'justify-content:space-between',
+                    'align-items:center',
+                    'padding:10px 14px',
+                    'margin-bottom:12px',
+                    'border-radius:6px',
+                    'background-color:' + bgColor,
+                    'color:' + txtColor,
+                    'font-size:0.9rem'
+                ].join(';');
+
+                alertBox.innerHTML =
+                    '<span>' + message + '</span>' +
+                    '<button onclick="this.parentElement.style.display=\'none\'" ' +
+                    'style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:' + txtColor + ';padding:0 0 0 12px;line-height:1;">' +
+                    '&times;</button>';
+
+                alertTimer = setTimeout(hideAlert, 4000);
+            }
+
+            // Update label on toggle switch
+            document.querySelectorAll('.schedule-active-toggle').forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const label = this.nextElementSibling;
+                    label.textContent = this.checked ? 'Active' : 'Inactive';
+                });
+            });
+
+            // Save button click
+            document.querySelectorAll('.schedule-save-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const id = this.dataset.id;
+                    const url = this.dataset.url;
+                    const timeVal = document.getElementById(`time_${id}`).value;
+                    const isActive = document.getElementById(`active_${id}`).checked;
+
+                    if (!timeVal) {
+                        showAlert('Please select a valid time.', 'warning');
+                        return;
+                    }
+
+                    // Disable button while saving
+                    this.disabled = true;
+                    this.textContent = 'Saving...';
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                scheduled_time: timeVal,
+                                is_active: isActive ? 1 : 0,
+                            }),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.success) {
+                            showAlert(`✓ ${result.message}`, 'success');
+                        } else {
+                            const errors = result.errors ?
+                                Object.values(result.errors).flat().join(' ') :
+                                result.message ?? 'Something went wrong.';
+                            showAlert(`✗ ${errors}`, 'danger');
+                        }
+                    } catch (error) {
+                        showAlert('✗ Network error. Please try again.', 'danger');
+                    } finally {
+                        this.disabled = false;
+                        this.textContent = 'Save';
+                    }
+                });
+            });
+
+        });
+    </script>
+    @endif
+
+    @if(Auth::user()->role != 'patient')
     @if($isActive)
     <script>
-        // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
             const con = document.getElementById('notification');
-
-            if (con) {
-                con.classList.add('active');
-            }
-        })
+            if (con) con.classList.add('active');
+        });
     </script>
     @endif
     @else
     @if($isActive)
     <script>
-        // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
             const con = document.getElementById('patient_notification');
-
-            if (con) {
-                con.classList.add('active');
-            }
-        })
+            if (con) con.classList.add('active');
+        });
     </script>
     @endif
     @endif
+
 </body>
 
 </html>

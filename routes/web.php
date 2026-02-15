@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
 use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\NoficationScheduleController;
 use App\Http\Controllers\PatientAccountController;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
@@ -138,6 +139,12 @@ Route::middleware(['role:nurse'])->group(function () {
         Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
             ->name('health-workers.swap');
     });
+
+
+    Route::patch(
+        '/notification-schedules/{id}',
+        [NoficationScheduleController::class, 'update']
+    )->name('notification-schedules.update');
 });
 
 // =============== health worker only

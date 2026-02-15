@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\StaffDailyScheduleMail;
 use App\Models\notifications;
+use App\Models\NotificationSchedule;
 use App\Models\staff;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -59,7 +60,7 @@ class SendStaffDailySchedule extends Command
         }
 
         
-        if (date('H') == '5') {
+        if (NotificationSchedule::shouldRun('staff-daily-schedule')) {
             // send consolidated email with all appointment types
             $this->sendDailyScheduleEmail($staff, $scheduleData, $totalAppointments, $today);
             // create in app notification for individual sections 
