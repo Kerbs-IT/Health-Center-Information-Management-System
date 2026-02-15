@@ -503,39 +503,54 @@ class RecordsController extends Controller
         try {
             $patient = patients::findOrFail($id);
 
-            if(!$patient)return;
+            if (!$patient) return;
 
-            $patient->update([
-                'status' => 'Archived'
-            ]);
+            if ($typeOfPatient === 'familyPlanning') {
+                $activeCases = medical_record_cases::where('patient_id', $id)
+                    ->where('status', 'Active')
+                    ->get();
+
+                $hasActivePrenatal       = $activeCases->contains('type_of_case', 'prenatal');
+                $hasActiveFamilyPlanning = $activeCases->contains('type_of_case', 'family-planning');
+
+                if ($hasActivePrenatal && $hasActiveFamilyPlanning) {
+                    $familyPlanningCase = $activeCases->firstWhere('type_of_case', 'family-planning');
+                    $familyPlanningCase->update(['status' => 'Archived']);
+
+                    $prenatalCase = $activeCases->firstWhere('type_of_case', 'prenatal');
+                    $prenatalMedicalRecord = $prenatalCase?->prenatal_medical_record;
+
+                    if ($prenatalMedicalRecord) {
+                        $prenatalMedicalRecord->update(['family_planning_decision' => 'no']);
+                    }
+
+                    return response()->json(['message' => 'Family Planning record has been archived successfully']);
+                }
+            }
+
+            // ↓ Only reaches here if NOT the dual-case scenario
+            $patient->update(['status' => 'Archived']);
 
             if ($typeOfPatient === 'vaccination') {
-                $vaccinationMasterlistRecord = vaccination_masterlists::where("patient_id", $id)->first();
+                $vaccinationMasterlistRecord = vaccination_masterlists::where('patient_id', $id)->first();
 
-                
-                if($vaccinationMasterlistRecord){
-                    $vaccinationMasterlistRecord->update([
-                        'status' => 'Archived'
-                    ]);
+                if ($vaccinationMasterlistRecord) {
+                    $vaccinationMasterlistRecord->update(['status' => 'Archived']);
                 }
-               
             }
-            if ($typeOfPatient == 'prenatal' || $typeOfPatient == 'family-planning') {
-                $wraMasterlistRecord = wra_masterlists::where("patient_id", $id)->first();
+
+            if ($typeOfPatient === 'prenatal' || $typeOfPatient === 'familyPlanning') {
+                $wraMasterlistRecord = wra_masterlists::where('patient_id', $id)->first();
+
                 if ($wraMasterlistRecord) {
-                    $wraMasterlistRecord->update([
-                        'status' => 'Archived'
-                    ]);
+                    $wraMasterlistRecord->update(['status' => 'Archived']);
                 }
             }
-
-
-
 
             return response()->json(['message' => 'Patient Record has been deleted successfully']);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => "Unexpected error occurred",
+                'message' => 'Unexpected error occurred',
                 'error' => $e->getMessage()
             ], 422);
         }
