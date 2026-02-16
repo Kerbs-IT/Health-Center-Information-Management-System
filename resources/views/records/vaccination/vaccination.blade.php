@@ -25,7 +25,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
+        <div class="d-flex flex-grow-1 flex-column" style="min-width: 0;">
             @include('layout.header')
             <main class="flex-column p-2 w-100 overflow-y-auto flex-grow-1 ">
                 <h1>Vaccination</h1>

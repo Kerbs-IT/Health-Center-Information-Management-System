@@ -23,7 +23,7 @@
         <aside>
             @include('layout.menuBar')
         </aside>
-        <div class="d-flex flex-grow-1 flex-column overflow-x-auto">
+        <div class="d-flex flex-grow-1 flex-column " style="min-width: 0;">
             @include('layout.header')
             <main class="flex-column p-2 px-4">
                 <h1>TB - Tuberculosis</h1>
