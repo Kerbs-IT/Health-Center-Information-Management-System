@@ -779,11 +779,34 @@ class RecordsController extends Controller
 
     public function editPrenatalDetail($id)
     {
-        $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
-        $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)->where("status", "!=", 'Archived')->firstOrFail();
+        $prenatalRecord = medical_record_cases::with([
+            'patient',
+            'prenatal_medical_record',
+            'prenatal_case_record' => function ($query) {
+                $query->where('status', '!=', 'Archived')
+                    ->with('pregnancy_history_questions');
+            }
+        ])->where('id', $id)->firstOrFail();
+
+        $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)
+            ->where('status', '!=', 'Archived')
+            ->firstOrFail();
 
         $address = patient_addresses::where('patient_id', $prenatalRecord->patient->id)->firstOrFail();
-        return view('records.prenatal.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'prenatalRecord' => $prenatalRecord, 'address' => $address, 'caseRecord' => $caseRecord]);
+
+        // get the first active case record and its first pregnancy history
+        $activeCaseRecord = $prenatalRecord->prenatal_case_record->first();
+        $pregnancyHistory = $activeCaseRecord?->pregnancy_history_questions->first();
+
+        return view('records.prenatal.editPatientDetails', [
+            'isActive'         => true,
+            'page'             => 'RECORD',
+            'prenatalRecord'   => $prenatalRecord,
+            'address'          => $address,
+            'caseRecord'       => $caseRecord,
+            'activeCaseRecord' => $activeCaseRecord,
+            'pregnancyHistory' => $pregnancyHistory,
+        ]);
     }
     public function prenatalCase($caseId)
     {
