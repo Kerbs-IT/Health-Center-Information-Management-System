@@ -28,10 +28,10 @@ class PatientAccountController extends Controller
             $staff = staff::findOrFail(Auth::user()->id);
             $assignedArea = brgy_unit::where('id', $staff->assigned_area_id)->first();
 
-            // Join with user_address table to filter by purok
-            $query->join('user_addresses', 'users.id', '=', 'user_addresses.user_id')
-                ->where('user_addresses.purok', $assignedArea->brgy_unit)
-                ->select('users.*'); // Ens ure only user columns are selected
+            // Use whereHas to filter through the relationship
+            $query->whereHas('user_address', function ($q) use ($assignedArea) {
+                $q->where('purok', $assignedArea->brgy_unit);
+            });
         }
 
         $users = $query->limit(50)->get();

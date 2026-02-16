@@ -114,7 +114,7 @@
                             <button type="button"
                                 class="btn btn-sm btn-warning text-dark"
                                 title="Restore Account"
-                                onclick="if(confirm('Are you sure you want to restore {{ addslashes($user->full_name) }}?')) $wire.restoreUser({{ $user->id }})">
+                                onclick="confirmRestore({{ $user->id }})">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </button>
                             @endif
@@ -141,3 +141,41 @@
     </div>
 
 </div>
+
+<script>
+    function confirmRestore(userId) {
+        Swal.fire({
+            title: 'Restore Account?',
+            text: "This patient account will be restored to active status.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, restore it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                @this.restoreUser(userId);
+            }
+        });
+    }
+
+    window.addEventListener('restoreSuccess', event => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Restored!',
+            text: 'Patient account has been restored successfully.',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    });
+
+    window.addEventListener('restoreError', event => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Cannot Restore',
+            text: event.detail.message,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        });
+    });
+</script>
