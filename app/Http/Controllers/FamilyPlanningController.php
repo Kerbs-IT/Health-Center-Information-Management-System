@@ -1048,6 +1048,9 @@ class FamilyPlanningController extends Controller
             if ($familyPlanningCaseRecord) {
                 $familyPlanningCaseRecord->update([
                     'client_name' => $familyPlanningRecord->patient->full_name,
+                    'client_first_name' => $familyPlanningRecord->patient -> first_name,
+                    'client_middle_name' => $familyPlanningRecord->patient->middle_initial,
+                    'client_last_name' => $familyPlanningRecord->patient->last_name,
                     'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
                     'philhealth_no' => $data['philhealth_no'] ?? null,
                     'NHTS' => $data['NHTS'] ?? null,
@@ -1124,7 +1127,7 @@ class FamilyPlanningController extends Controller
             }
             $patientData = $request->validate([
                 'side_A_add_client_fname' => 'required|string',
-                'side_A_add_client_MI' => 'sometimes|nullable|string|max:2',
+                'side_A_add_client_MI' => 'sometimes|nullable|string',
                 'side_A_add_client_lname' => 'required|string',
                 'side_A_add_client_date_of_birth' => 'required|date|before_or_equal:today',
                 'side_A_add_client_age' => 'sometimes|nullable|numeric|max:100',
@@ -1401,6 +1404,17 @@ class FamilyPlanningController extends Controller
                 $signatureConsentPath = $this->saveCanvasSignature($request->side_A_add_family_planning_consent_signature_data);
             }
 
+            // build name components cleanly first
+            $fpFirstName  = ucwords(strtolower($patientData['side_A_add_client_fname'] ?? ''));
+            $fpLastName   = ucwords(strtolower($patientData['side_A_add_client_lname'] ?? ''));
+
+            // get only first letter of middle name as initial
+            $fpMiddleName = ucwords(strtolower($patientData['side_A_add_client_MI'] ?? ''));
+            $fpMiddleInitial = $fpMiddleName ? strtoupper(substr($fpMiddleName, 0, 1)) . '.' : null;
+
+            // build full name — skip middle initial if empty
+            $fpFullName = trim($fpFirstName . ' ' . ($fpMiddleInitial ? $fpMiddleInitial . ' ' : '') . $fpLastName);
+
             // update the case
             $familyPlanningCaseRecord = family_planning_case_records::create([
                 'medical_record_case_id' => $id,
@@ -1408,7 +1422,10 @@ class FamilyPlanningController extends Controller
                 'client_id' => $caseData['side_A_add_client_id'] ?? null,
                 'philhealth_no' => $caseData['side_A_add_philhealth_no'] ?? null,
                 'NHTS' => $caseData['side_A_add_NHTS'] ?? null,
-                'client_name' => trim(($patientData['side_A_add_client_fname'] . ' ' . $patientData['side_A_add_client_MI'] . ' ' . $patientData['side_A_add_client_lname'])) ?? null,
+                'client_name'        => $fpFullName,        // e.g. "Juan S. Cruz"
+                'client_first_name'  => $fpFirstName,       // e.g. "Juan"
+                'client_middle_name' => $fpMiddleName,   // e.g. "S."
+                'client_last_name'   => $fpLastName,        // e.g. "Cruz"
                 'client_date_of_birth' => $patientData['side_A_add_client_date_of_birth'] ?? null,
                 'client_age' => $patientData['side_A_add_client_age'] ?? null,
                 'client_suffix' => $patientData['side_A_add_client_suffix'] ?? '',
@@ -1883,13 +1900,15 @@ class FamilyPlanningController extends Controller
                 $patientData['edit_client_suffix'] ?? null
             ];
 
+            
+
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
             // update patient info first
             $medical_case_record->patient->update([
-                'first_name' => $patientData['edit_client_fname'] ?? $medical_case_record->patient->first_name,
-                'middle_initial' => $patientData['edit_client_MI'] ?? '',
-                'last_name' => $patientData['edit_client_lname'] ?? $medical_case_record->patient->last_name,
+                'first_name' => ucwords(strtolower($patientData['edit_client_fname'])) ?? $medical_case_record->patient->first_name,
+                'middle_initial' => ucwords(strtolower($patientData['edit_client_MI'])) ?? '',
+                'last_name' => ucwords(strtolower($patientData['edit_client_lname'])) ?? $medical_case_record->patient->last_name,
                 'full_name' => $fullName,
                 'age' => $patientData['edit_client_age'] ?? $medical_case_record->patient->age,
                 'contact_number' => $patientData['edit_client_contact_number'] ?? null,
@@ -1980,6 +1999,9 @@ class FamilyPlanningController extends Controller
                 'philhealth_no' => $caseData['edit_philhealth_no'] ??null,
                 'NHTS' => $caseData['edit_NHTS'] ?? null,
                 'client_name' => $medical_case_record->patient->full_name,
+                'client_first_name' => ucwords(strtolower($patientData['edit_client_fname'])) ?? $medical_case_record->patient->first_name,
+                'client_middle_name' => ucwords(strtolower($patientData['edit_client_MI'])) ?? '',
+                'client_last_name' => ucwords(strtolower($patientData['edit_client_lname'])) ?? $medical_case_record->patient->last_name,
                 'client_address' =>  $newAddress,
                 'client_date_of_birth' => $patientData['edit_client_date_of_birth'] ?? $familyPlanCaseInfo->client_date_of_birth,
                 'client_age' => $patientData['edit_client_age'] ?? $familyPlanCaseInfo->client_age,
