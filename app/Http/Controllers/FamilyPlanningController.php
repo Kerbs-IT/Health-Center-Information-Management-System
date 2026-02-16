@@ -1049,7 +1049,7 @@ class FamilyPlanningController extends Controller
                 $familyPlanningCaseRecord->update([
                     'client_name' => $familyPlanningRecord->patient->full_name,
                     'client_first_name' => $familyPlanningRecord->patient -> first_name,
-                    'client_middle_name' => $familyPlanningRecord->patient->middle_initial,
+                    'client_middle_name' => $familyPlanningRecord->patient->middle_initial ?? '',
                     'client_last_name' => $familyPlanningRecord->patient->last_name,
                     'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
                     'philhealth_no' => $data['philhealth_no'] ?? null,
