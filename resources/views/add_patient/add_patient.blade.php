@@ -26,7 +26,7 @@
     'resources/js/add_patient/searchUser.js'
     ])
     @include('sweetalert::alert')
-    <div class="add-patient d-flex min-vh-100">
+    <div class="add-patient d-flex vh-100">
         <aside>
             @include('layout.menuBar')
         </aside>
@@ -67,7 +67,7 @@
                                             </div>
                                         </div>
 
-                                        <div id="loadingSpinner" class="mt-2  align-items-center justify-content-center" style="display: none;">
+                                        <div id="loadingSpinner" class="mt-2" style="display: none;">
                                             <div class="spinner-border spinner-border-sm text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
@@ -80,7 +80,7 @@
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient<span class="text-danger">*</span></label>
                                         <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
-                                            <option value="" selected>Select type of patient</option>
+                                            <option value="" disabled selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
                                             <option value="prenatal">Prenatal</option>
                                             <option value="tb-dots">TB DOTS</option>
@@ -96,23 +96,23 @@
                                         <input type="email" id="email" placeholder="Enter the email" class="form-control" name="email" value="">
                                         <small class="text-danger error-text" id="email_error"></small>
                                     </div>
-                                    <div class="mb-2 d-flex gap-1">
-                                        <div class="input-field w-25">
+                                    <div class=" d-flex gap-1 flex-wrap flex-lg-nowrap">
+                                        <div class="input-field !w-full md:w-1/4 lg:!w-[30%]">
                                             <label for="first_name" class="">First Name<span class="text-danger">*</span></label>
                                             <input type="text" id="first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="">
                                             <small class="text-danger error-text" id="first_name_error"></small>
                                         </div>
-                                        <div class="input-field w-25">
+                                        <div class="input-field !w-full md:w-1/4 lg:!w-[30%]">
                                             <label for="middle_initial" class="">Middle Name</label>
                                             <input type="text" id="middle_initial" placeholder="Enter Middle Name" class="form-control" name="middle_initial" value="">
                                             <small class="text-danger error-text" id="middle_initial_error"></small>
                                         </div>
-                                        <div class="input-field w-25">
+                                        <div class="input-field !w-full md:w-1/4 lg:!w-[30%]">
                                             <label for="last_name" class="">Last Name<span class="text-danger">*</span></label>
                                             <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
                                             <small class="text-danger error-text" id="last_name_error"></small>
                                         </div>
-                                        <div class="input-field w-25">
+                                        <div class="input-field !w-full md:w-1/4 lg:!w-[10%]">
                                             <label for="add_suffix" class="">Suffix</label>
                                             <select name="suffix" id="add_suffix" class="form-select py-2">
                                                 <option value="" selected>Select Suffix</option>
@@ -142,7 +142,7 @@
                                         </div>
 
                                         <!-- age -->
-                                        <div class="input-field w-50 ">
+                                        <div class="input-field w-50">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="Enter the age" disabled class="form-control">
                                             <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
@@ -151,8 +151,8 @@
                                     </div>
                                     <!-- civil status, contact number, nationality -->
                                     <div class="mb-2 d-flex gap-1 flex-md-row flex-column flex-wrap flex-xl-nowrap">
-                                        <div class="input-field flex-fill xl: w-[50%] sex-container">
-                                            <label for="sex">Sex<span class="text-danger">*</span></label>
+                                        <div class="input-field flex-fill xl: w-[50%]">
+                                            <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2">
                                                 @php
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
@@ -208,7 +208,7 @@
 
                                         <div class="mb-2 flex-fill xl:w-[50%] tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
-                                            <input type="text" placeholder="eg.1234-5678-9012" name="philheath_id" class="form-control">
+                                            <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
                                             <small class="text-danger error-text" id="philhealth_id_no_error"></small>
                                         </div>
                                     </div>
@@ -385,7 +385,7 @@
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="philhealth_no">Philhealth No:</label>
-                                            <input type="text" id="philhealth_no" placeholder="eg.1234-5678-9012" class="form-control" name="philhealth_no">
+                                            <input type="text" id="philhealth_no" placeholder="Enter the Religion" class="form-control" name="philhealth_no">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>
                                         </div>
                                         <div class="input-field w-50 ">
@@ -425,14 +425,14 @@
                                                     <option value="" selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
                                                     @if($isStaff)
-                                                    {{-- Staff: only show their assigned area --}}
-                                                    @if($brgy_unit->id == $assignedAreaId)
-                                                    <option value="{{ $brgy_unit->brgy_unit }}" selected>
+                                                    {{-- Staff: only their assigned area is enabled --}}
+                                                    <option value="{{ $brgy_unit->brgy_unit }}"
+                                                        {{ $brgy_unit->id != $assignedAreaId ? 'disabled' : '' }}
+                                                        {{ $brgy_unit->id == $assignedAreaId ? 'selected' : '' }}>
                                                         {{ $brgy_unit->brgy_unit }}
                                                     </option>
-                                                    @endif
                                                     @else
-                                                    {{-- Nurse/Admin: show all options --}}
+                                                    {{-- Nurse: all options enabled --}}
                                                     <option value="{{ $brgy_unit->brgy_unit }}">
                                                         {{ $brgy_unit->brgy_unit }}
                                                     </option>
@@ -505,7 +505,7 @@
                     <!-- step 2 -->
                     <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
                         <!-- vaccination -->
-                        <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
+                        <div class="vaccination d-none card  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
                             <div class="vaccination-content">
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
