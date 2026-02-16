@@ -18,6 +18,7 @@ class PatientAccountBinding extends Component
     public $search = '';
     public $filterStatus = 'all';
     public $filterPatientType = 'all';
+    public $filterPurok = 'all';
     public $showModal = false;
     public $selectedUser = null;
     public $recordSearch = '';
@@ -29,30 +30,35 @@ class PatientAccountBinding extends Component
 
     public function render()
     {
-        $query = User::where('role', 'patient');
+        $query = User::where('users.role', 'patient')
+            ->leftJoin('users_addresses', 'users.id', '=', 'users_addresses.user_id')
+            ->select('users.*', 'users_addresses.purok');
 
+        // Staff restriction
         if (Auth::user()->role == 'staff') {
             $staffInfo = Staff::where('user_id', Auth::id())->first();
             if ($staffInfo && $staffInfo->assigned_area_id) {
                 $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-                $query->join('users_addresses', 'users.id', '=', 'users_addresses.user_id')
-                    ->where('users_addresses.purok', $assignedArea->brgy_unit)
-                    ->select('users.*');
+                $query->where('users_addresses.purok', $assignedArea->brgy_unit);
             }
         }
 
+        // Search
         $query->where(function ($q) {
-            $q->where('first_name', 'like', '%' . $this->search . '%')
-                ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                ->orWhere('email', 'like', '%' . $this->search . '%');
+            $q->where('users.first_name', 'like', '%' . $this->search . '%')
+                ->orWhere('users.last_name', 'like', '%' . $this->search . '%')
+                ->orWhere('users.email', 'like', '%' . $this->search . '%');
         });
 
-        $query->when($this->filterStatus === 'active',   fn($q) => $q->where('status', 'active'));
-        $query->when($this->filterStatus === 'archived', fn($q) => $q->where('status', 'archived'));
-        $query->when($this->filterPatientType !== 'all', fn($q) => $q->where('patient_type', $this->filterPatientType));
+        // Filters
+        $query->when($this->filterStatus === 'active',   fn($q) => $q->where('users.status', 'active'));
+        $query->when($this->filterStatus === 'archived', fn($q) => $q->where('users.status', 'archived'));
+        $query->when($this->filterPatientType !== 'all', fn($q) => $q->where('users.patient_type', $this->filterPatientType));
+        $query->when($this->filterPurok !== 'all',       fn($q) => $q->where('users_addresses.purok', $this->filterPurok));
 
         $users = $query->orderBy('users.created_at', 'asc')->paginate(15);
 
+        // Unbound count
         $unboundQuery = User::where('role', 'patient')
             ->where('status', '!=', 'archived')
             ->whereNull('patient_record_id');
@@ -66,9 +72,13 @@ class PatientAccountBinding extends Component
             }
         }
 
+        // All puroks for the filter dropdown
+        $puroks = brgy_unit::orderBy('brgy_unit')->get();
+
         return view('livewire.patient-account-binding', [
             'users'        => $users,
             'unboundCount' => $unboundQuery->count(),
+            'puroks'       => $puroks,
         ]);
     }
 
@@ -81,7 +91,6 @@ class PatientAccountBinding extends Component
             return;
         }
 
-        // Check duplicate name
         $nameConflict = User::where('role', 'patient')
             ->where('status', 'active')
             ->where('id', '!=', $userId)
@@ -89,7 +98,6 @@ class PatientAccountBinding extends Component
             ->whereRaw('LOWER(last_name) = ?',  [strtolower($user->last_name)])
             ->exists();
 
-        // Check duplicate email
         $emailConflict = User::where('role', 'patient')
             ->where('status', 'active')
             ->where('id', '!=', $userId)
@@ -171,6 +179,10 @@ class PatientAccountBinding extends Component
         $this->resetPage();
     }
     public function updatingFilterStatus()
+    {
+        $this->resetPage();
+    }
+    public function updatingFilterPurok()
     {
         $this->resetPage();
     }

@@ -35,7 +35,7 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input
                         type="text"
                         class="form-control"
@@ -49,7 +49,7 @@
                         <option value="archived">Archived</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <select class="form-select" wire:model.live="filterPatientType">
                         <option value="all">All Patient Types</option>
                         <option value="vaccination">Vaccination</option>
@@ -60,6 +60,14 @@
                     </select>
                 </div>
                 <div class="col-md-3">
+                    <select class="form-select" wire:model.live="filterPurok">
+                        <option value="all">All Puroks</option>
+                        @foreach($puroks as $purok)
+                        <option value="{{ $purok->brgy_unit }}">{{ $purok->brgy_unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <button class="btn btn-success w-100" wire:click="$refresh">
                         <i class="bi bi-arrow-clockwise"></i> Search
                     </button>
@@ -77,7 +85,7 @@
                         <th>Name</th>
                         <th>Type of Patient</th>
                         <th>Email</th>
-                        <th>DOB</th>
+                        <th>Purok</th>
                         <th>Contact</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -89,7 +97,7 @@
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->date_of_birth ? $user->date_of_birth->format('M d, Y') : 'N/A' }}</td>
+                        <td>{{ $user->purok ?? 'N/A' }}</td>
                         <td>{{ $user->contact_number }}</td>
                         <td>
                             @if($user->status == 'active')

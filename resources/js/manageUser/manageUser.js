@@ -11,15 +11,21 @@ fetch("/showBrgyUnit")
         const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
         // console.log(data);
         data.forEach((item) => {
-            let option = document.createElement("option");
-            option.value = item.brgy_unit;
-            option.text = item.brgy_unit;
-            if (healthWorkerId) { // this is for the health worker account to enable other option
-                if (item.id != healthWorkerId) {
-                    option.disabled = true;
-                }
-            }
-            dropdown.appendChild(option);
+           if (healthWorkerId) {
+               // this is for the health worker account to enable other option
+               if (item.id == healthWorkerId) {
+                   let option = document.createElement("option");
+                   option.value = item.brgy_unit;
+                   option.text = item.brgy_unit;
+                   dropdown.appendChild(option);
+               }
+           } else {
+               let option = document.createElement("option");
+               option.value = item.brgy_unit;
+               option.text = item.brgy_unit;
+               dropdown.appendChild(option);
+           }
+            
         });
     });
 
@@ -30,16 +36,22 @@ fetch("/showBrgyUnit")
         const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
         // console.log(data);
         data.forEach((item) => {
-            let option = document.createElement("option");
-            option.value = item.brgy_unit;
-            option.text = item.brgy_unit;
+            
             if (healthWorkerId) {
                 // this is for the health worker account to enable other option
-                if (item.id != healthWorkerId) {
-                    option.disabled = true;
+                if (item.id == healthWorkerId) {
+                    let option = document.createElement("option");
+                    option.value = item.brgy_unit;
+                    option.text = item.brgy_unit;
+                    dropdown.appendChild(option);
                 }
+            } else {
+                let option = document.createElement("option");
+                option.value = item.brgy_unit;
+                option.text = item.brgy_unit;
+                dropdown.appendChild(option);
             }
-            dropdown.appendChild(option);
+            
         });
     });
 
@@ -363,10 +375,13 @@ document.addEventListener("click", async (e) => {
                 if (response.ok) {
                     Swal.fire(
                         "Deleted!",
-                        "The user has been removed.",
+                        "The user has been move to Archive status.",
                         "success"
                     );
-                    deleteBtn.closest("tr").remove(); // remove row from table
+                    if (typeof Livewire !== 'undefined') {
+                        Livewire.dispatch('manageUserRefreshTable');
+                    }
+                    // deleteBtn.closest("tr").remove(); // remove row from table
                 } else {
                     Swal.fire("Error", "Failed to delete user.", "error");
                 }
