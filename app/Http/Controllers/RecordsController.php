@@ -807,7 +807,8 @@ class RecordsController extends Controller
                 'caseId' => $caseId,
                 'patientInfo' => $patientInfo,
                 'prenatal_case_record' => $prenatal_case_record,
-                'pregnancy_plan' => $pregnancy_plan
+                'pregnancy_plan' => $pregnancy_plan,
+                'medical_record_case' => $prenatalCaseRecords
             ]);
         }
         $familyPlanCaseInfo = family_planning_case_records::with(['medical_history', 'obsterical_history', 'risk_for_sexually_transmitted_infection', 'physical_examinations'])

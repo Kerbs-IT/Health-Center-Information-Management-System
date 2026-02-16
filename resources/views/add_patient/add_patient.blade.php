@@ -67,7 +67,7 @@
                                             </div>
                                         </div>
 
-                                        <div id="loadingSpinner" class="mt-2" style="display: none;">
+                                        <div id="loadingSpinner" class="mt-2  align-items-center justify-content-center" style="display: none;">
                                             <div class="spinner-border spinner-border-sm text-primary" role="status">
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
@@ -80,7 +80,7 @@
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient<span class="text-danger">*</span></label>
                                         <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
-                                            <option value="" disabled selected>Select type of patient</option>
+                                            <option value="" selected>Select type of patient</option>
                                             <option value="vaccination">Vaccination</option>
                                             <option value="prenatal">Prenatal</option>
                                             <option value="tb-dots">TB DOTS</option>
@@ -425,14 +425,14 @@
                                                     <option value="" selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
                                                     @if($isStaff)
-                                                    {{-- Staff: only their assigned area is enabled --}}
-                                                    <option value="{{ $brgy_unit->brgy_unit }}"
-                                                        {{ $brgy_unit->id != $assignedAreaId ? 'disabled' : '' }}
-                                                        {{ $brgy_unit->id == $assignedAreaId ? 'selected' : '' }}>
+                                                    {{-- Staff: only show their assigned area --}}
+                                                    @if($brgy_unit->id == $assignedAreaId)
+                                                    <option value="{{ $brgy_unit->brgy_unit }}" selected>
                                                         {{ $brgy_unit->brgy_unit }}
                                                     </option>
+                                                    @endif
                                                     @else
-                                                    {{-- Nurse: all options enabled --}}
+                                                    {{-- Nurse/Admin: show all options --}}
                                                     <option value="{{ $brgy_unit->brgy_unit }}">
                                                         {{ $brgy_unit->brgy_unit }}
                                                     </option>
