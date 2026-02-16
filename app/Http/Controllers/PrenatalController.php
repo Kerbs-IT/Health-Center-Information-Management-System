@@ -1004,7 +1004,7 @@ class PrenatalController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = isset($data['sex']) ? $data['sex'] : $prenatalRecord->patient->sex;
+            $data['sex'] = 'Female';
             // update the patient data first
             $prenatalRecord->patient->update([
                 'first_name' => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),

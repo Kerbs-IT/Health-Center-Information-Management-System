@@ -986,6 +986,7 @@ class FamilyPlanningController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+            $data['sex'] = 'Female';
             $sex = isset($data['sex']) ? $data['sex']: 'Female';
             // update the patient data first
             $familyPlanningRecord->patient->update([
