@@ -53,7 +53,7 @@
         <table class="w-100 table">
             <thead class="table-header">
                 <tr>
-                    <th>Patient No.</th>
+                    <th>#</th>
 
                     <!-- Full Name -->
                     <th style="cursor:pointer;" wire:click="sortBy('full_name')">
@@ -100,7 +100,7 @@
             <tbody>
                 @forelse($familyPlanningRecords as $record)
                 <tr class="{{ isset($record->followup_status_info['class']) ? $record->followup_status_info['class'] : '' }}">
-                    <td>{{ optional($record->patient)->id ?? 'N/A' }}</td>
+                    <td>{{ $familyPlanningRecords->firstItem() + $loop->index }}</td>
                     <td>{{ optional($record->patient)->full_name ?? 'N/A' }}</td>
                     <td>{{ optional($record->patient)->age ?? 'N/A' }}</td>
                     <td>{{ optional($record->patient)->sex ?? 'N/A' }}</td>

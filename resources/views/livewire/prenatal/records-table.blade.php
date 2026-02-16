@@ -56,7 +56,7 @@
             <table class="w-100 table">
                 <thead class="table-header">
                     <tr>
-                        <th>Patient No.</th>
+                        <th>#</th>
 
                         <!-- Full Name -->
                         <th style="cursor:pointer;" wire:click="sortBy('full_name')">
@@ -103,7 +103,7 @@
                 <tbody>
                     @forelse($prenatalRecord as $record)
                     <tr class="{{ isset($record->checkup_status_info['class']) ? $record->checkup_status_info['class'] : '' }}">
-                        <td>{{ $record->patient->id }}</td>
+                        <td>{{ $prenatalRecord->firstItem() + $loop->index }}</td>
                         <td>{{ $record->patient->full_name ?? 'N/A' }}</td>
                         <td>{{ optional($record->patient)->age ?? 'N/A'}}</td>
                         <td>{{ optional($record->patient)->sex ?? 'N/A' }}</td>

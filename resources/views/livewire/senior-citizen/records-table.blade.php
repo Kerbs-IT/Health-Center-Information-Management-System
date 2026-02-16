@@ -49,13 +49,13 @@
                     <i class="fa-solid fa-box-archive"></i> Archive
                 </a>
             </div>
-           
+
         </div>
         <div class="tables table-responsive">
             <table class="w-100 table table-hover">
                 <thead class="table-header text-nowrap">
                     <tr>
-                        <th>Patient No.</th>
+                        <th>#</th>
 
                         <!-- Full Name -->
                         <th style="cursor:pointer;" wire:click="sortBy('full_name')">
@@ -102,7 +102,7 @@
                 <tbody>
                     @forelse($seniorCitizenRecords as $record)
                     <tr class="{{ isset($record->checkup_status_info['class']) ? $record->checkup_status_info['class'] : '' }}">
-                        <td>{{ $record->patient_id }}</td>
+                        <td>{{ $seniorCitizenRecords->firstItem() + $loop->index }}</td>
                         <td>{{ $record->patient->full_name }}</td>
                         <td>{{ $record->patient->age ?? 'N/A' }}</td>
                         <td>{{ $record->patient->sex ?? 'N/A' }}</td>

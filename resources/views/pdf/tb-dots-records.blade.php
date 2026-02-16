@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Vaccination Records</title>
+    <title>Tb Dots Records</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,6 +114,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>#</th>
                     <th class="{{ $sortField == 'patients.full_name' || $sortField == 'full_name' ? 'sorted' : '' }}">
                         Full Name
                         @if($sortField == 'patients.full_name' || $sortField == 'full_name')
@@ -149,6 +150,7 @@
             <tbody>
                 @forelse($records as $record)
                 <tr>
+                    <td>{{ ($pageIndex * $entriesPerPage) + $loop->index + 1 }}</td>
                     <td>{{ $record->full_name }}</td>
                     <td>{{ $record->age }}</td>
                     <td>{{ $record->sex }}</td>
@@ -157,7 +159,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align: center;">No records found</td>
+                    <td colspan="6" style="text-align: center;">No records found</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -191,6 +193,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th>
                 <th class="{{ $sortField == 'patients.full_name' || $sortField == 'full_name' ? 'sorted' : '' }}">
                     Full Name
                     @if($sortField == 'patients.full_name' || $sortField == 'full_name')
@@ -225,7 +228,7 @@
         </thead>
         <tbody>
             <tr>
-                <td colspan="12" style="text-align:center">No record available.</td>
+                <td colspan="6" style="text-align:center">No record available.</td>
             </tr>
         </tbody>
     </table>

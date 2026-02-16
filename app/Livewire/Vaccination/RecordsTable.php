@@ -19,7 +19,7 @@ class RecordsTable extends Component
     use WithPagination;
 
     public $entries = 10;
-    public $sortField = 'created_at';
+    public $sortField = 'full_name';
     public $sortDirection = 'asc';
     // new property for searching
     public $search = '';

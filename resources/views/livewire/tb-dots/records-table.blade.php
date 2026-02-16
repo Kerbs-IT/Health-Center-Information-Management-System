@@ -56,7 +56,7 @@
             <table class="w-100 table table-hover">
                 <thead class="table-header">
                     <tr>
-                        <th>Patient No.</th>
+                        <th>#</th>
 
                         <!-- Full Name -->
                         <th style="cursor:pointer;" wire:click="sortBy('full_name')">
@@ -103,7 +103,7 @@
                 <tbody>
                     @forelse($tbRecords as $record)
                     <tr class="{{ isset($record->checkup_status_info['class']) ? $record->checkup_status_info['class'] : '' }}">
-                        <td>{{ $record->id }}</td>
+                        <td>{{ $tbRecords->firstItem() + $loop->index }}</td>
                         <td>{{ $record->patient->full_name ?? 'N/A' }}</td>
                         <td>{{ $record->patient->age ?? 'N/A' }}</td>
                         <td>{{ $record->patient->sex ?? 'N/A' }}</td>
@@ -149,7 +149,6 @@
                                 <a href="" class="delete-record-icon-tbDots fs-2" data-bs-patient-id="{{ $record->patient->id }}">
                                     <i class="fa-solid fa-box-archive text-danger"></i>
                                 </a>
-
 
                                 <a href="/patient-record/tb-dots/view-case/{{ $record->id }}?{{$backParams}}" class="fs-2 text-warning fw-bold">
                                     <i class="fa-solid fa-folder"></i>
