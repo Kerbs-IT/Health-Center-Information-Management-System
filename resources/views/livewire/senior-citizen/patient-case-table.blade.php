@@ -6,12 +6,12 @@
 
             @endphp
 
-            <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+            <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5">
                 Back
             </a>
             <div class="end-btn d-flex gap-1">
                 <button type="button" class="btn btn-success px-3 py-1" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add_record_btn">Add Record</button>
-                <a href="{{ route('senior.citizen.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger">
+                <a href="{{ route('senior.citizen.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger d-flex align-items-center gap-1">
                     <i class="fa-solid fa-box-archive"></i> Archive
                 </a>
             </div>

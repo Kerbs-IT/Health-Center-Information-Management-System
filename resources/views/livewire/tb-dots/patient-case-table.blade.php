@@ -2,20 +2,20 @@
     <div class="tables d-flex flex-column p-md-3 p-0">
         <div class="add-btn mb-3 d-flex justify-content-between">
             <div>
-                
+
                 @php
                 $backUrl = route('record.tb-dots') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
 
                 @endphp
 
-                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 ">
                     Back
                 </a>
             </div>
             <div class="add-buttons d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-2">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#tbDotsCaseRecordModal" data-patient-info='@json($patientInfo)' id="add-case-record-btn">Add Case Record</button>
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#tbDotsAddCheckUpModal" id="add-check-up-record-btn">Add Check-up Record</button>
-                <a href="{{ route('tbDots.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger">
+                <a href="{{ route('tbDots.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger d-flex align-items-center gap-1">
                     <i class="fa-solid fa-box-archive"></i> Archive
                 </a>
             </div>

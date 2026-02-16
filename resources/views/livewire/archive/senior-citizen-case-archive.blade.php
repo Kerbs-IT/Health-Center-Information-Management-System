@@ -38,7 +38,7 @@
             <table class="w-100 table">
                 <thead class="table-header text-nowrap">
                     <tr>
-                        <th>Case No.</th>
+                        <th>#</th>
                         <th>Type of Record</th>
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                             Date
@@ -54,24 +54,22 @@
                 <tbody>
                     @forelse($seniorCaseRecords as $record)
                     <tr class="px-1">
-                        <td>{{ $record->id }}</td>
+                        <td>{{ $seniorCaseRecords->firstItem() + $loop->index }}</td>
                         <td>{{ $record->type_of_record }}</td>
                         <td>{{ $record->created_at->format('M d Y') }}</td>
-                        <td>{{ $record->date_of_comeback?$record->date_of_comeback->format('M d Y'): 'N/A' }}</td>
+                        <td>{{ $record->date_of_comeback ? $record->date_of_comeback->format('M d Y') : 'N/A' }}</td>
                         <td><span class="badge bg-secondary">{{ $record->status }}</span></td>
                         <td>
                             <div class="actions d-flex gap-2 justify-content-center align-items-center">
-
                                 <button onclick="confirmActivate({{ $record->id }})" class="text-success fs-2 fw-bold" title="Restore Record">
                                     <i class="fa-solid fa-rotate-left"></i>
                                 </button>
-
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4">
+                        <td colspan="6" class="text-center py-4">
                             <div class="alert alert-warning mb-0">
                                 <i class="fa-solid fa-inbox"></i> No archived records found.
                             </div>

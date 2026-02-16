@@ -7,7 +7,7 @@
 
                 @endphp
 
-                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
+                <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 ">
                     Back
                 </a>
 
@@ -15,7 +15,7 @@
             <div class="add-btn  d-flex justify-content-end text-nowrap flex-sm-row flex-column gap-1">
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-a-add-record" data-patient-info='@json($patientInfo)' data-patient-address='@json($address)' data-medical-case-record-id="{{$patientInfo->id}}" id="side-a-add-record-btn">Add Side A Record</button>
                 <button type="button" class="btn btn-success px-3 py-2" data-bs-toggle="modal" data-bs-target="#side-b-add-record" data-patient-info='@json($patientInfo)' id="side-b-add-record-btn">Add Side B Record</button>
-                <a href="{{route('family.planning.case.record.archive')}}?medical_record_id={{$this->medicalRecordCaseId}}" class="btn btn-danger">
+                <a href="{{route('family.planning.case.record.archive')}}?medical_record_id={{$this->medicalRecordCaseId}}" class="btn btn-danger d-flex align-items-center gap-1">
                     <i class="fa-solid fa-box-archive"></i> Archive
                 </a>
             </div>

@@ -59,10 +59,10 @@
     </div>
 
     <div class="tables table-responsive">
-        <table class="w-100 table table-hover">
+        <table class="w-100 table table-hover ">
             <thead class="table-header">
                 <tr>
-                    <th class="text-nowrap">Patient No.</th>
+                    <th class="text-nowrap">#</th>
                     <th style="cursor:pointer;" wire:click="sortBy('full_name')">
                         Full Name
                         @if ($sortField === 'full_name')
@@ -102,7 +102,7 @@
             <tbody>
                 @foreach($archivedRecords as $record)
                 <tr>
-                    <td>{{ $record->patient->id ?? 'N/A' }}</td>
+                    <td>{{ $archivedRecords->firstItem() + $loop->index }}</td>
                     <td class="text-nowrap">{{ $record->patient->full_name ?? 'N/A' }}</td>
                     <td class="text-nowrap">{{ $record->patient->age_display ?? 'N/A' }}</td>
                     <td>{{ $record->patient->sex ?? 'N/A' }}</td>
@@ -145,7 +145,7 @@
 
                 @if($archivedRecords->isEmpty())
                 <tr>
-                    <td colspan="{{ $showAllTypes ? '8' : '8' }}" class="text-center bg-light">No archived records found.</td>
+                    <td colspan="8" class="text-center bg-light">No archived records found.</td>
                 </tr>
                 @endif
             </tbody>

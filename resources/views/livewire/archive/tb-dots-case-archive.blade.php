@@ -34,16 +34,14 @@
                     Back
                 </a>
             </div>
-           
-        </div>
 
+        </div>
 
         <table class="w-100 table">
             <thead class="table-header">
                 <tr>
-                    <th>Case No.</th>
+                    <th>#</th>
                     <th>Type of Record</th>
-                    
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                         Date
                         @if ($sortField === 'created_at')
@@ -58,9 +56,8 @@
             <tbody>
                 @forelse($allRecords as $record)
                 <tr class="px-">
-                    <td>{{ $record['id'] }}</td>
+                    <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                     <td>{{ $record['type_of_record'] }}</td>
-                  
                     <td>{{ optional($record['created_at'])->format('M d, Y') }}</td>
                     <td><span class="badge bg-secondary">{{ $record['status'] }}</span></td>
 
@@ -101,7 +98,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-4">
+                    <td colspan="5" class="text-center py-4">
                         <div class="alert alert-warning mb-0">
                             <i class="fa-solid fa-inbox"></i> No archived records found.
                         </div>

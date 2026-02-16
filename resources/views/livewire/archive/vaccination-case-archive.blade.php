@@ -29,17 +29,17 @@
         <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
             Back
         </a>
-
-
     </div>
+
     <div class="alert alert-info">
         <i class="fa-solid fa-info-circle"></i> Showing archived records. Click the restore button to activate a record.
     </div>
+
     <div class="table-responsive">
-        <table class="w-100 table ">
+        <table class="w-100 table">
             <thead class="table-header">
                 <tr>
-                    <th>Case No.</th>
+                    <th>#</th>
                     <th>Vaccine Type/s</th>
                     <th>Dosage</th>
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
@@ -50,38 +50,31 @@
                     </th>
                     <th>Status</th>
                     <th>Action</th>
-
-
                 </tr>
             </thead>
             <!-- data of patient -->
             <tbody>
                 @forelse($records as $record)
                 <tr class="px-">
-                    <!-- <div>{{$record}}</div> -->
-
-                    <td>{{$record->id}}</td>
-                    <td>{{$record->vaccine_type}}</td>
-                    <td>{{$record->dose_number}}{{$record->dose_number == 1 ? 'st':'th'}} Dose</td>
+                    <td>{{ $records->firstItem() + $loop->index }}</td>
+                    <td>{{ $record->vaccine_type }}</td>
+                    <td>{{ $record->dose_number }}{{ $record->dose_number == 1 ? 'st' : 'th' }} Dose</td>
                     <td>{{ \Carbon\Carbon::parse($record->date_of_vaccination)->format('M j, Y') }}</td>
                     <td><span class="badge bg-secondary">{{ $record['status'] }}</span></td>
-
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                            <button onclick="confirmActivate({{ $record->id }})" class=" text-success  fs-2 fw-bold ">
+                            <button onclick="confirmActivate({{ $record->id }})" class="text-success fs-2 fw-bold">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
                 @empty
-                <tr class="">
-                    <td colspan="12" class="text-center bg-light">No records found.</td>
+                <tr>
+                    <td colspan="6" class="text-center bg-light">No records found.</td>
                 </tr>
                 @endforelse
-
             </tbody>
-
         </table>
     </div>
 
@@ -122,3 +115,4 @@
             });
         });
     </script>
+</div>

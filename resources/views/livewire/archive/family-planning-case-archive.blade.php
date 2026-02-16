@@ -33,13 +33,11 @@
             </div>
         </div>
 
-
-
         <div class="table-responsive">
             <table class="w-100 table">
                 <thead class="table-header">
                     <tr>
-                        <th>Case No.</th>
+                        <th>#</th>
                         <th>Type of Record</th>
                         <th>Nurse</th>
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
@@ -55,7 +53,7 @@
                 <tbody>
                     @forelse($allRecords as $record)
                     <tr class="px-">
-                        <td>{{ $record['id'] }}</td>
+                        <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                         <td>{{ $record['type_of_record'] }}</td>
                         <td>Nurse Joy</td>
                         <td>{{ optional($record['created_at'])->format('M d, Y') }}</td>

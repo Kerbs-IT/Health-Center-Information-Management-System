@@ -9,9 +9,6 @@
                 $currentRoute = request()->route()->getName();
                 $currentUrl = url()->current();
 
-                // Debug - check what we're getting
-                // dd(['route' => $currentRoute, 'url' => $currentUrl]);
-
                 // Determine back URL based on route or URL
                 if (str_contains($currentRoute ?? '', 'vaccination') || str_contains($currentUrl, 'vaccination')) {
                 $backUrl = url("/patient-record/vaccination/case/{$medicalRecordId}");
@@ -24,7 +21,6 @@
                 } elseif (str_contains($currentRoute ?? '', 'senior-citizen') || str_contains($currentUrl, 'senior-citizen')) {
                 $backUrl = url("/patient-record/senior-citizen/case/{$medicalRecordId}");
                 } else {
-                // Since you're on prenatal archive, default to prenatal instead of vaccination
                 $backUrl = url("/patient-record/prenatal/view-case/{$medicalRecordId}");
                 }
 
@@ -48,7 +44,7 @@
         <table class="w-100 table overflow-y-scroll">
             <thead class="table-header">
                 <tr>
-                    <th>Case No.</th>
+                    <th>#</th>
                     <th>Type of Record</th>
                     <th>Nurse</th>
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
@@ -64,7 +60,7 @@
             <tbody>
                 @forelse($allRecords as $record)
                 <tr class="px-">
-                    <td>{{ $record['id'] }}</td>
+                    <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                     <td>{{ $record['type_of_record'] }}</td>
                     <td>Nurse Joy</td>
                     <td>{{ optional($record['created_at'])->format('M j, Y') }}</td>
