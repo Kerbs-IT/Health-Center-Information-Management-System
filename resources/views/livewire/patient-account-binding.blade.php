@@ -1,7 +1,5 @@
 <div class="container-fluid py-4">
 
-
-
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <div class="left-con d-flex align-items-center gap-2">
@@ -12,12 +10,10 @@
         </div>
 
         <div class="right-side-con ms-auto mt-ms-0 mt-2">
-
             <button type="button" class="btn btn-success text-nowrap" data-bs-toggle="modal" id="add-patient-account-modal-btn" data-bs-target="#addModal">
                 Add an Account
             </button>
         </div>
-
     </div>
 
     {{-- Flash Messages --}}
@@ -39,18 +35,28 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <input
                         type="text"
                         class="form-control"
                         placeholder="Search by name, email, or username..."
                         wire:model.debounce.300ms="search">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <select class="form-select" wire:model.live="filterStatus">
-                        <option value="all">All Accounts</option>
+                        <option value="all">All Statuses</option>
                         <option value="active">Active</option>
                         <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" wire:model.live="filterPatientType">
+                        <option value="all">All Patient Types</option>
+                        <option value="vaccination">Vaccination</option>
+                        <option value="prenatal">Prenatal</option>
+                        <option value="senior-citizen">Senior Citizen</option>
+                        <option value="tb-dots">TB DOTS</option>
+                        <option value="family-planning">Family Planning</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -68,7 +74,6 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-
                         <th>Name</th>
                         <th>Type of Patient</th>
                         <th>Email</th>
@@ -81,9 +86,8 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr>
-
                         <td>{{ $user->full_name }}</td>
-                        <td>{{$user->patient_type??'none'}}</td>
+                        <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->date_of_birth ? $user->date_of_birth->format('M d, Y') : 'N/A' }}</td>
                         <td>{{ $user->contact_number }}</td>
@@ -95,13 +99,25 @@
                             @endif
                         </td>
                         <td>
-
-                            <button type="button" class="btn btn-sm btn-info text-white edit-user-profile" data-bs-toggle="modal" data-bs-target="#edit-user-profile" data-id="{{$user->id}}">
+                            @if($user->status == 'active')
+                            <button type="button" class="btn btn-sm btn-info text-white edit-user-profile"
+                                data-bs-toggle="modal"
+                                data-bs-target="#edit-user-profile"
+                                data-id="{{ $user->id }}">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger text-white delete-user" data-id="{{$user->id}}">
+                            <button type="button" class="btn btn-sm btn-danger text-white delete-user"
+                                data-id="{{ $user->id }}" title="Archive">
                                 <i class="fa-solid fa-box-archive"></i>
                             </button>
+                            @else
+                            <button type="button"
+                                class="btn btn-sm btn-warning text-dark"
+                                title="Restore Account"
+                                onclick="if(confirm('Are you sure you want to restore {{ addslashes($user->full_name) }}?')) $wire.restoreUser({{ $user->id }})">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -118,12 +134,6 @@
             {{ $users->links() }}
         </div>
     </div>
-
-
-
-
-
-
 
     {{-- Loading --}}
     <div wire:loading class="position-fixed top-50 start-50">

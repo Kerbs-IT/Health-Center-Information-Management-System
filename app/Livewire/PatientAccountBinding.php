@@ -18,6 +18,7 @@ class PatientAccountBinding extends Component
 
     public $search = '';
     public $filterStatus = 'all';
+    public $filterPatientType = 'all';
     public $showModal = false;
     public $selectedUser = null;
     public $recordSearch = '';
@@ -25,51 +26,38 @@ class PatientAccountBinding extends Component
     public $selectedRecordId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['manageUserRefreshTable'=> 'refresh'];
+    protected $listeners = ['manageUserRefreshTable' => 'refresh'];
 
     public function render()
     {
-        // Build the base query
         $query = User::where('role', 'patient')
-                ->orderBy('status','asc');
-            
+            ->orderBy('status', 'asc');
 
-        // Add restriction if the user is staff
         if (Auth::user()->role == 'staff') {
             $userId = Auth::user()->id;
             $staffInfo = Staff::where("user_id", $userId)->first();
 
             if ($staffInfo && $staffInfo->assigned_area_id) {
                 $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-
-                // Join with user_addresses to filter by purok
                 $query->join('users_addresses', 'users.id', '=', 'users_addresses.user_id')
                     ->where('users_addresses.purok', $assignedArea->brgy_unit)
                     ->select('users.*');
             }
         }
 
-        // Apply search filter
         $query->where(function ($q) {
             $q->where('first_name', 'like', '%' . $this->search . '%')
                 ->orWhere('last_name', 'like', '%' . $this->search . '%')
                 ->orWhere('email', 'like', '%' . $this->search . '%');
         });
 
-        // Apply status filters
-        $query->when($this->filterStatus === 'active', function ($q) {
-            $q->where("status",'active');
-        });
+        $query->when($this->filterStatus === 'active', fn($q) => $q->where('status', 'active'));
+        $query->when($this->filterStatus === 'archived', fn($q) => $q->where('status', 'archived'));
+        $query->when($this->filterPatientType !== 'all', fn($q) => $q->where('patient_type', $this->filterPatientType));
 
-        $query->when($this->filterStatus === 'archived', function ($q) {
-            $q->where('status', 'archived');
-        });
+        $users = $query->orderBy('users.created_at', 'asc')->paginate(15);
 
-        // Execute the query with pagination
-        $users = $query->orderBy('users.created_at', 'asc')
-            ->paginate(15);
-
-        // Count unbound patients (apply same staff restriction)
+        // Unbound count
         $unboundQuery = User::where('role', 'patient')
             ->where('status', '!=', 'archived')
             ->whereNull('patient_record_id');
@@ -77,7 +65,6 @@ class PatientAccountBinding extends Component
         if (Auth::user()->role == 'staff') {
             $userId = Auth::user()->id;
             $staffInfo = Staff::where("user_id", $userId)->first();
-
             if ($staffInfo && $staffInfo->assigned_area_id) {
                 $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
                 $unboundQuery->join('users_addresses', 'users.id', '=', 'users_addresses.user_id')
@@ -89,8 +76,50 @@ class PatientAccountBinding extends Component
 
         return view('livewire.patient-account-binding', [
             'users' => $users,
-            'unboundCount' => $unboundCount
+            'unboundCount' => $unboundCount,
         ]);
+    }
+
+    public function restoreUser(int $userId): void
+    {
+        $user = User::find($userId);
+
+        if (!$user || $user->status !== 'archived') {
+            $this->dispatch('restoreError', message: 'Patient account not found or is not archived.');
+            return;
+        }
+
+        // Check for duplicate first_name + last_name
+        $nameConflict = User::where('role', 'patient')
+            ->where('status', 'active')
+            ->where('id', '!=', $userId)
+            ->whereRaw('LOWER(first_name) = ?', [strtolower($user->first_name)])
+            ->whereRaw('LOWER(last_name) = ?', [strtolower($user->last_name)])
+            ->exists();
+
+        // Check for duplicate email
+        $emailConflict = User::where('role', 'patient')
+            ->where('status', 'active')
+            ->where('id', '!=', $userId)
+            ->whereRaw('LOWER(email) = ?', [strtolower($user->email)])
+            ->exists();
+
+        if ($nameConflict || $emailConflict) {
+            $reasons = [];
+            if ($nameConflict) $reasons[] = 'name (' . $user->full_name . ')';
+            if ($emailConflict) $reasons[] = 'email (' . $user->email . ')';
+
+            $this->dispatch(
+                'restoreError',
+                message: 'An active account with the same ' . implode(' and ', $reasons) . ' already exists.'
+            );
+            return;
+        }
+
+        $user->status = 'active';
+        $user->save();
+
+        $this->dispatch('restoreSuccess');
     }
 
     public function openBindModal($userId)
@@ -107,7 +136,6 @@ class PatientAccountBinding extends Component
             ->where('status', '!=', 'Archived')
             ->where(function ($query) {
                 $searchTerm = str_replace(' ', '%', $this->recordSearch);
-
                 $query->where('first_name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('middle_initial', 'like', '%' . $searchTerm . '%')
@@ -115,46 +143,35 @@ class PatientAccountBinding extends Component
                     ->orWhere('id', 'like', '%' . trim($this->recordSearch) . '%')
                     ->orWhere('contact_number', 'like', '%' . $this->recordSearch . '%');
             });
-        // Add staff restriction
+
         if (Auth::user()->role == 'staff') {
             $staffId = Auth::id();
-
-            // Get all patient IDs that this staff member has worked with
             $patientIds = collect();
 
-            // Collect patient IDs from vaccination records
             $patientIds = $patientIds->merge(
                 DB::table('vaccination_medical_records')
                     ->join('medical_record_cases', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', $staffId)
                     ->pluck('medical_record_cases.patient_id')
             );
-
-            // Collect from prenatal records
             $patientIds = $patientIds->merge(
                 DB::table('prenatal_medical_records')
                     ->join('medical_record_cases', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('prenatal_medical_records.health_worker_id', $staffId)
                     ->pluck('medical_record_cases.patient_id')
             );
-
-            // Collect from TB DOTS records
             $patientIds = $patientIds->merge(
                 DB::table('tb_dots_medical_records')
                     ->join('medical_record_cases', 'tb_dots_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('tb_dots_medical_records.health_worker_id', $staffId)
                     ->pluck('medical_record_cases.patient_id')
             );
-
-            // Collect from senior citizen records
             $patientIds = $patientIds->merge(
                 DB::table('senior_citizen_medical_records')
                     ->join('medical_record_cases', 'senior_citizen_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('senior_citizen_medical_records.health_worker_id', $staffId)
                     ->pluck('medical_record_cases.patient_id')
             );
-
-            // Collect from family planning records
             $patientIds = $patientIds->merge(
                 DB::table('family_planning_medical_records')
                     ->join('medical_record_cases', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
@@ -162,76 +179,11 @@ class PatientAccountBinding extends Component
                     ->pluck('medical_record_cases.patient_id')
             );
 
-            // Get unique patient IDs
-            $uniquePatientIds = $patientIds->unique()->values();
-
-            // Filter patients by these IDs
-            $baseQuery->whereIn('id', $uniquePatientIds);
+            $baseQuery->whereIn('id', $patientIds->unique()->values());
         }
 
         $this->patientRecords = $baseQuery->limit(20)->get();
     }
-
-    // public function bind()
-    // {
-    //     if (!$this->selectedRecordId) {
-    //         session()->flash('error', 'Please select a patient record.');
-    //         return;
-    //     }
-
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $record = patients::find($this->selectedRecordId);
-
-    //         // Double check not already bound
-    //         if ($record->user_id) {
-    //             session()->flash('error', 'This record is already bound to another account.');
-    //             DB::rollBack();
-    //             return;
-    //         }
-
-    //         // Bind both ways
-    //         $this->selectedUser->patient_record_id = $this->selectedRecordId;
-    //         $this->selectedUser->save();
-
-    //         $record->user_id = $this->selectedUser->id;
-    //         $record->save();
-
-    //         DB::commit();
-
-    //         session()->flash('success', 'Account successfully bound to patient record!');
-    //         $this->closeModal();
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         session()->flash('error', 'Binding failed: ' . $e->getMessage());
-    //     }
-    // }
-
-    // public function unbind($userId)
-    // {
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $user = User::find($userId);
-    //         if ($user->patient_record_id) {
-    //             $record = patients::find($user->patient_record_id);
-    //             if ($record) {
-    //                 $record->user_id = null;
-    //                 $record->save();
-    //             }
-
-    //             $user->patient_record_id = null;
-    //             $user->save();
-    //         }
-
-    //         DB::commit();
-    //         session()->flash('success', 'Account unbound successfully.');
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         session()->flash('error', 'Unbind failed: ' . $e->getMessage());
-    //     }
-    // }
 
     public function closeModal()
     {
@@ -243,6 +195,16 @@ class PatientAccountBinding extends Component
     }
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterPatientType()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus()
     {
         $this->resetPage();
     }

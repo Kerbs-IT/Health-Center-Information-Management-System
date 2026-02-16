@@ -154,40 +154,40 @@
     </div>
 </div>
 
-<script>
-    function confirmActivate(patientId) {
-        Swal.fire({
-            title: 'Activate Patient?',
-            text: "This patient will be moved to active status.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, activate it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                @this.activatePatient(patientId);
-            }
-        });
-    }
+    <script>
+        function confirmActivate(patientId) {
+            Swal.fire({
+                title: 'Activate Patient?',
+                text: "This patient will be moved to active status.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, activate it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.activatePatient(patientId);
+                }
+            });
+        }
 
-    window.addEventListener('patientActivated', event => {
-        Swal.fire({
-            icon: 'success',
-            title: 'Activated!',
-            text: 'Patient Record has been restored successfully.',
-            timer: 2000,
-            showConfirmButton: false
+        window.addEventListener('patientActivated', event => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Activated!',
+                text: 'Patient Record has been restored successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            });
         });
-    });
 
-    window.addEventListener('activationError', event => {
-        Swal.fire({
-            icon: 'error',
-            title: 'Cannot Restore',
-            text: event.detail.message,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'OK'
+        window.addEventListener('activationError', event => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Cannot Restore',
+                text: event.detail.message,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
         });
-    });
-</script>
+    </script>
