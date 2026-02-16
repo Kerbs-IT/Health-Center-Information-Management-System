@@ -40,7 +40,7 @@
                         type="text"
                         class="form-control"
                         placeholder="Search by name, email, or username..."
-                        wire:model.debounce.300ms="search">
+                        wire:model.live.debounce.300ms="search">
                 </div>
                 <div class="col-md-2">
                     <select class="form-select" wire:model.live="filterStatus">
@@ -97,7 +97,7 @@
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->purok ?? 'N/A' }}</td>
+                        <td>{{ $user->address?->purok ?? 'N/A' }}</td>
                         <td>{{ $user->contact_number }}</td>
                         <td>
                             @if($user->status == 'active')
@@ -181,7 +181,7 @@
         Swal.fire({
             icon: 'error',
             title: 'Cannot Restore',
-            text: event.detail.message,
+            text: event.detail[0].message,
             confirmButtonColor: '#d33',
             confirmButtonText: 'OK'
         });
