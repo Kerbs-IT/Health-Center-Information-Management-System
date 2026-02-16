@@ -94,11 +94,13 @@ document.addEventListener("click", async (e) => {
                         input.checked = input.value == value;
                     });
                 } else if (key == "Address") {
-                    const addressText = (
-                        data.address_info.house_number +
-                        "," +
-                        data.address_info.street
-                    ).trim(" ");
+                    const addressText = [
+                        data.address_info.house_number,
+                        data.address_info.street,
+                    ]
+                        .filter(Boolean) // removes null, undefined, empty strings
+                        .join(",")
+                        .trim();
                     const street = document.getElementById("street");
                     street.value = addressText;
 
@@ -222,6 +224,10 @@ saveBtn.addEventListener("click", async (e) => {
                 modal.hide();
             }
         });
+
+        if (typeof Livewire !== "undefined") {
+            Livewire.dispatch("vaccinationMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+        }
     }
 });
 

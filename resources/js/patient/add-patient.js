@@ -182,8 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (vaccination_birth_weight.value !== 0) {
                 current_weight.value = vaccination_birth_weight.value;
             }
-
-
         }
 
         if (typeSelect.value === "prenatal") {
@@ -240,10 +238,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".third-row")
                 .classList.replace("d-none", "d-flex");
-            
-             setTimeout(function () {
-                 initializeVaccinationMasks();
-             }, 2000);
+
+            setTimeout(function () {
+                initializeVaccinationMasks();
+            }, 2000);
         } else if (dropdownValue == "prenatal") {
             // hide the vaccination
             document
@@ -400,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
     typeSelect.addEventListener("change", function () {
         disableSubmitBtn(typeSelect.value);
 
-       
+        showInfoPerTypeOfPatient();
     });
 
     // handle adding the vaccine
@@ -603,12 +601,12 @@ const vaccination_birth_weight = document.getElementById(
 );
 
 if (
-    (add_patient_blood_pressure &&
-        add_patient_height &&
-        add_patient_weight &&
-        add_patient_pulse_rate &&
-        add_patient_respiratory_rate &&
-        add_patient_temperature) 
+    add_patient_blood_pressure &&
+    add_patient_height &&
+    add_patient_weight &&
+    add_patient_pulse_rate &&
+    add_patient_respiratory_rate &&
+    add_patient_temperature
 ) {
     Inputmask({
         mask: "99[9]/99[9]",
@@ -656,8 +654,6 @@ if (
         max: 250,
         rightAlign: false,
     }).mask(add_patient_weight);
-
-   
 }
 
 //  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
@@ -961,4 +957,68 @@ function initializeVaccinationMasks() {
         max: 250,
         rightAlign: false,
     }).mask(document.getElementById("vaccination_birth_weight"));
+}
+
+function showInfoPerTypeOfPatient() {
+    const patientType = document.getElementById("type-of-patient").value;
+    const sexContainer = document.querySelector(".sex-container");
+    const sexInputs = document.querySelectorAll('input[name="sex"]');
+    const birthdate = document.getElementById("birthdate");
+
+    const today = new Date();
+
+    // Reset birthdate constraints
+    birthdate.min = "1950-01-01";
+    birthdate.max = today.toISOString().split("T")[0];
+
+    if (patientType === "senior-citizen") {
+        // Minimum age is 60 — so max birthdate is today minus 60 years
+        const maxBirthdate = new Date(
+            today.getFullYear() - 60,
+            today.getMonth(),
+            today.getDate(),
+        );
+        birthdate.max = maxBirthdate.toISOString().split("T")[0];
+        birthdate.min = "1900-01-01";
+
+        // Clear birthdate if it no longer falls within the valid range
+        if (birthdate.value && new Date(birthdate.value) > maxBirthdate) {
+            birthdate.value = "";
+        }
+
+        // Show sex container
+        sexContainer.style.display = "";
+        sexInputs.forEach((input) => (input.required = true));
+    } else if (
+        patientType === "prenatal" ||
+        patientType === "family-planning"
+    ) {
+        // Hide sex container — assumed female
+        sexContainer.style.display = "none";
+
+        // Auto-select female and make it not required (since it's implicit)
+        sexInputs.forEach((input) => {
+            input.required = false;
+            if (input.value === "female") input.checked = true;
+        });
+
+        // Reset birthdate to normal range
+        birthdate.min = "1950-01-01";
+        birthdate.max = today.toISOString().split("T")[0];
+
+        // Clear birthdate if it was set outside normal range
+        if (birthdate.value && new Date(birthdate.value) > today) {
+            birthdate.value = "";
+        }
+    } else {
+        // Default — show sex container, reset constraints
+        sexContainer.style.display = "";
+        sexInputs.forEach((input) => {
+            input.required = true;
+            input.checked = false;
+        });
+
+        birthdate.min = "1950-01-01";
+        birthdate.max = today.toISOString().split("T")[0];
+    }
 }

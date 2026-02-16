@@ -130,7 +130,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="sex">Sex</label>
-                                            <div class="input-field d-flex align-items-center p-2">
+                                            <div class="input-field d-flex align-items-center justify-content-center flex-column p-2">
 
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
                                                     <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{ optional($tbDotsRecord->patient)->sex == 'Male' ? 'checked' : '' }}>

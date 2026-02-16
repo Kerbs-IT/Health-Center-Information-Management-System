@@ -362,6 +362,19 @@ const puroks = async function () {
 puroks();
 // add health workers
 
+// open the add health worker
+const addHealthWorkerModalBtn = document.getElementById("add-health-worker-modal");
+
+if (addHealthWorkerModalBtn) {
+    addHealthWorkerModalBtn.addEventListener('click', () => {
+         const errorMessages = document.querySelectorAll(
+             ".add-healthworker-error",
+         );
+         // remove all error messages after submission
+         errorMessages.forEach((error) => (error.innerHTML = ""));
+    })
+}
+
 const addHealthWorkerSubmitBTN = document.getElementById("add-Health-worker");
 
 addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
@@ -438,9 +451,13 @@ addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
                     document.getElementById(`${key}_error`).innerHTML = value;
                 }
             });
+            const errorList = Object.values(data.errors)
+                .flat()
+                .map((err) => `<p>${err}</p>`)
+                .join("");
             Swal.fire({
                 title: "Add New Health Worker",
-                text: "Invalid input value",
+                html: errorList,
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",

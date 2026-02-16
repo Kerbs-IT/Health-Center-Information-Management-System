@@ -107,7 +107,7 @@
                                 <h4>Address</h4>
                                 <div class="input-field d-flex gap-2 align-items-center w-100 flex-wrap flex-lg-nowrap">
                                     <div class=" mb-2 w-[100%]  w-lg-[50%]">
-                                        <label for="street">Street<span class=" text-danger">*</span></label>
+                                        <label for="street">House No., Street,<span class=" text-danger">*</span></label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
                                         <small class="text-danger error-text flex-grow-1" id="street_error"></small>
                                     </div>
@@ -128,16 +128,17 @@
                             </div>
                             <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
                                 <div class="input-field flex-grow-1 ">
-                                    <label for="">Sex</label>
+                                    <label for="">Sex<span class=" text-danger">*</span></label>
                                     <div class="input-field d-flex align-items-center p-2">
                                         <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                            <input type="radio" id="male" class="mb-0" name="sex" value="male" class="mb-0">
+                                            <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0">
                                             <label for="male">Male</label>
-                                            <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0">
+                                            <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0">
                                             <label for="female">Female</label>
                                         </div>
-                                        <small class="text-danger error-text flex-grow-1" id="sex_error"></small>
+
                                     </div>
+                                    <small class="text-danger error-text flex-grow-1" id="sex_error"></small>
                                 </div>
 
                                 <div class="input-field flex-grow-1 ">

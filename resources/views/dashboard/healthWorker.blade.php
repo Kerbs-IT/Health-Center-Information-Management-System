@@ -145,7 +145,7 @@
                                     <small class="text-danger edit-healthworker-info" id="birthdate-error"></small>
                                 </div>
                                 <div class="input-field xl:w-[50%] flex-fill">
-                                    <label for="sex">Sex</label>
+                                    <label for="sex">Sex<span class="text-danger">*</span></label>
                                     <div class="input-field d-flex align-items-center p-2">
                                         @php
                                         $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
@@ -303,14 +303,17 @@
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <label for="add_first_name_healthworker" class="">First Name<span class="text-danger">*</span></label>
                                     <input type="text" placeholder="Enter First Name" id="add_first_name_healthworker" name="first_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('first_name')}}">
+                                    <small class="text-danger add-healthworker-error" id="first_name_error"></small>
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <label for="add_middle_name_healthworker" class="">Middle Name</label>
                                     <input type="text" placeholder="Enter Middle Name" id="add_middle_name_healthworker" name="middle_initial" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('middle_initial')}}">
+                                    <small class="text-danger middle-initial-error add-healthworker-error" id="middle_initial_error"></small>
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <label for="add_last_name_healthworker" class="">Last Name<span class="text-danger">*</span></label>
                                     <input type="text" placeholder="Enter Last Name" id="add_last_name_healthworker" name="last_name" class="py-2 px-2 responsive-input rounded form-control" autocomplete="off" value="{{old('last_name')}}">
+                                    <small class="text-danger lname-error add-healthworker-error" id="last_name_error"></small>
                                 </div>
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <label for="add_suffix" class="">Suffix</label>
@@ -326,9 +329,9 @@
                                     <small class="text-danger add-healthworker-error" id="add_suffix_error"></small>
                                 </div>
                             </div>
-                            <small class="text-danger add-healthworker-error" id="first_name_error"></small>
-                            <small class="text-danger middle-initial-error add-healthworker-error" id="middle_initial_error"></small>
-                            <small class="text-danger lname-error add-healthworker-error" id="last_name_error"></small>
+
+
+
                         </div>
                         <!-- email -->
                         <div class="mb-2 w-100">
@@ -341,6 +344,21 @@
                             <label for="add_date_of_birth" class="mb-1 responsive-label">Date of Birth<span class="text-danger">*</span></label>
                             <input type="date" placeholder="Enter the date_of_birth" id="add_date_of_birth" name="add_date_of_birth" class="py-2 px-2 w-100 responsive-input rounded form-control" value="{{old('date_of_birth')}}" min="1950-01-01" max="{{date('Y-m-d',strtotime('-18 years'))}}">
                             <small class="text-danger add_date_of_birth-error add-healthworker-error" id="add_date_of_birth_error"></small>
+                        </div>
+                        <!-- sex -->
+                        <div class="input-field xl:w-[100%] flex-fill">
+                            <label for="sex">Sex<span class="text-danger">*</span></label>
+                            <div class="input-field d-flex align-items-center p-2">
+
+                                <div class="sex-input d-flex align-items-center gap-1">
+                                    <input type="radio" id="add_male" class="mb-0" name="add_sex" value="Male">
+                                    <label for="add_male" class="mb-0">Male</label>
+                                    <input type="radio" id="add_female" class="mb-0" name="add_sex" value="Female">
+                                    <label for="add_female" class="mb-0">Female</label>
+                                </div>
+
+                            </div>
+                            <small class="text-danger edit-healthworker-info" id="add_sex_error"></small>
                         </div>
                         <!-- contact number -->
                         <div class="mb-2 w-100">
@@ -382,7 +400,7 @@
                         <!-- RECOVERY QUESTION -->
 
 
-                        <div class="mb-3 w-95">
+                        <div class="mb-3 w-100">
                             <input type="submit" value="Register Healthworker" class=" fs-5 d-block btn btn-success py-1 responsive-btn m-auto" id="add-Health-worker">
                         </div>
                     </form>

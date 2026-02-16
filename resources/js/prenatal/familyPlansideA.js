@@ -349,9 +349,9 @@ if (editIcon) {
                     let full_name = value.split(" ");
 
                     if (fname && MI && lname) {
-                        fname.value = full_name[0];
-                        MI.value = full_name[1];
-                        lname.value = full_name[2];
+                       fname.value = data.caseInfo.client_first_name;
+                       MI.value = data.caseInfo.client_middle_name ?? "";
+                       lname.value = data.caseInfo.client_last_name;
                     }
                 } else if (key == "NHTS") {
                     inputPicker(key, value);

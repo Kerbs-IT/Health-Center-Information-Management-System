@@ -120,7 +120,7 @@
                                         </div>
                                     </div>
                                     <div class="mb-md-2 mb-0 d-flex gap-1 flex-xl-nowrap flex-wrap">
-                                        <div class="input-field flex-fill xl:w-[50%]">
+                                        <!-- <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2">
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
@@ -131,7 +131,7 @@
                                                 <small class="text-danger error-text" id="sex_error"></small>
 
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>

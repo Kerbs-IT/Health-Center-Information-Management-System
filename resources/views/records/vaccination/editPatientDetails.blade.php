@@ -46,7 +46,7 @@
                     <div class="flex-grow-1 py-3 px-lg-5 px-md-3 px-1 bg-white mx-lg-3 mx-0 mt-2 rounded shadow-xl">
                         @php
                         $backUrl = route('record.vaccination') . '?' . http_build_query(request()->only(['patient_id', 'search', 'entries', 'sortField', 'sortDirection']));
-                        
+
                         @endphp
 
                         <a href="{{ $backUrl }}" class="btn btn-danger px-4 fs-5 mb-3">
@@ -119,8 +119,8 @@
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-xl-nowrap">
                                         <div class="input-field flex-fill xl:w-[50%]">
-                                            <label for="sex">Sex</label>
-                                            <div class="input-field d-flex align-items-center p-2">
+                                            <label for="sex">Sex<span class="text-danger">*</span></label>
+                                            <div class="input-field d-flex align-items-center flex-column p-2">
                                                 <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
                                                     <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0" {{optional($info)-> sex == 'Male'?'checked': ''}}>Male</label>
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0" {{optional($info)-> sex == 'Female'?'checked': ''}}>Female</label>

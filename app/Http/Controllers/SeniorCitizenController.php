@@ -64,7 +64,7 @@ class SeniorCitizenController extends Controller
                 ],
                 'place_of_birth' => 'sometimes|nullable|string',
                 'age' => 'sometimes|nullable|numeric|min:60',
-                'sex' => 'sometimes|nullable|string',
+                'sex' => 'required|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
                 'date_of_registration' => 'required|date',
@@ -221,7 +221,7 @@ class SeniorCitizenController extends Controller
             // ==================================================================================================================================
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $age = isset($patientData['sex'])? ucfirst($patientData['sex']):null;
+            $sex = isset($patientData['sex'])? ucfirst($patientData['sex']):null;
 
             $seniorCitizenPatient = patients::create([
                 'user_id' => null,
@@ -230,7 +230,7 @@ class SeniorCitizenController extends Controller
                 'last_name' => ucwords($patientData['last_name']),
                 'full_name' =>  $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => $age,
+                'sex' => $sex,
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -546,7 +546,7 @@ class SeniorCitizenController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
                 'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
                 'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,
-                'sex' => $sex ? ucfirst($sex) : null,
+                'sex' => $sex ? ucfirst(strtolower($sex)) : null,
                 'civil_status' => $data['civil_status'] ?? '',
                 'contact_number' => $data['contact_number'] ?? '',
                 'date_of_birth' => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,

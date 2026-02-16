@@ -267,7 +267,7 @@ class patientController extends Controller
                 'last_name'              => 'required|string',
                 'middle_initial'         => 'sometimes|nullable|string',
                 'date_of_birth'          => 'required|date|before_or_equal:today',
-                'sex'                    => 'sometimes|nullable|string',
+                'sex'                    => 'required|string',
                 'civil_status'           => 'sometimes|nullable|string',
                 'contact_number'         => 'sometimes|nullable|digits_between:7,12',
                 'nationality'            => 'sometimes|nullable|string',

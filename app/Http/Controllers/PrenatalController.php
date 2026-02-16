@@ -341,7 +341,7 @@ class PrenatalController extends Controller
                 'last_name'      => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => isset($patientData['sex']) ? ucfirst($patientData['sex']) : null,
+                'sex' => 'Female',
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -629,256 +629,261 @@ class PrenatalController extends Controller
             $isFamilyPlan = $medicalCaseData['family_planning'] ?? null;
 
             if ($isFamilyPlan != null && $isFamilyPlan === 'yes') {
-                // add record for medical_case table
-                $familyPlanningMedicalCase = medical_record_cases::create([
-                    'patient_id' => $prenatalPatient->id,
-                    'type_of_case' => 'family-planning',
-                ]);
 
-                $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id; //medical record id
+                // For add patient — only create if no existing FP record yet
+                $existingFPMedicalCase = medical_record_cases::where('patient_id', $prenatalPatient->id)
+                    ->where('type_of_case', 'family-planning')
+                    ->first();
 
+                if (!$existingFPMedicalCase) {
+                    // No existing record — create everything from scratch
+                    $familyPlanningMedicalCase = medical_record_cases::create([
+                        'patient_id'   => $prenatalPatient->id,
+                        'type_of_case' => 'family-planning',
+                    ]);
 
-                // CREATE THE MEDICAL RECORD
-                family_planning_medical_records::create([
-                    'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                    'health_worker_id' => $patientData['handled_by'],
-                    'patient_name' => $prenatalPatient->full_name,
-                    'occupation' =>  null,
-                    'religion' => $medicalCaseData['religion'] ?? null,
-                    'philhealth_no' =>  null,
-                    'blood_pressure' => $prenatalCaseData['blood_pressure'] ?? null,
-                    'temperature' => $prenatalCaseData['temperature'] ?? null,
-                    'pulse_rate' => $prenatalCaseData['pulse_rate'] ?? null,
-                    'respiratory_rate' => $prenatalCaseData['respiratory_rate'] ?? null,
-                    'height' => $prenatalCaseData['height'] ?? null,
-                    'weight' => $prenatalCaseData['weight'] ?? null,
-                ]);
+                    $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id;
 
-                $previoulyMethod = null;
+                    // CREATE THE MEDICAL RECORD
+                    family_planning_medical_records::create([
+                        'medical_record_case_id' => $familyPlanningMedicalCaseId,
+                        'health_worker_id'       => $patientData['handled_by'],
+                        'patient_name'           => $prenatalPatient->full_name,
+                        'occupation'             => null,
+                        'religion'               => $medicalCaseData['religion'] ?? null,
+                        'philhealth_no'          => null,
+                        'blood_pressure'         => $prenatalCaseData['blood_pressure'] ?? null,
+                        'temperature'            => $prenatalCaseData['temperature'] ?? null,
+                        'pulse_rate'             => $prenatalCaseData['pulse_rate'] ?? null,
+                        'respiratory_rate'       => $prenatalCaseData['respiratory_rate'] ?? null,
+                        'height'                 => $prenatalCaseData['height'] ?? null,
+                        'weight'                 => $prenatalCaseData['weight'] ?? null,
+                    ]);
 
-                // CREATE THE CASE RECORD
-                $caseRecord = family_planning_case_records::create([
-                    'medical_record_case_id' =>  $familyPlanningMedicalCaseId,
-                    'health_worker_id' =>  $patientData['handled_by'],
-                    'client_id' =>  null,
-                    'philhealth_no' =>  null,
-                    'NHTS' =>  null,
-                    'client_name' =>  $prenatalPatient->full_name,
-                    'client_date_of_birth' => $prenatalPatient['date_of_birth'] ?? null,
-                    'client_age' => $prenatalPatient['age'] ?? null,
-                    'client_suffix' => $patientData['suffix'] ?? '',
-                    'occupation' => null,
-                    'client_address' => $fullAddress,
-                    'client_contact_number' => $prenatalPatient['contact_number'] ?? null,
-                    'client_civil_status' => $prenatalPatient['civil_status'] ?? null,
-                    'client_religion' => $medicalCaseData['religion'] ?? null,
-                    'spouse_lname' =>  null,
-                    'spouse_fname' =>  null,
-                    'spouse_MI' =>  null,
-                    'spouse_date_of_birth' =>  null,
-                    'spouse_age' =>  null,
-                    'spouse_occupation' =>  null,
-                    'number_of_living_children' => $prenatalCaseData['living_children'] ?? null,
-                    'plan_to_have_more_children' =>  null,
+                    // CREATE THE CASE RECORD
+                    $caseRecord = family_planning_case_records::create([
+                        'medical_record_case_id'                  => $familyPlanningMedicalCaseId,
+                        'health_worker_id'                        => $patientData['handled_by'],
+                        'client_id'                               => null,
+                        'philhealth_no'                           => null,
+                        'NHTS'                                    => null,
+                        'client_name'                             => $prenatalPatient->full_name,
+                        'client_first_name'                       => ucwords(strtolower($patientData['first_name'])) ?? null,
+                        'client_last_name'                        => ucwords(strtolower($patientData['last_name'])) ?? null,
+                        'client_middle_name'                      => $middleName,
+                        'client_date_of_birth'                    => $prenatalPatient['date_of_birth'] ?? null,
+                        'client_age'                              => $prenatalPatient['age'] ?? null,
+                        'client_suffix'                           => $patientData['suffix'] ?? '',
+                        'occupation'                              => null,
+                        'client_address'                          => $fullAddress,
+                        'client_contact_number'                   => $prenatalPatient['contact_number'] ?? null,
+                        'client_civil_status'                     => $prenatalPatient['civil_status'] ?? null,
+                        'client_religion'                         => $medicalCaseData['religion'] ?? null,
+                        'spouse_lname'                            => null,
+                        'spouse_fname'                            => null,
+                        'spouse_MI'                               => null,
+                        'spouse_date_of_birth'                    => null,
+                        'spouse_age'                              => null,
+                        'spouse_occupation'                       => null,
+                        'number_of_living_children'               => $prenatalCaseData['living_children'] ?? null,
+                        'plan_to_have_more_children'              => null,
+                        'average_montly_income'                   => null,
+                        'type_of_patient'                         => null,
+                        'new_acceptor_reason_for_FP'              => null,
+                        'current_user_reason_for_FP'              => null,
+                        'current_method_reason'                   => null,
+                        'previously_used_method'                  => null,
+                        'choosen_method'                          => null,
+                        'signature_image'                         => null,
+                        'date_of_acknowledgement'                 => null,
+                        'acknowledgement_consent_signature_image' => null,
+                        'date_of_acknowledgement_consent'         => null,
+                        'current_user_type'                       => null,
+                    ]);
 
-                    'average_montly_income' => null,
-                    'type_of_patient' => null,
-                    'new_acceptor_reason_for_FP' => null,
-                    'current_user_reason_for_FP' =>  null,
-                    'current_method_reason' => null,
-                    'previously_used_method' =>  null,
-                    'choosen_method' => null,
-                    'signature_image' =>  null,
-                    'date_of_acknowledgement' =>  null,
-                    'acknowledgement_consent_signature_image' =>  null,
-                    'date_of_acknowledgement_consent' =>  null,
-                    'current_user_type' =>  null,
-                ]);
+                    $caseId = $caseRecord->id;
 
-                $caseId = $caseRecord->id;
+                    // MEDICAL HISTORY
+                    family_planning_medical_histories::create([
+                        'case_id'                           => $caseId,
+                        'severe_headaches_migraine'         => null,
+                        'history_of_stroke'                 => null,
+                        'non_traumatic_hemtoma'             => null,
+                        'history_of_breast_cancer'          => null,
+                        'severe_chest_pain'                 => null,
+                        'cough'                             => null,
+                        'jaundice'                          => null,
+                        'unexplained_vaginal_bleeding'      => null,
+                        'abnormal_vaginal_discharge'        => null,
+                        'abnormal_phenobarbital'            => null,
+                        'smoker'                            => null,
+                        'with_dissability'                  => null,
+                        'if_with_dissability_specification' => null,
+                    ]);
 
-                // medical history
-                $medicalHistories = family_planning_medical_histories::create([
-                    'case_id' => $caseId,
-                    'severe_headaches_migraine' =>  null,
-                    'history_of_stroke' =>  null,
-                    'non_traumatic_hemtoma' =>  null,
-                    'history_of_breast_cancer' =>  null,
-                    'severe_chest_pain' =>  null,
-                    'cough' =>  null,
-                    'jaundice' =>  null,
-                    'unexplained_vaginal_bleeding' =>  null,
-                    'abnormal_vaginal_discharge' =>  null,
-                    'abnormal_phenobarbital' =>  null,
-                    'smoker' =>  null,
-                    'with_dissability' =>  null,
-                    'if_with_dissability_specification' =>  null,
-                ]);
-                // obsterical history
-                $obstericalHistories = family_planning_obsterical_histories::create([
-                    'case_id' => $caseId,
-                    'G' => $prenatalCaseData['G']  ?? null,
-                    'P' => $prenatalCaseData['P']  ?? null,
-                    'full_term' => null,
-                    'abortion' => $prenatalCaseData['abortion'] ?? null,
-                    'premature' => $prenatalCaseData['premature']  ?? null,
-                    'living_children' => $prenatalCaseData['living_children'] ?? null,
-                    'date_of_last_delivery' => null,
-                    'type_of_last_delivery' =>  null,
-                    'date_of_last_delivery_menstrual_period' => null,
-                    'date_of_previous_delivery_menstrual_period' =>  null,
-                    'type_of_menstrual' =>  null,
-                    'Dysmenorrhea' =>  null,
-                    'hydatidiform_mole' =>  null,
-                    'ectopic_pregnancy' =>  null,
-                ]);
+                    // OBSTETRICAL HISTORY
+                    family_planning_obsterical_histories::create([
+                        'case_id'                                    => $caseId,
+                        'G'                                          => $prenatalCaseData['G'] ?? null,
+                        'P'                                          => $prenatalCaseData['P'] ?? null,
+                        'full_term'                                  => null,
+                        'abortion'                                   => $prenatalCaseData['abortion'] ?? null,
+                        'premature'                                  => $prenatalCaseData['premature'] ?? null,
+                        'living_children'                            => $prenatalCaseData['living_children'] ?? null,
+                        'date_of_last_delivery'                      => null,
+                        'type_of_last_delivery'                      => null,
+                        'date_of_last_delivery_menstrual_period'     => null,
+                        'date_of_previous_delivery_menstrual_period' => null,
+                        'type_of_menstrual'                          => null,
+                        'Dysmenorrhea'                               => null,
+                        'hydatidiform_mole'                          => null,
+                        'ectopic_pregnancy'                          => null,
+                    ]);
 
-                // III. RISK FOR SEXUALLY TRANSMITTED INFECTIONS
+                    // RISK FOR SEXUALLY TRANSMITTED INFECTIONS
+                    risk_for_sexually_transmitted_infections::create([
+                        'case_id'                                        => $caseId,
+                        'infection_abnormal_discharge_from_genital_area' => null,
+                        'origin_of_abnormal_discharge'                   => null,
+                        'scores_or_ulcer'                                => null,
+                        'pain_or_burning_sensation'                      => null,
+                        'history_of_sexually_transmitted_infection'      => null,
+                        'sexually_transmitted_disease'                   => null,
+                        'history_of_domestic_violence_of_VAW'            => null,
+                        'unpleasant_relationship_with_partner'           => null,
+                        'partner_does_not_approve'                       => null,
+                        'referred_to'                                    => null,
+                        'reffered_to_others'                             => null,
+                    ]);
 
-                $riskOfSexuallyTransmitted = risk_for_sexually_transmitted_infections::create([
-                    'case_id' => $caseId,
-                    'infection_abnormal_discharge_from_genital_area' =>  null,
-                    'origin_of_abnormal_discharge' =>  null,
-                    'scores_or_ulcer' =>  null,
-                    'pain_or_burning_sensation' =>  null,
-                    'history_of_sexually_transmitted_infection' =>  null,
-                    'sexually_transmitted_disease' =>  null,
-                    'history_of_domestic_violence_of_VAW' =>  null,
-                    'unpleasant_relationship_with_partner' =>  null,
-                    'partner_does_not_approve' =>  null,
-                    'referred_to' =>  null,
-                    'reffered_to_others' =>  null,
-                ]);
+                    // PHYSICAL EXAMINATION
+                    family_planning_physical_examinations::create([
+                        'case_id'                     => $caseId,
+                        'blood_pressure'              => $prenatalCaseData['blood_pressure'] ?? null,
+                        'pulse_rate'                  => $prenatalCaseData['pulse_rate'] ?? null,
+                        'height'                      => $prenatalCaseData['height'] ?? null,
+                        'weight'                      => $prenatalCaseData['weight'] ?? null,
+                        'skin_type'                   => null,
+                        'conjuctiva_type'             => null,
+                        'breast_type'                 => null,
+                        'abdomen_type'                => null,
+                        'extremites_type'             => null,
+                        'extremites_UID_type'         => null,
+                        'cervical_abnormalities_type' => null,
+                        'cervical_consistency_type'   => null,
+                        'uterine_position_type'       => null,
+                        'uterine_depth_text'          => null,
+                        'neck_type'                   => null,
+                    ]);
 
-                // PHYSICAL EXAMINATION
-                $physicalExamination = family_planning_physical_examinations::create([
-                    'case_id' => $caseId,
-                    'blood_pressure' => $prenatalCaseData['blood_pressure'] ?? null,
-                    'pulse_rate' => $prenatalCaseData['pulse_rate'] ?? null,
-                    'height' => $prenatalCaseData['height']  ?? null,
-                    'weight' => $prenatalCaseData['weight']  ?? null,
+                    // SIDE B RECORD
+                    family_planning_side_b_records::create([
+                        'medical_record_case_id'                         => $familyPlanningMedicalCaseId,
+                        'health_worker_id'                               => $patientData['handled_by'],
+                        'date_of_visit'                                  => null,
+                        'medical_findings'                               => null,
+                        'method_accepted'                                => null,
+                        'signature_of_the_provider'                      => null,
+                        'date_of_follow_up_visit'                        => null,
+                        'baby_Less_than_six_months_question'             => null,
+                        'sexual_intercouse_or_mesntrual_period_question' => null,
+                        'baby_last_4_weeks_question'                     => null,
+                        'menstrual_period_in_seven_days_question'        => null,
+                        'miscarriage_or_abortion_question'               => null,
+                        'contraceptive_question'                         => null,
+                    ]);
 
-                    'skin_type' =>  null,
-                    'conjuctiva_type' =>  null,
-                    'breast_type' =>  null,
-                    'abdomen_type' =>  null,
-                    'extremites_type' =>  null,
-                    'extremites_UID_type' =>  null,
-                    'cervical_abnormalities_type' =>  null,
-                    'cervical_consistency_type' =>  null,
-                    'uterine_position_type' =>  null,
-                    'uterine_depth_text' =>  null,
-                    'neck_type' =>  null
-                ]);
+                    // WRA MASTERLIST
+                    $method_of_FP = [
+                        'modern'      => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                        'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
+                    ];
 
-                // add side b record
-                family_planning_side_b_records::create([
-                    'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                    'health_worker_id' => $patientData['handled_by'],
-                    'date_of_visit' =>  null,
-                    'medical_findings' =>  null,
-                    'method_accepted' =>  null,
-                    'signature_of_the_provider' =>  null,
-                    'date_of_follow_up_visit' =>  null,
-                    'baby_Less_than_six_months_question' =>  null,
-                    'sexual_intercouse_or_mesntrual_period_question' =>  null,
-                    'baby_last_4_weeks_question' =>  null,
-                    'menstrual_period_in_seven_days_question' =>  null,
-                    'miscarriage_or_abortion_question' =>  null,
-                    'contraceptive_question' =>  null
-                ]);
+                    $modern_methods      = [];
+                    $traditional_methods = [];
 
-                // create the wra record
-                // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
-                $method_of_FP = [
-                    'modern' => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
-                    'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
-                ];
-
-                $modern_methods = [];
-                $traditional_methods = [];
-
-                $previously_methods = $caseData['previously_used_method'] ?? null;
-                if ($previously_methods != null) {
-                    foreach ($previously_methods as $method) {
-                        if (in_array($method, $method_of_FP['modern'])) {
-                            $modern_methods[] = $method;
-                        } elseif (in_array($method, $method_of_FP['traditional'])) {
-                            $traditional_methods[] = $method;
+                    $previously_methods = $caseData['previously_used_method'] ?? null;
+                    if ($previously_methods != null) {
+                        foreach ($previously_methods as $method) {
+                            if (in_array($method, $method_of_FP['modern'])) {
+                                $modern_methods[] = $method;
+                            } elseif (in_array($method, $method_of_FP['traditional'])) {
+                                $traditional_methods[] = $method;
+                            }
                         }
                     }
-                }
-                // convert them to string
-                $converted_modern_methods = implode(",", $modern_methods);
-                $converted_traditional_methods = implode(",", $traditional_methods);
 
-                // check if the patient currently accept any modern methods
-                $method_accepted = [];
-                $currently_choosen_method = $caseData['choosen_method'] ?? null;
-                if ($currently_choosen_method) {
-                    $method_accepted = explode(",", $currently_choosen_method);
-                }
+                    $converted_modern_methods      = implode(",", $modern_methods);
+                    $converted_traditional_methods = implode(",", $traditional_methods);
 
-                $accept_modern_FP = [];
-                foreach ($method_accepted as $method) {
+                    $method_accepted          = [];
+                    $currently_choosen_method = $caseData['choosen_method'] ?? null;
+                    if ($currently_choosen_method) {
+                        $method_accepted = explode(",", $currently_choosen_method);
+                    }
 
-                    if (in_array($method, $method_of_FP['modern'])) {
-                        $accept_modern_FP[] = $method;
+                    $accept_modern_FP = [];
+                    foreach ($method_accepted as $method) {
+                        if (in_array($method, $method_of_FP['modern'])) {
+                            $accept_modern_FP[] = $method;
+                        }
+                    }
+                    $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
+
+                    if ($prenatalPatient->age >= 10) {
+                        wra_masterlists::create([
+                            'medical_record_case_id'           => $familyPlanningMedicalCaseId,
+                            'health_worker_id'                 => $patientData['handled_by'],
+                            'address_id'                       => $patientAddress->id,
+                            'patient_id'                       => $prenatalPatient->id,
+                            'brgy_name'                        => $patientAddress->purok,
+                            'house_hold_number'                => null,
+                            'name_of_wra'                      => $prenatalPatient->full_name,
+                            'address'                          => $fullAddress,
+                            'age'                              => $prenatalPatient->age ?? null,
+                            'date_of_birth'                    => $prenatalPatient->date_of_birth ?? null,
+                            'SE_status'                        => null,
+                            'plan_to_have_more_children_yes'   => null,
+                            'plan_to_have_more_children_no'    => null,
+                            'current_FP_methods'               => null,
+                            'modern_FP'                        => null,
+                            'traditional_FP'                   => null,
+                            'currently_using_any_FP_method_no' => null,
+                            'shift_to_modern_method'           => null,
+                            'wra_with_MFP_unmet_need'          => 'no',
+                            'wra_accept_any_modern_FP_method'  => null,
+                            'selected_modern_FP_method'        => null,
+                            'date_when_FP_method_accepted'     => null,
+                        ]);
                     }
                 }
-                $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
+                // if $existingFPMedicalCase already exists, do nothing — update function handles that
 
-                if ($prenatalPatient->age >= 10) {
-                    $wra_masterlist = wra_masterlists::create([
-                        'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                        'health_worker_id' => $patientData['handled_by'],
-                        'address_id' => $patientAddress->id,
-                        'patient_id' => $prenatalPatient->id,
-                        'brgy_name' => $patientAddress->purok,
-                        'house_hold_number' => null,
-                        'name_of_wra' => $prenatalPatient->full_name,
-                        'address' => $fullAddress,
-                        'age' => $prenatalPatient->age ?? null,
-                        'date_of_birth' => $prenatalPatient->date_of_birth ?? null,
-                        'SE_status' => null,
-                        'plan_to_have_more_children_yes' => null,
-                        'plan_to_have_more_children_no' =>  null,
-                        'current_FP_methods' => null,
-                        'modern_FP' =>  null,
-                        'traditional_FP' =>  null,
-                        'currently_using_any_FP_method_no' =>  null,
-                        'shift_to_modern_method' => null,
-                        'wra_with_MFP_unmet_need' => 'no',
-                        'wra_accept_any_modern_FP_method' => null,
-                        'selected_modern_FP_method' => null,
-                        'date_when_FP_method_accepted' =>  null
-                    ]);
-                }
             } else {
                 if ($prenatalPatient->age >= 10) {
-                    $wra_masterlist = wra_masterlists::create([
-                        'medical_record_case_id' => null,
-                        'health_worker_id' => $patientData['handled_by'],
-                        'address_id' => $patientAddress->id,
-                        'patient_id' => $prenatalPatient->id,
-                        'brgy_name' => $patientAddress->purok,
-                        'house_hold_number' => null,
-                        'name_of_wra' => $prenatalPatient->full_name,
-                        'address' => $fullAddress,
-                        'age' => $prenatalPatient->age ?? null,
-                        'date_of_birth' => $prenatalPatient->date_of_birth ?? null,
-                        'SE_status' => null,
-                        'plan_to_have_more_children_yes' => null,
-                        'plan_to_have_more_children_no' =>  null,
-                        'current_FP_methods' => null,
-                        'modern_FP' =>  null,
-                        'traditional_FP' =>  null,
-                        'currently_using_any_FP_method_no' =>  null,
-                        'shift_to_modern_method' => null,
-                        'wra_with_MFP_unmet_need' => 'yes',
-                        'wra_accept_any_modern_FP_method' => null,
-                        'selected_modern_FP_method' => null,
-                        'date_when_FP_method_accepted' =>  null
+                    wra_masterlists::create([
+                        'medical_record_case_id'           => null,
+                        'health_worker_id'                 => $patientData['handled_by'],
+                        'address_id'                       => $patientAddress->id,
+                        'patient_id'                       => $prenatalPatient->id,
+                        'brgy_name'                        => $patientAddress->purok,
+                        'house_hold_number'                => null,
+                        'name_of_wra'                      => $prenatalPatient->full_name,
+                        'address'                          => $fullAddress,
+                        'age'                              => $prenatalPatient->age ?? null,
+                        'date_of_birth'                    => $prenatalPatient->date_of_birth ?? null,
+                        'SE_status'                        => null,
+                        'plan_to_have_more_children_yes'   => null,
+                        'plan_to_have_more_children_no'    => null,
+                        'current_FP_methods'               => null,
+                        'modern_FP'                        => null,
+                        'traditional_FP'                   => null,
+                        'currently_using_any_FP_method_no' => null,
+                        'shift_to_modern_method'           => null,
+                        'wra_with_MFP_unmet_need'          => 'yes',
+                        'wra_accept_any_modern_FP_method'  => null,
+                        'selected_modern_FP_method'        => null,
+                        'date_when_FP_method_accepted'     => null,
                     ]);
                 }
             }
@@ -1007,7 +1012,7 @@ class PrenatalController extends Controller
                 'last_name' => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
                 'full_name' => $fullName,
                 'age' => $data['age'] ?? $prenatalRecord->patient->age,
-                'sex' => $sex ? ucfirst($sex) : null,
+                'sex' => 'Female',
                 'civil_status' => $data['civil_status'] ?? '',
                 'contact_number' => $data['contact_number'] ?? '',
                 'date_of_birth' => $data['date_of_birth'] ?? $prenatalRecord->patient->date_of_birth,
@@ -1099,229 +1104,259 @@ class PrenatalController extends Controller
 
             if ($isFamilyPlan != null && $isFamilyPlan === 'yes') {
                 // check if there is an existing family plan
-                $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->exists();
+                $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)
+                    ->where('type_of_case', 'family-planning')
+                    ->exists();
 
                 if (!empty($hasExistingFamilyPlan)) {
-                    $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
+                    $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)
+                        ->where('type_of_case', 'family-planning')
+                        ->first();
 
                     if ($existingFamilyPlan->status == 'Archived') {
                         $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
                         $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
-                        // make the records archived
                         $existingFamilyPlan->update(['status' => 'Active']);
+
                         if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
                             $family_planning_sideA->update([
+                                'client_name'        => $prenatalRecord->patient->full_name,
+                                'client_first_name'  => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
+                                'client_middle_name' => $middleName,
+                                'client_last_name'   => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
+                                'client_suffix'      => $data['suffix'] ?? '',
+                                'client_age'         => $data['age'] ?? null,
+                                'client_date_of_birth'   => $data['date_of_birth'] ?? null,
+                                'client_address'         => $fullAddress,
+                                'client_contact_number'  => $data['contact_number'] ?? null,
+                                'client_civil_status'    => $data['civil_status'] ?? null,
+                                'client_religion'        => $data['religion'] ?? null,
+                                'number_of_living_children' => $data['living_children'] ?? null,
                                 'status' => 'Active',
                             ]);
 
-                            $family_planning_sideB->update([
-                                'status' => 'Active'
-                            ]);
+                            $family_planning_sideB->update(['status' => 'Active']);
+
                             $wra_record->update([
-                                'plan_to_have_more_children_yes' => null,
-                                'plan_to_have_more_children_no' =>  null,
-                                'current_FP_methods' => null,
-                                'modern_FP' =>  null,
-                                'traditional_FP' =>  null,
-                                'currently_using_any_FP_method_no' =>  null,
-                                'shift_to_modern_method' => null,
-                                'wra_with_MFP_unmet_need' => 'no',
-                                'wra_accept_any_modern_FP_method' => null,
-                                'selected_modern_FP_method' => null,
-                                'date_when_FP_method_accepted' =>  null
+                                'plan_to_have_more_children_yes'   => null,
+                                'plan_to_have_more_children_no'    => null,
+                                'current_FP_methods'               => null,
+                                'modern_FP'                        => null,
+                                'traditional_FP'                   => null,
+                                'currently_using_any_FP_method_no' => null,
+                                'shift_to_modern_method'           => null,
+                                'wra_with_MFP_unmet_need'          => 'no',
+                                'wra_accept_any_modern_FP_method'  => null,
+                                'selected_modern_FP_method'        => null,
+                                'date_when_FP_method_accepted'     => null,
                             ]);
-                            $message = 'family planning deactivated';
                         }
 
                         $message = 'Family planning reactivated and patient information updated successfully';
-                    }
+                    } else {
+                        // Status is Active — always sync name and patient fields
+                        family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                            ->where('status', '!=', 'Archived')
+                            ->update([
+                                'client_name'               => $prenatalRecord->patient->full_name,
+                                'client_first_name'         => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
+                                'client_middle_name'        => $middleName,
+                                'client_last_name'          => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
+                                'client_suffix'             => $data['suffix'] ?? '',
+                                'client_age'                => $data['age'] ?? null,
+                                'client_date_of_birth'      => $data['date_of_birth'] ?? null,
+                                'client_address'            => $fullAddress,
+                                'client_contact_number'     => $data['contact_number'] ?? null,
+                                'client_civil_status'       => $data['civil_status'] ?? null,
+                                'client_religion'           => $data['religion'] ?? null,
+                                'number_of_living_children' => $data['living_children'] ?? null,
+                            ]);
 
-                    $message = 'Family planning already exists and is active';
+                        $message = 'Family planning already exists — patient info synced';
+                    }
                 }
+
                 // add record for medical_case table
-                $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->first();
+                $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)
+                    ->where('type_of_case', 'family-planning')
+                    ->first();
+
                 if ($existingFamilyPlan) {
                     $familyPlanningMedicalCase = $existingFamilyPlan;
                 } else {
                     $familyPlanningMedicalCase = medical_record_cases::create([
-                        'patient_id' => $prenatalRecord->patient->id,
+                        'patient_id'   => $prenatalRecord->patient->id,
                         'type_of_case' => 'family-planning',
                     ]);
                 }
 
+                $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id;
 
-                $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id; //medical record id
-
-                $existingMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningMedicalCaseId)->first();
+                $existingMedicalRecord = family_planning_medical_records::where('medical_record_case_id', $familyPlanningMedicalCaseId)->first();
 
                 if (!$existingMedicalRecord) {
-                    // CREATE THE MEDICAL RECORD
                     family_planning_medical_records::create([
                         'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                        'health_worker_id' => $data['handled_by'],
-                        'patient_name' => $prenatalRecord->patient->full_name,
-                        'occupation' =>  null,
-                        'religion' => $data['religion'] ?? null,
-                        'philhealth_no' =>  null,
-                        'blood_pressure' => $data['blood_pressure'] ?? null,
-                        'temperature' => $data['temperature'] ?? null,
-                        'pulse_rate' => $data['pulse_rate'] ?? null,
-                        'respiratory_rate' => $data['respiratory_rate'] ?? null,
-                        'height' => $data['height'] ?? null,
-                        'weight' => $data['weight'] ?? null,
+                        'health_worker_id'       => $data['handled_by'],
+                        'patient_name'           => $prenatalRecord->patient->full_name,
+                        'occupation'             => null,
+                        'religion'               => $data['religion'] ?? null,
+                        'philhealth_no'          => null,
+                        'blood_pressure'         => $data['blood_pressure'] ?? null,
+                        'temperature'            => $data['temperature'] ?? null,
+                        'pulse_rate'             => $data['pulse_rate'] ?? null,
+                        'respiratory_rate'       => $data['respiratory_rate'] ?? null,
+                        'height'                 => $data['height'] ?? null,
+                        'weight'                 => $data['weight'] ?? null,
                     ]);
                 }
 
-
                 $previoulyMethod = null;
-                $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', "!=", 'Archived')->first();
-                $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', "!=", 'Archived')->first();
+                $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                    ->where('status', '!=', 'Archived')
+                    ->first();
+                $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                    ->where('status', '!=', 'Archived')
+                    ->first();
+
                 if (!$family_planning_sideA && !$family_planning_sideB) {
-
-                    // CREATE THE CASE RECORD
                     $caseRecord = family_planning_case_records::create([
-                        'medical_record_case_id' =>  $familyPlanningMedicalCaseId,
-                        'health_worker_id' =>  $data['handled_by'],
-                        'client_id' =>  null,
-                        'philhealth_no' =>  null,
-                        'NHTS' =>  null,
-                        'client_name' =>  $prenatalRecord->patient->full_name,
-                        'client_date_of_birth' => $data['date_of_birth'] ?? null,
-                        'client_suffix' => $data['suffix'] ?? '',
-                        'client_age' => $data['age'] ?? null,
-                        'occupation' => null,
-                        'client_address' => $fullAddress,
-                        'client_contact_number' => $data['contact_number'] ?? null,
-                        'client_civil_status' => $data['civil_status'] ?? null,
-                        'client_religion' => $medicalCaseData['religion'] ?? null,
-                        'spouse_lname' =>  null,
-                        'spouse_fname' =>  null,
-                        'spouse_MI' =>  null,
-                        'spouse_date_of_birth' =>  null,
-                        'spouse_age' =>  null,
-                        'spouse_occupation' =>  null,
-                        'number_of_living_children' => $data['living_children'] ?? null,
-                        'plan_to_have_more_children' =>  null,
-
-                        'average_montly_income' => null,
-                        'type_of_patient' => null,
-                        'new_acceptor_reason_for_FP' => null,
-                        'current_user_reason_for_FP' =>  null,
-                        'current_method_reason' => null,
-                        'previously_used_method' =>  null,
-                        'choosen_method' => null,
-                        'signature_image' =>  null,
-                        'date_of_acknowledgement' =>  null,
-                        'acknowledgement_consent_signature_image' =>  null,
-                        'date_of_acknowledgement_consent' =>  null,
-                        'current_user_type' =>  null,
+                        'medical_record_case_id'                  => $familyPlanningMedicalCaseId,
+                        'health_worker_id'                        => $data['handled_by'],
+                        'client_id'                               => null,
+                        'philhealth_no'                           => null,
+                        'NHTS'                                    => null,
+                        'client_name'                             => $prenatalRecord->patient->full_name,
+                        'client_first_name'                       => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
+                        'client_middle_name'                      => $middleName,
+                        'client_last_name'                        => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
+                        'client_date_of_birth'                    => $data['date_of_birth'] ?? null,
+                        'client_suffix'                           => $data['suffix'] ?? '',
+                        'client_age'                              => $data['age'] ?? null,
+                        'occupation'                              => null,
+                        'client_address'                          => $fullAddress,
+                        'client_contact_number'                   => $data['contact_number'] ?? null,
+                        'client_civil_status'                     => $data['civil_status'] ?? null,
+                        'client_religion'                         => $data['religion'] ?? null,
+                        'spouse_lname'                            => null,
+                        'spouse_fname'                            => null,
+                        'spouse_MI'                               => null,
+                        'spouse_date_of_birth'                    => null,
+                        'spouse_age'                              => null,
+                        'spouse_occupation'                       => null,
+                        'number_of_living_children'               => $data['living_children'] ?? null,
+                        'plan_to_have_more_children'              => null,
+                        'average_montly_income'                   => null,
+                        'type_of_patient'                         => null,
+                        'new_acceptor_reason_for_FP'              => null,
+                        'current_user_reason_for_FP'              => null,
+                        'current_method_reason'                   => null,
+                        'previously_used_method'                  => null,
+                        'choosen_method'                          => null,
+                        'signature_image'                         => null,
+                        'date_of_acknowledgement'                 => null,
+                        'acknowledgement_consent_signature_image' => null,
+                        'date_of_acknowledgement_consent'         => null,
+                        'current_user_type'                       => null,
                     ]);
 
                     $caseId = $caseRecord->id;
 
-                    // medical history
-                    $medicalHistories = family_planning_medical_histories::create([
-                        'case_id' => $caseId,
-                        'severe_headaches_migraine' =>  null,
-                        'history_of_stroke' =>  null,
-                        'non_traumatic_hemtoma' =>  null,
-                        'history_of_breast_cancer' =>  null,
-                        'severe_chest_pain' =>  null,
-                        'cough' =>  null,
-                        'jaundice' =>  null,
-                        'unexplained_vaginal_bleeding' =>  null,
-                        'abnormal_vaginal_discharge' =>  null,
-                        'abnormal_phenobarbital' =>  null,
-                        'smoker' =>  null,
-                        'with_dissability' =>  null,
-                        'if_with_dissability_specification' =>  null,
-                    ]);
-                    // obsterical history
-                    $obstericalHistories = family_planning_obsterical_histories::create([
-                        'case_id' => $caseId,
-                        'G' =>  null,
-                        'P' => null,
-                        'full_term' => null,
-                        'abortion' =>  null,
-                        'premature' =>  null,
-                        'living_children' =>  null,
-                        'date_of_last_delivery' => null,
-                        'type_of_last_delivery' =>  null,
-                        'date_of_last_delivery_menstrual_period' => null,
-                        'date_of_previous_delivery_menstrual_period' =>  null,
-                        'type_of_menstrual' =>  null,
-                        'Dysmenorrhea' =>  null,
-                        'hydatidiform_mole' =>  null,
-                        'ectopic_pregnancy' =>  null,
+                    family_planning_medical_histories::create([
+                        'case_id'                           => $caseId,
+                        'severe_headaches_migraine'         => null,
+                        'history_of_stroke'                 => null,
+                        'non_traumatic_hemtoma'             => null,
+                        'history_of_breast_cancer'          => null,
+                        'severe_chest_pain'                 => null,
+                        'cough'                             => null,
+                        'jaundice'                          => null,
+                        'unexplained_vaginal_bleeding'      => null,
+                        'abnormal_vaginal_discharge'        => null,
+                        'abnormal_phenobarbital'            => null,
+                        'smoker'                            => null,
+                        'with_dissability'                  => null,
+                        'if_with_dissability_specification' => null,
                     ]);
 
-                    // III. RISK FOR SEXUALLY TRANSMITTED INFECTIONS
-
-                    $riskOfSexuallyTransmitted = risk_for_sexually_transmitted_infections::create([
-                        'case_id' => $caseId,
-                        'infection_abnormal_discharge_from_genital_area' =>  null,
-                        'origin_of_abnormal_discharge' =>  null,
-                        'scores_or_ulcer' =>  null,
-                        'pain_or_burning_sensation' =>  null,
-                        'history_of_sexually_transmitted_infection' =>  null,
-                        'sexually_transmitted_disease' =>  null,
-                        'history_of_domestic_violence_of_VAW' =>  null,
-                        'unpleasant_relationship_with_partner' =>  null,
-                        'partner_does_not_approve' =>  null,
-                        'referred_to' =>  null,
-                        'reffered_to_others' =>  null,
+                    family_planning_obsterical_histories::create([
+                        'case_id'                                    => $caseId,
+                        'G'                                          => null,
+                        'P'                                          => null,
+                        'full_term'                                  => null,
+                        'abortion'                                   => null,
+                        'premature'                                  => null,
+                        'living_children'                            => null,
+                        'date_of_last_delivery'                      => null,
+                        'type_of_last_delivery'                      => null,
+                        'date_of_last_delivery_menstrual_period'     => null,
+                        'date_of_previous_delivery_menstrual_period' => null,
+                        'type_of_menstrual'                          => null,
+                        'Dysmenorrhea'                               => null,
+                        'hydatidiform_mole'                          => null,
+                        'ectopic_pregnancy'                          => null,
                     ]);
 
-                    // PHYSICAL EXAMINATION
-                    $physicalExamination = family_planning_physical_examinations::create([
-                        'case_id' => $caseId,
-                        'blood_pressure' => $prenatalCaseData['blood_pressure'] ?? null,
-                        'pulse_rate' => $prenatalCaseData['pulse_rate'] ?? null,
-                        'height' => $prenatalCaseData['height']  ?? null,
-                        'weight' => $prenatalCaseData['weight']  ?? null,
-
-                        'skin_type' =>  null,
-                        'conjuctiva_type' =>  null,
-                        'breast_type' =>  null,
-                        'abdomen_type' =>  null,
-                        'extremites_type' =>  null,
-                        'extremites_UID_type' =>  null,
-                        'cervical_abnormalities_type' =>  null,
-                        'cervical_consistency_type' =>  null,
-                        'uterine_position_type' =>  null,
-                        'uterine_depth_text' =>  null,
-                        'neck_type' =>  null
+                    risk_for_sexually_transmitted_infections::create([
+                        'case_id'                                        => $caseId,
+                        'infection_abnormal_discharge_from_genital_area' => null,
+                        'origin_of_abnormal_discharge'                   => null,
+                        'scores_or_ulcer'                                => null,
+                        'pain_or_burning_sensation'                      => null,
+                        'history_of_sexually_transmitted_infection'      => null,
+                        'sexually_transmitted_disease'                   => null,
+                        'history_of_domestic_violence_of_VAW'            => null,
+                        'unpleasant_relationship_with_partner'           => null,
+                        'partner_does_not_approve'                       => null,
+                        'referred_to'                                    => null,
+                        'reffered_to_others'                             => null,
                     ]);
 
-                    // add side b record
+                    family_planning_physical_examinations::create([
+                        'case_id'                     => $caseId,
+                        'blood_pressure'              => $prenatalCaseData['blood_pressure'] ?? null,
+                        'pulse_rate'                  => $prenatalCaseData['pulse_rate'] ?? null,
+                        'height'                      => $prenatalCaseData['height'] ?? null,
+                        'weight'                      => $prenatalCaseData['weight'] ?? null,
+                        'skin_type'                   => null,
+                        'conjuctiva_type'             => null,
+                        'breast_type'                 => null,
+                        'abdomen_type'                => null,
+                        'extremites_type'             => null,
+                        'extremites_UID_type'         => null,
+                        'cervical_abnormalities_type' => null,
+                        'cervical_consistency_type'   => null,
+                        'uterine_position_type'       => null,
+                        'uterine_depth_text'          => null,
+                        'neck_type'                   => null,
+                    ]);
+
                     family_planning_side_b_records::create([
-                        'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                        'health_worker_id' => $data['handled_by'],
-                        'date_of_visit' =>  null,
-                        'medical_findings' =>  null,
-                        'method_accepted' =>  null,
-                        'signature_of_the_provider' =>  null,
-                        'date_of_follow_up_visit' =>  null,
-                        'baby_Less_than_six_months_question' =>  null,
-                        'sexual_intercouse_or_mesntrual_period_question' =>  null,
-                        'baby_last_4_weeks_question' =>  null,
-                        'menstrual_period_in_seven_days_question' =>  null,
-                        'miscarriage_or_abortion_question' =>  null,
-                        'contraceptive_question' =>  null
+                        'medical_record_case_id'                         => $familyPlanningMedicalCaseId,
+                        'health_worker_id'                               => $data['handled_by'],
+                        'date_of_visit'                                  => null,
+                        'medical_findings'                               => null,
+                        'method_accepted'                                => null,
+                        'signature_of_the_provider'                      => null,
+                        'date_of_follow_up_visit'                        => null,
+                        'baby_Less_than_six_months_question'             => null,
+                        'sexual_intercouse_or_mesntrual_period_question' => null,
+                        'baby_last_4_weeks_question'                     => null,
+                        'menstrual_period_in_seven_days_question'        => null,
+                        'miscarriage_or_abortion_question'               => null,
+                        'contraceptive_question'                         => null,
                     ]);
                 }
 
-
-                // create the wra record
-                // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
+                // WRA MASTERLIST
                 $method_of_FP = [
-                    'modern' => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                    'modern'      => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
                     'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
                 ];
 
-                $modern_methods = [];
+                $modern_methods      = [];
                 $traditional_methods = [];
 
                 $previously_methods = $caseData['previously_used_method'] ?? null;
@@ -1334,12 +1369,11 @@ class PrenatalController extends Controller
                         }
                     }
                 }
-                // convert them to string
-                $converted_modern_methods = implode(",", $modern_methods);
+
+                $converted_modern_methods      = implode(",", $modern_methods);
                 $converted_traditional_methods = implode(",", $traditional_methods);
 
-                // check if the patient currently accept any modern methods
-                $method_accepted = [];
+                $method_accepted          = [];
                 $currently_choosen_method = $caseData['choosen_method'] ?? null;
                 if ($currently_choosen_method) {
                     $method_accepted = explode(",", $currently_choosen_method);
@@ -1347,7 +1381,6 @@ class PrenatalController extends Controller
 
                 $accept_modern_FP = [];
                 foreach ($method_accepted as $method) {
-
                     if (in_array($method, $method_of_FP['modern'])) {
                         $accept_modern_FP[] = $method;
                     }
@@ -1355,119 +1388,131 @@ class PrenatalController extends Controller
                 $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
 
                 if ($prenatalRecord->patient->age >= 10) {
-                    // check if there is wra record 
                     $wra_masterlist = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
                     if ($wra_masterlist) {
                         $wra_masterlist->update([
-                            'brgy_name' => $address->purok,
+                            'brgy_name'      => $address->purok,
                             'house_hold_number' => null,
-                            'name_of_wra' => $prenatalRecord->patient->full_name,
-                            'address' => $fullAddress,
-                            'age' => $prenatalRecord->patient->age ?? null,
-                            'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
+                            'name_of_wra'    => $prenatalRecord->patient->full_name,
+                            'address'        => $fullAddress,
+                            'age'            => $prenatalRecord->patient->age ?? null,
+                            'date_of_birth'  => $prenatalRecord->patient->date_of_birth ?? null,
                         ]);
                     } else {
-                        $wra_masterlist = wra_masterlists::create([
-                            'medical_record_case_id' => $familyPlanningMedicalCaseId,
-                            'health_worker_id' => $data['handled_by'],
-                            'address_id' => $address->id,
-                            'patient_id' => $prenatalRecord->patient->id,
-                            'brgy_name' => $address->purok,
-                            'house_hold_number' => null,
-                            'name_of_wra' => $prenatalRecord->patient->full_name,
-                            'address' => $fullAddress,
-                            'age' => $prenatalRecord->patient->age ?? null,
-                            'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
-                            'SE_status' => null,
-                            'plan_to_have_more_children_yes' => null,
-                            'plan_to_have_more_children_no' =>  null,
-                            'current_FP_methods' => null,
-                            'modern_FP' =>  null,
-                            'traditional_FP' =>  null,
-                            'currently_using_any_FP_method_no' =>  null,
-                            'shift_to_modern_method' => null,
-                            'wra_with_MFP_unmet_need' => 'no',
-                            'wra_accept_any_modern_FP_method' => null,
-                            'selected_modern_FP_method' => null,
-                            'date_when_FP_method_accepted' =>  null
+                        wra_masterlists::create([
+                            'medical_record_case_id'           => $familyPlanningMedicalCaseId,
+                            'health_worker_id'                 => $data['handled_by'],
+                            'address_id'                       => $address->id,
+                            'patient_id'                       => $prenatalRecord->patient->id,
+                            'brgy_name'                        => $address->purok,
+                            'house_hold_number'                => null,
+                            'name_of_wra'                      => $prenatalRecord->patient->full_name,
+                            'address'                          => $fullAddress,
+                            'age'                              => $prenatalRecord->patient->age ?? null,
+                            'date_of_birth'                    => $prenatalRecord->patient->date_of_birth ?? null,
+                            'SE_status'                        => null,
+                            'plan_to_have_more_children_yes'   => null,
+                            'plan_to_have_more_children_no'    => null,
+                            'current_FP_methods'               => null,
+                            'modern_FP'                        => null,
+                            'traditional_FP'                   => null,
+                            'currently_using_any_FP_method_no' => null,
+                            'shift_to_modern_method'           => null,
+                            'wra_with_MFP_unmet_need'          => 'no',
+                            'wra_accept_any_modern_FP_method'  => null,
+                            'selected_modern_FP_method'        => null,
+                            'date_when_FP_method_accepted'     => null,
                         ]);
                     }
                 }
             } else {
                 if ($isFamilyPlan != null && $isFamilyPlan === 'no') {
-                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->exists();
+                    $hasExistingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)
+                        ->where('type_of_case', 'family-planning')
+                        ->where('status', '!=', 'Archived')
+                        ->exists();
 
                     if (!empty($hasExistingFamilyPlan)) {
-                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)->where('type_of_case', 'family-planning')->where('status', '!=', 'Archived')->first();
+                        $existingFamilyPlan = medical_record_cases::where('patient_id', $prenatalRecord->patient->id)
+                            ->where('type_of_case', 'family-planning')
+                            ->where('status', '!=', 'Archived')
+                            ->first();
 
-                        $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
-                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->where('status', '!=', 'Archived')->first() ?? null;
+                        $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                            ->where('status', '!=', 'Archived')
+                            ->first() ?? null;
+                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                            ->where('status', '!=', 'Archived')
+                            ->first() ?? null;
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
-                        // make the records archived
                         $existingFamilyPlan->update(['status' => 'Archived']);
+
                         if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
                             $family_planning_sideA->update([
-                                'status' => 'Archived',
+                                'client_name'        => $prenatalRecord->patient->full_name,
+                                'client_first_name'  => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
+                                'client_middle_name' => $middleName,
+                                'client_last_name'   => ucwords($data['last_name']) ?? ucwords($prenatalRecord->patient->last_name),
+                                'status'             => 'Archived',
                             ]);
 
-                            $family_planning_sideB->update([
-                                'status' => 'Archived'
-                            ]);
+                            $family_planning_sideB->update(['status' => 'Archived']);
+
                             $wra_record->update([
-                                'plan_to_have_more_children_yes' => null,
-                                'plan_to_have_more_children_no' =>  null,
-                                'current_FP_methods' => null,
-                                'modern_FP' =>  null,
-                                'traditional_FP' =>  null,
-                                'currently_using_any_FP_method_no' =>  null,
-                                'shift_to_modern_method' => null,
-                                'wra_with_MFP_unmet_need' => 'yes',
-                                'wra_accept_any_modern_FP_method' => null,
-                                'selected_modern_FP_method' => null,
-                                'date_when_FP_method_accepted' =>  null
+                                'plan_to_have_more_children_yes'   => null,
+                                'plan_to_have_more_children_no'    => null,
+                                'current_FP_methods'               => null,
+                                'modern_FP'                        => null,
+                                'traditional_FP'                   => null,
+                                'currently_using_any_FP_method_no' => null,
+                                'shift_to_modern_method'           => null,
+                                'wra_with_MFP_unmet_need'          => 'yes',
+                                'wra_accept_any_modern_FP_method'  => null,
+                                'selected_modern_FP_method'        => null,
+                                'date_when_FP_method_accepted'     => null,
                             ]);
                         }
-
 
                         return response()->json(['errors' => 'family planning exist'], 200);
                     }
                 }
+
                 if ($prenatalRecord->patient->age >= 10) {
                     $wra_masterlist = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
                     if ($wra_masterlist) {
                         $wra_masterlist->update([
-                            'brgy_name' => $address->purok,
+                            'brgy_name'         => $address->purok,
                             'house_hold_number' => null,
-                            'name_of_wra' => $prenatalRecord->patient->full_name,
-                            'address' => $fullAddress,
-                            'age' => $prenatalRecord->patient->age ?? null,
-                            'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
+                            'name_of_wra'       => $prenatalRecord->patient->full_name,
+                            'address'           => $fullAddress,
+                            'age'               => $prenatalRecord->patient->age ?? null,
+                            'date_of_birth'     => $prenatalRecord->patient->date_of_birth ?? null,
                         ]);
                     } else {
-                        $wra_masterlist = wra_masterlists::create([
-                            'medical_record_case_id' => null,
-                            'health_worker_id' => $data['handled_by'],
-                            'address_id' => $address->id,
-                            'patient_id' => $prenatalRecord->patient->id,
-                            'brgy_name' => $address->purok,
-                            'house_hold_number' => null,
-                            'name_of_wra' => $prenatalRecord->patient->full_name,
-                            'address' => $fullAddress,
-                            'age' => $prenatalRecord->patient->age ?? null,
-                            'date_of_birth' => $prenatalRecord->patient->date_of_birth ?? null,
-                            'SE_status' => null,
-                            'plan_to_have_more_children_yes' => null,
-                            'plan_to_have_more_children_no' =>  null,
-                            'current_FP_methods' => null,
-                            'modern_FP' =>  null,
-                            'traditional_FP' =>  null,
-                            'currently_using_any_FP_method_no' =>  null,
-                            'shift_to_modern_method' => null,
-                            'wra_with_MFP_unmet_need' => 'yes',
-                            'wra_accept_any_modern_FP_method' => null,
-                            'selected_modern_FP_method' => null,
-                            'date_when_FP_method_accepted' =>  null
+                        wra_masterlists::create([
+                            'medical_record_case_id'           => null,
+                            'health_worker_id'                 => $data['handled_by'],
+                            'address_id'                       => $address->id,
+                            'patient_id'                       => $prenatalRecord->patient->id,
+                            'brgy_name'                        => $address->purok,
+                            'house_hold_number'                => null,
+                            'name_of_wra'                      => $prenatalRecord->patient->full_name,
+                            'address'                          => $fullAddress,
+                            'age'                              => $prenatalRecord->patient->age ?? null,
+                            'date_of_birth'                    => $prenatalRecord->patient->date_of_birth ?? null,
+                            'SE_status'                        => null,
+                            'plan_to_have_more_children_yes'   => null,
+                            'plan_to_have_more_children_no'    => null,
+                            'current_FP_methods'               => null,
+                            'modern_FP'                        => null,
+                            'traditional_FP'                   => null,
+                            'currently_using_any_FP_method_no' => null,
+                            'shift_to_modern_method'           => null,
+                            'wra_with_MFP_unmet_need'          => 'yes',
+                            'wra_accept_any_modern_FP_method'  => null,
+                            'selected_modern_FP_method'        => null,
+                            'date_when_FP_method_accepted'     => null,
                         ]);
                     }
                 }

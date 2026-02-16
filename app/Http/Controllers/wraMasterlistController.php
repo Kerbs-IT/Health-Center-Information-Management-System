@@ -90,7 +90,7 @@ class wraMasterlistController extends Controller
                 'middle_initial' => !empty($data['wra_masterlist_MI']) ? ucwords(strtolower($data['wra_masterlist_MI'])) : null,
                 'last_name' => ucwords(strtolower($data['wra_masterlist_lname'] ?? $wra_masterlistRecord->patient->last_name)),
                 'full_name' => $fullName ?? $wra_masterlistRecord->patient->full_name,
-                'sex' => $data['sex'] ?? $wra_masterlistRecord->patient->sex,
+                'sex' => 'Female',
                 'age' => $data['age'] ?? $wra_masterlistRecord->patient->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $wra_masterlistRecord->patient->date_of_birth,
                 'suffix' => $data['wra_masterlist_suffix']??''
@@ -147,7 +147,7 @@ class wraMasterlistController extends Controller
                 'name_of_wra' => $fullName,
                 'house_hold_number'=> $data['house_hold_number']?? $wra_masterlistRecord ->house_hold_number,
                 'Address' => $newAddress,
-                'sex' => $data['sex'] ?? $wra_masterlistRecord->sex,
+                'sex' => 'Female',
                 'age' => $data['age'] ?? $wra_masterlistRecord->age,
                 'SE_status'=> $data['SE_status'] ?? $wra_masterlistRecord->SE_status,
                 'plan_to_have_more_children_yes' => ($data['plan_to_have_more_children'] ?? null) === 'Yes'
@@ -159,11 +159,11 @@ class wraMasterlistController extends Controller
                         $converted_current_FP_method ?? $wra_masterlistRecord->current_FP_methods:null,
                 'currently_using_any_FP_method_no' => ($data['currently_using_any_FP_method'] ?? null) === 'no' ? 
                         'yes' ?? $wra_masterlistRecord->currently_using_any_FP_method_no : null,
-                'shift_to_modern_method' => $data['shift_to_modern_method'] ?? $wra_masterlistRecord ->shift_to_modern_method ,
+                'shift_to_modern_method' => $data['shift_to_modern_method'] ?? null,
 
                 'date_of_birth' => $data['date_of_birth'] ?? $wra_masterlistRecord->date_of_birth,
-                'wra_with_MFP_unmet_need' => $data['wra_with_MFP_unmet_need'] ?? $wra_masterlistRecord ->wra_with_MFP_unmet_need,
-                'wra_accept_any_modern_FP_method' => $data['wra_accept_any_modern_FP_method'] ?? $wra_masterlistRecord->wra_accept_any_modern_FP_method,
+                'wra_with_MFP_unmet_need' => $data['wra_with_MFP_unmet_need'] ?? null,
+                'wra_accept_any_modern_FP_method' => $data['wra_accept_any_modern_FP_method'] ?? null,
                 'selected_modern_FP_method' => ($data['wra_accept_any_modern_FP_method']??null) === 'yes'? $selected_modern_FP_methods ??
                         $wra_masterlistRecord->selected_modern_FP_method:null,
                 'date_when_FP_method_accepted' => ($data['wra_accept_any_modern_FP_method'] ?? null) === 'yes' ? $data['date_when_FP_method_accepted']??

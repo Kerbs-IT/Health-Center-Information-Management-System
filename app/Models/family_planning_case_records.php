@@ -44,6 +44,9 @@ class family_planning_case_records extends Model
         'current_user_type',
         'client_suffix',
         'spouse_suffix',
+        'client_first_name',
+        'client_last_name',
+        'client_middle_name'
     ];
 
     public function medical_record_case()

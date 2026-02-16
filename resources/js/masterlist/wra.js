@@ -365,6 +365,10 @@ wra_update_btn.addEventListener("click", async (e) => {
                 modal.hide();
             }
         });
+
+         if (typeof Livewire !== "undefined") {
+             Livewire.dispatch("wraMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+         }
     }
 });
 

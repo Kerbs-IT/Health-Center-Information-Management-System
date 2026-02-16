@@ -477,7 +477,7 @@ class FamilyPlanningController extends Controller
                 'last_name' => ucwords(strtolower($patientData['last_name'])),
                 'full_name' => $fullName,
                 'age' => $patientData['age'] ?? null,
-                'sex' => isset($patientData['sex']) ? ucfirst($patientData['sex']) : null,
+                'sex' => 'Female',
                 'civil_status' => $patientData['civil_status'] ?? null,
                 'contact_number' => $patientData['contact_number'] ?? null,
                 'date_of_birth' => $patientData['date_of_birth'] ?? null,
@@ -986,7 +986,7 @@ class FamilyPlanningController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = isset($data['sex']) ? $data['sex']: null;
+            $sex = isset($data['sex']) ? $data['sex']: 'Female';
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
@@ -994,7 +994,7 @@ class FamilyPlanningController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->last_name)),
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
-                'sex' => $sex ? ucfirst($sex) : null,
+                'sex' =>'Female',
                 'civil_status' => $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,

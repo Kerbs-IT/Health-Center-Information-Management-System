@@ -74,7 +74,7 @@ class masterListController extends Controller
                 'vaccination_masterlist_suffix' => 'sometimes|nullable|string',
                 'street' => 'required',
                 'brgy' => 'required',
-                'sex' => 'sometimes|nullable|string',
+                'sex' => 'required|string',
                 'age' => 'sometimes|nullable|numeric|max:100',
                 'date_of_birth' => 'required|date|before_or_equal:today',
                 'SE_status' => 'sometimes|nullable|string',
@@ -163,13 +163,14 @@ class masterListController extends Controller
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+            $sex = $data['sex']? ucwords(strtolower($data['sex'])):null;
             // update the patient name
             $vaccination_masterlist->patient->update([
                 'first_name' => ucwords(strtolower($data['vaccination_masterlist_fname'] ?? $vaccination_masterlist->patient->first_name)),
                 'middle_initial' => !empty($data['vaccination_masterlist_MI']) ? ucwords(strtolower($data['vaccination_masterlist_MI'])) : null,
                 'last_name' => ucwords(strtolower($data['vaccination_masterlist_lname'] ?? $vaccination_masterlist->patient->last_name)),
                 'full_name'=>  $fullName,
-                'sex' => $data['sex'] ?? $vaccination_masterlist->patient->sex,
+                'sex' => $sex ?? null,
                 'age' => $data['age'] ?? $vaccination_masterlist->patient->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $vaccination_masterlist->patient->date_of_birth,
                 'suffix' => $data['vaccination_masterlist_suffix']??''
@@ -180,7 +181,7 @@ class masterListController extends Controller
             $blk_n_street = explode(',', $data['street']);
             $address->update([
                 'house_number' => $blk_n_street[0] ?? $address->house_number,
-                'street' => $blk_n_street[1] ?? $address->street,
+                'street' => $blk_n_street[1] ?? null,
                 'purok' => $data['brgy'] ?? $address->purok
             ]);
 
@@ -339,7 +340,7 @@ class masterListController extends Controller
             $vaccination_masterlist->update([
                 'name_of_child' => $fullName,
                 'Address' => $newAddress,
-                'sex' => $data['sex'] ?? $vaccination_masterlist->sex,
+                'sex' => $sex ?? $vaccination_masterlist->sex,
                 'age' => $data['age'] ?? $vaccination_masterlist->age,
                 'date_of_birth' => $data['date_of_birth'] ?? $vaccination_masterlist->date_of_birth,
                 'remarks' => $data['remarks'] ?? $vaccination_masterlist->remarks

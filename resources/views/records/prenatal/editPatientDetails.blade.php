@@ -124,7 +124,7 @@
                                         </div>
                                     </div>
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-wrap">
-                                        <div class="input-field flex-fill xl:w-[50%]">
+                                        <!-- <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="sex">Sex</label>
                                             <div class="input-field d-flex align-items-center p-2 bg-light border-dark">
                                                 @php
@@ -138,7 +138,7 @@
                                                 <small class="text-danger error-text" id="sex_error"></small>
 
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
                                             <label for="contact_number" class="">Contact Number</span><span class="text-danger">*</span></label>

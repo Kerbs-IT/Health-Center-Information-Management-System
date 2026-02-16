@@ -142,7 +142,7 @@
                                         </div>
 
                                         <!-- age -->
-                                        <div class="input-field w-50">
+                                        <div class="input-field w-50 ">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" placeholder="Enter the age" disabled class="form-control">
                                             <input type="hidden" id="hiddenAge" placeholder="Enter the age" class="form-control" name="age">
@@ -151,8 +151,8 @@
                                     </div>
                                     <!-- civil status, contact number, nationality -->
                                     <div class="mb-2 d-flex gap-1 flex-md-row flex-column flex-wrap flex-xl-nowrap">
-                                        <div class="input-field flex-fill xl: w-[50%]">
-                                            <label for="sex">Sex</label>
+                                        <div class="input-field flex-fill xl: w-[50%] sex-container">
+                                            <label for="sex">Sex<span class="text-danger">*</span></label>
                                             <div class="input-field d-flex align-items-center p-2">
                                                 @php
                                                 $selectedSex = optional(Auth::user() -> staff) -> sex ?? optional(Auth::user() -> nurses) -> sex ?? 'none';
@@ -208,7 +208,7 @@
 
                                         <div class="mb-2 flex-fill xl:w-[50%] tb-dots-inputs d-none flex-column">
                                             <label for="">PhilHealth ID No.</label>
-                                            <input type="text" placeholder="ex.1234-5678-9012" name="philheath_id" class="form-control">
+                                            <input type="text" placeholder="eg.1234-5678-9012" name="philheath_id" class="form-control">
                                             <small class="text-danger error-text" id="philhealth_id_no_error"></small>
                                         </div>
                                     </div>
@@ -385,7 +385,7 @@
                                         </div>
                                         <div class="input-field w-50">
                                             <label for="philhealth_no">Philhealth No:</label>
-                                            <input type="text" id="philhealth_no" placeholder="Enter the Religion" class="form-control" name="philhealth_no">
+                                            <input type="text" id="philhealth_no" placeholder="eg.1234-5678-9012" class="form-control" name="philhealth_no">
                                             <small class="text-danger error-text" id="philhealth_no_error"></small>
                                         </div>
                                         <div class="input-field w-50 ">
