@@ -26,7 +26,7 @@
     'resources/js/add_patient/searchUser.js'
     ])
     @include('sweetalert::alert')
-    <div class="add-patient d-flex min-vh-100">
+    <div class="add-patient d-flex vh-100">
         <aside>
             @include('layout.menuBar')
         </aside>
