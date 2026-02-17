@@ -1368,17 +1368,19 @@ async function initOverDueCount() {
         listEl.innerHTML = data
             .map(
                 (item) => `
-        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" 
-           >
-            <div>
-                <span class="fs-5 me-2">${item.icon}</span>
-                <span class="fw-semibold">${item.label}</span>
-            </div>
-            <div class="d-flex align-items-center">
-                <span class="badge bg-danger rounded-pill me-3 fs-6">${item.count}</span>
-                <a href="#" class="link-visit-element text-info text-decoration-none" data-type="${item.type}"><i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
+            <a href="#" class="link-visit-element text-dark  text-decoration-none" data-type="${item.type}">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" 
+                >
+                    <div>
+                        <span class="fs-5 me-2">${item.icon}</span>
+                        <span class="fw-semibold">${item.label}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-danger rounded-pill me-3 fs-6">${item.count}</span>
+                        <span class="text-info"><i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
     `,
             )
             .join("");
@@ -1397,7 +1399,7 @@ async function initOverDueCount() {
     function handleVisitClick(type) {
         const routes = {
             vaccination: {
-                url: "/patient-record/vaccination",
+                url: "/patient-record/vaccination/view-records",
                 menuId: "record_vaccination",
             },
             prenatal: {

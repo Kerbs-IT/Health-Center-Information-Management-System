@@ -37,7 +37,7 @@ class PatientAccountBinding extends Component
             $staffInfo = Staff::where('user_id', Auth::id())->first();
             if ($staffInfo && $staffInfo->assigned_area_id) {
                 $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-                $query->whereHas('address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
+                $query->whereHas('user_address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
             }
         }
 
@@ -52,9 +52,9 @@ class PatientAccountBinding extends Component
         $query->when($this->filterStatus === 'active',   fn($q) => $q->where('status', 'active'));
         $query->when($this->filterStatus === 'archived', fn($q) => $q->where('status', 'archived'));
         $query->when($this->filterPatientType !== 'all', fn($q) => $q->where('patient_type', $this->filterPatientType));
-        $query->when($this->filterPurok !== 'all',       fn($q) => $q->whereHas('address', fn($q) => $q->where('purok', $this->filterPurok)));
+        $query->when($this->filterPurok !== 'all',       fn($q) => $q->whereHas('user_address', fn($q) => $q->where('purok', $this->filterPurok)));
 
-        $users = $query->orderBy('created_at', 'asc')->paginate(15);
+        $users = $query->orderBy('full_name', 'asc')->paginate(15);
 
         // Unbound count
         $unboundQuery = User::where('role', 'patient')
@@ -65,7 +65,7 @@ class PatientAccountBinding extends Component
             $staffInfo = Staff::where('user_id', Auth::id())->first();
             if ($staffInfo && $staffInfo->assigned_area_id) {
                 $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-                $unboundQuery->whereHas('address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
+                $unboundQuery->whereHas('user_address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
             }
         }
 

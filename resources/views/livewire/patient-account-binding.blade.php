@@ -4,9 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <div class="left-con d-flex align-items-center gap-2">
             <h3 class="mb-0">Patient Accounts</h3>
-            <span class="badge bg-warning text-dark fs-6">
-                {{ $unboundCount }} Unbound
-            </span>
+           
         </div>
 
         <div class="right-side-con ms-auto mt-ms-0 mt-2">
@@ -97,7 +95,7 @@
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->address?->purok ?? 'N/A' }}</td>
+                        <td>{{ $user->user_address?->purok ?? 'N/A' }}</td>
                         <td>{{ $user->contact_number }}</td>
                         <td>
                             @if($user->status == 'active')
