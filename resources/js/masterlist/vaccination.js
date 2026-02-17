@@ -54,11 +54,20 @@ document.addEventListener("click", async (e) => {
                     const lname = document.getElementById(
                         "vaccination_masterlist_lname"
                     );
+                    const suffix_element = document.getElementById(
+                        "vaccination_masterlist_suffix",
+                    );
 
-                    const fullName = value.split(" ");
-                    fname.value = fullName[0];
-                    MI.value = fullName[1];
-                    lname.value = fullName[2];
+                    const [fnameVal, MIVal, lnameVal, suffix] = [
+                        data.patientDetails.first_name ?? null,
+                        data.patientDetails.middle_initial ?? null,
+                        data.patientDetails.last_name ?? null,
+                        data.patientDetails.suffix ?? null,
+                    ];
+                    fname.value = fnameVal;
+                    MI.value = MIVal;
+                    lname.value = lnameVal;
+                    suffix_element.value = suffix
 
                     // set the bg
                 } else if (key == "date_of_birth") {

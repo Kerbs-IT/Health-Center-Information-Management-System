@@ -87,7 +87,7 @@
                                     <div class="input-form flex-fill lg:w-[50%]">
                                         <label for="vaccination_masterlist_suffix" class="w-100">Suffix</label>
                                         <select name="vaccination_masterlist_suffix" id="vaccination_masterlist_suffix" class="form-control  border flex-fill">
-                                            <option value="" disabled selected>Select Suffix</option>
+                                            <option value="" selected>Select Suffix</option>
                                             <option value="Jr.">Jr</option>
                                             <option value="Sr.">Sr</option>
                                             <option value="II.">II</option>

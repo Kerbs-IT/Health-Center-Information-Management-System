@@ -195,7 +195,7 @@
 
                                             {{-- Time input --}}
                                             <div class="d-flex align-items-center gap-2">
-                                                <label class="small text-muted mb-0" style="min-width:80px;">Send time:</label>
+                                                <label class="small text-muted mb-0" style="min-width:80px;">Set time:</label>
                                                 <input type="time"
                                                     class="form-control form-control-sm schedule-time-input"
                                                     id="time_{{ $schedule->id }}"

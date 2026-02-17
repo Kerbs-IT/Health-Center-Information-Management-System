@@ -291,11 +291,11 @@
                                                 <div class="mb-4 px-2 d-flex">
                                                     <label for="number_of" class="w-100 fs-5" class="w-50">Bilang ng Pagbubuntis:</label>
                                                     <select name="number_of_children" id="number_of_children" class="form-select w-50 text-center">
-                                                        <option value="" disabled selected>Select the number</option>
+                                                        <option value=""  selected>Select the number</option>
                                                         <option value="1" {{ optional($pregnancyHistory)->number_of_children == 1 ? 'selected' : '' }}>1</option>
                                                         <option value="2" {{ optional($pregnancyHistory)->number_of_children == 2 ? 'selected' : '' }}>2</option>
                                                         <option value="3" {{ optional($pregnancyHistory)->number_of_children == 3 ? 'selected' : '' }}>3</option>
-                                                        <option value="4+" {{ optional($pregnancyHistory)->number_of_children == 4 ? 'selected' : '' }}>4+</option>
+                                                        <option value="4" {{ optional($pregnancyHistory)->number_of_children == 4 ? 'selected' : '' }}>4+</option>
                                                     </select>
                                                 </div>
                                                 <div class="mb-4 px-2 d-flex justify-content-between w-100">

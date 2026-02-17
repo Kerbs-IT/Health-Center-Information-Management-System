@@ -11,32 +11,6 @@ fetch("/showBrgyUnit")
         const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
         // console.log(data);
         data.forEach((item) => {
-           if (healthWorkerId) {
-               // this is for the health worker account to enable other option
-               if (item.id == healthWorkerId) {
-                   let option = document.createElement("option");
-                   option.value = item.brgy_unit;
-                   option.text = item.brgy_unit;
-                   dropdown.appendChild(option);
-               }
-           } else {
-               let option = document.createElement("option");
-               option.value = item.brgy_unit;
-               option.text = item.brgy_unit;
-               dropdown.appendChild(option);
-           }
-            
-        });
-    });
-
-fetch("/showBrgyUnit")
-    .then((response) => response.json())
-    .then((data) => {
-        let dropdown = document.getElementById("patient_purok_dropdown");
-        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
-        // console.log(data);
-        data.forEach((item) => {
-            
             if (healthWorkerId) {
                 // this is for the health worker account to enable other option
                 if (item.id == healthWorkerId) {
@@ -51,7 +25,30 @@ fetch("/showBrgyUnit")
                 option.text = item.brgy_unit;
                 dropdown.appendChild(option);
             }
-            
+        });
+    });
+
+fetch("/showBrgyUnit")
+    .then((response) => response.json())
+    .then((data) => {
+        let dropdown = document.getElementById("patient_purok_dropdown");
+        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
+        // console.log(data);
+        data.forEach((item) => {
+            if (healthWorkerId) {
+                // this is for the health worker account to enable other option
+                if (item.id == healthWorkerId) {
+                    let option = document.createElement("option");
+                    option.value = item.brgy_unit;
+                    option.text = item.brgy_unit;
+                    dropdown.appendChild(option);
+                }
+            } else {
+                let option = document.createElement("option");
+                option.value = item.brgy_unit;
+                option.text = item.brgy_unit;
+                dropdown.appendChild(option);
+            }
         });
     });
 
@@ -87,32 +84,32 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
 
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
-            ".middle-initial-error"
+            ".middle-initial-error",
         );
         const lname_error = document.querySelector(".lname-error");
         const email_error = document.querySelector(".email-error");
         const password_error = document.querySelector(".password-error");
         const blk_n_street_error = document.querySelector(
-            ".blk-n-street-error"
+            ".blk-n-street-error",
         );
         const purok_dropdown_error = document.querySelector(
-            ".purok-dropdown-error"
+            ".purok-dropdown-error",
         );
         const contact_number_error = document.querySelector(
-            ".contact_number_error"
+            ".contact_number_error",
         );
         const date_of_birth_error = document.querySelector(
-            ".date_of_birth_error"
+            ".date_of_birth_error",
         );
         const patient_type_error = document.querySelector(
-            ".patient-type-error"
+            ".patient-type-error",
         );
 
         const response = await fetch("/add-patient-account", {
             method: "POST", // Yes, use POST
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
+                    'meta[name="csrf-token"]',
                 ).content,
                 Accept: "application/json",
             },
@@ -251,7 +248,7 @@ document.addEventListener("click", async (e) => {
             data.info?.first_name,
             data.info?.middle_initial,
             data.info?.last_name,
-            data.info?.suffix
+            data.info?.suffix,
         ]
             .filter(Boolean)
             .join(" ");
@@ -284,7 +281,7 @@ if (submitBtn) {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
@@ -302,6 +299,17 @@ if (submitBtn) {
                     icon: "success",
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
+                }).then((response) => {
+                    if (response.isConfirmed) {
+                        // dismiss the modal
+                        const modal =
+                            document.getElementById("edit-user-profile");
+
+                        if (modal) {
+                            const bsModal = bootstrap.Modal.getInstance(modal);
+                            bsModal.hide();
+                        }
+                    }
                 });
                 // dispatch the livewire
                 if (typeof Livewire !== "undefined") {
@@ -367,7 +375,7 @@ document.addEventListener("click", async (e) => {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
@@ -376,10 +384,10 @@ document.addEventListener("click", async (e) => {
                     Swal.fire(
                         "Deleted!",
                         "The user has been move to Archive status.",
-                        "success"
+                        "success",
                     );
-                    if (typeof Livewire !== 'undefined') {
-                        Livewire.dispatch('manageUserRefreshTable');
+                    if (typeof Livewire !== "undefined") {
+                        Livewire.dispatch("manageUserRefreshTable");
                     }
                     // deleteBtn.closest("tr").remove(); // remove row from table
                 } else {
@@ -410,8 +418,6 @@ const errorFieldMap = {
     cityKey: "city-error",
     barangayKey: "brgy-error",
 };
-
-
 
 if (resetPasswordElement) {
     resetPasswordElement.addEventListener("click", (e) => {
