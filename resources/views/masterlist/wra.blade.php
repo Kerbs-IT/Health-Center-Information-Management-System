@@ -78,7 +78,7 @@
                                     <div class="input-form flex-fill lg:w-[50%]">
                                         <label for="wra_masterlist_suffix" class="w-100">Suffix</label>
                                         <select name="wra_masterlist_suffix" id="wra_masterlist_suffix" class="form-control  border flex-fill py-2">
-                                            <option value="" disabled selected>Select Suffix</option>
+                                            <option value=""  selected>Select Suffix</option>
                                             <option value="Jr.">Jr</option>
                                             <option value="Sr.">Sr</option>
                                             <option value="II.">II</option>

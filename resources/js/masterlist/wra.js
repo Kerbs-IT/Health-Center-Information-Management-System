@@ -119,14 +119,21 @@ document.addEventListener("click", async (e) => {
                 // skip nulls early
 
                 switch (key) {
+                    
                     case "name_of_wra":
-                        const [fnameVal, MIVal, lnameVal] = value.split(" ");
+                        const [fnameVal, MIVal, lnameVal,suffix] = [
+                            data.patientDetails.first_name ?? null,
+                            data.patientDetails.middle_initial ?? null,
+                            data.patientDetails.last_name ?? null,
+                            data.patientDetails.suffix?? null,
+                        ];
                         document.getElementById("wra_masterlist_fname").value =
                             fnameVal || "";
                         document.getElementById("wra_masterlist_MI").value =
                             MIVal || "";
                         document.getElementById("wra_masterlist_lname").value =
                             lnameVal || "";
+                        document.getElementById("wra_masterlist_suffix").value = suffix
                         break;
 
                     case "date_of_birth":
