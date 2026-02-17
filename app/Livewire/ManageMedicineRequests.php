@@ -59,11 +59,12 @@ class ManageMedicineRequests extends Component
         $this->users = User::when($this->userSearch, function ($query) {
                 $query->where(function($q) {
                     $q->where('first_name', 'like', "%{$this->userSearch}%")
-                      ->orWhere('last_name', 'like', "%{$this->userSearch}%")
-                      ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?", ["%{$this->userSearch}%"]);
+                    ->orWhere('last_name', 'like', "%{$this->userSearch}%")
+                    ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?", ["%{$this->userSearch}%"]);
                 });
             })
             ->whereIn('role', ['user', 'patient']) // Only load user/patient roles, not staff
+            ->where('status', 'active') // Only active users
             ->orderBy('first_name')
             ->limit(50)
             ->get();
