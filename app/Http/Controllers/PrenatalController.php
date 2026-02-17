@@ -1118,7 +1118,9 @@ class PrenatalController extends Controller
                         $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
-                        $existingFamilyPlan->update(['status' => 'Active']);
+                        $existingFamilyPlan->update([
+                            'status' => 'Active',
+                            'created_at' => now()]);
 
                         if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
                             $family_planning_sideA->update([
@@ -1154,7 +1156,10 @@ class PrenatalController extends Controller
                             ]);
                         }
 
-                        $message = 'Family planning reactivated and patient information updated successfully';
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Family planning reactivated and patient information updated successfully'
+                        ], 200);
                     } else {
                         // Status is Active — always sync name and patient fields
                         family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
@@ -1174,7 +1179,10 @@ class PrenatalController extends Controller
                                 'number_of_living_children' => $data['living_children'] ?? null,
                             ]);
 
-                        $message = 'Family planning already exists — patient info synced';
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Family planning already exists — patient info synced'
+                        ], 200);
                     }
                 }
 
@@ -1474,7 +1482,10 @@ class PrenatalController extends Controller
                             ]);
                         }
 
-                        return response()->json(['errors' => 'family planning exist'], 200);
+                        return response()->json([
+                            'message' => 'Family planning archived successfully',
+                            'recordVerification' => 'Family planning has been archived'
+                        ], 200);
                     }
                 }
 
