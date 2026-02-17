@@ -32,18 +32,20 @@ editIcon.addEventListener("click", (e) => {
             const fname = document.getElementById("first_name") ?? null;
             const lname = document.getElementById("last_name") ?? null;
             const mInitial = document.getElementById("middle_initial") ?? null;
-            const age = document.getElementById("age")??null;
+            const age = document.getElementById("age") ?? null;
             const bday = document.getElementById("birthdate") ?? null;
-            const contact = document.getElementById("contact_num")??null;
+            const contact = document.getElementById("contact_num") ?? null;
             const nationality = document.getElementById("nationality") ?? null;
-            
+            const patientType = document.getElementById("edit_patient_type");
+
             const email = document.getElementById("email") ?? null;
             const blkNstreet =
                 document.getElementById("update_blk_n_street") ?? null;
             const patient_purok_address = document.getElementById(
-                "update_patient_purok_dropdown"
+                "update_patient_purok_dropdown",
             );
             const suffix = document.getElementById("edit_suffix");
+            const sex = document.querySelectorAll('input[name="sex"]');
 
             // address
             const region = document.getElementById("region");
@@ -55,8 +57,6 @@ editIcon.addEventListener("click", (e) => {
             // vaccination
             const motherName = document.getElementById("mother_name");
             const fatherName = document.getElementById("father_name");
-            const birthHeight = document.getElementById("vaccination_height");
-            const birthWeight = document.getElementById("vaccination_weight");
             // prenatal
             const headOfFamily = document.getElementById("head_of_the_family");
             const bloodType = document.getElementById("blood_type");
@@ -72,14 +72,12 @@ editIcon.addEventListener("click", (e) => {
             const memberOfsss = document.querySelectorAll('input[name="SSS"]');
             // familyPlanning
             const philHealthNumber = document.getElementById("philhealth_no");
-            const civil_status = document.getElementById("civil_status")??null;
+            const civil_status =
+                document.getElementById("civil_status") ?? null;
 
             // Safe handling of patient data with fallback to user data
             const patient = data.response.patient;
             const user = data.response.user;
-
-
-
 
             // Safely construct full name with fallback
             if (patient?.full_name) {
@@ -101,14 +99,22 @@ editIcon.addEventListener("click", (e) => {
                 baseUrl + data.response.patient.profile_image;
             // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
             // console.log(profileImg);
-           
+
             fname.value = patient?.first_name || user?.first_name || "";
             lname.value = patient?.last_name || user?.last_name || "";
             mInitial.value =
                 patient?.middle_initial || user?.middle_initial || "";
             if (age) age.value = data.response.patient?.age ?? "";
-            if(suffix) suffix.value = patient?.suffix|| user?.suffix|| "";
-            
+            if (suffix) suffix.value = patient?.suffix || user?.suffix || "";
+
+            // Loop through all radio buttons and check the one that matches
+            sex.forEach((input) => {
+                input.checked = input.value === patient?.sex;
+            });
+
+            // patient type
+            patientType.value = user.patient_type ?? "";
+
             // slice date
             function dateFormat(date) {
                 if (!date) return "";
@@ -120,13 +126,18 @@ editIcon.addEventListener("click", (e) => {
 
             bday.value = dateFormat(
                 data.response.patient?.date_of_birth ??
-                    data.response.user.date_of_birth
+                    data.response.user.date_of_birth,
             );
-            contact.value = data.response.patient?.contact_number ?? data.response.user.contact_number ?? "";
-            if (nationality) nationality.value = data.response.patient?.nationality ?? "";
-            if (civil_status) civil_status.value = data.response.patient?.civil_status ?? '';
+            contact.value =
+                data.response.patient?.contact_number ??
+                data.response.user.contact_number ??
+                "";
+            if (nationality)
+                nationality.value = data.response.patient?.nationality ?? "";
+            if (civil_status)
+                civil_status.value =
+                    data.response.patient?.civil_status ?? "single";
 
-            
             email.value = data.response.user.email;
 
             // console.log(username.value);
@@ -142,10 +153,6 @@ editIcon.addEventListener("click", (e) => {
                         data.response.medicalRecord.mother_name ?? "";
                     fatherName.value =
                         data.response.medicalRecord.father_name ?? "";
-                    birthHeight.value =
-                        data.response.medicalRecord.birth_height ?? "";
-                    birthWeight.value =
-                        data.response.medicalRecord.birth_weight ?? "";
                 } else if (data.response.typeOfPatient == "prenatal") {
                     headOfFamily.value =
                         data.response.medicalRecord.family_head_name ?? "";
@@ -236,7 +243,7 @@ submitBtn.addEventListener("click", async (e) => {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
+                    'meta[name="csrf-token"]',
                 ).content,
                 Accept: "application/json",
             },
@@ -254,20 +261,42 @@ submitBtn.addEventListener("click", async (e) => {
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then((response) => {
+                if (response.isConfirmed) {
+                    // dismiss the modal
+                    const modal = document.getElementById("profile_modal");
+
+                    if (modal) {
+                        const bsModal = bootstrap.Modal.getInstance(modal);
+                        bsModal.hide();
+                    }
+                }
             });
         } else {
-            displayErrors(data.errors);
+            // handle laravel validation errors
+            if (data.errors) {
+                displayErrors(data.errors);
+                const errorMessages = formatErrorMessages(data.errors);
 
-            // Format errors for SweetAlert
-            const errorMessages = formatErrorMessages(data.errors);
+                Swal.fire({
+                    title: "Validation Error",
+                    html: errorMessages,
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+            }
 
-            Swal.fire({
-                title: "Validation Error",
-                html: errorMessages,
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+            // handle custom single error (e.g. patient type conflict)
+            if (data.error) {
+                Swal.fire({
+                    title: "Error",
+                    text: data.error,
+                    icon: "error",
+                    confirmButtonColor: "#d33",
+                    confirmButtonText: "OK",
+                });
+            }
 
             // Clear file input
             const imageFile = document.getElementById("fileInput");

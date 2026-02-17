@@ -16,7 +16,7 @@ class PatientAccountBinding extends Component
     use WithPagination;
 
     public $search = '';
-    public $filterStatus = 'all';
+    public $filterStatus = 'active';
     public $filterPatientType = 'all';
     public $filterPurok = 'all';
     public $showModal = false;

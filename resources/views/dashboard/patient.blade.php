@@ -122,7 +122,9 @@
                                     <div class="col-md-6">
                                         <div class="info-item mb-3">
                                             <label class="text-muted small mb-1">Mother Name</label>
-                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->mother_name ?? 'Not specified' }}</p>
+                                            <p class="mb-0 fw-medium">
+                                                {{ (optional($medicalRecord)->mother_name === '' || optional($medicalRecord)->mother_name === null) ? 'Not specified' : optional($medicalRecord)->mother_name }}
+                                            </p>
                                         </div>
                                         <div class="info-item mb-3">
                                             <label class="text-muted small mb-1">Birth Weight</label>
@@ -133,7 +135,9 @@
                                     <div class="col-md-6">
                                         <div class="info-item mb-3">
                                             <label class="text-muted small mb-1">Father Name</label>
-                                            <p class="mb-0 fw-medium">{{ optional($medicalRecord)->father_name?? 'Not specified' }}</p>
+                                            <p class="mb-0 fw-medium">
+                                                {{ (optional($medicalRecord)->father_name === '' || optional($medicalRecord)->father_name === null) ? 'Not specified' : optional($medicalRecord)->father_name }}
+                                            </p>
                                         </div>
                                         <div class="info-item mb-3">
                                             <label class="text-muted small mb-1">Birth Height</label>
@@ -285,7 +289,7 @@
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="edit_suffix" class="">Suffix</label>
                                         <select name="edit_suffix" id="edit_suffix" class="form-select responsive-input py-2">
-                                            <option value="" disabled selected>Select Suffix</option>
+                                            <option value="" selected>Select Suffix</option>
                                             <option value="Jr.">Jr</option>
                                             <option value="Sr.">Sr</option>
                                             <option value="II.">II</option>
@@ -301,7 +305,7 @@
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="age">Age <span class="text-danger">*</span></label>
-                                        <input type="text" id="age" placeholder="20" class="form-control" name="age" value="">
+                                        <input type="text" id="age" placeholder="Enter the age" class="form-control" name="age" value="">
                                         <small class="text-danger" id="age-error"></small>
                                     </div>
                                     @endif
@@ -345,14 +349,14 @@
                                     @endif
                                     <!-- contact -->
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
-                                        <label for="contact_number" class="">Contact Number</label>
-                                        <input type="number" placeholder="+63-936-627-8671" class="form-control" id="contact_num" name="contact_number" value="">
+                                        <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
+                                        <input type="number" placeholder="Enter the contact number" class="form-control" id="contact_num" name="contact_number" value="">
                                         <small class="text-danger" id="contact-error"></small>
                                     </div>
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="nationality" class="">Nationality</label>
-                                        <input type="text" placeholder="ex. Filipino" class="form-control" id="nationality" name="nationality" value="">
+                                        <input type="text" placeholder="eg. Filipino" class="form-control" id="nationality" name="nationality" value="">
                                         <small class="text-danger" id="nationality-error"></small>
                                     </div>
                                     @endif
@@ -362,8 +366,8 @@
 
                                     <!-- email -->
                                     <div class="input-field flex-fill xl: w-[50%]">
-                                        <label for="email" class="">Email <span class="text-danger">*</span></label>
-                                        <input type="email" placeholder="ex. yato" id="email" class="form-control" name="email" value="">
+                                        <label for="email" class="">Email Address<span class="text-danger">*</span></label>
+                                        <input type="email" placeholder="Enter the Email Address" id="email" class="form-control" name="email" value="">
                                         <small class="text-danger" id="email-error"></small>
                                     </div>
 
@@ -374,8 +378,8 @@
 
                                     <div class=" w-100 d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
                                         <div class="items w-[100%] xl:[50%]">
-                                            <label for="patient_street" class="w-100 text-muted">Blk & lot,Street <span class="text-danger">*</span></label>
-                                            <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="enter the blk & lot & street seperated by ','" class="w-100 form-control">
+                                            <label for="patient_street" class="w-100 text-muted">House No., Street,<span class="text-danger">*</span></label>
+                                            <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="w-100 form-control">
                                             @error('blk_n_street')
                                             <small class="text-danger">{{$message}}</small>
                                             @enderror
@@ -391,6 +395,18 @@
                                         </div>
 
                                     </div>
+                                    <div class="mb-3 roles w-100">
+                                        <label for="patient_type" class="">Type of Patient<span class="text-danger">*</span></label>
+                                        <select name="edit_patient_type" id="edit_patient_type" class="form-select text-center w-100">
+                                            <option value="" selected disabled>Select the type of patient</option>
+                                            <option value="vaccination">Vaccination</option>
+                                            <option value="prenatal">PRE-NATAL</option>
+                                            <option value="tb-dots">Tb-dots</option>
+                                            <option value="senior-citizen">Senior Citizen</option>
+                                            <option value="family-planning">Family Planning</option>
+                                        </select>
+                                        <small class="text-danger error-element patient-type-error"></small>
+                                    </div>
                                 </div>
                                 <!-- ADDITIONAL INFORMATION -->
                                 <div class="mb-3 w-100">
@@ -401,28 +417,17 @@
                                     <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
                                         <div class="input-field w-[100%] xl:[50%]">
                                             <label for="motherName">Mother's Name</label>
-                                            <input type="text" id="mother_name" placeholder="mother name" class="form-control" name="mother_name" value="">
+                                            <input type="text" id="mother_name" placeholder="Enter Mother Name" class="form-control" name="mother_name" value="">
                                             <!-- ERROR HANDLING -->
                                             <small class="text-danger error-text" id="mother_name_error"></small>
                                         </div>
                                         <div class="input-field w-[100%] xl:[50%]">
                                             <label for="fatherName">Father's Name</label>
-                                            <input type="text" id="father_name" placeholder="Father Name" class="form-control" name="father_name" value="">
+                                            <input type="text" id="father_name" placeholder="Enter Father Name" class="form-control" name="father_name" value="">
                                             <small class="text-danger error-text" id="father_name_error"></small>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2 flex-xl-row flex-column flex-xl-nowrap flex-wrap">
-                                        <div class="mb-2 w-[100%] xl:[50%]">
-                                            <label for="BP">Birth Height(cm):</label>
-                                            <input type="number" class="form-control w-100" id="vaccination_height" placeholder="00.00" name="vaccination_height">
-                                            <small class="text-danger error-text" id="vaccination_height_error"></small>
-                                        </div>
-                                        <div class="mb-2 w-[100%] xl:[50%]">
-                                            <label for="BP">Birth Weight(kg):</label>
-                                            <input type="text" class="form-control w-100" id="vaccination_weight" placeholder=" 00.00" name="vaccination_weight">
-                                            <small class="text-danger error-text" id="vaccination_weight_error"></small>
-                                        </div>
-                                    </div>
+
                                     @elseif(($typeOfPatient ?? null) === 'prenatal')
                                     <div class="mb-2 d-flex gap-2 flex-wrap flex-xl-nowrap">
                                         <div class="input-field flex-1 flex-fill flex-xl:w-[50%]">
@@ -492,7 +497,7 @@
                                         </div>
                                         <div class="mb-3 w-[100%] xl:[50%] d-flex gap-2">
                                             <div class="input-field w-100">
-                                                <label for="senior_religion">Religion</label>
+                                                <label for="religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
                                                 <small class=" text-danger" id="religion_error"></small>
                                             </div>
@@ -519,7 +524,7 @@
                                         </div>
                                         <div class="mb-3 flex-fill xl:w-[50%] d-flex gap-2">
                                             <div class="input-field w-100">
-                                                <label for="senior_religion">Religion</label>
+                                                <label for="religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
                                                 <small class=" text-danger" id="religion_error"></small>
                                             </div>

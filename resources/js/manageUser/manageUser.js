@@ -175,6 +175,19 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
     }
 });
 
+// remove errors after click
+
+document.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".edit-user-profile");
+
+    if (!editBtn) return;
+
+     const errorsMessages = document.querySelectorAll(".error-element");
+
+     if (errorsMessages) {
+         errorsMessages.forEach((element) => (element.innerHTML = ""));
+     }
+})
 // import the address function
 
 const submitBtn = document.getElementById("edit-user-submit-btn") ?? null;
@@ -318,18 +331,30 @@ if (submitBtn) {
                     // console.warn("Livewire is not available");
                 }
             } else {
-                displayErrors(data.errors);
+                // handle laravel validation errors
+                if (data.errors) {
+                    displayErrors(data.errors);
+                    const errorMessages = formatErrorMessages(data.errors);
 
-                // Format errors for SweetAlert
-                const errorMessages = formatErrorMessages(data.errors);
+                    Swal.fire({
+                        title: "Validation Error",
+                        html: errorMessages,
+                        icon: "error",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "OK",
+                    });
+                }
 
-                Swal.fire({
-                    title: "Validation Error",
-                    html: errorMessages,
-                    icon: "error",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK",
-                });
+                // handle custom single error (e.g. patient type conflict)
+                if (data.error) {
+                    Swal.fire({
+                        title: "Error",
+                        text: data.error,
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK",
+                    });
+                }
 
                 // Clear file input
                 const imageFile = document.getElementById("fileInput");

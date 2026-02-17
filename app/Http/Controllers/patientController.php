@@ -276,13 +276,14 @@ class patientController extends Controller
                     'required',
                     'email',
                     Rule::unique('users', 'email')->ignore($user->id),
-                ],      // ++ added
-                
+                ],
+
                 'blk_n_street'           => 'required',
                 'patient_purok_dropdown' => 'required',
                 'password'               => ['sometimes', 'nullable', 'string', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'profile_image'          => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
                 'edit_suffix'            => 'sometimes|nullable|string',
+                'edit_patient_type'      => 'required|string'
             ], [
                 'first_name.required'             => 'The first name field is required.',
                 'first_name.string'               => 'The first name must be a string.',
@@ -302,8 +303,6 @@ class patientController extends Controller
             $additionalData = $request->validate([
                 'mother_name'             => 'sometimes|nullable|string',
                 'father_name'             => 'sometimes|nullable|string',
-                'vaccination_height'      => ['nullable', 'numeric', 'min:1', 'max:250'],
-                'vaccination_weight'      => ['nullable', 'numeric', 'min:1', 'max:250'],
                 'family_head_name'        => 'sometimes|nullable|string',
                 'blood_type'              => 'sometimes|nullable|string',
                 'religion'                => 'sometimes|nullable|string',
@@ -314,12 +313,7 @@ class patientController extends Controller
                 'philhealth_no'           => 'sometimes|nullable|string',
                 'philhealth_id'           => 'sometimes|nullable|numeric',
             ], [
-                'vaccination_height.numeric'        => 'The height must be a number.',
-                'vaccination_height.min'            => 'The height must be at least :min cm.',
-                'vaccination_height.max'            => 'The height may not be greater than :max cm.',
-                'vaccination_weight.numeric'        => 'The weight must be a number.',
-                'vaccination_weight.min'            => 'The weight must be at least :min kg.',
-                'vaccination_weight.max'            => 'The weight may not be greater than :max kg.',
+                
                 'family_head_name.string'           => 'The family head name must be a string.',
                 'philhealth_number_radio.string'    => 'The PhilHealth number radio must be a string.',
                 'philHealth_number.string'          => 'The PhilHealth number must be a string.',
@@ -397,18 +391,18 @@ class patientController extends Controller
             if ($patient) {
                 // ── Update patient record ─────────────────────────────────────
                 $patient->update([
-                    'first_name'     => ucwords(strtolower($data['first_name'])),  // ++ fixed casing
+                    'first_name'     => ucwords(strtolower($data['first_name'])),
                     'middle_initial' => $middleName,
-                    'last_name'      => ucwords(strtolower($data['last_name'])),   // ++ fixed casing
-                    'full_name'      => $fullName,                                 // ++ added
+                    'last_name'      => ucwords(strtolower($data['last_name'])),
+                    'full_name'      => $fullName,
                     'age'            => $age,
-                    'age_in_months'  => $ageMonths,                                // ++ added
+                    'age_in_months'  => $ageMonths,
                     'date_of_birth'  => $data['date_of_birth']  ?? null,
                     'sex'            => $data['sex']             ?? null,
                     'civil_status'   => $data['civil_status']   ?? null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'nationality'    => $data['nationality']    ?? null,
-                    'place_of_birth' => $data['place_of_birth'] ?? null,           // ++ added
+                    'place_of_birth' => $data['place_of_birth'] ?? null,
                     'suffix'         => $data['edit_suffix']    ?? '',
                 ]);
 
@@ -429,14 +423,14 @@ class patientController extends Controller
                 ])->filter()->join(', ');
 
                 // ── Sync users_address to match patient address ───────────────
-                $userAddress = users_address::where('user_id', $user->id)->first();  // ++ added
-                if ($userAddress) {                                                   // ++ added
-                    $userAddress->update([                                            // ++ added
-                        'house_number' => $house_number,                              // ++ added
-                        'street'       => $street,                                    // ++ added
-                        'purok'        => $data['patient_purok_dropdown'],            // ++ added
-                    ]);                                                               // ++ added
-                }                                                                     // ++ added
+                $userAddress = users_address::where('user_id', $user->id)->first();
+                if ($userAddress) {
+                    $userAddress->update([
+                        'house_number' => $house_number,
+                        'street'       => $street,
+                        'purok'        => $data['patient_purok_dropdown'],
+                    ]);
+                }
 
                 // ── Sync to patients table via patient_record_id ──────────────
                 if (!empty($user->patient_record_id)) {
@@ -487,6 +481,11 @@ class patientController extends Controller
                     );
                 }
 
+                // ── Block patient_type change if bound to a patient record ─────
+                if (!empty($user->patient_record_id) && $data['edit_patient_type'] !== $user->patient_type) {
+                    return response()->json(['error' => 'Patient type cannot be changed because this user is bound to a patient record.'], 422);
+                }
+
                 // ── Update user account ───────────────────────────────────────
                 $userUpdateData = [
                     'email'          => $data['email']          ?? $user->email,
@@ -498,6 +497,7 @@ class patientController extends Controller
                     'contact_number' => $data['contact_number'] ?? null,
                     'address'        => $fullAddress,
                     'suffix'         => $data['edit_suffix']    ?? '',
+                    'patient_type'   => $data['edit_patient_type'],  // ++ added
                 ];
 
                 if (!empty($data['password'])) {
@@ -517,6 +517,11 @@ class patientController extends Controller
 
                 $this->updateMedicalRecordByType($request, $medicalRecordCases, $additionalData);
             } else {
+                // ── Block patient_type change if bound to a patient record ─────
+                if (!empty($user->patient_record_id) && $data['edit_patient_type'] !== $user->patient_type) {
+                    return response()->json(['error' => 'Patient type cannot be changed because this user is bound to a patient record.'], 422);
+                }
+
                 // ── No patient — update user table only ───────────────────────
                 $userUpdateData = [
                     'email'          => $data['email']          ?? $user->email,
@@ -528,6 +533,7 @@ class patientController extends Controller
                     'contact_number' => $data['contact_number'] ?? null,
                     'address'        => $fullAddress,
                     'suffix'         => $data['edit_suffix']    ?? '',
+                    'patient_type'   => $data['edit_patient_type'],  // ++ added
                 ];
 
                 if (!empty($data['password'])) {
@@ -785,8 +791,6 @@ class patientController extends Controller
                         $medicalRecordInfo->update([
                             'mother_name' => $additionalData['mother_name'] ?? $medicalRecordInfo->mother_name,
                             'father_name' => $additionalData['father_name'] ?? $medicalRecordInfo->father_name,
-                            'birth_height' => $additionalData['vaccination_height'] ?? $medicalRecordInfo->birth_height,
-                            'birth_weight' => $additionalData['vaccination_weight'] ?? $medicalRecordInfo->birth_weight,
                         ]);
                     }
                 }
