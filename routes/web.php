@@ -160,7 +160,13 @@ Route::get('/dashboard/staff', function () {
 Route::middleware(['auth', 'verified', 'role:patient'])->group(function () {
     Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
     // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'renderData'])->name('view.medical.record');
+   
+    Route::get('/user-account/medical-record', [patientController::class, 'renderOverview'])
+        ->name('patient.record.overview');
+
+
+    Route::get('/user-account/medical-record/{patientId}/{caseType}', [patientController::class, 'renderData'])
+        ->name('patient.record.case');
 });
 
 

@@ -231,8 +231,11 @@
             </a>
         </div>
 
+        {{-- Medical Records link --}}
         <div class="wrapper w-100 d-flex justify-content-center">
-            <a href="{{ route('view.medical.record', ['userId' => Auth::user()->id]) }}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none w-100 px-3 py-2" id="patient_medical_record">
+            <a href="{{ route('patient.record.overview') }}"
+                class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none w-100 px-3 py-2"
+                id="patient_medical_record">
                 <i class="fa-solid fa-folder-open"></i>
                 <h4 class="mb-0 fs-5">Medical Records</h4>
             </a>

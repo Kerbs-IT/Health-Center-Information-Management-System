@@ -29,6 +29,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
@@ -857,25 +858,22 @@ class patientController extends Controller
         }
     }
 
-    public function renderData($userId)
+    public function renderData($patientId, $caseType)
     {
         // sorting variables
         $perPage  = request('per_page', 10);
         $search   = request('search');
         $dateSort = request('date_sort', 'desc');
 
-
-        $user = User::findOrFail($userId);
-        $patient = patients::where('user_id', $userId)
+        // Find the patient directly by patient ID
+        $patient = patients::where('id', $patientId)
             ->where('status', '!=', 'Archived')
             ->first();
 
-        
-
         if (!$patient) {
             return view('patient-info.patient-records', [
-                'isActive' => true,
-                'page' => 'PATIENT RECORD',
+                'isActive'     => true,
+                'page'         => 'PATIENT RECORD',
                 'typeOfPatient' => null,
             ]);
         }
@@ -888,7 +886,7 @@ class patientController extends Controller
             ->toArray();
 
         // VACCINATION
-        if (in_array('vaccination', $patientType)) {
+        if ($caseType === 'vaccination') {
             $medicalCase = medical_record_cases::where('patient_id', $patient->id)
                 ->where('type_of_case', 'vaccination')
                 ->where('status', 'Active')
@@ -927,7 +925,7 @@ class patientController extends Controller
                 'vaccination_case_record' => $vaccination_case_records
             ]);
         }
-        if (in_array('prenatal', $patientType)) {
+        if ($caseType === 'prenatal') {
             // Get the medical record cases
             $prenatalMedicalRecordCase = medical_record_cases::where('patient_id', $patient->id)
                 ->where('type_of_case', 'prenatal')
@@ -1102,7 +1100,7 @@ class patientController extends Controller
             ]);
         }
 
-        if(in_array('senior-citizen', $patientType)){
+        if($caseType === 'senior-citizen'){
             $medicalCase = medical_record_cases::where('patient_id', $patient->id)
                 ->where('type_of_case', 'senior-citizen')
                 ->where('status', 'Active')
@@ -1151,7 +1149,7 @@ class patientController extends Controller
             ]);
             
         }
-        if(in_array('tb-dots',$patientType)){
+        if($caseType === 'tb-dots'){
             $medicalCase = medical_record_cases::where('patient_id', $patient->id)
                 ->where('type_of_case', 'tb-dots')
                 ->where('status', 'Active')
@@ -1259,9 +1257,7 @@ class patientController extends Controller
             ]);
         }
 
-        if(is_array($patientType) &&
-            count($patientType) === 1 &&
-            in_array('family-planning', $patientType)){
+        if($caseType === 'family-planning'){
             $familyPlanningMedicalRecordCase = medical_record_cases::where('patient_id', $patient->id)
                 ->where('type_of_case', 'family-planning')
                 ->where('status', '!=', 'Archived')
@@ -1374,6 +1370,79 @@ class patientController extends Controller
         return view('patient-info.patient-records', [
             'isActive' => true,
             'page' => 'RECORD'
+        ]);
+    }
+
+    /**
+     * Show the patient case overview page.
+     * Supports both regular patients and guardians.
+     */
+    public function renderOverview()
+    {
+        $authUser = Auth::user();
+        $rows = collect();
+
+        try {
+            // CASE 1: Direct patient record
+            $directPatient = patients::where('user_id', $authUser->id)
+                ->where('status', '!=', 'Archived')
+                ->first();
+
+            if ($directPatient) {
+                $cases = medical_record_cases::where('patient_id', $directPatient->id)
+                    ->where('status', '!=', 'Archived')
+                    ->get();
+
+                foreach ($cases as $case) {
+                    $rows->push([
+                        'patient_name'    => trim(implode(' ', array_filter([
+                            $directPatient->first_name ?? '',
+                            $directPatient->middle_initial ?? '',
+                            $directPatient->last_name ?? '',
+                            $directPatient->suffix ?? '',
+                        ]))),
+                        'type_of_case'    => $case->type_of_case ?? 'unknown',
+                        'date_registered' => $case->created_at,
+                        'patient_id'      => $directPatient->id,
+                    ]);
+                }
+            }
+
+            // CASE 2: Guardian-linked patients (always runs regardless of case 1)
+            $guardianPatients = patients::where('guardian_user_id', $authUser->id)
+                ->whereNull('user_id')
+                ->where('status', '!=', 'Archived')
+                ->get();
+
+            foreach ($guardianPatients as $patient) {
+                $cases = medical_record_cases::where('patient_id', $patient->id)
+                    ->where('status', '!=', 'Archived')
+                    ->get();
+
+                foreach ($cases as $case) {
+                    $rows->push([
+                        'patient_name'    => trim(implode(' ', array_filter([
+                            $patient->first_name ?? '',
+                            $patient->middle_initial ?? '',
+                            $patient->last_name ?? '',
+                            $patient->suffix ?? '',
+                        ]))),
+                        'type_of_case'    => $case->type_of_case ?? 'unknown',
+                        'date_registered' => $case->created_at,
+                        'patient_id'      => $patient->id,
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't crash — just show empty state
+            Log::error('renderOverview error for user ' . $authUser->id . ': ' . $e->getMessage());
+        }
+
+        return view('patient-info.patient-case-overview', [
+            'isActive'   => true,
+            'page'       => 'MY RECORDS',
+            'rows'       => $rows,
+            'isGuardian' => isset($guardianPatients) && $guardianPatients->isNotEmpty(),
         ]);
     }
 }

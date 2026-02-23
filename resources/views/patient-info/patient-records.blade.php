@@ -42,8 +42,11 @@
             <main class="flex-column p-md-3 p-2 overflow-y-auto">
                 <h1>PATIENT CASES</h1>
                 <!-- body part -->
+                <a href="{{ route('patient.record.overview') }}" class="btn btn-danger px-4 fs-5 mb-3">
+                    Back
+                </a>
                 <div class="mb-3 w-100 px-lg-5 px-md-3 px-2 min-h-[700px] record-con">
-                   
+
                     <div class="filters d-flex justify-content-between w-100">
                         @if(($typeOfPatient ?? null) === 'vaccination')
                         @include('patient-info.filters.vaccination')
