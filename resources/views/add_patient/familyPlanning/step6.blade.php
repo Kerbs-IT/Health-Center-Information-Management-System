@@ -371,7 +371,7 @@
         <input type="date" class="form-control w-100 text-center" name="family_planning_date_of_acknowledgement_consent" id="family_planning_date_of_acknowledgement_consent" min="1950-01-01" max="{{date('Y-m-d')}}">
         <small class="text-danger error-text" id="family_planning_date_of_acknowledgement_consent_error"></small>
     </div>
-    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
+    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto flex-column flex-sm-row">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
         <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
     </div>

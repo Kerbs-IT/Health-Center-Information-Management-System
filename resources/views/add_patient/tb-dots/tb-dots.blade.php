@@ -199,8 +199,8 @@
         <input type="text" class="form-control" name="tb_outcome">
         <small class="text-danger error-text" id="tb_outcome_error"></small>
     </div>
-    <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
-        <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
-        <button type="submit" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" id="tb_dots_save_record_btn">Save Record</button>
+    <div class="buttons w-100 align-self-center d-flex flex-column flex-sm-row justify-content-end gap-2 mt-2">
+        <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
+        <button type="submit" class="btn btn-success px-5 py-2 fs-5" id="tb_dots_save_record_btn">Save Record</button>
     </div>
 </div>
