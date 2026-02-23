@@ -503,6 +503,7 @@
      */
     window.clearPatientRecordSelection = function () {
         // Clear hidden field
+        if (!elements.searchInput) return;
         elements.selectedPatientId.value = "";
 
         // Clear and re-enable search
