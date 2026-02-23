@@ -80,10 +80,26 @@ class RecordsTable extends Component
 
     public function render()
     {
-
-        
-
         $vaccinationRecord = medical_record_cases::select('medical_record_cases.*')
+            ->selectRaw("
+                CASE
+                    WHEN EXISTS (
+                        SELECT 1 FROM vaccination_case_records vcr
+                        WHERE vcr.medical_record_case_id = medical_record_cases.id
+                        AND vcr.status != 'Archived'
+                        AND vcr.vaccination_status = 'completed'
+                        AND vcr.date_of_comeback < CURDATE()
+                    ) THEN 1
+                    WHEN EXISTS (
+                        SELECT 1 FROM vaccination_case_records vcr
+                        WHERE vcr.medical_record_case_id = medical_record_cases.id
+                        AND vcr.status != 'Archived'
+                        AND vcr.vaccination_status = 'completed'
+                        AND vcr.date_of_comeback = CURDATE()
+                    ) THEN 2
+                    ELSE 3
+                END as sort_priority
+            ")
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'vaccination')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
@@ -95,35 +111,22 @@ class RecordsTable extends Component
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
+            ->whereDate('patients.created_at', '>=', $this->start_date)
+            ->whereDate('patients.created_at', '<=', $this->end_date)
+            ->orderBy('sort_priority', 'asc')
             ->when($this->sortField === 'age', function ($query) {
-                // Sort by age in years first, then by age_in_months for those with age = 0
                 $query->orderBy('patients.age', $this->sortDirection)
                     ->orderBy('patients.age_in_months', $this->sortDirection);
             }, function ($query) {
-                // Default sorting for other fields
                 $query->orderBy($this->sortField, $this->sortDirection);
             })
-            ->whereDate('patients.created_at', '>=', $this->start_date)
-            ->whereDate('patients.created_at', '<=', $this->end_date)
-            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->entries);
 
-        // Add vaccination status to each record
+        // Keep this for badge display in the view
         $vaccinationRecord->getCollection()->transform(function ($record) {
             $record->vaccination_status_info = $this->calculateVaccinationStatus($record);
             return $record;
         });
-
-
-        // Sort by priority
-        $sortedCollection = $vaccinationRecord->getCollection()->sortBy(function ($record) {
-            if ($record->vaccination_status_info) {
-                return $record->vaccination_status_info['sort_priority'];
-            }
-            return 3;
-        });
-
-        $vaccinationRecord->setCollection($sortedCollection);
 
         return view('livewire.vaccination.records-table', [
             'vaccinationRecord' => $vaccinationRecord,
