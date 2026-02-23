@@ -106,6 +106,8 @@ export default defineConfig({
                 "resources/js/vitalSign.js",
                 "resources/js/add_patient/searchUser.js",
                 "resources/js/manage-medicine.js",
+                "resources/js/patient/patient-record-search.js",
+                "resources/js/patient/patient-mode-toggle.js",
             ],
             refresh: true,
         }),

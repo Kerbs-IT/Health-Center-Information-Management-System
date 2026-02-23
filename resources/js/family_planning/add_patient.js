@@ -186,6 +186,14 @@ const saveBTN = document.getElementById("family_planning_submit_btn");
 saveBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
+       const handledBySelect = document.getElementById("handled_by");
+       const handledByBackup = document.getElementById("handled_by_backup");
+
+       if (handledBySelect && handledByBackup) {
+           handledByBackup.value = handledBySelect.value;
+           // console.log("wandled by value set to:", handledBySelect.value);
+           // console.log("Backup value set to:", handledByBackup.value); // debug
+       }    
     const form = document.getElementById("add-patient-form");
     const formData = new FormData(form);
     const hiddenSignature = document.getElementById(
@@ -247,6 +255,10 @@ saveBTN.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
+                // Reset existing patient selection
+                if (typeof window.clearPatientRecordSelection === "function") {
+                    window.clearPatientRecordSelection();
+                }
                 // reset the steps
                 form.reset();
                 window.currentStep = 1;

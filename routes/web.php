@@ -44,6 +44,7 @@ use LDAP\Result;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\NoficationScheduleController;
 use App\Http\Controllers\PatientAccountController;
+use App\Http\Controllers\PatientRecord;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -440,6 +441,7 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // get the user list for the add patient search bar
     Route::get('/get-user-list',[PatientAccountController::class,'search'])->name('users.search');
+    Route::get('/get-guardian-account-list',[PatientAccountController::class,'searchGuardian']);
 
     // for archived record
     Route::get('/archive-records',function(){
@@ -468,6 +470,11 @@ Route::middleware(['role:nurse,staff'])->group(function () {
         $caseId = request()->get('medical_record_id');
         return view('records.archivedRecord.family-planning-case-archive', ['page' => 'Archive Records', 'isActive' => true, 'medicalRecordCaseId' => $caseId]);
     })->name('family.planning.case.record.archive');
+
+
+    // search patient record in add patient
+
+    Route::get("/patient-record/link",[PatientRecord::class,'search'])-> name('patient.record.search');
 
 });
 // ---------------------------- home page

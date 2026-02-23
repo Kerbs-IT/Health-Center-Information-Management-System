@@ -480,7 +480,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             return;
         }
+// Handle handled_by field for nurses
+        const handledBySelect = document.getElementById("handled_by");
+        const handledByBackup = document.getElementById("handled_by_backup");
 
+        if (handledBySelect && handledByBackup) {
+            handledByBackup.value = handledBySelect.value;
+            console.log("wandled by value set to:", handledBySelect.value);
+            console.log("Backup value set to:", handledByBackup.value); // debug
+        }
         const form = document.getElementById("add-patient-form");
         const formData = new FormData(form);
         // for (let [key, value] of formData.entries()) {
@@ -513,6 +521,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmButtonText: "OK",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Reset existing patient selection
+                    if (
+                        typeof window.clearPatientRecordSelection === "function"
+                    ) {
+                        window.clearPatientRecordSelection();
+                    }
+                    if (typeof window.clearGuardianSelection === "function") {
+                        window.clearGuardianSelection();
+                    }
                     // reset the steps
                     form.reset();
                     window.currentStep = 1;

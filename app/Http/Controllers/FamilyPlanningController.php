@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -56,866 +57,819 @@ class FamilyPlanningController extends Controller
         // Shuffle the password to randomize character positions
         return str_shuffle($password);
     }
-    
+
+
+
+
     public function addPatient(Request $request)
     {
         try {
-            // validations
             $patientData = $request->validate([
-                'type_of_patient' => 'required',
-                'first_name' => ['required', 'string', Rule::unique('patients')->where(function ($query) use ($request) {
-                    return $query->where('first_name', $request->first_name)
-                        ->where('last_name', $request->last_name);
-                })],
-                'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'required|date|before_or_equal:today',
-                'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'required|numeric|min:10|max:49',
-                'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'required|digits_between:7,12',
-                'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
-                'handled_by' => 'required',
-                'street' => 'required',
-                'brgy' => 'required',
-                'civil_status' => 'sometimes|nullable|string',
-                'suffix' => 'sometimes|nullable|string',
+                'patient_id'           => 'nullable|exists:patients,id',
+                'type_of_patient'      => 'required',
+                'first_name'           => [
+                    'required_without:patient_id',
+                    'string',
+                    Rule::unique('patients')->where(function ($query) use ($request) {
+                        return $query->where('first_name', $request->first_name)
+                            ->where('last_name', $request->last_name);
+                    })->ignore($request->patient_id)
+                ],
+                'last_name'            => 'required_without:patient_id|nullable|string',
+                'middle_initial'       => 'sometimes|nullable|string',
+                'date_of_birth'        => 'required_without:patient_id|date|before_or_equal:today',
+                'place_of_birth'       => 'sometimes|nullable|string',
+                'age'                  => 'required_without:patient_id|numeric|min:10|max:49',
+                'sex'                  => 'sometimes|nullable|string',
+                'contact_number'       => 'required_without:patient_id|digits_between:7,12',
+                'nationality'          => 'sometimes|nullable|string',
+                'date_of_registration' => 'required_without:patient_id|date',
+                'handled_by'           => 'nullable|exists:users,id',
+                'handled_by_backup'    => 'nullable|exists:users,id',
+                'street'               => 'required_without:patient_id',
+                'brgy'                 => 'required_without:patient_id',
+                'civil_status'         => 'sometimes|nullable|string',
+                'suffix'               => 'sometimes|nullable|string',
+
+                // Guardian account — optional, only used when notification_mode = guardian
+                'guardian_account_id'  => 'nullable|exists:users,id',
+
+                // Email: not required when guardian is linked or existing patient
                 'email' => array_filter([
-                    'required',
+                    !$request->filled('guardian_account_id') && !$request->filled('patient_id')
+                        ? 'required_without:patient_id'
+                        : 'nullable',
                     'email',
-                    !$request->user_account ? Rule::unique('users', 'email') : null,
+                    !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
+                        ? Rule::unique('users', 'email')
+                        : null,
                 ]),
-                'user_account' => 'sometimes|nullable|numeric'
+
+                'user_account'         => 'sometimes|nullable|numeric',
             ], [
-                // Custom messages with friendly attribute names
-                'type_of_patient.required' => 'The type of patient field is required.',
-
-                'first_name.required' => 'The first name field is required.',
-                'first_name.string' => 'The first name must be a string.',
-                'first_name.unique' => 'This patient already exists.',
-
-                'last_name.required' => 'The last name field is required.',
-                'last_name.string' => 'The last name must be a string.',
-
-                'middle_initial.string' => 'The middle initial must be a string.',
-
-                'date_of_birth.required' => 'The date of birth field is required.',
-                'date_of_birth.date' => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
-
-                'place_of_birth.string' => 'The place of birth must be a string.',
-
-                'age.required' => 'The age field is required.',
-                'age.numeric' => 'The age must be a number.',
-                'age.min' => 'The age must be at least :min.',
-                'age.max' => 'The age may not be greater than :max.',
-
-                'contact_number.required' => 'The contact number field is required.',
-                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
-
-                'date_of_registration.required' => 'The date of registration field is required.',
-                'date_of_registration.date' => 'The date of registration must be a valid date.',
-
-                'handled_by.required' => 'The handled by field is required.',
-
-                'user_account.numeric' => 'The user account must be a number.',
+                'patient_id.exists'                     => 'The selected patient record does not exist.',
+                'type_of_patient.required'              => 'The type of patient field is required.',
+                'first_name.required_without'           => 'The first name field is required.',
+                'first_name.string'                     => 'The first name must be a string.',
+                'first_name.unique'                     => 'This patient already exists.',
+                'last_name.required_without'            => 'The last name field is required.',
+                'last_name.string'                      => 'The last name must be a string.',
+                'middle_initial.string'                 => 'The middle initial must be a string.',
+                'date_of_birth.required_without'        => 'The date of birth field is required.',
+                'date_of_birth.date'                    => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal'         => 'The date of birth must be today or earlier.',
+                'place_of_birth.string'                 => 'The place of birth must be a string.',
+                'age.required_without'                  => 'The age field is required.',
+                'age.numeric'                           => 'The age must be a number.',
+                'age.min'                               => 'The age must be at least :min.',
+                'age.max'                               => 'The age may not be greater than :max.',
+                'contact_number.required_without'       => 'The contact number field is required.',
+                'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required_without' => 'The date of registration field is required.',
+                'date_of_registration.date'             => 'The date of registration must be a valid date.',
+                'handled_by.exists'                     => 'The selected health worker does not exist.',
+                'handled_by_backup.exists'              => 'The selected health worker does not exist.',
+                'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
+                'user_account.numeric'                  => 'The user account must be a number.',
             ]);
 
+            // ============================================================================
+            // DETERMINE handled_by
+            // ============================================================================
+            $handledBy = $patientData['handled_by'] ?? $patientData['handled_by_backup'] ?? null;
+
+            if (!$handledBy) {
+                return response()->json([
+                    'message' => 'Validation failed.',
+                    'errors'  => ['handled_by' => ['The health worker field is required.']]
+                ], 422);
+            }
+
+            // ============================================================================
+            // DETERMINE notification mode
+            // ============================================================================
+            $guardianAccountId = $patientData['guardian_account_id'] ?? null;
+            $isGuardianMode    = !empty($guardianAccountId);
+
             $medicalData = $request->validate([
-                'religion' => 'sometimes|nullable|string',
+                'religion'               => 'sometimes|nullable|string',
                 'family_plan_occupation' => 'sometimes|nullable|string',
-                'philhealth_no' => [
-                    'sometimes',
-                    'nullable',
-                    'regex:/^\d{2}-\d{9}-\d{1}$/'
-                ],
-                'blood_pressure' => [
-                    'sometimes',
-                    'nullable',
-                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
-                ],
-                'temperature'       => 'nullable|numeric|between:30,45',
-                'pulse_rate'        => 'nullable|string|max:20',
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:1,250',
-                'weight'            => 'nullable|numeric|between:1,250',
+                'philhealth_no'          => ['sometimes', 'nullable', 'regex:/^\d{2}-\d{9}-\d{1}$/'],
+                'blood_pressure'         => ['sometimes', 'nullable', 'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'],
+                'temperature'            => 'nullable|numeric|between:30,45',
+                'pulse_rate'             => 'nullable|string|max:20',
+                'respiratory_rate'       => 'nullable|integer|min:5|max:60',
+                'height'                 => 'nullable|numeric|between:1,250',
+                'weight'                 => 'nullable|numeric|between:1,250',
             ], [
-                // Custom messages with friendly attribute names
                 'family_plan_occupation.string' => 'The family plan occupation must be a string.',
-
-                'philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
-
-                'blood_pressure.regex' => 'The blood pressure format is invalid.',
-
-                'pulse_rate.string' => 'The pulse rate must be a string.',
-                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
-
-                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
-                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
-                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+                'philhealth_no.regex'           => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
+                'blood_pressure.regex'          => 'The blood pressure format is invalid.',
+                'pulse_rate.string'             => 'The pulse rate must be a string.',
+                'pulse_rate.max'                => 'The pulse rate may not be greater than :max characters.',
+                'respiratory_rate.integer'      => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min'          => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max'          => 'The respiratory rate may not be greater than :max.',
             ]);
 
             $caseData = $request->validate([
-                'client_id' => 'sometimes|nullable|string',
-                'philhealth_no' => [
-                    'sometimes',
-                    'nullable',
-                    'regex:/^\d{2}-\d{9}-\d{1}$/'
-                ],
-                'NHTS' => 'sometimes|nullable|string',
-                'spouse_lname' => 'sometimes|nullable|string',
-                'spouse_fname' => 'sometimes|nullable|string',
-                'spouse_MI' => 'sometimes|nullable|string|max:2',
-                'spouse_date_of_birth' => 'sometimes|nullable|date|before_or_equal:today',
-                'spouse_age' => 'sometimes|nullable|numeric|max:100',
-                'spouse_occupation' => 'sometimes|nullable|string',
-                'spouse_suffix' => 'sometimes|nullable|string',
-
-                'number_of_living_children' => 'sometimes|nullable|numeric|max:50',
-                'plan_to_have_more_children' => 'sometimes|nullable|string',
-                'average_montly_income' => 'sometimes|nullable|numeric',
-                'family_planning_type_of_patient' => 'sometimes|nullable|string',
-                'new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
-                'current_user_reason_for_FP' => 'sometimes|nullable|string',
-                'current_method_reason' => 'sometimes|nullable|string',
-                'previously_used_method' => 'sometimes|nullable|array',
-
-                // acknowledgement
-                'choosen_method' => 'sometimes|nullable|string',
-                'add_family_planning_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'add_family_planning_signature_data' => 'sometimes|nullable|string',
-                'family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
-                'add_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'add_family_planning_consent_signature_data' => 'sometimes|nullable|string',
-                'family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
-                'current_user_type' => 'sometimes|nullable|string'
+                'client_id'                                        => 'sometimes|nullable|string',
+                'philhealth_no'                                    => ['sometimes', 'nullable', 'regex:/^\d{2}-\d{9}-\d{1}$/'],
+                'NHTS'                                             => 'sometimes|nullable|string',
+                'spouse_lname'                                     => 'sometimes|nullable|string',
+                'spouse_fname'                                     => 'sometimes|nullable|string',
+                'spouse_MI'                                        => 'sometimes|nullable|string|max:2',
+                'spouse_date_of_birth'                             => 'sometimes|nullable|date|before_or_equal:today',
+                'spouse_age'                                       => 'sometimes|nullable|numeric|max:100',
+                'spouse_occupation'                                => 'sometimes|nullable|string',
+                'spouse_suffix'                                    => 'sometimes|nullable|string',
+                'number_of_living_children'                        => 'sometimes|nullable|numeric|max:50',
+                'plan_to_have_more_children'                       => 'sometimes|nullable|string',
+                'average_montly_income'                            => 'sometimes|nullable|numeric',
+                'family_planning_type_of_patient'                  => 'sometimes|nullable|string',
+                'new_acceptor_reason_for_FP'                       => 'sometimes|nullable|string',
+                'current_user_reason_for_FP'                       => 'sometimes|nullable|string',
+                'current_method_reason'                            => 'sometimes|nullable|string',
+                'previously_used_method'                           => 'sometimes|nullable|array',
+                'choosen_method'                                   => 'sometimes|nullable|string',
+                'add_family_planning_signature_image'              => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_family_planning_signature_data'               => 'sometimes|nullable|string',
+                'family_planning_date_of_acknowledgement'          => 'sometimes|nullable|date',
+                'add_family_planning_consent_signature_image'      => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_family_planning_consent_signature_data'       => 'sometimes|nullable|string',
+                'family_planning_date_of_acknowledgement_consent'  => 'sometimes|nullable|date',
+                'current_user_type'                                => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'client_id.string' => 'The client ID must be a string.',
-
-                'philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
-
-                'spouse_lname.string' => 'The spouse last name must be a string.',
-
-                'spouse_fname.string' => 'The spouse first name must be a string.',
-
-                'spouse_MI.string' => 'The spouse middle initial must be a string.',
-                'spouse_MI.max' => 'The spouse middle initial may not be greater than :max characters.',
-
-                'spouse_date_of_birth.date' => 'The spouse date of birth must be a valid date.',
-                'spouse_date_of_birth.before_or_equal' => 'The spouse date of birth must be today or earlier.',
-
-                'spouse_age.numeric' => 'The spouse age must be a number.',
-                'spouse_age.max' => 'The spouse age may not be greater than :max.',
-
-                'number_of_living_children.numeric' => 'The number of living children must be a number.',
-                'number_of_living_children.max' => 'The number of living children may not be greater than :max.',
-
-                'average_montly_income.numeric' => 'The average monthly income must be a number.',
-
-                'family_planning_type_of_patient.string' => 'The family planning type of patient must be a string.',
-
-                'new_acceptor_reason_for_FP.string' => 'The new acceptor reason for FP must be a string.',
-
-                'current_user_reason_for_FP.string' => 'The current user reason for FP must be a string.',
-
-                'add_family_planning_signature_image.image' => 'The signature must be an image.',
-                'add_family_planning_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
-                'add_family_planning_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
-
-                'family_planning_date_of_acknowledgement.date' => 'The date of acknowledgement must be a valid date.',
-
-                'add_family_planning_consent_signature_image.image' => 'The consent signature must be an image.',
-                'add_family_planning_consent_signature_image.mimes' => 'The consent signature must be a file of type: jpg, jpeg, png.',
-                'add_family_planning_consent_signature_image.max' => 'The consent signature may not be greater than :max kilobytes.',
-
-                'family_planning_date_of_acknowledgement_consent.date' => 'The date of acknowledgement consent must be a valid date.',
+                'client_id.string'                                     => 'The client ID must be a string.',
+                'philhealth_no.regex'                                   => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
+                'spouse_lname.string'                                   => 'The spouse last name must be a string.',
+                'spouse_fname.string'                                   => 'The spouse first name must be a string.',
+                'spouse_MI.string'                                      => 'The spouse middle initial must be a string.',
+                'spouse_MI.max'                                         => 'The spouse middle initial may not be greater than :max characters.',
+                'spouse_date_of_birth.date'                             => 'The spouse date of birth must be a valid date.',
+                'spouse_date_of_birth.before_or_equal'                  => 'The spouse date of birth must be today or earlier.',
+                'spouse_age.numeric'                                    => 'The spouse age must be a number.',
+                'spouse_age.max'                                        => 'The spouse age may not be greater than :max.',
+                'number_of_living_children.numeric'                     => 'The number of living children must be a number.',
+                'number_of_living_children.max'                         => 'The number of living children may not be greater than :max.',
+                'average_montly_income.numeric'                         => 'The average monthly income must be a number.',
+                'family_planning_type_of_patient.string'                => 'The family planning type of patient must be a string.',
+                'new_acceptor_reason_for_FP.string'                     => 'The new acceptor reason for FP must be a string.',
+                'current_user_reason_for_FP.string'                     => 'The current user reason for FP must be a string.',
+                'add_family_planning_signature_image.image'             => 'The signature must be an image.',
+                'add_family_planning_signature_image.mimes'             => 'The signature must be a file of type: jpg, jpeg, png.',
+                'add_family_planning_signature_image.max'               => 'The signature may not be greater than :max kilobytes.',
+                'family_planning_date_of_acknowledgement.date'          => 'The date of acknowledgement must be a valid date.',
+                'add_family_planning_consent_signature_image.image'     => 'The consent signature must be an image.',
+                'add_family_planning_consent_signature_image.mimes'     => 'The consent signature must be a file of type: jpg, jpeg, png.',
+                'add_family_planning_consent_signature_image.max'       => 'The consent signature may not be greater than :max kilobytes.',
+                'family_planning_date_of_acknowledgement_consent.date'  => 'The date of acknowledgement consent must be a valid date.',
             ]);
 
-            // medical history
             $medicalHistoryData = $request->validate([
-                'medical_history_severe_headaches_migraine' => 'sometimes|nullable|string',
-                'medical_history_history_of_stroke' => 'sometimes|nullable|string',
-                'medical_history_non_traumatic_hemtoma' => 'sometimes|nullable|string',
-                'medical_history_history_of_breast_cancer' => 'sometimes|nullable|string',
-                'medical_history_severe_chest_pain' => 'sometimes|nullable|string',
-                'medical_history_cough' => 'sometimes|nullable|string',
-                'medical_history_jaundice' => 'sometimes|nullable|string',
-                'medical_history_unexplained_vaginal_bleeding' => 'sometimes|nullable|string',
-                'medical_history_abnormal_vaginal_discharge' => 'sometimes|nullable|string',
-                'medical_history_abnormal_phenobarbital' => 'sometimes|nullable|string',
-                'medical_history_smoker' => 'sometimes|nullable|string',
-                'medical_history_with_dissability' => 'sometimes|nullable|string',
-                'if_with_dissability_specification' => 'sometimes|nullable|string',
+                'medical_history_severe_headaches_migraine'       => 'sometimes|nullable|string',
+                'medical_history_history_of_stroke'               => 'sometimes|nullable|string',
+                'medical_history_non_traumatic_hemtoma'           => 'sometimes|nullable|string',
+                'medical_history_history_of_breast_cancer'        => 'sometimes|nullable|string',
+                'medical_history_severe_chest_pain'               => 'sometimes|nullable|string',
+                'medical_history_cough'                           => 'sometimes|nullable|string',
+                'medical_history_jaundice'                        => 'sometimes|nullable|string',
+                'medical_history_unexplained_vaginal_bleeding'    => 'sometimes|nullable|string',
+                'medical_history_abnormal_vaginal_discharge'      => 'sometimes|nullable|string',
+                'medical_history_abnormal_phenobarbital'          => 'sometimes|nullable|string',
+                'medical_history_smoker'                          => 'sometimes|nullable|string',
+                'medical_history_with_dissability'                => 'sometimes|nullable|string',
+                'if_with_dissability_specification'               => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'medical_history_severe_headaches_migraine.string' => 'The severe headaches/migraine field must be a string.',
-                'medical_history_history_of_stroke.string' => 'The history of stroke field must be a string.',
-                'medical_history_non_traumatic_hemtoma.string' => 'The non-traumatic hematoma field must be a string.',
-                'medical_history_history_of_breast_cancer.string' => 'The history of breast cancer field must be a string.',
-                'medical_history_severe_chest_pain.string' => 'The severe chest pain field must be a string.',
+                'medical_history_severe_headaches_migraine.string'    => 'The severe headaches/migraine field must be a string.',
+                'medical_history_history_of_stroke.string'            => 'The history of stroke field must be a string.',
+                'medical_history_non_traumatic_hemtoma.string'        => 'The non-traumatic hematoma field must be a string.',
+                'medical_history_history_of_breast_cancer.string'     => 'The history of breast cancer field must be a string.',
+                'medical_history_severe_chest_pain.string'            => 'The severe chest pain field must be a string.',
                 'medical_history_unexplained_vaginal_bleeding.string' => 'The unexplained vaginal bleeding field must be a string.',
-                'medical_history_abnormal_vaginal_discharge.string' => 'The abnormal vaginal discharge field must be a string.',
-                'medical_history_abnormal_phenobarbital.string' => 'The abnormal phenobarbital field must be a string.',
-                'medical_history_with_dissability.string' => 'The with disability field must be a string.',
-                'if_with_dissability_specification.string' => 'The disability specification field must be a string.',
+                'medical_history_abnormal_vaginal_discharge.string'   => 'The abnormal vaginal discharge field must be a string.',
+                'medical_history_abnormal_phenobarbital.string'       => 'The abnormal phenobarbital field must be a string.',
+                'medical_history_with_dissability.string'             => 'The with disability field must be a string.',
+                'if_with_dissability_specification.string'            => 'The disability specification field must be a string.',
             ]);
 
-            // Obsterical history
             $obstericalHistoryData = $request->validate([
-                'family_planning_G' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_P' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_full_term' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_abortion' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_premature' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_living_children' => 'sometimes|nullable|numeric|max:20',
-                'family_planning_date_of_last_delivery' => 'sometimes|nullable|date',
-                'family_planning_type_of_last_delivery' => 'sometimes|nullable|string',
-                'family_planning_date_of_last_delivery_menstrual_period' => 'sometimes|nullable|date',
+                'family_planning_G'                                          => 'sometimes|nullable|numeric|max:20',
+                'family_planning_P'                                          => 'sometimes|nullable|numeric|max:20',
+                'family_planning_full_term'                                  => 'sometimes|nullable|numeric|max:20',
+                'family_planning_abortion'                                   => 'sometimes|nullable|numeric|max:20',
+                'family_planning_premature'                                  => 'sometimes|nullable|numeric|max:20',
+                'family_planning_living_children'                            => 'sometimes|nullable|numeric|max:20',
+                'family_planning_date_of_last_delivery'                      => 'sometimes|nullable|date',
+                'family_planning_type_of_last_delivery'                      => 'sometimes|nullable|string',
+                'family_planning_date_of_last_delivery_menstrual_period'     => 'sometimes|nullable|date',
                 'family_planning_date_of_previous_delivery_menstrual_period' => 'sometimes|nullable|date',
-                'family_planning_type_of_menstrual' => 'sometimes|nullable|string',
-                'family_planning_Dysmenorrhea' => 'sometimes|nullable|string',
-                'family_planning_hydatidiform_mole' => 'sometimes|nullable|string',
-                'family_planning_ectopic_pregnancy' => 'sometimes|nullable|string',
+                'family_planning_type_of_menstrual'                          => 'sometimes|nullable|string',
+                'family_planning_Dysmenorrhea'                               => 'sometimes|nullable|string',
+                'family_planning_hydatidiform_mole'                          => 'sometimes|nullable|string',
+                'family_planning_ectopic_pregnancy'                          => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'family_planning_G.numeric' => 'The G (gravida) must be a number.',
-                'family_planning_G.max' => 'The G (gravida) may not be greater than :max.',
-
-                'family_planning_P.numeric' => 'The P (para) must be a number.',
-                'family_planning_P.max' => 'The P (para) may not be greater than :max.',
-
-                'family_planning_full_term.numeric' => 'The full term must be a number.',
-                'family_planning_full_term.max' => 'The full term may not be greater than :max.',
-
-                'family_planning_abortion.numeric' => 'The abortion must be a number.',
-                'family_planning_abortion.max' => 'The abortion may not be greater than :max.',
-
-                'family_planning_premature.numeric' => 'The premature must be a number.',
-                'family_planning_premature.max' => 'The premature may not be greater than :max.',
-
-                'family_planning_living_children.numeric' => 'The living children must be a number.',
-                'family_planning_living_children.max' => 'The living children may not be greater than :max.',
-
-                'family_planning_date_of_last_delivery.date' => 'The date of last delivery must be a valid date.',
-
-                'family_planning_date_of_last_delivery_menstrual_period.date' => 'The date of last delivery menstrual period must be a valid date.',
-
+                'family_planning_G.numeric'                                       => 'The G (gravida) must be a number.',
+                'family_planning_G.max'                                           => 'The G (gravida) may not be greater than :max.',
+                'family_planning_P.numeric'                                       => 'The P (para) must be a number.',
+                'family_planning_P.max'                                           => 'The P (para) may not be greater than :max.',
+                'family_planning_full_term.numeric'                               => 'The full term must be a number.',
+                'family_planning_full_term.max'                                   => 'The full term may not be greater than :max.',
+                'family_planning_abortion.numeric'                                => 'The abortion must be a number.',
+                'family_planning_abortion.max'                                    => 'The abortion may not be greater than :max.',
+                'family_planning_premature.numeric'                               => 'The premature must be a number.',
+                'family_planning_premature.max'                                   => 'The premature may not be greater than :max.',
+                'family_planning_living_children.numeric'                         => 'The living children must be a number.',
+                'family_planning_living_children.max'                             => 'The living children may not be greater than :max.',
+                'family_planning_date_of_last_delivery.date'                      => 'The date of last delivery must be a valid date.',
+                'family_planning_date_of_last_delivery_menstrual_period.date'     => 'The date of last delivery menstrual period must be a valid date.',
                 'family_planning_date_of_previous_delivery_menstrual_period.date' => 'The date of previous delivery menstrual period must be a valid date.',
-
-                'family_planning_type_of_menstrual.string' => 'The type of menstrual must be a string.',
+                'family_planning_type_of_menstrual.string'                        => 'The type of menstrual must be a string.',
             ]);
 
-            //  RISK FOR SEXUALLY TRANSMITTED INFECTIONS & RISKS FOR VIOLENCE AGAINTS WOMEN (VAW)
             $riskData = $request->validate([
                 'infection_abnormal_discharge_from_genital_area' => 'sometimes|nullable|string',
-                'origin_of_abnormal_discharge' => 'sometimes|nullable|string',
-                'scores_or_ulcer' => 'sometimes|nullable|string',
-                'pain_or_burning_sensation' => 'sometimes|nullable|string',
-                'history_of_sexually_transmitted_infection' => 'sometimes|nullable|string',
-                'sexually_transmitted_disease' => 'sometimes|nullable|string',
-
-                'history_of_domestic_violence_of_VAW' => 'sometimes|nullable|string',
-                'unpleasant_relationship_with_partner' => 'sometimes|nullable|string',
-                'partner_does_not_approve' => 'sometimes|nullable|string',
-                'referred_to' => 'sometimes|nullable|string',
-                'reffered_to_others' => 'sometimes|nullable|string',
+                'origin_of_abnormal_discharge'                   => 'sometimes|nullable|string',
+                'scores_or_ulcer'                                => 'sometimes|nullable|string',
+                'pain_or_burning_sensation'                      => 'sometimes|nullable|string',
+                'history_of_sexually_transmitted_infection'      => 'sometimes|nullable|string',
+                'sexually_transmitted_disease'                   => 'sometimes|nullable|string',
+                'history_of_domestic_violence_of_VAW'            => 'sometimes|nullable|string',
+                'unpleasant_relationship_with_partner'           => 'sometimes|nullable|string',
+                'partner_does_not_approve'                       => 'sometimes|nullable|string',
+                'referred_to'                                    => 'sometimes|nullable|string',
+                'reffered_to_others'                             => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
                 'infection_abnormal_discharge_from_genital_area.string' => 'The abnormal discharge from genital area field must be a string.',
-                'origin_of_abnormal_discharge.string' => 'The origin of abnormal discharge field must be a string.',
-                'scores_or_ulcer.string' => 'The sores or ulcer field must be a string.',
-                'pain_or_burning_sensation.string' => 'The pain or burning sensation field must be a string.',
-                'history_of_sexually_transmitted_infection.string' => 'The history of sexually transmitted infection field must be a string.',
-                'sexually_transmitted_disease.string' => 'The sexually transmitted disease field must be a string.',
-                'history_of_domestic_violence_of_VAW.string' => 'The history of domestic violence of VAW field must be a string.',
-                'unpleasant_relationship_with_partner.string' => 'The unpleasant relationship with partner field must be a string.',
-                'partner_does_not_approve.string' => 'The partner does not approve field must be a string.',
-                'reffered_to_others.string' => 'The referred to others field must be a string.',
+                'origin_of_abnormal_discharge.string'                   => 'The origin of abnormal discharge field must be a string.',
+                'scores_or_ulcer.string'                                => 'The sores or ulcer field must be a string.',
+                'pain_or_burning_sensation.string'                      => 'The pain or burning sensation field must be a string.',
+                'history_of_sexually_transmitted_infection.string'      => 'The history of sexually transmitted infection field must be a string.',
+                'sexually_transmitted_disease.string'                   => 'The sexually transmitted disease field must be a string.',
+                'history_of_domestic_violence_of_VAW.string'            => 'The history of domestic violence of VAW field must be a string.',
+                'unpleasant_relationship_with_partner.string'           => 'The unpleasant relationship with partner field must be a string.',
+                'partner_does_not_approve.string'                       => 'The partner does not approve field must be a string.',
+                'reffered_to_others.string'                             => 'The referred to others field must be a string.',
             ]);
 
-            // physical examination
             $physicalExaminationData = $request->validate([
-                'physical_examination_skin_type' => 'sometimes|nullable|string',
-                'physical_examination_conjuctiva_type' => 'sometimes|nullable|string',
-                'physical_examination_breast_type' => 'sometimes|nullable|string',
-                'physical_examination_abdomen_type' => 'sometimes|nullable|string',
-                'physical_examination_extremites_type' => 'sometimes|nullable|string',
+                'physical_examination_skin_type'           => 'sometimes|nullable|string',
+                'physical_examination_conjuctiva_type'     => 'sometimes|nullable|string',
+                'physical_examination_breast_type'         => 'sometimes|nullable|string',
+                'physical_examination_abdomen_type'        => 'sometimes|nullable|string',
+                'physical_examination_extremites_type'     => 'sometimes|nullable|string',
                 'physical_examination_extremites_UID_type' => 'sometimes|nullable|string',
-                'cervical_abnormalities_type' => 'sometimes|nullable|string',
-                'cervical_consistency_type' => 'sometimes|nullable|string',
-                'uterine_position_type' => 'sometimes|nullable|string',
-                'uterine_depth_text' => 'sometimes|nullable|numeric',
-                'physical_examination_neck_type' => 'sometimes|nullable|string',
+                'cervical_abnormalities_type'              => 'sometimes|nullable|string',
+                'cervical_consistency_type'                => 'sometimes|nullable|string',
+                'uterine_position_type'                    => 'sometimes|nullable|string',
+                'uterine_depth_text'                       => 'sometimes|nullable|numeric',
+                'physical_examination_neck_type'           => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'physical_examination_skin_type.string' => 'The skin type field must be a string.',
-                'physical_examination_conjuctiva_type.string' => 'The conjunctiva type field must be a string.',
-                'physical_examination_breast_type.string' => 'The breast type field must be a string.',
-                'physical_examination_abdomen_type.string' => 'The abdomen type field must be a string.',
-                'physical_examination_extremites_type.string' => 'The extremities type field must be a string.',
+                'physical_examination_skin_type.string'           => 'The skin type field must be a string.',
+                'physical_examination_conjuctiva_type.string'     => 'The conjunctiva type field must be a string.',
+                'physical_examination_breast_type.string'         => 'The breast type field must be a string.',
+                'physical_examination_abdomen_type.string'        => 'The abdomen type field must be a string.',
+                'physical_examination_extremites_type.string'     => 'The extremities type field must be a string.',
                 'physical_examination_extremites_UID_type.string' => 'The extremities UID type field must be a string.',
-                'cervical_abnormalities_type.string' => 'The cervical abnormalities type field must be a string.',
-                'cervical_consistency_type.string' => 'The cervical consistency type field must be a string.',
-                'uterine_position_type.string' => 'The uterine position type field must be a string.',
-                'uterine_depth_text.numeric' => 'The uterine depth must be a number.',
-                'physical_examination_neck_type.string' => 'The neck type field must be a string.',
+                'cervical_abnormalities_type.string'              => 'The cervical abnormalities type field must be a string.',
+                'cervical_consistency_type.string'                => 'The cervical consistency type field must be a string.',
+                'uterine_position_type.string'                    => 'The uterine position type field must be a string.',
+                'uterine_depth_text.numeric'                      => 'The uterine depth must be a number.',
+                'physical_examination_neck_type.string'           => 'The neck type field must be a string.',
             ]);
 
-            // side b info
             $sideBdata = $request->validate([
-                'side_b_date_of_visit' => 'required|date',
-                'side_b_medical_findings' => 'sometimes|nullable|string',
-                'side_b_method_accepted' => 'sometimes|nullable|string',
-                'add_side_b_name_n_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'add_side_b_name_n_signature_data' => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit' => 'required|date',
-                'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
+                'side_b_date_of_visit'                           => 'required|date',
+                'side_b_medical_findings'                        => 'sometimes|nullable|string',
+                'side_b_method_accepted'                         => 'sometimes|nullable|string',
+                'add_side_b_name_n_signature_image'              => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_side_b_name_n_signature_data'               => 'sometimes|nullable|string',
+                'side_b_date_of_follow_up_visit'                 => 'required|date',
+                'baby_Less_than_six_months_question'             => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
-                'baby_last_4_weeks_question' => 'sometimes|nullable|string',
-                'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
-                'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
-                'contraceptive_question' => 'sometimes|nullable|string'
+                'baby_last_4_weeks_question'                     => 'sometimes|nullable|string',
+                'menstrual_period_in_seven_days_question'        => 'sometimes|nullable|string',
+                'miscarriage_or_abortion_question'               => 'sometimes|nullable|string',
+                'contraceptive_question'                         => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
-                'side_b_date_of_visit.required' => 'The date of visit field is required.',
-                'side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
-
-                'side_b_medical_findings.string' => 'The medical findings field must be a string.',
-                'side_b_method_accepted.string' => 'The method accepted field must be a string.',
-
-                'add_side_b_name_n_signature_image.image' => 'The signature must be an image.',
-                'add_side_b_name_n_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
-                'add_side_b_name_n_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
-
-                'side_b_date_of_follow_up_visit.required' => 'The date of follow up visit field is required.',
-                'side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
-
-                'baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
-                'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
-                'baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
-                'menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
-                'miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
+                'side_b_date_of_visit.required'                          => 'The date of visit field is required.',
+                'side_b_date_of_visit.date'                              => 'The date of visit must be a valid date.',
+                'side_b_medical_findings.string'                         => 'The medical findings field must be a string.',
+                'side_b_method_accepted.string'                          => 'The method accepted field must be a string.',
+                'add_side_b_name_n_signature_image.image'                => 'The signature must be an image.',
+                'add_side_b_name_n_signature_image.mimes'                => 'The signature must be a file of type: jpg, jpeg, png.',
+                'add_side_b_name_n_signature_image.max'                  => 'The signature may not be greater than :max kilobytes.',
+                'side_b_date_of_follow_up_visit.required'                => 'The date of follow up visit field is required.',
+                'side_b_date_of_follow_up_visit.date'                    => 'The date of follow up visit must be a valid date.',
+                'baby_Less_than_six_months_question.string'              => 'The baby less than six months question field must be a string.',
+                'sexual_intercouse_or_mesntrual_period_question.string'  => 'The sexual intercourse or menstrual period question field must be a string.',
+                'baby_last_4_weeks_question.string'                      => 'The baby last 4 weeks question field must be a string.',
+                'menstrual_period_in_seven_days_question.string'         => 'The menstrual period in seven days question field must be a string.',
+                'miscarriage_or_abortion_question.string'                => 'The miscarriage or abortion question field must be a string.',
             ]);
 
-            // check if the email is valid
-            if ($patientData['user_account']) {
-                $errors = [];
+            // ============================================================================
+            // HANDLE EXISTING PATIENT RECORD
+            // ============================================================================
+            if ($request->filled('patient_id')) {
 
-                try {
-                    $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
+                $familPlanningPatient = patients::with('address')->findOrFail($patientData['patient_id']);
 
-                    // Validate email
-                    if ($user->email != $patientData['email']) {
-                        $errors['email'] = ["Patient Account email doesn't match the email input value."];
-                    }
+                $existingCase = medical_record_cases::where('patient_id', $familPlanningPatient->id)
+                    ->where('type_of_case', $patientData['type_of_patient'])
+                    ->where('status', 'Active')
+                    ->first();
 
-                    // Validate house number (required)
-                    if (isset($blk_n_street[0]) && $blk_n_street[0] != $user->user_address->house_number) {
-                        $errors['street'] = ["House number doesn't match the patient account records."];
-                    }
-
-                    // Validate street (optional - only if provided)
-                    if (isset($blk_n_street[1]) && !empty(trim($blk_n_street[1]))) {
-                        if (trim($blk_n_street[1]) != $user->user_address->street) {
-                            if (!isset($errors['street'])) {
-                                $errors['street'] = [];
-                            }
-                            $errors['street'][] = "Street doesn't match the patient account records.";
-                        }
-                    }
-
-                    // Validate barangay/purok
-                    if ($patientData['brgy'] != $user->user_address->purok) {
-                        $errors['brgy'] = ["Barangay doesn't match the patient account records."];
-                    }
-
-                    // If there are errors, return JSON response
-                    if (!empty($errors)) {
-                        return response()->json([
-                            'message' => 'The given data does not match our records.',
-                            'errors' => $errors
-                        ], 422);
-                    }
-
-                    // If validation passes, continue with your logic...
-
-                } catch (ModelNotFoundException $e) {
+                if ($existingCase) {
                     return response()->json([
-                        'message' => 'Patient account not found.',
-                        'errors' => [
-                            'user_account' => ['The selected patient account does not exist.']
-                        ]
-                    ], 404);
+                        'message' => 'Validation failed.',
+                        'errors'  => ['type_of_patient' => ['This patient already has an active Family Planning case.']]
+                    ], 422);
                 }
-            }
-            // ==================================================================================================================================
 
-            // -------------------------------------------------------------------------------------------------------
-            // INSERT THE DATA 
-            $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
-            $middle = $middle ? strtoupper($middle) . '.' : null;
-            $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
-            $parts = [
-                strtolower($patientData['first_name']),
-                $middle,
-                strtolower($patientData['last_name']),
-                $patientData['suffix'] ?? null
-            ];
+                $familyPlanningPatientRecordId = $familPlanningPatient->id;
 
-            // address
-            $blk_n_street = explode(',', $patientData['street']);
-
-            $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-
-            // create the patient record
-            $familPlanningPatient = patients::create([
-                'user_id' => null,
-                'first_name' => ucwords(strtolower($patientData['first_name'])),
-                'middle_initial' => $middleName,
-                'last_name' => ucwords(strtolower($patientData['last_name'])),
-                'full_name' => $fullName,
-                'age' => $patientData['age'] ?? null,
-                'sex' => 'Female',
-                'civil_status' => $patientData['civil_status'] ?? null,
-                'contact_number' => $patientData['contact_number'] ?? null,
-                'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                'profile_image' => 'images/default_profile.png',
-                'nationality' => $patientData['nationality'] ?? null,
-                'date_of_registration' => $patientData['date_of_registration'] ?? null,
-                'place_of_birth' => $patientData['place_of_birth'] ?? null,
-                'suffix' => $patientData['suffix'] ?? '',
-            ]);
-
-            // create the patient account if not existed
-            // Insert user data or update only
-            if ($patientData['user_account']) {
-                try {
-                    $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
-
-                    // Update existing user
-                    $user->update([
-                        'patient_record_id' => $familPlanningPatient->id,
-                        'first_name' => ucwords(strtolower($patientData['first_name'])),
-                        'middle_initial' => $middleName,
-                        'last_name' => ucwords(strtolower($patientData['last_name'])),
-                        'full_name' => $fullName,
-                        'email' => $patientData['email'],
-                        'contact_number' => $patientData['contact_number'] ?? null,
-                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                        'suffix' => $patientData['suffix'] ?? null,
-                        'patient_type' => $patientData['type_of_patient'],
-                        'role' => 'patient',
-                        'status' => 'active'
-                    ]);
-
-                    // update the user_id in patients record
-
-                    $familPlanningPatient->update([
-                        'user_id' => $user->id
-                    ]);
-
-                    // Update or create user address
-                    if ($user->user_address) {
-                        $user->user_address->update([
-                            'patient_id' => $familPlanningPatient->id,
-                            'house_number' => $blk_n_street[0],
-                            'street' => $blk_n_street[1] ?? null,
-                            'purok' => $patientData['brgy']
-                        ]);
-                    } else {
-                        // Create address if it doesn't exist
-                        $user->user_address()->create([
-                            'patient_id' => $familPlanningPatient->id,
-                            'house_number' => $blk_n_street[0],
-                            'street' => $blk_n_street[1] ?? null,
-                            'purok' => $patientData['brgy']
-                        ]);
-                    }
-                } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-                    // User account not found, but this shouldn't happen if validation passed
+                $patientAddress = $familPlanningPatient->address;
+                if (!$patientAddress) {
                     return response()->json([
-                        'message' => 'Patient account not found.',
-                        'errors' => [
-                            'user_account' => ['The selected patient account does not exist.']
-                        ]
-                    ], 404);
-                } catch (\Exception $e) {
-                    // Log the error
-                    // \Log::error('Error updating user account: ' . $e->getMessage());
-
-                    return response()->json([
-                        'message' => 'An error occurred while updating patient information.',
-                        'errors' => [
-                            'server' => ['Please try again or contact support.']
-                        ]
-                    ], 500);
+                        'message' => 'Patient address not found.',
+                        'errors'  => ['patient_id' => ['The selected patient does not have an address record.']]
+                    ], 422);
                 }
+
+                $patientAddress->refresh();
+                $fullAddress = collect([
+                    $patientAddress->house_number,
+                    $patientAddress->street,
+                    $patientAddress->purok,
+                    $patientAddress->barangay ?? null,
+                    $patientAddress->city ?? null,
+                    $patientAddress->province ?? null,
+                ])->filter()->join(', ');
+
+                $message = 'Family Planning case added to existing patient successfully.';
             } else {
-                // Create new user account
-                $temporaryPassword = $this->generateSecurePassword(8);
-                try {
-                    // Create user
-                    $user = User::create([
-                        'patient_record_id' => $familPlanningPatient->id,
-                        'first_name' => ucwords(strtolower($patientData['first_name'])),
-                        'middle_initial' => $middleName,
-                        'last_name' => ucwords(strtolower($patientData['last_name'])),
-                        'full_name' => $fullName,
-                        'email' => $patientData['email'],
-                        'contact_number' => $patientData['contact_number'] ?? null,
-                        'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                        'suffix' => $patientData['suffix'] ?? null,
-                        'patient_type' => $patientData['type_of_patient'],
-                        'password' => Hash::make($temporaryPassword),
-                        'role' => 'patient',
-                        'status' => 'active',
-                    ]);
+                // ============================================================================
+                // CREATE NEW PATIENT RECORD
+                // ============================================================================
 
-                    // update the user_id in patients record
+                $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle     = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
+                $parts      = [
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null,
+                ];
+                $blk_n_street = explode(',', $patientData['street']);
+                $fullName     = ucwords(trim(implode(' ', array_filter($parts))));
 
-                    $familPlanningPatient->update([
-                        'user_id' => $user->id
-                    ]);
+                // Validate user account matching (only if patient account linked, not guardian mode)
+                if ($patientData['user_account'] && !$isGuardianMode) {
+                    $errors = [];
 
-                    // Send email with credentials
-                    Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
-                    // Create user address
-                    $user->user_address()->create([
-                        'patient_id' => $familPlanningPatient->id,
-                        'house_number' => $blk_n_street[0],
-                        'street' => $blk_n_street[1] ?? null,
-                        'purok' => $patientData['brgy']
-                    ]);
-                } catch (\Exception $e) {
-                    // Log the error
+                    try {
+                        $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
 
-                    return response()->json([
-                        'message' => 'An error occurred while creating patient account.',
-                        'errors' => [
-                            'server' => ['Please try again or contact support.']
-                        ]
-                    ], 500);
+                        if ($user->email != $patientData['email']) {
+                            $errors['email'] = ["Patient Account email doesn't match the email input value."];
+                        }
+
+                        if (isset($blk_n_street[0]) && $blk_n_street[0] != $user->user_address->house_number) {
+                            $errors['street'] = ["House number doesn't match the patient account records."];
+                        }
+
+                        if (isset($blk_n_street[1]) && !empty(trim($blk_n_street[1]))) {
+                            if (trim($blk_n_street[1]) != $user->user_address->street) {
+                                if (!isset($errors['street'])) $errors['street'] = [];
+                                $errors['street'][] = "Street doesn't match the patient account records.";
+                            }
+                        }
+
+                        if ($patientData['brgy'] != $user->user_address->purok) {
+                            $errors['brgy'] = ["Barangay doesn't match the patient account records."];
+                        }
+
+                        if (!empty($errors)) {
+                            return response()->json([
+                                'message' => 'The given data does not match our records.',
+                                'errors'  => $errors
+                            ], 422);
+                        }
+                    } catch (ModelNotFoundException $e) {
+                        return response()->json([
+                            'message' => 'Patient account not found.',
+                            'errors'  => ['user_account' => ['The selected patient account does not exist.']]
+                        ], 404);
+                    }
                 }
+
+                // Create patient record
+                $familPlanningPatient = patients::create([
+                    'user_id'              => null,
+                    'guardian_user_id'     => $isGuardianMode ? $guardianAccountId : null, // NEW
+                    'first_name'           => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial'       => $middleName,
+                    'last_name'            => ucwords(strtolower($patientData['last_name'])),
+                    'full_name'            => $fullName,
+                    'age'                  => $patientData['age'] ?? null,
+                    'sex'                  => 'Female',
+                    'civil_status'         => $patientData['civil_status'] ?? null,
+                    'contact_number'       => $patientData['contact_number'] ?? null,
+                    'date_of_birth'        => $patientData['date_of_birth'] ?? null,
+                    'profile_image'        => 'images/default_profile.png',
+                    'nationality'          => $patientData['nationality'] ?? null,
+                    'date_of_registration' => $patientData['date_of_registration'] ?? null,
+                    'place_of_birth'       => $patientData['place_of_birth'] ?? null,
+                    'suffix'               => $patientData['suffix'] ?? '',
+                    'status'               => 'Active',
+                ]);
+
+                // ----------------------------------------------------------------
+                // ACCOUNT HANDLING: Guardian mode vs Patient account vs New account
+                // ----------------------------------------------------------------
+                if ($isGuardianMode) {
+                    // GUARDIAN MODE: no user account created for the patient
+                    // guardian_user_id already set above on the patient record
+                    // Notifications will go to the guardian's account
+
+                } elseif ($patientData['user_account']) {
+                    // EXISTING USER ACCOUNT: link and update
+                    try {
+                        $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
+
+                        $user->update([
+                            'patient_record_id' => $familPlanningPatient->id,
+                            'first_name'        => ucwords(strtolower($patientData['first_name'])),
+                            'middle_initial'    => $middleName,
+                            'last_name'         => ucwords(strtolower($patientData['last_name'])),
+                            'full_name'         => $fullName,
+                            'email'             => $patientData['email'],
+                            'contact_number'    => $patientData['contact_number'] ?? null,
+                            'date_of_birth'     => $patientData['date_of_birth'] ?? null,
+                            'suffix'            => $patientData['suffix'] ?? null,
+                            'patient_type'      => $patientData['type_of_patient'],
+                            'role'              => 'patient',
+                            'status'            => 'active',
+                        ]);
+
+                        $familPlanningPatient->update(['user_id' => $user->id]);
+
+                        if ($user->user_address) {
+                            $user->user_address->update([
+                                'patient_id'   => $familPlanningPatient->id,
+                                'house_number' => $blk_n_street[0],
+                                'street'       => $blk_n_street[1] ?? null,
+                                'purok'        => $patientData['brgy'],
+                            ]);
+                        } else {
+                            $user->user_address()->create([
+                                'patient_id'   => $familPlanningPatient->id,
+                                'house_number' => $blk_n_street[0],
+                                'street'       => $blk_n_street[1] ?? null,
+                                'purok'        => $patientData['brgy'],
+                            ]);
+                        }
+                    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                        return response()->json([
+                            'message' => 'Patient account not found.',
+                            'errors'  => ['user_account' => ['The selected patient account does not exist.']]
+                        ], 404);
+                    } catch (\Exception $e) {
+                        return response()->json([
+                            'message' => 'An error occurred while updating patient information.',
+                            'errors'  => ['server' => ['Please try again or contact support.']]
+                        ], 500);
+                    }
+                } else {
+                    // NEW ACCOUNT: create fresh user account and send credentials
+                    $temporaryPassword = $this->generateSecurePassword(8);
+                    try {
+                        $user = User::create([
+                            'patient_record_id' => $familPlanningPatient->id,
+                            'first_name'        => ucwords(strtolower($patientData['first_name'])),
+                            'middle_initial'    => $middleName,
+                            'last_name'         => ucwords(strtolower($patientData['last_name'])),
+                            'full_name'         => $fullName,
+                            'email'             => $patientData['email'],
+                            'contact_number'    => $patientData['contact_number'] ?? null,
+                            'date_of_birth'     => $patientData['date_of_birth'] ?? null,
+                            'suffix'            => $patientData['suffix'] ?? null,
+                            'patient_type'      => $patientData['type_of_patient'],
+                            'password'          => Hash::make($temporaryPassword),
+                            'role'              => 'patient',
+                            'status'            => 'active',
+                        ]);
+
+                        $familPlanningPatient->update(['user_id' => $user->id]);
+
+                        Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
+
+                        $user->user_address()->create([
+                            'patient_id'   => $familPlanningPatient->id,
+                            'house_number' => $blk_n_street[0],
+                            'street'       => $blk_n_street[1] ?? null,
+                            'purok'        => $patientData['brgy'],
+                        ]);
+                    } catch (\Exception $e) {
+                        return response()->json([
+                            'message' => 'An error occurred while creating patient account.',
+                            'errors'  => ['server' => ['Please try again or contact support.']]
+                        ], 500);
+                    }
+                }
+
+                $familyPlanningPatientRecordId = $familPlanningPatient->id;
+
+                $patientAddress = patient_addresses::create([
+                    'patient_id'   => $familyPlanningPatientRecordId,
+                    'house_number' => $blk_n_street[0] ?? $patientData['blk_n_street'],
+                    'street'       => $blk_n_street[1] ?? null,
+                    'purok'        => $patientData['brgy'],
+                    'postal_code'  => '4109',
+                    'latitude'     => null,
+                    'longitude'    => null,
+                ]);
+
+                $patientAddress->refresh();
+
+                $fullAddress = collect([
+                    $patientAddress->house_number,
+                    $patientAddress->street,
+                    $patientAddress->purok,
+                    $patientAddress->barangay ?? null,
+                    $patientAddress->city ?? null,
+                    $patientAddress->province ?? null,
+                ])->filter()->join(', ');
+
+                $message = 'Family Planning patient information added successfully.';
             }
-            //  =================================================================================================================================
 
-            $familyPlanningPatientRecordId = $familPlanningPatient->id;
+            // ============================================================================
+            // CREATE MEDICAL CASE RECORD (Common for both new and existing patients)
+            // ============================================================================
 
-            // add the patient address
-           
-            $patientAddress = patient_addresses::create([
-                'patient_id' => $familyPlanningPatientRecordId,
-                'house_number' => $blk_n_street[0] ?? $patientData['blk_n_street'],
-                'street' => $blk_n_street[1] ?? null,
-                'purok' => $patientData['brgy'],
-                'postal_code' => '4109',
-                'latitude' => null,
-                'longitude' => null,
-            ]);
-
-            $patientAddress->refresh(); // <-- this pulls in DB defaults
-
-            $fullAddress = collect([
-                $patientAddress->house_number,
-                $patientAddress->street,
-                $patientAddress->purok,
-                $patientAddress->barangay ?? null,
-                $patientAddress->city ?? null,
-                $patientAddress->province ?? null,
-            ])->filter()->join(', ');
-
-
-            // add record for medical_case table
             $medicalCase = medical_record_cases::create([
-                'patient_id' =>  $familyPlanningPatientRecordId,
+                'patient_id'   => $familyPlanningPatientRecordId,
                 'type_of_case' => $patientData['type_of_patient'],
+                'status'       => 'Active',
             ]);
 
-            $medicalCaseId = $medicalCase->id; //medical record id
+            $medicalCaseId = $medicalCase->id;
 
-
-            // CREATE THE MEDICAL RECORD
             family_planning_medical_records::create([
                 'medical_record_case_id' => $medicalCaseId,
-                'health_worker_id' => $patientData['handled_by'],
-                'patient_name' => $familPlanningPatient->full_name,
-                'occupation' => $medicalData['family_planning_occupation'] ?? null,
-                'religion' => $medicalData['religion'] ?? null,
-                'philhealth_no' => $medicalData['philhealth_no'] ?? null,
-                'blood_pressure' => $medicalData['blood_pressure'] ?? null,
-                'temperature' => $medicalData['temperature'] ?? null,
-                'pulse_rate' => $medicalData['pulse_rate'] ?? null,
-                'respiratory_rate' => $medicalData['respiratory_rate'] ?? null,
-                'height' => $medicalData['height'] ?? null,
-                'weight' => $medicalData['weight'] ?? null,
+                'health_worker_id'       => $handledBy,
+                'patient_name'           => $familPlanningPatient->full_name,
+                'occupation'             => $medicalData['family_plan_occupation'] ?? null,
+                'religion'               => $medicalData['religion'] ?? null,
+                'philhealth_no'          => $medicalData['philhealth_no'] ?? null,
+                'blood_pressure'         => $medicalData['blood_pressure'] ?? null,
+                'temperature'            => $medicalData['temperature'] ?? null,
+                'pulse_rate'             => $medicalData['pulse_rate'] ?? null,
+                'respiratory_rate'       => $medicalData['respiratory_rate'] ?? null,
+                'height'                 => $medicalData['height'] ?? null,
+                'weight'                 => $medicalData['weight'] ?? null,
             ]);
 
-            $methods = $caseData['previously_used_method'] ?? null;
+            $methods         = $caseData['previously_used_method'] ?? null;
             $previoulyMethod = null;
             if ($methods) {
-
                 $previoulyMethod = implode(",", $caseData['previously_used_method'] ?? []);
             }
 
-            // signature 
-            $signaturePath = null;
+            $signaturePath        = null;
             $signatureConsentPath = null;
 
-            // If user uploaded an image file
             if ($request->hasFile('add_family_planning_signature_image')) {
                 $signaturePath = $this->compressAndSaveSignature($request->file('add_family_planning_signature_image'));
-            }
-            // If user drew a signature
-            else if ($request->filled('add_family_planning_signature_data')) {
+            } elseif ($request->filled('add_family_planning_signature_data')) {
                 $signaturePath = $this->saveCanvasSignature($request->add_family_planning_signature_data);
             }
-            // signature consent
+
             if ($request->hasFile('add_family_planning_consent_signature_image')) {
                 $signatureConsentPath = $this->compressAndSaveSignature($request->file('add_family_planning_consent_signature_image'));
-            }
-            // If user drew a signature
-            else if ($request->filled('add_family_planning_consent_signature_data')) {
+            } elseif ($request->filled('add_family_planning_consent_signature_data')) {
                 $signatureConsentPath = $this->saveCanvasSignature($request->add_family_planning_consent_signature_data);
             }
 
-            // CREATE THE CASE RECORD
             $caseRecord = family_planning_case_records::create([
-                'medical_record_case_id' => $medicalCaseId,
-                'health_worker_id' => $patientData['handled_by'],
-                'client_id' => $caseData['client_id'] ?? null,
-                'philhealth_no' => $caseData['philhealth_no'] ?? null,
-                'NHTS' => $caseData['NHTS'] ?? null,
-                'client_name' => $familPlanningPatient->full_name,
-                'client_date_of_birth' => $patientData['date_of_birth'] ?? null,
-                'client_age' => $patientData['age'] ?? null,
-                'occupation' => $medicalData['family_plan_occupation'] ?? null,
-                'client_address' => $fullAddress,
-                'client_contact_number' => $patientData['contact_number'] ?? null,
-                'client_civil_status' => $patientData['civil_status'] ?? null,
-                'client_religion' => $medicalData['religion'] ?? null,
-                'client_suffix' => $patientData['suffix'] ?? '',
-                'spouse_lname' => $caseData['spouse_lname'] ?? null,
-                'spouse_fname' => $caseData['spouse_fname'] ?? null,
-                'spouse_MI' => $caseData['spouse_MI'] ?? null,
-                'spouse_date_of_birth' => $caseData['spouse_date_of_birth'] ?? null,
-                'spouse_age' => $caseData['spouse_age'] ?? null,
-                'spouse_occupation' => $caseData['spouse_occupation'] ?? null,
-                'spouse_suffix' => $caseData['spouse_suffix'] ?? '',
-                'number_of_living_children' => $caseData['number_of_living_children'] ?? null,
-                'plan_to_have_more_children' => $caseData['plan_to_have_more_children'] ?? null,
-
-                'average_montly_income' => $caseData['average_montly_income'] ?? null,
-                'type_of_patient' => $caseData['family_planning_type_of_patient'] ?? null,
-                'new_acceptor_reason_for_FP' => $caseData['new_acceptor_reason_for_FP'] ?? null,
-                'current_user_reason_for_FP' => $caseData['current_user_reason_for_FP'] ?? null,
-                'current_method_reason' => $caseData['current_method_reason'] ?? null,
-                'previously_used_method' => $previoulyMethod ?? null,
-                'choosen_method' => $caseData['choosen_method'] ?? null,
-                'signature_image' => $signaturePath ?? null,
-                'date_of_acknowledgement' => $caseData['family_planning_date_of_acknowledgement'] ?? null,
+                'medical_record_case_id'                  => $medicalCaseId,
+                'health_worker_id'                        => $handledBy,
+                'client_id'                               => $caseData['client_id'] ?? null,
+                'philhealth_no'                           => $caseData['philhealth_no'] ?? null,
+                'NHTS'                                    => $caseData['NHTS'] ?? null,
+                'client_name'                             => $familPlanningPatient->full_name,
+                'client_first_name'                       => $familPlanningPatient->first_name,
+                'client_last_name'                        => $familPlanningPatient->last_name,
+                'client_middle_name'                      => $familPlanningPatient->middle_initial,
+                'client_date_of_birth'                    => $familPlanningPatient->date_of_birth ?? null,
+                'client_age'                              => $familPlanningPatient->age ?? null,
+                'occupation'                              => $medicalData['family_plan_occupation'] ?? null,
+                'client_address'                          => $fullAddress,
+                'client_contact_number'                   => $familPlanningPatient->contact_number ?? null,
+                'client_civil_status'                     => $familPlanningPatient->civil_status ?? null,
+                'client_religion'                         => $medicalData['religion'] ?? null,
+                'client_suffix'                           => $familPlanningPatient->suffix ?? '',
+                'spouse_lname'                            => $caseData['spouse_lname'] ?? null,
+                'spouse_fname'                            => $caseData['spouse_fname'] ?? null,
+                'spouse_MI'                               => $caseData['spouse_MI'] ?? null,
+                'spouse_date_of_birth'                    => $caseData['spouse_date_of_birth'] ?? null,
+                'spouse_age'                              => $caseData['spouse_age'] ?? null,
+                'spouse_occupation'                       => $caseData['spouse_occupation'] ?? null,
+                'spouse_suffix'                           => $caseData['spouse_suffix'] ?? '',
+                'number_of_living_children'               => $caseData['number_of_living_children'] ?? null,
+                'plan_to_have_more_children'              => $caseData['plan_to_have_more_children'] ?? null,
+                'average_montly_income'                   => $caseData['average_montly_income'] ?? null,
+                'type_of_patient'                         => $caseData['family_planning_type_of_patient'] ?? null,
+                'new_acceptor_reason_for_FP'              => $caseData['new_acceptor_reason_for_FP'] ?? null,
+                'current_user_reason_for_FP'              => $caseData['current_user_reason_for_FP'] ?? null,
+                'current_method_reason'                   => $caseData['current_method_reason'] ?? null,
+                'previously_used_method'                  => $previoulyMethod ?? null,
+                'choosen_method'                          => $caseData['choosen_method'] ?? null,
+                'signature_image'                         => $signaturePath ?? null,
+                'date_of_acknowledgement'                 => $caseData['family_planning_date_of_acknowledgement'] ?? null,
                 'acknowledgement_consent_signature_image' => $signatureConsentPath ?? null,
-                'date_of_acknowledgement_consent' => $caseData['family_planning_date_of_acknowledgement_consent'] ?? null,
-                'current_user_type' => $caseData['current_user_type'] ?? null,
-                'status' => 'Active'
+                'date_of_acknowledgement_consent'         => $caseData['family_planning_date_of_acknowledgement_consent'] ?? null,
+                'current_user_type'                       => $caseData['current_user_type'] ?? null,
+                'status'                                  => 'Active',
             ]);
 
             $caseId = $caseRecord->id;
 
-            // medical history
-            $medicalHistories = family_planning_medical_histories::create([
-                'case_id' => $caseId,
-                'severe_headaches_migraine' => $medicalHistoryData['medical_history_severe_headaches_migraine'] ?? null,
-                'history_of_stroke' => $medicalHistoryData['medical_history_history_of_stroke'] ?? null,
-                'non_traumatic_hemtoma' => $medicalHistoryData['medical_history_non_traumatic_hemtoma'] ?? null,
-                'history_of_breast_cancer' => $medicalHistoryData['medical_history_history_of_breast_cancer'] ?? null,
-                'severe_chest_pain' => $medicalHistoryData['medical_history_severe_chest_pain'] ?? null,
-                'cough' => $medicalHistoryData['medical_history_cough'] ?? null,
-                'jaundice' => $medicalHistoryData['medical_history_jaundice'] ?? null,
-                'unexplained_vaginal_bleeding' => $medicalHistoryData['medical_history_unexplained_vaginal_bleeding'] ?? null,
-                'abnormal_vaginal_discharge' => $medicalHistoryData['medical_history_abnormal_vaginal_discharge'] ?? null,
-                'abnormal_phenobarbital' => $medicalHistoryData['medical_history_abnormal_phenobarbital'] ?? null,
-                'smoker' => $medicalHistoryData['medical_history_smoker'] ?? null,
-                'with_dissability' => $medicalHistoryData['medical_history_with_dissability'] ?? null,
+            family_planning_medical_histories::create([
+                'case_id'                           => $caseId,
+                'severe_headaches_migraine'         => $medicalHistoryData['medical_history_severe_headaches_migraine'] ?? null,
+                'history_of_stroke'                 => $medicalHistoryData['medical_history_history_of_stroke'] ?? null,
+                'non_traumatic_hemtoma'             => $medicalHistoryData['medical_history_non_traumatic_hemtoma'] ?? null,
+                'history_of_breast_cancer'          => $medicalHistoryData['medical_history_history_of_breast_cancer'] ?? null,
+                'severe_chest_pain'                 => $medicalHistoryData['medical_history_severe_chest_pain'] ?? null,
+                'cough'                             => $medicalHistoryData['medical_history_cough'] ?? null,
+                'jaundice'                          => $medicalHistoryData['medical_history_jaundice'] ?? null,
+                'unexplained_vaginal_bleeding'      => $medicalHistoryData['medical_history_unexplained_vaginal_bleeding'] ?? null,
+                'abnormal_vaginal_discharge'        => $medicalHistoryData['medical_history_abnormal_vaginal_discharge'] ?? null,
+                'abnormal_phenobarbital'            => $medicalHistoryData['medical_history_abnormal_phenobarbital'] ?? null,
+                'smoker'                            => $medicalHistoryData['medical_history_smoker'] ?? null,
+                'with_dissability'                  => $medicalHistoryData['medical_history_with_dissability'] ?? null,
                 'if_with_dissability_specification' => $medicalHistoryData['if_with_dissability_specification'] ?? null,
             ]);
-            // obsterical history
-            $obstericalHistories = family_planning_obsterical_histories::create([
-                'case_id' => $caseId,
-                'G' => $obstericalHistoryData['family_planning_G'] ?? null,
-                'P' => $obstericalHistoryData['family_planning_P'] ?? null,
-                'full_term' => $obstericalHistoryData['family_planning_full_term'] ?? null,
-                'abortion' => $obstericalHistoryData['family_planning_abortion'] ?? null,
-                'premature' => $obstericalHistoryData['family_planning_premature'] ?? null,
-                'living_children' => $obstericalHistoryData['family_planning_living_chldren'] ?? null,
-                'date_of_last_delivery' => $obstericalHistoryData['family_planning_date_of_last_delivery'] ?? null,
-                'type_of_last_delivery' => $obstericalHistoryData['family_planning_type_of_last_delivery'] ?? null,
-                'date_of_last_delivery_menstrual_period' => $obstericalHistoryData['family_planning_date_of_last_delivery_menstrual_period'] ?? null,
-                'date_of_previous_delivery_menstrual_period' => $obstericalHistoryData['family_planning_date_of_previous_delivery_menstrual_period'] ?? null,
-                'type_of_menstrual' => $obstericalHistoryData['family_planning_type_of_menstrual'] ?? null,
-                'Dysmenorrhea' => $obstericalHistoryData['family_planning_Dysmenorrhea'] ?? null,
-                'hydatidiform_mole' => $obstericalHistoryData['family_planning_hydatidiform_mole'] ?? null,
-                'ectopic_pregnancy' => $obstericalHistoryData['family_planning_ectopic_pregnancy'] ?? null,
+
+            family_planning_obsterical_histories::create([
+                'case_id'                                            => $caseId,
+                'G'                                                  => $obstericalHistoryData['family_planning_G'] ?? null,
+                'P'                                                  => $obstericalHistoryData['family_planning_P'] ?? null,
+                'full_term'                                          => $obstericalHistoryData['family_planning_full_term'] ?? null,
+                'abortion'                                           => $obstericalHistoryData['family_planning_abortion'] ?? null,
+                'premature'                                          => $obstericalHistoryData['family_planning_premature'] ?? null,
+                'living_children'                                    => $obstericalHistoryData['family_planning_living_children'] ?? null,
+                'date_of_last_delivery'                              => $obstericalHistoryData['family_planning_date_of_last_delivery'] ?? null,
+                'type_of_last_delivery'                              => $obstericalHistoryData['family_planning_type_of_last_delivery'] ?? null,
+                'date_of_last_delivery_menstrual_period'             => $obstericalHistoryData['family_planning_date_of_last_delivery_menstrual_period'] ?? null,
+                'date_of_previous_delivery_menstrual_period'         => $obstericalHistoryData['family_planning_date_of_previous_delivery_menstrual_period'] ?? null,
+                'type_of_menstrual'                                  => $obstericalHistoryData['family_planning_type_of_menstrual'] ?? null,
+                'Dysmenorrhea'                                       => $obstericalHistoryData['family_planning_Dysmenorrhea'] ?? null,
+                'hydatidiform_mole'                                  => $obstericalHistoryData['family_planning_hydatidiform_mole'] ?? null,
+                'ectopic_pregnancy'                                  => $obstericalHistoryData['family_planning_ectopic_pregnancy'] ?? null,
             ]);
 
-            // III. RISK FOR SEXUALLY TRANSMITTED INFECTIONS
-
-            $riskOfSexuallyTransmitted = risk_for_sexually_transmitted_infections::create([
-                'case_id' => $caseId,
+            risk_for_sexually_transmitted_infections::create([
+                'case_id'                                        => $caseId,
                 'infection_abnormal_discharge_from_genital_area' => $riskData['infection_abnormal_discharge_from_genital_area'] ?? null,
-                'origin_of_abnormal_discharge' => $riskData['origin_of_abnormal_discharge'] ?? null,
-                'scores_or_ulcer' => $riskData['scores_or_ulcer'] ?? null,
-                'pain_or_burning_sensation' => $riskData['pain_or_burning_sensation'] ?? null,
-                'history_of_sexually_transmitted_infection' => $riskData['history_of_sexually_transmitted_infection'] ?? null,
-                'sexually_transmitted_disease' => $riskData['sexually_transmitted_disease'] ?? null,
-                'history_of_domestic_violence_of_VAW' => $riskData['history_of_domestic_violence_of_VAW'] ?? null,
-                'unpleasant_relationship_with_partner' => $riskData['unpleasant_relationship_with_partner'] ?? null,
-                'partner_does_not_approve' => $riskData['partner_does_not_approve'] ?? null,
-                'referred_to' => $riskData['referred_to'] ?? null,
-                'reffered_to_others' => $riskData['reffered_to_others'] ?? null,
+                'origin_of_abnormal_discharge'                   => $riskData['origin_of_abnormal_discharge'] ?? null,
+                'scores_or_ulcer'                                => $riskData['scores_or_ulcer'] ?? null,
+                'pain_or_burning_sensation'                      => $riskData['pain_or_burning_sensation'] ?? null,
+                'history_of_sexually_transmitted_infection'      => $riskData['history_of_sexually_transmitted_infection'] ?? null,
+                'sexually_transmitted_disease'                   => $riskData['sexually_transmitted_disease'] ?? null,
+                'history_of_domestic_violence_of_VAW'            => $riskData['history_of_domestic_violence_of_VAW'] ?? null,
+                'unpleasant_relationship_with_partner'           => $riskData['unpleasant_relationship_with_partner'] ?? null,
+                'partner_does_not_approve'                       => $riskData['partner_does_not_approve'] ?? null,
+                'referred_to'                                    => $riskData['referred_to'] ?? null,
+                'reffered_to_others'                             => $riskData['reffered_to_others'] ?? null,
             ]);
 
-            // PHYSICAL EXAMINATION
-            $physicalExamination = family_planning_physical_examinations::create([
-                'case_id' => $caseId,
-                'blood_pressure' => $medicalData['blood_pressure'] ?? null,
-                'pulse_rate' => $medicalData['pulse_rate'] ?? null,
-                'height' => $medicalData['height'] ?? null,
-                'weight' => $medicalData['weight'] ?? null,
-
-                'skin_type' => $physicalExaminationData['physical_examination_skin_type'] ?? null,
-                'conjuctiva_type' => $physicalExaminationData['physical_examination_conjuctiva_type'] ?? null,
-                'breast_type' => $physicalExaminationData['physical_examination_breast_type'] ?? null,
-                'abdomen_type' => $physicalExaminationData['physical_examination_abdomen_type'] ?? null,
-                'extremites_type' => $physicalExaminationData['physical_examination_extremites_type'] ?? null,
-                'extremites_UID_type' => $physicalExaminationData['physical_examination_extremites_UID_type'] ?? null,
+            family_planning_physical_examinations::create([
+                'case_id'                     => $caseId,
+                'blood_pressure'              => $medicalData['blood_pressure'] ?? null,
+                'pulse_rate'                  => $medicalData['pulse_rate'] ?? null,
+                'height'                      => $medicalData['height'] ?? null,
+                'weight'                      => $medicalData['weight'] ?? null,
+                'skin_type'                   => $physicalExaminationData['physical_examination_skin_type'] ?? null,
+                'conjuctiva_type'             => $physicalExaminationData['physical_examination_conjuctiva_type'] ?? null,
+                'breast_type'                 => $physicalExaminationData['physical_examination_breast_type'] ?? null,
+                'abdomen_type'                => $physicalExaminationData['physical_examination_abdomen_type'] ?? null,
+                'extremites_type'             => $physicalExaminationData['physical_examination_extremites_type'] ?? null,
+                'extremites_UID_type'         => $physicalExaminationData['physical_examination_extremites_UID_type'] ?? null,
                 'cervical_abnormalities_type' => $physicalExaminationData['cervical_abnormalities_type'] ?? null,
-                'cervical_consistency_type' => $physicalExaminationData['cervical_consistency_type'] ?? null,
-                'uterine_position_type' => $physicalExaminationData['uterine_position_type'] ?? null,
-                'uterine_depth_text' => $physicalExaminationData['uterine_depth_text'] ?? null,
-                'neck_type' => $physicalExaminationData['physical_examination_neck_type'] ?? null
+                'cervical_consistency_type'   => $physicalExaminationData['cervical_consistency_type'] ?? null,
+                'uterine_position_type'       => $physicalExaminationData['uterine_position_type'] ?? null,
+                'uterine_depth_text'          => $physicalExaminationData['uterine_depth_text'] ?? null,
+                'neck_type'                   => $physicalExaminationData['physical_examination_neck_type'] ?? null,
             ]);
 
-            // side b signature
-            // signature 
             $sideBsignaturePath = null;
-
-
-            // If user uploaded an image file
             if ($request->hasFile('add_side_b_name_n_signature_image')) {
                 $sideBsignaturePath = $this->compressAndSaveSignature($request->file('add_side_b_name_n_signature_image'));
-            }
-            // If user drew a signature
-            else if ($request->filled('add_side_b_name_n_signature_data')) {
+            } elseif ($request->filled('add_side_b_name_n_signature_data')) {
                 $sideBsignaturePath = $this->saveCanvasSignature($request->add_side_b_name_n_signature_data);
             }
 
-            // add side b record
             family_planning_side_b_records::create([
-                'medical_record_case_id' => $medicalCaseId,
-                'health_worker_id' => $patientData['handled_by'],
-                'date_of_visit' => $sideBdata['side_b_date_of_visit'] ?? null,
-                'medical_findings' => $sideBdata['side_b_medical_findings'] ?? null,
-                'method_accepted' => $sideBdata['side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $sideBsignaturePath ?? null,
-                'date_of_follow_up_visit' => $sideBdata['side_b_date_of_follow_up_visit'] ?? null,
-                'baby_Less_than_six_months_question' => $sideBdata['baby_Less_than_six_months_question'] ?? null,
+                'medical_record_case_id'                         => $medicalCaseId,
+                'health_worker_id'                               => $handledBy,
+                'date_of_visit'                                  => $sideBdata['side_b_date_of_visit'] ?? null,
+                'medical_findings'                               => $sideBdata['side_b_medical_findings'] ?? null,
+                'method_accepted'                                => $sideBdata['side_b_method_accepted'] ?? null,
+                'signature_of_the_provider'                      => $sideBsignaturePath ?? null,
+                'date_of_follow_up_visit'                        => $sideBdata['side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question'             => $sideBdata['baby_Less_than_six_months_question'] ?? null,
                 'sexual_intercouse_or_mesntrual_period_question' => $sideBdata['sexual_intercouse_or_mesntrual_period_question'] ?? null,
-                'baby_last_4_weeks_question' => $sideBdata['baby_last_4_weeks_question'] ?? null,
-                'menstrual_period_in_seven_days_question' => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
-                'miscarriage_or_abortion_question' => $sideBdata['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $sideBdata['contraceptive_question'] ?? null,
-                'status' => 'Active'
+                'baby_last_4_weeks_question'                     => $sideBdata['baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question'        => $sideBdata['menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question'               => $sideBdata['miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question'                         => $sideBdata['contraceptive_question'] ?? null,
+                'status'                                         => 'Active',
             ]);
 
-            // --------------------------------------------------- WRA masterlist record -------------------------------------------------------------------------
+            // WRA masterlist
             $method_of_FP = [
-                'modern' => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
+                'modern'      => ['Implant', 'IUD', 'BTL', 'NSV', 'Injectable', 'COC', 'POP', 'Condom'],
                 'traditional' => ['LAM', 'SDM', 'BBT', 'BOM/CMM/STM'],
             ];
 
-            $modern_methods = [];
+            $modern_methods      = [];
             $traditional_methods = [];
 
             if ($methods) {
-
-                if ($caseData['previously_used_method'] != null) {
-                    foreach ($caseData['previously_used_method'] as $method) {
-                        if (in_array($method, $method_of_FP['modern'])) {
-                            $modern_methods[] = $method;
-                        } elseif (in_array($method, $method_of_FP['traditional'])) {
-                            $traditional_methods[] = $method;
-                        }
+                foreach ($caseData['previously_used_method'] as $method) {
+                    if (in_array($method, $method_of_FP['modern'])) {
+                        $modern_methods[] = $method;
+                    } elseif (in_array($method, $method_of_FP['traditional'])) {
+                        $traditional_methods[] = $method;
                     }
                 }
             }
-            // convert them to string
-            $converted_modern_methods = implode(",", $modern_methods);
+
+            $converted_modern_methods      = implode(",", $modern_methods);
             $converted_traditional_methods = implode(",", $traditional_methods);
 
-            // check if the patient currently accept any modern methods
-            $method_accepted = [];
+            $method_accepted  = [];
             if ($caseData['choosen_method']) {
                 $method_accepted = explode(",", $caseData['choosen_method']);
             }
 
             $accept_modern_FP = [];
             foreach ($method_accepted as $method) {
-
                 if (in_array($method, $method_of_FP['modern'])) {
                     $accept_modern_FP[] = $method;
                 }
             }
             $converted_accepted_modern_FP = implode(",", $accept_modern_FP);
 
-            if ($patientData['age'] >= 10) {
-                $wra_masterlist = wra_masterlists::create([
-                    'medical_record_case_id' => $medicalCaseId,
-                    'health_worker_id' => $patientData['handled_by'],
-                    'address_id' => $patientAddress->id,
-                    'patient_id' => $familyPlanningPatientRecordId,
-                    'brgy_name' => $patientAddress->purok,
-                    'house_hold_number' => null,
-                    'name_of_wra' => $familPlanningPatient->full_name,
-                    'address' => $fullAddress,
-                    'age' => $patientData['age'] ?? null,
-                    'date_of_birth' => $patientData['date_of_birth'] ?? null,
-                    'SE_status' => ($caseData['NHTS'] ?? null) === 'yes'
+            if ($familPlanningPatient->age >= 10) {
+                wra_masterlists::create([
+                    'medical_record_case_id'           => $medicalCaseId,
+                    'health_worker_id'                 => $handledBy,
+                    'address_id'                       => $patientAddress->id,
+                    'patient_id'                       => $familyPlanningPatientRecordId,
+                    'brgy_name'                        => $patientAddress->purok,
+                    'house_hold_number'                => null,
+                    'name_of_wra'                      => $familPlanningPatient->full_name,
+                    'address'                          => $fullAddress,
+                    'age'                              => $familPlanningPatient->age ?? null,
+                    'date_of_birth'                    => $familPlanningPatient->date_of_birth ?? null,
+                    'SE_status'                        => ($caseData['NHTS'] ?? null) === 'yes'
                         ? 'NHTS'
                         : (($caseData['NHTS'] ?? null) !== null ? 'Yes' : 'No'),
-                    'plan_to_have_more_children_yes' => ($caseData['plan_to_have_more_children'] ?? null) === 'Yes' ? collect(
+                    'plan_to_have_more_children_yes'   => ($caseData['plan_to_have_more_children'] ?? null) === 'Yes' ? collect(
                         $caseData['new_acceptor_reason_for_FP'] ?? null,
                         $caseData['current_user_reason_for_FP'] ?? null,
                         $caseData['current_method_reason'] ?? null
                     )->first(fn($value) => !empty($value)) : null,
-                    'plan_to_have_more_children_no' => ($caseData['plan_to_have_more_children'] ?? null) === 'No' ? 'limiting' : null,
-                    'current_FP_methods' => ($caseData['family_planning_type_of_patient'] ?? null) === 'current user' ? $previoulyMethod : null,
-                    'modern_FP' => $converted_modern_methods ?? null,
-                    'traditional_FP' =>  $converted_traditional_methods ?? null,
+                    'plan_to_have_more_children_no'    => ($caseData['plan_to_have_more_children'] ?? null) === 'No' ? 'limiting' : null,
+                    'current_FP_methods'               => ($caseData['family_planning_type_of_patient'] ?? null) === 'current user' ? $previoulyMethod : null,
+                    'modern_FP'                        => $converted_modern_methods ?? null,
+                    'traditional_FP'                   => $converted_traditional_methods ?? null,
                     'currently_using_any_FP_method_no' => empty($caseData['previously_used_method']) ? 'yes' : null,
-                    'shift_to_modern_method' => null,
-                    'wra_with_MFP_unmet_need' => 'no',
-                    'wra_accept_any_modern_FP_method' => $converted_accepted_modern_FP != null ? 'yes' : 'no',
-                    'selected_modern_FP_method' => $converted_accepted_modern_FP ?? null,
-                    'date_when_FP_method_accepted' => !empty($converted_accepted_modern_FP)
+                    'shift_to_modern_method'           => null,
+                    'wra_with_MFP_unmet_need'          => 'no',
+                    'wra_accept_any_modern_FP_method'  => $converted_accepted_modern_FP != null ? 'yes' : 'no',
+                    'selected_modern_FP_method'        => $converted_accepted_modern_FP ?? null,
+                    'date_when_FP_method_accepted'     => !empty($converted_accepted_modern_FP)
                         ? ($caseData['family_planning_date_of_acknowledgement'] ?? null)
-                        : null
+                        : null,
                 ]);
             }
 
-
-
-
-            return response()->json(['message' => 'Family Planning Patient information is added Successfully'], 200);
+            return response()->json(['message' => $message], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
+            Log::error('Family Planning Patient Creation Error: ' . $e->getMessage());
             return response()->json([
-                'errors' => $e->getMessage()
-            ], 422);
+                'message' => 'An unexpected error occurred.',
+                'errors'  => ['server' => ['Please try again or contact support.']]
+            ], 500);
         }
     }
 
@@ -987,7 +941,7 @@ class FamilyPlanningController extends Controller
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
             $data['sex'] = 'Female';
-            $sex = isset($data['sex']) ? $data['sex']: 'Female';
+            $sex = isset($data['sex']) ? $data['sex'] : 'Female';
             // update the patient data first
             $familyPlanningRecord->patient->update([
                 'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->first_name)),
@@ -995,7 +949,7 @@ class FamilyPlanningController extends Controller
                 'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords(strtolower($familyPlanningRecord->patient->last_name)),
                 'full_name' => $fullName ?? $familyPlanningRecord->patient->full_name,
                 'age' => $data['age'] ?? $familyPlanningRecord->patient->age,
-                'sex' =>'Female',
+                'sex' => 'Female',
                 'civil_status' => $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
@@ -1049,7 +1003,7 @@ class FamilyPlanningController extends Controller
             if ($familyPlanningCaseRecord) {
                 $familyPlanningCaseRecord->update([
                     'client_name' => $familyPlanningRecord->patient->full_name,
-                    'client_first_name' => $familyPlanningRecord->patient -> first_name,
+                    'client_first_name' => $familyPlanningRecord->patient->first_name,
                     'client_middle_name' => $familyPlanningRecord->patient->middle_initial ?? '',
                     'client_last_name' => $familyPlanningRecord->patient->last_name,
                     'client_id' => $data['client_id'] ?? $familyPlanningCaseRecord->client_id,
@@ -1381,7 +1335,7 @@ class FamilyPlanningController extends Controller
                 'side_A_add_uterine_depth_text.numeric' => 'The uterine depth must be a number.',
                 'side_A_add_neck_type.string' => 'The neck type field must be a string.',
             ]);
-            
+
             // update patient info first
             $previoulyMethod = implode(",", $caseData['side_A_add_previously_used_method'] ?? []);
 
@@ -1901,7 +1855,7 @@ class FamilyPlanningController extends Controller
                 $patientData['edit_client_suffix'] ?? null
             ];
 
-            
+
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
 
@@ -1997,7 +1951,7 @@ class FamilyPlanningController extends Controller
             // update the case
             $familyPlanCaseInfo->update([
                 'client_id' => $caseData['edit_client_id'] ?? null,
-                'philhealth_no' => $caseData['edit_philhealth_no'] ??null,
+                'philhealth_no' => $caseData['edit_philhealth_no'] ?? null,
                 'NHTS' => $caseData['edit_NHTS'] ?? null,
                 'client_name' => $medical_case_record->patient->full_name,
                 'client_first_name' => ucwords(strtolower($patientData['edit_client_fname'])) ?? $medical_case_record->patient->first_name,
@@ -2009,7 +1963,7 @@ class FamilyPlanningController extends Controller
                 'occupation' => $patientData['edit_occupation'] ?? null,
                 'client_contact_number' => $patientData['edit_client_contact_number'] ?? $familyPlanCaseInfo->client_contact_number,
                 'client_civil_status' => $patientData['edit_client_civil_status'] ?? null,
-                'client_religion' => $patientData['edit_client_religion'] ??null,
+                'client_religion' => $patientData['edit_client_religion'] ?? null,
                 'client_suffix' => $patientData['edit_client_suffix'] ?? '',
                 'spouse_lname' => $caseData['edit_spouse_lname'] ?? null,
                 'spouse_fname' => $caseData['edit_spouse_fname'] ?? null,

@@ -97,6 +97,15 @@ const tbDotsBtn = document.getElementById("tb_dots_save_record_btn");
 tbDotsBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
+    const handledBySelect = document.getElementById("handled_by");
+    const handledByBackup = document.getElementById("handled_by_backup");
+
+    if (handledBySelect && handledByBackup) {
+        handledByBackup.value = handledBySelect.value;
+        // console.log("wandled by value set to:", handledBySelect.value);
+        // console.log("Backup value set to:", handledByBackup.value); // debug
+    }
+
     const form = document.getElementById("add-patient-form");
     const formData = new FormData(form);
 
@@ -119,13 +128,17 @@ tbDotsBtn.addEventListener("click", async (e) => {
              element.textContent = "";
          });
         Swal.fire({
-            title: "Prenatal Patient",
-            text: "Patient is Successfully added.", // this will make the text capitalize each word
+            title: "Add",
+            text: "Tb Dots Patient Information is successfully Added", // this will make the text capitalize each word
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
+                // Reset existing patient selection
+                if (typeof window.clearPatientRecordSelection === "function") {
+                    window.clearPatientRecordSelection();
+                }
                 // reset the steps
                 form.reset();
                 window.currentStep = 1;

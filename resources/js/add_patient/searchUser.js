@@ -2,6 +2,7 @@ import { automateAge } from "../automateAge";
 
 let searchTimeout;
 
+// search user
 // Search function
 async function searchUsers(query) {
     try {

@@ -31,7 +31,8 @@ class patients extends Model
         'date_of_registration',
         'place_of_birth',
         'status',
-        'suffix'
+        'suffix',
+        'guardian_user_id'
 
     ];
     protected $casts = [

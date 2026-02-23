@@ -23,7 +23,9 @@
     'resources/js/senior_citizen/addPatient.js',
     'resources/js/tb_dots/add_patient.js',
     'resources/js/family_planning/add_patient.js',
-    'resources/js/add_patient/searchUser.js'
+    'resources/js/add_patient/searchUser.js',
+    'resources/js/patient/patient-record-search.js',
+    'resources/js/patient/patient-mode-toggle.js'
     ])
     @include('sweetalert::alert')
     <div class="add-patient d-flex vh-100">
@@ -49,34 +51,209 @@
                                     </span>
                                 </div>
                                 <div class="user-info w-100">
-                                    <div class="mb-3 position-relative">
-                                        <label for="searchInput" class="form-label">Search Patient Account:</label>
-                                        <input
-                                            type="text"
-                                            id="searchInput"
-                                            class="form-control"
-                                            placeholder="Search by full name..."
-                                            autocomplete="off">
 
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold mb-2">Patient Mode</label>
+                                        <div class="d-flex gap-2">
+                                            <input type="radio" class="btn-check" name="patient_mode" id="mode-new" value="new" autocomplete="off" checked>
+                                            <label class="btn btn-outline-primary flex-fill" for="mode-new">
+                                                <i class="bi bi-person-plus me-1"></i> New Patient
+                                            </label>
 
-                                        <div id="resultsContainer"
-                                            class="position-absolute w-100 shadow-lg"
-                                            style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
-                                            <div class="list-group list-group-flush" id="searchResults">
-                                                <!-- Results will be populated here -->
-                                            </div>
-                                        </div>
-
-                                        <div id="loadingSpinner" class="mt-2  align-items-center justify-content-center" style="display: none;">
-                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-
-                                        <div id="noResults" class="mt-2" style="display: none;">
-                                            <small class="text-muted">No results found</small>
+                                            <input type="radio" class="btn-check" name="patient_mode" id="mode-existing" value="existing" autocomplete="off">
+                                            <label class="btn btn-outline-primary flex-fill" for="mode-existing">
+                                                <i class="bi bi-person-check me-1"></i> Existing Patient
+                                            </label>
                                         </div>
                                     </div>
+
+                                    {{-- ============================================================ --}}
+                                    {{-- NEW PATIENT SECTION                                           --}}
+                                    {{-- Shows: Patient Account search + Notification Setup            --}}
+                                    {{-- ============================================================ --}}
+                                    <div id="section-new-patient">
+
+                                        {{-- Patient Account Search (existing user account) --}}
+                                        <div class="mb-3 position-relative">
+                                            <label for="searchInput" class="form-label">
+                                                Patient Account:
+                                                <span class="text-muted fw-normal">(Optional)</span>
+                                            </label>
+                                            <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">
+                                                Link an existing user account if the patient already has one.
+                                            </small>
+                                            <input
+                                                type="text"
+                                                id="searchInput"
+                                                class="form-control"
+                                                placeholder="Search by full name..."
+                                                autocomplete="off">
+
+                                            <div id="resultsContainer"
+                                                class="position-absolute w-100 shadow-lg"
+                                                style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
+                                                <div class="list-group list-group-flush" id="searchResults">
+                                                    <!-- Results will be populated here -->
+                                                </div>
+                                            </div>
+
+                                            <div id="loadingSpinner" class="mt-2 align-items-center justify-content-center" style="display: none;">
+                                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+
+                                            <div id="noResults" class="mt-2" style="display: none;">
+                                                <small class="text-muted">No results found</small>
+                                            </div>
+                                        </div>
+
+                                        {{-- -------------------------------------------------------- --}}
+                                        {{-- NOTIFICATION SETUP                                        --}}
+                                        {{-- Only shows when NO patient account is selected            --}}
+                                        {{-- -------------------------------------------------------- --}}
+                                        <div id="section-notification-setup" class="mb-3">
+                                            <label class="form-label mb-1">Notifications</label>
+                                            <div class="d-flex gap-3">
+                                                <div class="form-check d-flex gap-2 align-items-center">
+                                                    <input class="form-check" type="radio" name="notification_mode" id="notif-new-account" value="new_account" checked>
+                                                    <label class="form-check-label" for="notif-new-account">Create new account</label>
+                                                </div>
+                                                <div class="form-check d-flex gap-2 align-items-center">
+                                                    <input class="form-check" type="radio" name="notification_mode" id="notif-guardian" value="guardian">
+                                                    <label class="form-check-label" for="notif-guardian">Link guardian account</label>
+                                                </div>
+                                            </div>
+
+                                            {{-- Guardian Search — only shows when "Link guardian account" is selected --}}
+                                            <div id="section-guardian-search" class="mt-3" style="display: none;">
+                                                <label for="guardianSearchInput" class="form-label">
+                                                    Guardian Account<span class="text-danger">*</span>
+                                                </label>
+                                                <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">
+                                                    Search for the parent or guardian's existing account.
+                                                </small>
+                                                <div class="position-relative">
+                                                    <input
+                                                        type="text"
+                                                        id="guardianSearchInput"
+                                                        class="form-control"
+                                                        placeholder="Search guardian by name or email..."
+                                                        autocomplete="off">
+
+                                                    <div id="guardianResultsContainer"
+                                                        class="position-absolute w-100 shadow-lg"
+                                                        style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
+                                                        <div class="list-group list-group-flush" id="guardianSearchResults">
+                                                            <!-- Results populated by guardianSearch.js -->
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="guardianLoadingSpinner" class="mt-2" style="display: none;">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="guardianNoResults" class="mt-2" style="display: none;">
+                                                        <small class="text-muted">No accounts found</small>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Selected Guardian Indicator --}}
+                                                <div id="selectedGuardianIndicator" class="alert alert-info border-start border-info border-4 mt-2 mb-0" style="display: none;">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div>
+                                                            <strong class="d-block">Guardian linked</strong>
+                                                            <small class="text-muted">
+                                                                <span id="displayGuardianName" class="fw-bold"></span> —
+                                                                <span id="displayGuardianEmail"></span>
+                                                            </small>
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-outline-info" id="clearGuardianBtn">
+                                                            Clear
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Hidden field for guardian user id --}}
+                                                <input type="hidden" name="guardian_account_id" id="guardian_account_id" value="">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    {{-- END: NEW PATIENT SECTION --}}
+
+
+                                    {{-- ============================================================ --}}
+                                    {{-- EXISTING PATIENT SECTION                                      --}}
+                                    {{-- Shows: Patient Record search only                             --}}
+                                    {{-- ============================================================ --}}
+                                    <div id="section-existing-patient" style="display: none;">
+                                        <div class="mb-3">
+                                            <label for="patientRecordSearch" class="form-label">
+                                                Patient Record<span class="text-danger">*</span>
+                                                <span class="text-muted fw-normal">(Search existing records)</span>
+                                            </label>
+                                            <p class="text-muted mb-2" style="font-size: 0.875rem;">
+                                                Search for the patient's existing record to add a new case.
+                                            </p>
+
+                                            <div class="position-relative">
+                                                <input
+                                                    type="text"
+                                                    id="patientRecordSearch"
+                                                    class="form-control"
+                                                    placeholder="Search by patient name..."
+                                                    autocomplete="off">
+
+                                                <div id="patientRecordResults"
+                                                    class="position-absolute w-100 bg-white border rounded shadow-lg"
+                                                    style="max-height: 350px; overflow-y: auto; display: none; z-index: 1060; top: 100%; margin-top: 4px;">
+                                                    <div id="patientRecordResultsList">
+                                                        <!-- Results populated by patient-record-search.js -->
+                                                    </div>
+                                                </div>
+
+                                                <div id="patientRecordLoading"
+                                                    class="position-absolute end-0 top-50 translate-middle-y me-3"
+                                                    style="display: none;">
+                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                                Type at least 2 characters to search
+                                            </small>
+                                        </div>
+
+                                        {{-- Hidden field to store selected patient ID --}}
+                                        <input type="hidden" id="selectedPatientId" name="patient_id" value="">
+
+                                        {{-- Selected Patient Indicator --}}
+                                        <div id="selectedPatientIndicator" class="alert alert-success border-start border-success border-4 mb-3" style="display: none;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <svg class="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                                                    </svg>
+                                                    <div>
+                                                        <strong class="d-block mb-1">Existing patient record linked</strong>
+                                                        <small class="text-muted">
+                                                            Patient ID: <span id="displayPatientId" class="fw-bold"></span> •
+                                                            Patient information is locked (read-only)
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-success" onclick="clearPatientRecordSelection()">
+                                                    Clear Selection
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="d-flex flex-column justify-content-center w-100 align-items-end">
                                         <label for="type-of-patient" class="">Type of Patient<span class="text-danger">*</span></label>
                                         <select name="type_of_patient" id="type-of-patient" class="form-select text-center bg-light w-100 w-md-50 w-lg-25" onchange="showAdditional()">
@@ -91,7 +268,7 @@
                                     <h4>Personal Info</h4>
                                     <!-- add hidden input, if it has a user -->
                                     <input type="hidden" name="user_account" id="user_account">
-                                    <div class="mb-2">
+                                    <div class="mb-2 email-con">
                                         <label for="email" class="">Email<span class="text-danger">*</span></label>
                                         <input type="email" id="email" placeholder="Enter the email" class="form-control" name="email" value="">
                                         <small class="text-danger error-text" id="email_error"></small>
@@ -198,12 +375,16 @@
                                             </select>
                                             <small class="text-danger error-text" id="health_worker_id_error"></small>
                                         </div>
+
+                                        <!-- Hidden backup for when select is disabled (existing patient) -->
+                                        <input type="hidden" name="handled_by_backup" id="handled_by_backup">
                                         @elseif(Auth::user()->role == 'staff')
 
 
                                         <div class="hidden-handled-by">
                                             <input type="hidden" name="handled_by" id="handled_by" value="{{Auth::user()->id}}" data-health-worker-name="{{$healthWorkerFullName}}">
                                         </div>
+                                        <input type="hidden" name="handled_by_backup" id="handled_by_backup" value="{{Auth::user()->id}}" data-health-worker-name="{{$healthWorkerFullName}}">
                                         @endif
 
                                         <div class="mb-2 flex-fill xl:w-[50%] tb-dots-inputs d-none flex-column">

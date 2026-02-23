@@ -875,7 +875,7 @@ class patientController extends Controller
         if (!$patient) {
             return view('patient-info.patient-records', [
                 'isActive' => true,
-                'page' => 'RECORD',
+                'page' => 'PATIENT RECORD',
                 'typeOfPatient' => null,
             ]);
         }
@@ -1360,7 +1360,7 @@ class patientController extends Controller
 
             return view('patient-info.patient-records', [
                 'isActive' => true,
-                'page' => 'RECORD',
+                'page' => 'PATIENT RECORD',
                 'allRecords' => $paginatedRecords, // Single paginated collection
                 'typeOfPatient' => 'family-planning',
             ]);
