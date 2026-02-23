@@ -6,8 +6,8 @@
  * 2. Notification mode toggle (new account / guardian)
  * 3. Guardian account search + selection
  *
- * Does NOT touch searchUser.js or patient-record-search.js logic.
- * Those files continue to work exactly as before.
+ * Only included in add_patient blade.
+ * All DOM references are null-checked for safety.
  */
 
 (function () {
@@ -16,7 +16,7 @@
     // =========================================================================
     // CONFIG
     // =========================================================================
-    const GUARDIAN_SEARCH_ENDPOINT = "/get-guardian-account-list"; // same endpoint as searchUser.js
+    const GUARDIAN_SEARCH_ENDPOINT = "/get-guardian-account-list";
     const MIN_SEARCH_LENGTH = 2;
     const DEBOUNCE_DELAY = 300;
     const csrfToken = document
@@ -64,15 +64,19 @@
     // 1. PATIENT MODE TOGGLE (New / Existing)
     // =========================================================================
     function handleModeToggle() {
+        // Fail-safe: if core elements don't exist, do nothing
+        if (!modeNewRadio || !modeExistingRadio) return;
+
         const isNew = modeNewRadio.checked;
 
         // Show/hide sections
-        sectionNew.style.display = isNew ? "block" : "none";
-        sectionExisting.style.display = isNew ? "none" : "block";
+        if (sectionNew) sectionNew.style.display = isNew ? "block" : "none";
+        if (sectionExisting)
+            sectionExisting.style.display = isNew ? "none" : "block";
 
-        // Reset notification mode to default when switching
+        // Reset notification mode to default when switching to new
         if (isNew) {
-            notifNewAccount.checked = true;
+            if (notifNewAccount) notifNewAccount.checked = true;
             hideSectionGuardian();
         }
 
@@ -87,8 +91,13 @@
         // Clear patient account search if switching to existing
         if (!isNew && patientAccountInput) {
             patientAccountInput.value = "";
-            document.getElementById("resultsContainer").style.display = "none";
-            document.getElementById("user_account").value = "";
+
+            const resultsContainer =
+                document.getElementById("resultsContainer");
+            if (resultsContainer) resultsContainer.style.display = "none";
+
+            const userAccount = document.getElementById("user_account");
+            if (userAccount) userAccount.value = "";
         }
     }
 
@@ -99,6 +108,8 @@
     // 2. NOTIFICATION MODE TOGGLE (New Account / Guardian)
     // =========================================================================
     function handleNotifToggle() {
+        if (!notifGuardian) return;
+
         if (notifGuardian.checked) {
             showSectionGuardian();
         } else {
@@ -111,58 +122,57 @@
     notifGuardian?.addEventListener("change", handleNotifToggle);
 
     function showSectionGuardian() {
-        sectionGuardian.style.display = "block";
+        if (sectionGuardian) sectionGuardian.style.display = "block";
     }
 
     function hideSectionGuardian() {
-        sectionGuardian.style.display = "none";
+        if (sectionGuardian) sectionGuardian.style.display = "none";
     }
 
     // =========================================================================
     // 3. HIDE NOTIFICATION SETUP when patient account is linked
-    //    (If a patient account is selected, there's no need for guardian)
     // =========================================================================
     patientAccountInput?.addEventListener("input", function () {
-        // If user clears the search, show notification setup again
         if (this.value.trim().length === 0) {
-            sectionNotifSetup.style.display = "block";
+            if (sectionNotifSetup) sectionNotifSetup.style.display = "block";
         }
     });
 
-    // Hook into searchUser.js populateFormFields — watch for user_account being set
+    // Watch for user_account being set by searchUser.js
     const userAccountInput = document.getElementById("user_account");
     if (userAccountInput) {
         const observer = new MutationObserver(function () {
             if (userAccountInput.value) {
-                // Patient account selected — hide notification setup
-                sectionNotifSetup.style.display = "none";
+                if (sectionNotifSetup) sectionNotifSetup.style.display = "none";
                 hideSectionGuardian();
                 clearGuardianSelection();
-                notifNewAccount.checked = true;
+                if (notifNewAccount) notifNewAccount.checked = true;
             } else {
-                // Cleared — show notification setup
-                sectionNotifSetup.style.display = "block";
+                if (sectionNotifSetup)
+                    sectionNotifSetup.style.display = "block";
             }
         });
+
         observer.observe(userAccountInput, {
             attributes: true,
             attributeFilter: ["value"],
         });
 
-        // Also handle direct value changes (since JS sets .value directly)
-        // Patch: watch via interval as MutationObserver doesn't catch .value assignments
+        // Patch: MutationObserver doesn't catch direct .value assignments
         let lastUserAccountValue = "";
         setInterval(() => {
             const current = userAccountInput.value;
             if (current !== lastUserAccountValue) {
                 lastUserAccountValue = current;
                 if (current) {
-                    sectionNotifSetup.style.display = "none";
+                    if (sectionNotifSetup)
+                        sectionNotifSetup.style.display = "none";
                     hideSectionGuardian();
                     clearGuardianSelection();
-                    notifNewAccount.checked = true;
+                    if (notifNewAccount) notifNewAccount.checked = true;
                 } else {
-                    sectionNotifSetup.style.display = "block";
+                    if (sectionNotifSetup)
+                        sectionNotifSetup.style.display = "block";
                 }
             }
         }, 300);
@@ -170,19 +180,18 @@
 
     // =========================================================================
     // 4. GUARDIAN SEARCH
-    //    Reuses the same /get-user-list endpoint as searchUser.js
-    //    but renders into its own container
     // =========================================================================
     guardianInput?.addEventListener("input", function () {
         const query = this.value.trim();
 
         clearTimeout(guardianSearchTimeout);
         hideGuardianResults();
-        guardianNoResults.style.display = "none";
+
+        if (guardianNoResults) guardianNoResults.style.display = "none";
 
         if (query.length < MIN_SEARCH_LENGTH) return;
 
-        guardianSpinner.style.display = "block";
+        if (guardianSpinner) guardianSpinner.style.display = "block";
 
         guardianSearchTimeout = setTimeout(async () => {
             try {
@@ -203,14 +212,17 @@
                 renderGuardianResults(users);
             } catch (err) {
                 console.error("Guardian search error:", err);
-                guardianNoResults.style.display = "block";
+                if (guardianNoResults)
+                    guardianNoResults.style.display = "block";
             } finally {
-                guardianSpinner.style.display = "none";
+                if (guardianSpinner) guardianSpinner.style.display = "none";
             }
         }, DEBOUNCE_DELAY);
     });
 
     function renderGuardianResults(users) {
+        if (!guardianResultsList) return;
+
         guardianResultsList.innerHTML = "";
 
         if (!users || users.length === 0) {
@@ -218,7 +230,7 @@
                 <div class="p-3 text-center text-muted">
                     <small>No accounts found</small>
                 </div>`;
-            guardianResults.style.display = "block";
+            if (guardianResults) guardianResults.style.display = "block";
             return;
         }
 
@@ -232,7 +244,7 @@
                         <div class="fw-semibold">${user.full_name}</div>
                         <small class="text-muted">${user.email}</small>
                     </div>
-                    <div> 
+                    <div>
                         <span class="badge border-1 border-dark text-dark">Guardian</span>
                         <span class="badge bg-info-subtle text-dark border-1 border-info">${user.patient_type}</span>
                     </div>
@@ -249,22 +261,25 @@
             guardianResultsList.appendChild(item);
         });
 
-        guardianResults.style.display = "block";
+        if (guardianResults) guardianResults.style.display = "block";
     }
 
     function selectGuardian(user) {
         // Set hidden field
-        guardianIdInput.value = user.id;
+        if (guardianIdInput) guardianIdInput.value = user.id;
 
         // Show indicator
-        displayGuardianName.textContent = user.full_name;
-        displayGuardianEmail.textContent = user.email;
-        guardianIndicator.style.display = "block";
+        if (displayGuardianName)
+            displayGuardianName.textContent = user.full_name;
+        if (displayGuardianEmail) displayGuardianEmail.textContent = user.email;
+        if (guardianIndicator) guardianIndicator.style.display = "block";
 
         // Update input
-        guardianInput.value = user.full_name;
-        guardianInput.disabled = true;
-        guardianInput.style.backgroundColor = "#e9ecef";
+        if (guardianInput) {
+            guardianInput.value = user.full_name;
+            guardianInput.disabled = true;
+            guardianInput.style.backgroundColor = "#e9ecef";
+        }
 
         hideGuardianResults();
 
@@ -275,7 +290,9 @@
             patientAccountInput.style.backgroundColor = "#e9ecef";
             patientAccountInput.placeholder =
                 "Disabled — guardian account is linked";
-            document.getElementById("user_account").value = "";
+
+            const userAccount = document.getElementById("user_account");
+            if (userAccount) userAccount.value = "";
         }
 
         // Hide email field — notifications go to guardian's account
@@ -284,8 +301,8 @@
     }
 
     function clearGuardianSelection() {
-        guardianIdInput.value = "";
-        guardianIndicator.style.display = "none";
+        if (guardianIdInput) guardianIdInput.value = "";
+        if (guardianIndicator) guardianIndicator.style.display = "none";
 
         if (guardianInput) {
             guardianInput.value = "";
@@ -305,12 +322,12 @@
         if (emailWrapper) emailWrapper.style.display = "block";
     }
 
-    // Expose clearGuardianSelection globally so it can be called externally if needed
+    // Expose globally so it can be called externally if needed
     window.clearGuardianSelection = clearGuardianSelection;
 
     clearGuardianBtn?.addEventListener("click", function () {
         clearGuardianSelection();
-        guardianInput.focus();
+        if (guardianInput) guardianInput.focus();
     });
 
     // Close guardian results when clicking outside
@@ -330,5 +347,7 @@
     // =========================================================================
     // INIT — run on load
     // =========================================================================
-    handleModeToggle();
+    if (modeNewRadio && modeExistingRadio) {
+        handleModeToggle();
+    }
 })();

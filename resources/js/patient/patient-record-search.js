@@ -475,7 +475,7 @@
     function unlockPatientFields() {
         Object.values(elements.formFields).forEach((field) => {
             if (field) {
-                 if (!field || key === "age") return;
+                if (!field || key === "age") return;
                 field.disabled = false;
                 field.style.backgroundColor = "";
                 field.style.cursor = "";
