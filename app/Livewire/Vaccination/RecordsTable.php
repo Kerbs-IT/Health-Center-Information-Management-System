@@ -3,13 +3,10 @@
 namespace App\Livewire\Vaccination;
 
 use App\Models\medical_record_cases;
-use BcMath\Number;
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -21,35 +18,28 @@ class RecordsTable extends Component
     public $entries = 10;
     public $sortField = 'full_name';
     public $sortDirection = 'asc';
-    // new property for searching
     public $search = '';
+    public $patient_id = null;
 
-    public $patient_id = null; // its for when the user is in all record and want to redirect
-
-  
-
-    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search', 'patient_id'];
     protected $paginationTheme = 'bootstrap';
 
     public $start_date;
     public $end_date;
+
     public function mount()
     {
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
-
-        // Get patient_id from URL
         $this->patient_id = request()->get('patient_id');
-
-        $this->search = request()->get('search', '');
+        $this->search     = request()->get('search', '');
     }
 
-    // dont forget this for changes in the show entries
     public function updatingEntries()
     {
         $this->resetPage();
     }
-    // dont forget this for refreshing the page every seach
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -64,24 +54,40 @@ class RecordsTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+
     public function clearFilter()
     {
         $this->patient_id = null;
-        $this->search = '';
+        $this->search     = '';
         $this->resetPage();
     }
+
     #[On('dateRangeChanged')]
     public function updateDateRange($start_date, $end_date)
     {
         $this->start_date = $start_date;
-        $this->end_date = $end_date;
-        $this->resetPage(); // Reset to first page when filtering
+        $this->end_date   = $end_date;
+        $this->resetPage();
     }
 
     public function render()
     {
-        $vaccinationRecord = medical_record_cases::select('medical_record_cases.*')
-            ->selectRaw("
+        $query = medical_record_cases::select('medical_record_cases.*')
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('medical_record_cases.type_of_case', 'vaccination')
+            ->where('patients.full_name', 'like', '%' . $this->search . '%')
+            ->where('patients.status', '!=', 'Archived')
+            ->when($this->patient_id, function ($q) {
+                $q->where('patients.id', $this->patient_id);
+            })
+            ->when(Auth::user()->role == 'staff', function ($q) {
+                $q->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('vaccination_medical_records.health_worker_id', Auth::id());
+            })
+            ->whereDate('patients.created_at', '>=', $this->start_date)
+            ->whereDate('patients.created_at', '<=', $this->end_date)
+            // Sort by urgency FIRST across all pages — overdue=1, due today=2, normal=3
+            ->orderByRaw("
                 CASE
                     WHEN EXISTS (
                         SELECT 1 FROM vaccination_case_records vcr
@@ -98,31 +104,20 @@ class RecordsTable extends Component
                         AND vcr.date_of_comeback = CURDATE()
                     ) THEN 2
                     ELSE 3
-                END as sort_priority
-            ")
-            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
-            ->where('type_of_case', 'vaccination')
-            ->where('patients.full_name', 'like', '%' . $this->search . '%')
-            ->where('patients.status', '!=', 'Archived')
-            ->when($this->patient_id, function ($query) {
-                $query->where('patients.id', $this->patient_id);
-            })
-            ->when(Auth::user()->role == 'staff', function ($query) {
-                $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
-                    ->where('vaccination_medical_records.health_worker_id', Auth::id());
-            })
-            ->whereDate('patients.created_at', '>=', $this->start_date)
-            ->whereDate('patients.created_at', '<=', $this->end_date)
-            ->orderBy('sort_priority', 'asc')
-            ->when($this->sortField === 'age', function ($query) {
-                $query->orderBy('patients.age', $this->sortDirection)
-                    ->orderBy('patients.age_in_months', $this->sortDirection);
-            }, function ($query) {
-                $query->orderBy($this->sortField, $this->sortDirection);
-            })
-            ->paginate($this->entries);
+                END ASC
+            ");
 
-        // Keep this for badge display in the view
+        // Secondary sort by user-selected field
+        if ($this->sortField === 'age') {
+            $query->orderBy('patients.age', $this->sortDirection)
+                ->orderBy('patients.age_in_months', $this->sortDirection);
+        } else {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
+
+        $vaccinationRecord = $query->paginate($this->entries);
+
+        // Calculate status for badge display in view
         $vaccinationRecord->getCollection()->transform(function ($record) {
             $record->vaccination_status_info = $this->calculateVaccinationStatus($record);
             return $record;
@@ -136,34 +131,31 @@ class RecordsTable extends Component
     public function exportPdf()
     {
         return redirect()->route('vaccination.pdf', [
-            'search' => $this->search,              // Sends "Maria"
-            'sortField' => $this->sortField,        // Sends "full_name"
+            'search'        => $this->search,
+            'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'startDate' => $this->start_date,
-            'endDate' => $this->end_date,
-            'entries' => $this->entries, // Sends "desc"
+            'startDate'     => $this->start_date,
+            'endDate'       => $this->end_date,
+            'entries'       => $this->entries,
         ]);
     }
 
-    /**
-     * Check if patient needs vaccination today or is overdue
-     */
     private function calculateVaccinationStatus($medicalRecordCase)
     {
         try {
             $vaccineDoseConfig = [
-                'BCG' => ['acronym' => 'BCG', 'maxDoses' => 1, 'description' => 'at birth', 'name' => 'BCG Vaccine'],
-                'Hepatitis B' => ['acronym' => 'Hepatitis B', 'maxDoses' => 1, 'description' => 'at birth', 'name' => 'Hepatitis B Vaccine'],
-                'PENTA' => ['acronym' => 'PENTA', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
-                'OPV' => ['acronym' => 'OPV', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Oral Polio Vaccine (OPV)'],
-                'IPV' => ['acronym' => 'IPV', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Inactived Polio Vaccine (IPV)'],
-                'PCV' => ['acronym' => 'PCV', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
-                'MMR' => ['acronym' => 'MMR', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
-                'MCV' => ['acronym' => 'MCV', 'maxDoses' => 1, 'description' => 'dose 1', 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
-                'TD' => ['acronym' =>  'TD', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Tetanus Diphtheria (TD)'],
-                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Human Papiliomavirus Vaccine'],
-                'Influenza Vaccine' => ['acronym' => 'Influenza Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Influenza Vaccine'],
-                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnuemococcal Vaccine'],
+                'BCG'                  => ['acronym' => 'BCG',                  'maxDoses' => 1, 'name' => 'BCG Vaccine'],
+                'Hepatitis B'          => ['acronym' => 'Hepatitis B',          'maxDoses' => 1, 'name' => 'Hepatitis B Vaccine'],
+                'PENTA'                => ['acronym' => 'PENTA',                'maxDoses' => 3, 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
+                'OPV'                  => ['acronym' => 'OPV',                  'maxDoses' => 3, 'name' => 'Oral Polio Vaccine (OPV)'],
+                'IPV'                  => ['acronym' => 'IPV',                  'maxDoses' => 2, 'name' => 'Inactived Polio Vaccine (IPV)'],
+                'PCV'                  => ['acronym' => 'PCV',                  'maxDoses' => 3, 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
+                'MMR'                  => ['acronym' => 'MMR',                  'maxDoses' => 2, 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
+                'MCV'                  => ['acronym' => 'MCV',                  'maxDoses' => 1, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
+                'TD'                   => ['acronym' => 'TD',                   'maxDoses' => 2, 'name' => 'Tetanus Diphtheria (TD)'],
+                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'name' => 'Human Papiliomavirus Vaccine'],
+                'Influenza Vaccine'    => ['acronym' => 'Influenza Vaccine',    'maxDoses' => 3, 'name' => 'Influenza Vaccine'],
+                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'name' => 'Pnuemococcal Vaccine'],
             ];
 
             $lastVaccinationCase = DB::table('vaccination_case_records')
@@ -183,28 +175,24 @@ class RecordsTable extends Component
                 return null;
             }
 
-            // Parse vaccine types
-            $vaccines = explode(',', $lastVaccinationCase->vaccine_type ?? '');
+            $vaccines    = explode(',', $lastVaccinationCase->vaccine_type ?? '');
             $currentDose = $lastVaccinationCase->dose_number;
-            $nextDosage = $currentDose + 1;
+            $nextDosage  = $currentDose + 1;
 
-            // Check if ALL vaccines have reached their maximum doses
             $allVaccinesComplete = true;
-            $dueVaccines = [];
-            $vaccineCompleted = [];
+            $dueVaccines         = [];
+            $vaccineCompleted    = [];
 
             foreach ($vaccines as $vaccine) {
-                $vaccineAcronym = trim($vaccine); // IMPORTANT: Added trim() here
+                $vaccineAcronym = trim($vaccine);
 
                 if (isset($vaccineDoseConfig[$vaccineAcronym])) {
-                    $maxDoses = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
+                    $maxDoses    = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
                     $vaccineName = $vaccineDoseConfig[$vaccineAcronym]['acronym'];
 
-                    // Check if this specific vaccine still has doses remaining
                     if ($currentDose < $maxDoses) {
                         $allVaccinesComplete = false;
 
-                        // Check if next dose doesn't exist yet
                         $nextDoseExists = DB::table('vaccination_case_records')
                             ->where('medical_record_case_id', $medicalRecordCase->id)
                             ->where('vaccine_type', 'LIKE', '%' . $vaccineAcronym . '%')
@@ -216,57 +204,48 @@ class RecordsTable extends Component
                             $dueVaccines[] = $vaccineName . ' Dose ' . $nextDosage;
                         }
                     } else {
-                        if ($currentDose >= $maxDoses) {
-                            $vaccineCompleted[] = $vaccine;
-                        }
+                        $vaccineCompleted[] = $vaccine;
                     }
                 }
             }
 
-
-
-            // If all vaccines are complete, show completion status
             if ($allVaccinesComplete && !empty($vaccineCompleted)) {
-                // implode the completed vaccine
                 $implodedVaccineCompleted = implode(",", $vaccineCompleted);
                 return [
-                    'status' => 'complete',
-                    'badge' => 'Vaccination Complete',
-                    'class' => 'table-light',
-                    'badge_class' => 'badge bg-success',
-                    'due_vaccines' => ["$implodedVaccineCompleted doses is completed. Proceed to another vaccination if needed."],
-                    'sort_priority' => 3
+                    'status'        => 'complete',
+                    'badge'         => 'Vaccination Complete',
+                    'class'         => 'table-light',
+                    'badge_class'   => 'badge bg-success',
+                    'due_vaccines'  => ["$implodedVaccineCompleted doses is completed. Proceed to another vaccination if needed."],
+                    'sort_priority' => 3,
                 ];
             }
 
-            // If no vaccines are actually due (all next doses already exist)
             if (empty($dueVaccines)) {
                 return null;
             }
 
-            // Determine status for vaccines that are still pending
             if ($comebackDate->isToday()) {
                 return [
-                    'status' => 'due_today',
-                    'badge' => 'Due Today',
-                    'class' => 'table-warning',
-                    'badge_class' => 'badge bg-warning text-dark',
-                    'due_vaccines' => $dueVaccines,
-                    'next_dosage' => $nextDosage,
-                    'sort_priority' => 2
+                    'status'        => 'due_today',
+                    'badge'         => 'Due Today',
+                    'class'         => 'table-warning',
+                    'badge_class'   => 'badge bg-warning text-dark',
+                    'due_vaccines'  => $dueVaccines,
+                    'next_dosage'   => $nextDosage,
+                    'sort_priority' => 2,
                 ];
             } else {
                 $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
-
                 return [
-                    'status' => 'overdue',
-                    'badge' => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
-                    'class' => 'table-danger',
-                    'badge_class' => 'badge bg-danger',
-                    'due_vaccines' => $dueVaccines,
-                    'next_dosage' => $nextDosage,
-                    'days_overdue' => $daysOverdue,
-                    'sort_priority' => 1
+                    'status'        => 'overdue',
+                    'badge'         => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                    'class'         => 'table-danger',
+                    'badge_class'   => 'badge bg-danger',
+                    'due_vaccines'  => $dueVaccines,
+                    'next_dosage'   => $nextDosage,
+                    'days_overdue'  => $daysOverdue,
+                    'sort_priority' => 1,
                 ];
             }
         } catch (\Exception $e) {
