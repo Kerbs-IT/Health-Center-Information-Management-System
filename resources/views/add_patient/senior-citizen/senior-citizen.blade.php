@@ -93,7 +93,7 @@
             <input type="date" class="form-control border" name="senior_citizen_date_of_comeback" id="senior_citizen_date_of_comeback" max="{{date('Y-m-d',strtotime('+5 years'))}}">
         </div>
     </div>
-    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
+    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto flex-column flex-sm-row">
         <button type="button" class="btn btn-danger px-5 py-2 text-nowrap" onclick="prevStep()">Back</button>
         <button type="submit" class="btn btn-success px-5 py-2 text-nowrap" id="senior_citizen_save_record_btn">Save Record</button>
     </div>

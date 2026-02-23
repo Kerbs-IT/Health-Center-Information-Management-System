@@ -788,10 +788,10 @@
                         <!-- PRENATAL -->
                         <div class="prenatal d-none patient-type overflow-x-auto" id="prenatal-con">
                             @include('add_patient.prenatal')
-                            <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
+                            <!-- <div class="flex flex-col sm:flex-row sm:justify-end gap-2 mt-2">
                                 <button type="button" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2  fs-5 rounded" onclick="prevStep()">Back</button>
                                 <button type="button" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 fs-5 rounded" onclick="nextStep()" id="prenatal_2_next">Next</button>
-                            </div>
+                            </div> -->
 
                         </div>
                         <!-- TB DOTS -->
@@ -800,7 +800,7 @@
 
                         </div>
                         <!-- SENIOR CITIZEN -->
-                        <div class="senior-citizen patient-type d-none flex-column align-self-center w-75 card shadow" id="senior-citizen-con">
+                        <div class="senior-citizen patient-type d-none flex-column align-self-center w-full lg:w-[75%] card shadow" id="senior-citizen-con">
                             @include('add_patient.senior-citizen.senior-citizen')
                         </div>
                         <!-- Family Planning -->

@@ -160,7 +160,7 @@
             <small class="text-danger error-text" id="referred_to_error"></small>
         </div>
     </div>
-    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2">
+    <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-2 flex-column flex-sm-row">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
         <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
     </div>

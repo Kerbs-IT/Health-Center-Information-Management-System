@@ -222,8 +222,8 @@
              </div>
          </div>
      </div>
-     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto">
+     <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto flex-column flex-sm-row">
          <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
          <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
      </div>
- </div>
+</div>

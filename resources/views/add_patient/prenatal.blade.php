@@ -378,4 +378,8 @@
             </div>
         </div>
     </div>
+    <div class="buttons w-100 align-self-center d-flex flex-column flex-sm-row justify-content-end gap-2 mt-2">
+        <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
+        <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()" id="prenatal_2_next">Next</button>
+    </div>
 </div>
