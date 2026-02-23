@@ -129,8 +129,7 @@ document.addEventListener("click", async (e) => {
 
     // load the value
     spotting.innerHTML =
-        data.caseInfo.prenatal_assessment.spotting.charAt(0).toUpperCase() +
-            data.caseInfo.prenatal_assessment.spotting.slice(1) ?? "no";
+        data.caseInfo.prenatal_assessment.spotting ?? "no";
     edema.innerHTML = data.caseInfo.prenatal_assessment.edema ?? "no";
     severe_headache.innerHTML =
         data.caseInfo.prenatal_assessment.severe_headache ?? "no";
