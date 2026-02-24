@@ -72,21 +72,20 @@ class RecordsTable extends Component
 
     public function render()
     {
-        $query = medical_record_cases::select('medical_record_cases.*')
+        $vaccinationRecord = medical_record_cases::select('medical_record_cases.*')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('medical_record_cases.type_of_case', 'vaccination')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
-            ->when($this->patient_id, function ($q) {
-                $q->where('patients.id', $this->patient_id);
+            ->when($this->patient_id, function ($query) {
+                $query->where('patients.id', $this->patient_id);
             })
-            ->when(Auth::user()->role == 'staff', function ($q) {
-                $q->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+            ->when(Auth::user()->role == 'staff', function ($query) {
+                $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
             ->whereDate('patients.created_at', '>=', $this->start_date)
             ->whereDate('patients.created_at', '<=', $this->end_date)
-            // Sort by urgency FIRST across all pages — overdue=1, due today=2, normal=3
             ->orderByRaw("
                 CASE
                     WHEN EXISTS (
@@ -94,30 +93,26 @@ class RecordsTable extends Component
                         WHERE vcr.medical_record_case_id = medical_record_cases.id
                         AND vcr.status != 'Archived'
                         AND vcr.vaccination_status = 'completed'
-                        AND vcr.date_of_comeback < CURDATE()
+                        AND DATE(vcr.date_of_comeback) < CURDATE()
                     ) THEN 1
                     WHEN EXISTS (
                         SELECT 1 FROM vaccination_case_records vcr
                         WHERE vcr.medical_record_case_id = medical_record_cases.id
                         AND vcr.status != 'Archived'
                         AND vcr.vaccination_status = 'completed'
-                        AND vcr.date_of_comeback = CURDATE()
+                        AND DATE(vcr.date_of_comeback) = CURDATE()
                     ) THEN 2
                     ELSE 3
                 END ASC
-            ");
+            ")
+            ->when($this->sortField === 'age', function ($query) {
+                $query->orderBy('patients.age', $this->sortDirection)
+                    ->orderBy('patients.age_in_months', $this->sortDirection);
+            }, function ($query) {
+                $query->orderBy($this->sortField, $this->sortDirection);
+            })
+            ->paginate($this->entries);
 
-        // Secondary sort by user-selected field
-        if ($this->sortField === 'age') {
-            $query->orderBy('patients.age', $this->sortDirection)
-                ->orderBy('patients.age_in_months', $this->sortDirection);
-        } else {
-            $query->orderBy($this->sortField, $this->sortDirection);
-        }
-
-        $vaccinationRecord = $query->paginate($this->entries);
-
-        // Calculate status for badge display in view
         $vaccinationRecord->getCollection()->transform(function ($record) {
             $record->vaccination_status_info = $this->calculateVaccinationStatus($record);
             return $record;
@@ -144,18 +139,18 @@ class RecordsTable extends Component
     {
         try {
             $vaccineDoseConfig = [
-                'BCG'                  => ['acronym' => 'BCG',                  'maxDoses' => 1, 'name' => 'BCG Vaccine'],
-                'Hepatitis B'          => ['acronym' => 'Hepatitis B',          'maxDoses' => 1, 'name' => 'Hepatitis B Vaccine'],
-                'PENTA'                => ['acronym' => 'PENTA',                'maxDoses' => 3, 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
-                'OPV'                  => ['acronym' => 'OPV',                  'maxDoses' => 3, 'name' => 'Oral Polio Vaccine (OPV)'],
-                'IPV'                  => ['acronym' => 'IPV',                  'maxDoses' => 2, 'name' => 'Inactived Polio Vaccine (IPV)'],
-                'PCV'                  => ['acronym' => 'PCV',                  'maxDoses' => 3, 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
-                'MMR'                  => ['acronym' => 'MMR',                  'maxDoses' => 2, 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
-                'MCV'                  => ['acronym' => 'MCV',                  'maxDoses' => 1, 'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
-                'TD'                   => ['acronym' => 'TD',                   'maxDoses' => 2, 'name' => 'Tetanus Diphtheria (TD)'],
-                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'name' => 'Human Papiliomavirus Vaccine'],
-                'Influenza Vaccine'    => ['acronym' => 'Influenza Vaccine',    'maxDoses' => 3, 'name' => 'Influenza Vaccine'],
-                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'name' => 'Pnuemococcal Vaccine'],
+                'BCG'                  => ['acronym' => 'BCG',                  'maxDoses' => 1, 'description' => 'at birth',  'name' => 'BCG Vaccine'],
+                'Hepatitis B'          => ['acronym' => 'Hepatitis B',          'maxDoses' => 1, 'description' => 'at birth',  'name' => 'Hepatitis B Vaccine'],
+                'PENTA'                => ['acronym' => 'PENTA',                'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
+                'OPV'                  => ['acronym' => 'OPV',                  'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Oral Polio Vaccine (OPV)'],
+                'IPV'                  => ['acronym' => 'IPV',                  'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Inactived Polio Vaccine (IPV)'],
+                'PCV'                  => ['acronym' => 'PCV',                  'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
+                'MMR'                  => ['acronym' => 'MMR',                  'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
+                'MCV'                  => ['acronym' => 'MCV',                  'maxDoses' => 1, 'description' => 'dose 1',    'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
+                'TD'                   => ['acronym' => 'TD',                   'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Tetanus Diphtheria (TD)'],
+                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Human Papiliomavirus Vaccine'],
+                'Influenza Vaccine'    => ['acronym' => 'Influenza Vaccine',    'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Influenza Vaccine'],
+                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnuemococcal Vaccine'],
             ];
 
             $lastVaccinationCase = DB::table('vaccination_case_records')
@@ -204,7 +199,9 @@ class RecordsTable extends Component
                             $dueVaccines[] = $vaccineName . ' Dose ' . $nextDosage;
                         }
                     } else {
-                        $vaccineCompleted[] = $vaccine;
+                        if ($currentDose >= $maxDoses) {
+                            $vaccineCompleted[] = $vaccine;
+                        }
                     }
                 }
             }
