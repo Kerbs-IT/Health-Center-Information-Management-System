@@ -72,9 +72,10 @@ class RecordsTable extends Component
 
     public function render()
     {
-        $vaccinationRecord = medical_record_cases::select('medical_record_cases.*')
+        // Step 1: Fetch ALL records (no pagination yet)
+        $allRecords = medical_record_cases::select('medical_record_cases.*')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
-            ->where('medical_record_cases.type_of_case', 'vaccination')
+            ->where('type_of_case', 'vaccination')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
             ->when($this->patient_id, function ($query) {
@@ -84,39 +85,39 @@ class RecordsTable extends Component
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $this->start_date)
-            ->whereDate('patients.created_at', '<=', $this->end_date)
-            ->orderByRaw("
-                CASE
-                    WHEN EXISTS (
-                        SELECT 1 FROM vaccination_case_records vcr
-                        WHERE vcr.medical_record_case_id = medical_record_cases.id
-                        AND vcr.status != 'Archived'
-                        AND vcr.vaccination_status = 'completed'
-                        AND DATE(vcr.date_of_comeback) < CURDATE()
-                    ) THEN 1
-                    WHEN EXISTS (
-                        SELECT 1 FROM vaccination_case_records vcr
-                        WHERE vcr.medical_record_case_id = medical_record_cases.id
-                        AND vcr.status != 'Archived'
-                        AND vcr.vaccination_status = 'completed'
-                        AND DATE(vcr.date_of_comeback) = CURDATE()
-                    ) THEN 2
-                    ELSE 3
-                END ASC
-            ")
             ->when($this->sortField === 'age', function ($query) {
                 $query->orderBy('patients.age', $this->sortDirection)
                     ->orderBy('patients.age_in_months', $this->sortDirection);
             }, function ($query) {
                 $query->orderBy($this->sortField, $this->sortDirection);
             })
-            ->paginate($this->entries);
+            ->whereDate('patients.created_at', '>=', $this->start_date)
+            ->whereDate('patients.created_at', '<=', $this->end_date)
+            ->get();
 
-        $vaccinationRecord->getCollection()->transform(function ($record) {
+        // Step 2: Calculate vaccination status for ALL records
+        $allRecords->transform(function ($record) {
             $record->vaccination_status_info = $this->calculateVaccinationStatus($record);
             return $record;
         });
+
+        // Step 3: Sort ALL records by urgency priority across entire dataset
+        $sorted = $allRecords->sortBy(function ($record) {
+            return $record->vaccination_status_info['sort_priority'] ?? 4;
+        })->values();
+
+        // Step 4: Manually paginate the sorted collection
+        $currentPage = $this->getPage();
+        $perPage     = $this->entries;
+        $total       = $sorted->count();
+
+        $vaccinationRecord = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sorted->forPage($currentPage, $perPage),
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('livewire.vaccination.records-table', [
             'vaccinationRecord' => $vaccinationRecord,
