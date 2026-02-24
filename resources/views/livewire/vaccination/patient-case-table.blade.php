@@ -23,7 +23,7 @@
         <table class="w-100 table ">
             <thead class="table-header">
                 <tr>
-                    <th>Case No.</th>
+                    <th>#</th>
                     <th>Vaccine Type/s</th>
                     <th>Dosage</th>
 
@@ -41,11 +41,11 @@
             </thead>
             <!-- data of patient -->
             <tbody>
-                @forelse($vaccination_case_record as $record)
+                @forelse($vaccination_case_record as $index => $record)
                 <tr class="px-">
                     <!-- <div>{{$record}}</div> -->
 
-                    <td>{{$record->id}}</td>
+                    <td>{{ $vaccination_case_record->firstItem() + $loop->index }}</td>
                     <td>{{$record->vaccine_type}}</td>
                     <td>{{$record->dose_number}}{{$record->dose_number == 1 ? 'st':'th'}} Dose</td>
 

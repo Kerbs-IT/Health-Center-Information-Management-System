@@ -27,7 +27,7 @@
         <table class="w-100 table overflow-y-scroll">
             <thead class="table-header">
                 <tr>
-                    <th>Case No.</th>
+                    <th>#</th>
                     <th>Type of Record</th>
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                         Date
@@ -40,9 +40,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($allRecords as $record)
+                @foreach($allRecords as $index => $record)
                 <tr class="px-">
-                    <td>{{ $record['id'] }}</td>
+                    <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                     <td>{{ $record['type_of_record'] }}</td>
                     <td>{{ optional($record['created_at'])->format('M j, Y') }}</td>
                     <td>{{ $record['status'] }}</td>

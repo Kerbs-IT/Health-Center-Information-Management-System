@@ -21,7 +21,7 @@
             <table class="w-100 table ">
                 <thead class="table-header text-nowrap">
                     <tr>
-                        <th>Case No.</th>
+                        <th>#</th>
                         <th>Type of Record</th>
 
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
@@ -36,9 +36,9 @@
                 </thead>
                 <!-- data of patient -->
                 <tbody>
-                    @forelse($seniorCaseRecords as $record)
+                    @forelse($seniorCaseRecords as $index => $record)
                     <tr class="px-1">
-                        <td>{{$record->id}}</td>
+                        <td>{{ $seniorCaseRecords->firstItem() + $loop->index }}</td>
                         <td>{{$record->type_of_record}}</td>
                         <td>{{$record->created_at->format('M d Y')}}</td>
                         <td>{{$record->status}}</td>
