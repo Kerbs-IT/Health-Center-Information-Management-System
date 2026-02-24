@@ -119,4 +119,8 @@ class User extends Authenticatable implements CanResetPassword
     {
         return $this->hasOne(users_address::class, 'user_id', 'id');
     }
+    public function patients()
+    {
+        return $this->hasMany(patients::class, 'guardian_user_id', 'id');
+    }
 }

@@ -57,6 +57,7 @@
                     <thead class="table-header">
                         <tr class="text-nowrap">
                             <th class="text-center" scope="col"><button class="sort-btn">No.</button></th>
+                            <th class="text-center" scope="col">Requested For</th>
                             <th class="text-center" scope="col"><button>Medicine Name</button></th>
                             <th class="text-center" scope="col"><button>Quantity</button></th>
                             <th class="text-center" scope="col"><button>Status</button></th>
@@ -67,7 +68,22 @@
                     <tbody>
                         @forelse ($myRequests as $index => $request)
                             <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td class="text-center">
+                                @php
+                                    $user    = auth()->user();
+                                    $childIds = \App\Models\patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+                                @endphp
+                                @if($request->patients_id && in_array($request->patients_id, $childIds))
+                                    <span class="badge bg-primary">
+                                        <i class="fa-solid fa-child me-1"></i>{{ $request->patients->full_name ?? 'Child' }}
+                                    </span>
+                                @else
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-user me-1"></i>Myself
+                                    </span>
+                                @endif
+                            </td>
                                 <td class="text-center">{{ $request->medicine->medicine_name ?? 'N/A' }}</td>
                                 <td class="text-center">{{ $request->quantity_requested }}</td>
                                 <td class="text-center">
@@ -87,18 +103,18 @@
                                         @if($request->status === 'pending')
                                             <button   wire:click="editRequest({{ $request->id }})"
                                                     class="btn bg-primary text-white">
-                                                <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                                                <i class="fa-solid fa-pen-to-square"></i>
                                             </button>
                                             <button wire:click="confirmRequestMedicineDelete({{ $request->id }})"
                                                     class="btn p-0">
-                                                <i class="fa-solid fa-trash text-danger fs-3"></i>
+                                                <i class="fa-solid fa-xmark text-danger fs-3"></i>
                                             </button>
                                         @else
                                             <button wire:click="viewDetails({{ $request->id }})"
                                                     class="btn btn-sm btn-success text-white text-nowrap"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#viewDetailsModal">
-                                                <i class="fa-solid fa-eye me-1"></i>View Details
+                                                <i class="fa-solid fa-eye fs-5"></i>
                                             </button>
                                         @endif
                                     </div>
@@ -132,11 +148,87 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" wire:click="resetForm"></button>
                 </div>
 
-                {{-- Modal Body --}}
                 <div class="modal-body">
                     <form wire:submit.prevent="submitRequest">
                         @csrf
-                        {{-- Medicine Selection --}}
+
+                        {{-- ── Who is this request for? ── --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Who is this request for? <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-4 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" wire:model.live="requestFor"
+                                        id="requestForSelf" value="self">
+                                    <label class="form-check-label" for="requestForSelf">
+                                        <i class="fa-solid fa-user me-1 text-success"></i>Myself
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" wire:model.live="requestFor"
+                                        id="requestForChild" value="child">
+                                    <label class="form-check-label" for="requestForChild">
+                                        <i class="fa-solid fa-child me-1 text-primary"></i>My Child
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ── Child selector (only shown when "My Child" is selected) ── --}}
+                        @if($requestFor === 'child')
+                            <div class="mb-3 p-3 border rounded bg-light">
+                                <label class="form-label fw-semibold text-primary">
+                                    <i class="fa-solid fa-magnifying-glass me-1"></i>Search &amp; Select Child
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                {{-- Search box --}}
+                                <input wire:model.live.debounce.300ms="childSearch"
+                                    type="search"
+                                    class="form-control mb-2"
+                                    placeholder="Search child by name...">
+
+                                {{-- Child list --}}
+                                @if($children && count($children) > 0)
+                                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                                        @foreach($children as $child)
+                                            <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 cursor-pointer
+                                                        {{ $selectedChildId == $child->id ? 'active' : '' }}">
+                                                <input type="radio"
+                                                    wire:model.live="selectedChildId"
+                                                    value="{{ $child->id }}"
+                                                    class="form-check-input flex-shrink-0 mt-0">
+                                                <div>
+                                                    <div class="fw-semibold">{{ $child->full_name }}</div>
+                                                    <small class="{{ $selectedChildId == $child->id ? 'text-white-50' : 'text-muted' }}">
+                                                        Age: {{ $child->age_display ?? $child->age }}
+                                                        &bull; {{ ucfirst($child->sex ?? 'N/A') }}
+                                                    </small>
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="text-center py-3 text-muted">
+                                        <i class="fa-solid fa-child-reaching fs-3 d-block mb-1"></i>
+                                        <small>
+                                            @if($childSearch)
+                                                No children found matching "{{ $childSearch }}"
+                                            @else
+                                                No children linked to your account
+                                            @endif
+                                        </small>
+                                    </div>
+                                @endif
+
+                                @error('selectedChildId')
+                                    <div class="text-danger small mt-2">
+                                        <i class="fa-solid fa-circle-exclamation me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        @endif
+
+                        {{-- ── Medicine Selection ── --}}
                         <div class="mb-3">
                             <label class="form-label">Medicine <span class="text-danger">*</span></label>
                             <select wire:model="selectedMedicineId" class="form-select @error('selectedMedicineId') is-invalid @enderror">
@@ -153,25 +245,27 @@
                             @enderror
                         </div>
 
-                        {{-- Quantity --}}
+                        {{-- ── Quantity ── --}}
                         <div class="mb-3">
                             <label class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input wire:model="quantity"
-                                   type="number"
-                                   class="form-control @error('quantity') is-invalid @enderror"
-                                   placeholder="Enter quantity" min="1" max="99999" step="1" oninput="this.value = this.value.replace(/[^0-9]/g,).slice(0, 5)" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                type="number"
+                                class="form-control @error('quantity') is-invalid @enderror"
+                                placeholder="Enter quantity" min="1" max="99999" step="1"
+                                oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0, 5)"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             @error('quantity')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        {{-- Reason --}}
+                        {{-- ── Reason ── --}}
                         <div class="mb-3">
                             <label class="form-label">Reason for Request</label>
                             <textarea wire:model="reason"
-                                      class="form-control @error('reason') is-invalid @enderror"
-                                      rows="3"
-                                      placeholder="Describe the reason..."></textarea>
+                                    class="form-control @error('reason') is-invalid @enderror"
+                                    rows="3"
+                                    placeholder="Describe the reason..."></textarea>
                             @error('reason')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -289,8 +383,20 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label text-muted small">Request ID</label>
-                                <p class="fw-bold">#{{ $viewRequest->id }}</p>
+                                <label class="form-label text-muted small">Requested For</label>
+                                <p class="fw-bold">                                @php
+                                    $user    = auth()->user();
+                                    $childIds = \App\Models\patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+                                @endphp
+                                @if($request->patients_id && in_array($request->patients_id, $childIds))
+                                    <span class="badge bg-primary">
+                                        <i class="fa-solid fa-child me-1"></i>{{ $request->patients->full_name ?? 'Child' }}
+                                    </span>
+                                @else
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-user me-1"></i>Myself
+                                    </span>
+                                @endif</p>
                             </div>
 
                             <div class="col-md-6">
