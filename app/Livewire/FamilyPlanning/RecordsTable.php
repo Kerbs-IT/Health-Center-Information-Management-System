@@ -23,7 +23,7 @@ class RecordsTable extends Component
     // for redirect to specific page
     public $patient_id = null;
 
-    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search', 'patient_id'];
     protected $paginationTheme = 'bootstrap';
     public $start_date;
     public $end_date;
@@ -33,15 +33,14 @@ class RecordsTable extends Component
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
         $this->patient_id = request()->get('patient_id');
-
-        $this->search = request()->get('search', '');
+        $this->search     = request()->get('search', '');
     }
-    // dont forget this for changes in the show entries
+
     public function updatingEntries()
     {
         $this->resetPage();
     }
-    // dont forget this for refreshing the page every seach
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -61,66 +60,78 @@ class RecordsTable extends Component
     public function updateDateRange($start_date, $end_date)
     {
         $this->start_date = $start_date;
-        $this->end_date = $end_date;
-        $this->resetPage(); // Reset to first page when filtering
+        $this->end_date   = $end_date;
+        $this->resetPage();
     }
+
     public function clearFilter()
     {
         $this->patient_id = null;
-        $this->search = '';
+        $this->search     = '';
         $this->resetPage();
     }
+
     public function render()
     {
-        $familyPlanning = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
+        // Step 1: Fetch ALL records (no pagination yet)
+        $allRecords = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'family-planning')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
-            ->where('medical_record_cases.status','Active')
-            ->when($this->patient_id,function($query){
-                $query -> where('patients.id', $this->patient_id);
+            ->where('medical_record_cases.status', 'Active')
+            ->when($this->patient_id, function ($query) {
+                $query->where('patients.id', $this->patient_id);
             })
             ->when(Auth::user()->role == 'staff', function ($query) {
-                // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('family_planning_medical_records', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('family_planning_medical_records.health_worker_id', Auth::id());
             })
             ->whereDate('patients.created_at', '>=', $this->start_date)
             ->whereDate('patients.created_at', '<=', $this->end_date)
             ->orderBy("patients.$this->sortField", $this->sortDirection)
-            ->paginate($this->entries);
+            ->get();
 
-        // Add follow-up visit status to each record
-        $familyPlanning->getCollection()->transform(function ($record) {
+        // Step 2: Calculate follow-up status for ALL records
+        $allRecords->transform(function ($record) {
             $record->followup_status_info = $this->calculateFollowUpStatus($record);
             return $record;
         });
 
-        // Sort by priority (overdue first, then due today, then others)
-        $sortedCollection = $familyPlanning->getCollection()->sortBy(function ($record) {
-            if ($record->followup_status_info) {
-                return $record->followup_status_info['sort_priority'];
-            }
-            return 3; // No status = lowest priority
-        });
+        // Step 3: Sort ALL records by urgency priority across entire dataset
+        $sorted = $allRecords->sortBy(function ($record) {
+            return $record->followup_status_info['sort_priority'] ?? 3;
+        })->values();
 
-        $familyPlanning->setCollection($sortedCollection);
+        // Step 4: Manually paginate the sorted collection
+        $currentPage = $this->getPage();
+        $perPage     = $this->entries;
+        $total       = $sorted->count();
 
-        return view(
-            'livewire.family-planning.records-table',
-            ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecords' => $familyPlanning]
+        $familyPlanning = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sorted->forPage($currentPage, $perPage),
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
         );
+
+        return view('livewire.family-planning.records-table', [
+            'isActive'              => true,
+            'page'                  => 'RECORD',
+            'familyPlanningRecords' => $familyPlanning,
+        ]);
     }
+
     public function exportPdf()
     {
         return redirect()->route('family-planning.pdf', [
-            'search' => $this->search,              
-            'sortField' => $this->sortField,       
+            'search'        => $this->search,
+            'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'startDate' => $this->start_date,
-            'endDate' => $this->end_date,
-            'entries' => $this->entries, // Sends "desc"
+            'startDate'     => $this->start_date,
+            'endDate'       => $this->end_date,
+            'entries'       => $this->entries,
         ]);
     }
 
@@ -152,7 +163,7 @@ class RecordsTable extends Component
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
                 ->whereDate('created_at', '>=', $followUpDate)
-                ->where('id', '!=', $lastRecord->id) // Exclude the record that set this follow-up date
+                ->where('id', '!=', $lastRecord->id)
                 ->exists();
 
             if ($visitExists) {
@@ -162,29 +173,27 @@ class RecordsTable extends Component
             // Determine status
             if ($followUpDate->isToday()) {
                 return [
-                    'status' => 'due_today',
-                    'badge' => 'Follow-up Due Today',
-                    'class' => 'table-success',
-                    'badge_class' => 'badge bg-success',
+                    'status'        => 'due_today',
+                    'badge'         => 'Follow-up Due Today',
+                    'class'         => 'table-success',
+                    'badge_class'   => 'badge bg-success',
                     'followup_date' => $followUpDate->format('M j, Y'),
-                    'sort_priority' => 2
+                    'sort_priority' => 2,
                 ];
             } else {
                 $daysOverdue = (int) $followUpDate->diffInDays(now(), false);
 
                 return [
-                    'status' => 'overdue',
-                    'badge' => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
-                    'class' => 'table-danger',
-                    'badge_class' => 'badge bg-danger',
+                    'status'        => 'overdue',
+                    'badge'         => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                    'class'         => 'table-danger',
+                    'badge_class'   => 'badge bg-danger',
                     'followup_date' => $followUpDate->format('M j, Y'),
-                    'days_overdue' => $daysOverdue,
-                    'sort_priority' => 1
+                    'days_overdue'  => $daysOverdue,
+                    'sort_priority' => 1,
                 ];
             }
         } catch (\Exception $e) {
-            // Log error but don't break the page
-            // \Log::error('Family planning follow-up status calculation error: ' . $e->getMessage());
             return null;
         }
     }

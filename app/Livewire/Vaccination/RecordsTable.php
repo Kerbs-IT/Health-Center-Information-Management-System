@@ -227,8 +227,8 @@ class RecordsTable extends Component
                 return [
                     'status'        => 'due_today',
                     'badge'         => 'Due Today',
-                    'class'         => 'table-warning',
-                    'badge_class'   => 'badge bg-warning text-dark',
+                    'class'         => 'table-success',
+                    'badge_class'   => 'badge bg-success text-dark',
                     'due_vaccines'  => $dueVaccines,
                     'next_dosage'   => $nextDosage,
                     'sort_priority' => 2,

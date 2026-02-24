@@ -17,30 +17,27 @@ class RecordsTable extends Component
     public $entries = 10;
     public $sortField = 'full_name';
     public $sortDirection = 'asc';
-    // new property for searching
     public $search = '';
     public $start_date;
     public $end_date;
-    // for redirect from all record
     public $patient_id = null;
 
-    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search','patient_id'];
+    protected $queryString = ['entries', 'sortField', 'sortDirection', 'search', 'patient_id'];
     protected $paginationTheme = 'bootstrap';
+
     public function mount()
     {
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
-
         $this->patient_id = request()->get('patient_id');
-
-        $this->search = request()->get('search', '');
+        $this->search     = request()->get('search', '');
     }
-    // dont forget this for changes in the show entries
+
     public function updatingEntries()
     {
         $this->resetPage();
     }
-    // dont forget this for refreshing the page every seach
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -60,68 +57,80 @@ class RecordsTable extends Component
     public function updateDateRange($start_date, $end_date)
     {
         $this->start_date = $start_date;
-        $this->end_date = $end_date;
-        $this->resetPage(); // Reset to first page when filtering
+        $this->end_date   = $end_date;
+        $this->resetPage();
     }
 
     public function clearFilter()
     {
         $this->patient_id = null;
-        $this->search = '';
+        $this->search     = '';
         $this->resetPage();
     }
 
     public function render()
     {
-        $prenatalRecord = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
+        // Step 1: Fetch ALL records (no pagination yet)
+        $allRecords = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'prenatal')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
-            ->when($this->patient_id, function($query){
-                $query -> where('patients.id', $this->patient_id);
+            ->when($this->patient_id, function ($query) {
+                $query->where('patients.id', $this->patient_id);
             })
             ->when(Auth::user()->role == 'staff', function ($query) {
-                // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('prenatal_medical_records.health_worker_id', Auth::id());
             })
             ->whereDate('patients.created_at', '>=', $this->start_date)
             ->whereDate('patients.created_at', '<=', $this->end_date)
             ->orderBy($this->sortField, $this->sortDirection)
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->entries);
+            ->get();
 
-        // sorting via urgency
-
-        $prenatalRecord->getCollection()->transform(function ($record) {
+        // Step 2: Calculate checkup status for ALL records
+        $allRecords->transform(function ($record) {
             $record->checkup_status_info = $this->calculateCheckupStatus($record);
             return $record;
         });
-        // Sort by priority (overdue first, then due today, then others)
-        $sortedCollection = $prenatalRecord->getCollection()->sortBy(function ($record) {
-            if ($record->checkup_status_info) {
-                return $record->checkup_status_info['sort_priority'];
-            }
-            return 3; // No status = lowest priority
-        });
 
-        $prenatalRecord->setCollection($sortedCollection);
+        // Step 3: Sort ALL records by urgency priority across entire dataset
+        $sorted = $allRecords->sortBy(function ($record) {
+            return $record->checkup_status_info['sort_priority'] ?? 3;
+        })->values();
 
-        return view('livewire.prenatal.records-table', ['isActive' => true, 'page' => 'RECORD', 'prenatalRecord' => $prenatalRecord]);
+        // Step 4: Manually paginate the sorted collection
+        $currentPage = $this->getPage();
+        $perPage     = $this->entries;
+        $total       = $sorted->count();
+
+        $prenatalRecord = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sorted->forPage($currentPage, $perPage),
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('livewire.prenatal.records-table', [
+            'isActive'      => true,
+            'page'          => 'RECORD',
+            'prenatalRecord' => $prenatalRecord,
+        ]);
     }
 
     public function exportPdf()
     {
         return redirect()->route('prenatal.pdf', [
-            'search' => $this->search,              // Sends "Maria"
-            'sortField' => $this->sortField,        // Sends "full_name"
+            'search'        => $this->search,
+            'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'startDate' => $this->start_date,
-            'endDate' => $this->end_date,
-            'entries' => $this->entries, // Sends "desc"
+            'startDate'     => $this->start_date,
+            'endDate'       => $this->end_date,
+            'entries'       => $this->entries,
         ]);
     }
+
     private function calculateCheckupStatus($medicalRecordCase)
     {
         try {
@@ -150,7 +159,7 @@ class RecordsTable extends Component
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
                 ->whereDate('created_at', '>=', $comebackDate)
-                ->where('id', '!=', $lastCheckup->id) // Exclude the checkup that set this comeback date
+                ->where('id', '!=', $lastCheckup->id)
                 ->exists();
 
             if ($checkupExists) {
@@ -160,29 +169,27 @@ class RecordsTable extends Component
             // Determine status
             if ($comebackDate->isToday()) {
                 return [
-                    'status' => 'due_today',
-                    'badge' => 'Checkup Due Today',
-                    'class' => 'table-success',
-                    'badge_class' => 'badge bg-success',
+                    'status'        => 'due_today',
+                    'badge'         => 'Checkup Due Today',
+                    'class'         => 'table-success',
+                    'badge_class'   => 'badge bg-success',
                     'comeback_date' => $comebackDate->format('M j, Y'),
-                    'sort_priority' => 2
+                    'sort_priority' => 2,
                 ];
             } else {
                 $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
 
                 return [
-                    'status' => 'overdue',
-                    'badge' => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
-                    'class' => 'table-danger',
-                    'badge_class' => 'badge bg-danger',
+                    'status'        => 'overdue',
+                    'badge'         => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                    'class'         => 'table-danger',
+                    'badge_class'   => 'badge bg-danger',
                     'comeback_date' => $comebackDate->format('M j, Y'),
-                    'days_overdue' => $daysOverdue,
-                    'sort_priority' => 1
+                    'days_overdue'  => $daysOverdue,
+                    'sort_priority' => 1,
                 ];
             }
         } catch (\Exception $e) {
-            // Log error but don't break the page
-            // \Log::error('Prenatal checkup status calculation error: ' . $e->getMessage());
             return null;
         }
     }
