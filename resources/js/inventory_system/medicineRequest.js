@@ -41,12 +41,12 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('show-deleleteRequestModal', () => {
         Swal.fire({
             title: "Are you sure?",
-            text: "This category will be permanently deleted!",
+            text: "This medicine request will cancel permanently!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Yes, cancel it!",
         }).then((result) => {
             if (result.isConfirmed) {
                 Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'))

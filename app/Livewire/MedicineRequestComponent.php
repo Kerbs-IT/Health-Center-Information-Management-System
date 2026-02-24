@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\MedicineRequest;
+use App\Models\patients;
 
 class MedicineRequestComponent extends Component
 {
@@ -16,35 +17,91 @@ class MedicineRequestComponent extends Component
     public $edit_id;
     public $deleteRequestMedicineId;
 
+    // Who is the request for
+    public $requestFor = 'self'; // 'self' or 'child'
+    public $selectedChildId = null;
+    public $childSearch = '';
+    public $children = [];
+
     // Properties for view details
     public $viewRequest;
 
     protected $rules = [
         'selectedMedicineId' => 'required|exists:medicines,medicine_id',
-        'quantity' => 'required|integer|min:1',
-        'reason' => 'string|max:500',
+        'quantity'           => 'required|integer|min:1',
+        'reason'             => 'nullable|string|max:500',
+        'requestFor'         => 'required|in:self,child',
+        'selectedChildId'    => 'nullable|exists:patients,id',
     ];
 
-    public function mount(){
-        // Filter out expired medicines and out of stock medicines
+    protected $messages = [
+        'selectedChildId.exists' => 'Selected child was not found.',
+    ];
+
+    public function mount()
+    {
+        $this->loadMedicines();
+        $this->loadChildren();
+    }
+
+    public function loadMedicines()
+    {
         $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
             ->where('expiry_status', '!=', 'Expired')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('expiry_date', '>', now())
                       ->orWhereNull('expiry_date');
             })
             ->get();
     }
 
+    public function loadChildren()
+    {
+        $userId = auth()->id();
+
+        $this->children = patients::where('guardian_user_id', $userId)
+            ->when($this->childSearch, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('first_name', 'like', "%{$this->childSearch}%")
+                      ->orWhere('last_name', 'like', "%{$this->childSearch}%")
+                      ->orWhereRaw(
+                          "CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name) LIKE ?",
+                          ["%{$this->childSearch}%"]
+                      );
+                });
+            })
+            ->orderBy('first_name')
+            ->get();
+    }
+
+    public function updatedChildSearch()
+    {
+        $this->selectedChildId = null;
+        $this->loadChildren();
+    }
+
+    public function updatedRequestFor()
+    {
+        // Reset child selection when toggling
+        $this->reset(['selectedChildId', 'childSearch']);
+        $this->resetErrorBag(['selectedChildId', 'childSearch']);
+        $this->loadChildren();
+    }
+
     public function submitRequest()
     {
         $this->validate();
 
+        // Extra check: child must be selected when requestFor = child
+        if ($this->requestFor === 'child' && !$this->selectedChildId) {
+            $this->addError('selectedChildId', 'Please select a child to request medicine for.');
+            return;
+        }
+
         $medicine = Medicine::findOrFail($this->selectedMedicineId);
 
-        // Check if medicine is expired
-        if ($medicine->expiry_status === 'Expired' || $medicine->expiry_date <= now()) {
+        if ($medicine->expiry_status === 'Expired' || ($medicine->expiry_date && $medicine->expiry_date <= now())) {
             $this->addError('selectedMedicineId', 'This medicine has expired and cannot be requested.');
             return;
         }
@@ -54,29 +111,34 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        $user = auth()->user();
-        $patient = $user->patient; // This might be null
+        $user  = auth()->user();
 
-        // Prepare request data
         $requestData = [
-            'medicine_id' => $this->selectedMedicineId,
+            'medicine_id'        => $this->selectedMedicineId,
             'quantity_requested' => $this->quantity,
-            'reason' => $this->reason,
-            'status' => 'pending',
+            'reason'             => $this->reason,
+            'status'             => 'pending',
         ];
 
-        // Set either patient_id or user_id
-        if ($patient) {
-            $requestData['patients_id'] = $patient->id;
+        if ($this->requestFor === 'child') {
+            // Verify child actually belongs to this guardian
+            $child = patients::where('id', $this->selectedChildId)
+                ->where('guardian_user_id', $user->id)
+                ->firstOrFail();
+            $requestData['patients_id'] = $child->id;
         } else {
-            $requestData['user_id'] = $user->id;
+            // Self — use the user's own patient record or user_id
+            $patient = $user->patient;
+            if ($patient) {
+                $requestData['patients_id'] = $patient->id;
+            } else {
+                $requestData['user_id'] = $user->id;
+            }
         }
 
         MedicineRequest::create($requestData);
 
-        $this->reset(['selectedMedicineId', 'quantity', 'reason']);
-        $this->resetErrorBag();
-
+        $this->resetForm();
         $this->dispatch('medicineRequest-added');
     }
 
@@ -90,8 +152,7 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        // Verify this request belongs to the current user
-        $user = auth()->user();
+        $user    = auth()->user();
         $patient = $user->patient;
 
         $authorized = false;
@@ -99,6 +160,12 @@ class MedicineRequestComponent extends Component
             $authorized = true;
         } elseif ($request->user_id === $user->id) {
             $authorized = true;
+        } else {
+            // Check if it's one of the user's children
+            $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+            if (in_array($request->patients_id, $childIds)) {
+                $authorized = true;
+            }
         }
 
         if (!$authorized) {
@@ -106,54 +173,61 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        $this->edit_id = $request->id;
+        $this->edit_id            = $request->id;
         $this->selectedMedicineId = $request->medicine_id;
-        $this->quantity = $request->quantity_requested;
-        $this->reason = $request->reason;
+        $this->quantity           = $request->quantity_requested;
+        $this->reason             = $request->reason;
+
+        // Determine if this was originally for self or child
+        $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+        if ($request->patients_id && in_array($request->patients_id, $childIds)) {
+            $this->requestFor      = 'child';
+            $this->selectedChildId = $request->patients_id;
+        } else {
+            $this->requestFor = 'self';
+        }
     }
 
     public function updateRequest()
     {
         $this->validate();
 
-        $request = MedicineRequest::findOrFail($this->edit_id);
+        if ($this->requestFor === 'child' && !$this->selectedChildId) {
+            $this->addError('selectedChildId', 'Please select a child to request medicine for.');
+            return;
+        }
 
-        // Authorization check
-        $user = auth()->user();
+        $request = MedicineRequest::findOrFail($this->edit_id);
+        $user    = auth()->user();
         $patient = $user->patient;
 
+        // Authorization check
         $authorized = false;
         if ($patient && $request->patients_id === $patient->id) {
             $authorized = true;
         } elseif ($request->user_id === $user->id) {
             $authorized = true;
+        } else {
+            $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+            if (in_array($request->patients_id, $childIds)) {
+                $authorized = true;
+            }
         }
 
         if (!$authorized) {
-            $this->dispatch('swal:error', [
-                'title' => 'Unauthorized',
-                'text' => 'You are not authorized to perform this action.',
-            ]);
+            $this->dispatch('swal:error', ['title' => 'Unauthorized', 'text' => 'You are not authorized to perform this action.']);
             return;
         }
 
         if ($request->status !== 'pending') {
-            $this->dispatch('swal:error', [
-                'title' => 'Cannot Update',
-                'text' => 'Only pending requests can be updated.',
-            ]);
+            $this->dispatch('swal:error', ['title' => 'Cannot Update', 'text' => 'Only pending requests can be updated.']);
             return;
         }
 
-        // Check if new quantity is available
         $medicine = Medicine::findOrFail($this->selectedMedicineId);
 
-        // Check if medicine is expired
-        if ($medicine->expiry_status === 'Expired' || $medicine->expiry_date <= now()) {
-            $this->dispatch('swal:error', [
-                'title' => 'Medicine Expired',
-                'text' => 'This medicine has expired and cannot be requested.',
-            ]);
+        if ($medicine->expiry_status === 'Expired' || ($medicine->expiry_date && $medicine->expiry_date <= now())) {
+            $this->dispatch('swal:error', ['title' => 'Medicine Expired', 'text' => 'This medicine has expired and cannot be requested.']);
             return;
         }
 
@@ -162,18 +236,31 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        // Update the request
-        $request->update([
-            'medicine_id' => $this->selectedMedicineId,
+        $updateData = [
+            'medicine_id'        => $this->selectedMedicineId,
             'quantity_requested' => $this->quantity,
-            'reason' => $this->reason,
-        ]);
+            'reason'             => $this->reason,
+        ];
 
-        $this->dispatch('swal:success', [
-            'title' => 'Updated!',
-            'text' => 'Medicine request updated successfully.',
-        ]);
+        if ($this->requestFor === 'child') {
+            $child = patients::where('id', $this->selectedChildId)
+                ->where('guardian_user_id', $user->id)
+                ->firstOrFail();
+            $updateData['patients_id'] = $child->id;
+            $updateData['user_id']     = null;
+        } else {
+            if ($patient) {
+                $updateData['patients_id'] = $patient->id;
+                $updateData['user_id']     = null;
+            } else {
+                $updateData['user_id']     = $user->id;
+                $updateData['patients_id'] = null;
+            }
+        }
 
+        $request->update($updateData);
+
+        $this->dispatch('swal:success', ['title' => 'Updated!', 'text' => 'Medicine request updated successfully.']);
         $this->dispatch('close-medicineRequest-modal');
         $this->resetForm();
     }
@@ -182,8 +269,7 @@ class MedicineRequestComponent extends Component
     {
         $request = MedicineRequest::with(['medicine', 'patients', 'user'])->findOrFail($requestId);
 
-        // Verify this request belongs to the current user
-        $user = auth()->user();
+        $user    = auth()->user();
         $patient = $user->patient;
 
         $authorized = false;
@@ -191,6 +277,11 @@ class MedicineRequestComponent extends Component
             $authorized = true;
         } elseif ($request->user_id === $user->id) {
             $authorized = true;
+        } else {
+            $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+            if (in_array($request->patients_id, $childIds)) {
+                $authorized = true;
+            }
         }
 
         if (!$authorized) {
@@ -201,18 +292,17 @@ class MedicineRequestComponent extends Component
         $this->viewRequest = $request;
     }
 
-    public function confirmRequestMedicineDelete($id){
+    public function confirmRequestMedicineDelete($id)
+    {
         $this->deleteRequestMedicineId = $id;
         $this->dispatch('show-deleleteRequestModal');
     }
-    
 
     public function deleteRequest()
     {
         $request = MedicineRequest::findOrFail($this->deleteRequestMedicineId);
 
-        // Authorization check before delete
-        $user = auth()->user();
+        $user    = auth()->user();
         $patient = $user->patient;
 
         $authorized = false;
@@ -220,6 +310,11 @@ class MedicineRequestComponent extends Component
             $authorized = true;
         } elseif ($request->user_id === $user->id) {
             $authorized = true;
+        } else {
+            $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+            if (in_array($request->patients_id, $childIds)) {
+                $authorized = true;
+            }
         }
 
         if (!$authorized) {
@@ -238,38 +333,42 @@ class MedicineRequestComponent extends Component
             'quantity',
             'reason',
             'edit_id',
+            'requestFor',
+            'selectedChildId',
+            'childSearch',
         ]);
 
+        $this->requestFor = 'self';
+        $this->quantity   = 1;
         $this->resetErrorBag();
-
-        // Refresh the medicines list to exclude newly expired medicines
-        $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
-            ->where('stock', '>', 0)
-            ->where('expiry_status', '!=', 'Expired')
-            ->where(function($query) {
-                $query->where('expiry_date', '>', now())
-                      ->orWhereNull('expiry_date');
-            })
-            ->get();
+        $this->loadMedicines();
+        $this->loadChildren();
     }
-
 
     public function render()
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $patient = $user->patient;
 
-        // Get requests for this user (either through patient or user_id)
+        // Get all patient IDs this user has access to (self + children)
+        $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
+
+        $patientIds = $childIds;
+        if ($patient) {
+            $patientIds[] = $patient->id;
+        }
+
         $myRequests = MedicineRequest::with(['medicine', 'patients', 'user'])
-            ->where(function($query) use ($patient, $user) {
-                if ($patient) {
-                    $query->where('patients_id', $patient->id);
+            ->where(function ($query) use ($patientIds, $user) {
+                if (!empty($patientIds)) {
+                    $query->whereIn('patients_id', $patientIds);
                 }
                 $query->orWhere('user_id', $user->id);
             })
             ->latest()
             ->paginate(10);
 
-        return view('livewire.medicine-request', compact('myRequests'))->layout('livewire.layouts.requestMedicineLayout');
+        return view('livewire.medicine-request', compact('myRequests'))
+            ->layout('livewire.layouts.requestMedicineLayout');
     }
 }

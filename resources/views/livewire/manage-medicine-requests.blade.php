@@ -1,5 +1,5 @@
 <div>
-    
+
     <main class="d-flex flex-column container-fluid bg-light">
         <h2 class="mb-5 fs-1 text-center">Manage Medicine Requests</h2>
 
@@ -203,33 +203,43 @@
                     <form wire:submit.prevent="createWalkIn">
                         @csrf
 
-                        {{-- User Search & Selection with Select2 --}}
-                        <div class="mb-3">
-                            <label class="form-label">Search User/Patient <span class="text-danger">*</span></label>
-                            
-                            <div wire:ignore>
-                                <select id="userSelect" 
-                                        class="form-control user-search @error('walkInUserId') is-invalid @enderror"
-                                        style="width: 100%;">
-                                    <option value="">Select user/patient</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">
-                                            {{ $user->full_name }}
-                                            @if($user->patient)
-                                                ✓ Has Patient Record
-                                            @endif
-                                            @if($user->patient_type)
-                                                - {{ $user->patient_type }}
-                                            @endif
+                    {{-- User Search & Selection with Select2 --}}
+                    <div class="mb-3">
+                        <label class="form-label">Search User/Patient <span class="text-danger">*</span></label>
+
+                        <div wire:ignore>
+                            <select id="userSelect"
+                                    class="form-control user-search @error('walkInUserId') is-invalid @enderror"
+                                    style="width: 100%;">
+                                <option value="">Select user/patient</option>
+                                @foreach($users as $user)
+                                    {{-- Parent/Account holder option --}}
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->full_name }}
+                                        @if($user->patient)
+                                            ✓ Has Patient Record
+                                        @endif
+                                        @if($user->patient_type)
+                                            - {{ $user->patient_type }}
+                                        @endif
+                                    </option>
+
+                                    {{-- Children linked to this user as guardian --}}
+                                    @foreach($user->patients as $child)
+                                        <option value="child:{{ $child->id }}" class="text-muted">
+                                            {{ $child->full_name }}
+                                            ({{ $child->age_display ?? ($child->age . ' yrs') }})
+                                            — child of {{ $user->full_name }}
                                         </option>
                                     @endforeach
-                                </select>
-                            </div>
-                            
-                            @error('walkInUserId')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                                @endforeach
+                            </select>
                         </div>
+
+                        @error('walkInUserId')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                         {{-- Medicine Selection --}}
                         <div class="mb-3">
@@ -254,7 +264,7 @@
                             <input wire:model="walkInQuantity"
                                    type="number"
                                    class="form-control @error('walkInQuantity') is-invalid @enderror"
-                                
+
                                    placeholder="Enter quantity" min="1" max="99" step="1" oninput="this.value = this.value.replace(/[^0-9]/g,).slice(0, 2)" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             @error('walkInQuantity')
                                 <div class="invalid-feedback">{{ $message }}</div>
