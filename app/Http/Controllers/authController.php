@@ -626,24 +626,32 @@ class authController extends Controller
         }
     }
 
-    public function info($id){
-        try{
-
+    public function info($id)
+    {
+        try {
             $user = User::findOrFail($id);
             $connectedToPatient = $user->patient;
-            if(!$connectedToPatient){
+
+            if (!$connectedToPatient) {
                 $address = users_address::where('user_id', $user->id)->first();
-            }else{
+            } else {
                 $address = patient_addresses::where("patient_id", $connectedToPatient->id)->first();
             }
-            
 
-            return response()->json(['info'=>$user,'address'=>$address]);
+            // Load guardian patients WITH their medical cases
+            $guardianPatients = $user->guardian()
+                ->with('medical_record_case')  // Use the exact relationship name
+                ->get();
 
-        }catch(\Exception $e){
             return response()->json([
-                'errors'=> $e->getMessage()
+                'info' => $user,
+                'address' => $address,
+                'guardian_patients' => $guardianPatients
             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 500);
         }
     }
 }

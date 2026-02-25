@@ -2,7 +2,7 @@
     <table class="w-100 table">
         <thead class="table-header">
             <tr class="text-nowrap">
-                <th>Patient No.</th>
+                <th>#</th>
                 <th>Service Type</th>
                 <th>Type of Record</th>
                 <th>Date Registered</th>
@@ -12,7 +12,7 @@
         <tbody>
             @forelse($vaccination_case_record ?? [] as $record)
             <tr>
-                <td>{{ $record->id }}</td>
+                <td>{{ $vaccination_case_record ->firstItem() + $loop->index }}</td>
                 <td>Vaccination</td>
                 <td>Case Record</td>
                 <td>{{ $record->created_at?->format('Y-m-d') ?? 'N/A' }}</td>

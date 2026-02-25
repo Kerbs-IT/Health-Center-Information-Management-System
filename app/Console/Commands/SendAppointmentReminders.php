@@ -204,8 +204,8 @@ class SendAppointmentReminders extends Command
         try {
             $completedVaccinesList = implode(', ', $reminder->completed_vaccines);
             $date = Carbon::parse($reminder->appointment_date)->format('F j, Y (l)');
-
-            $message = "You have a vaccination completion checkup scheduled for tomorrow, {$date}. "
+            $patientName = "<strong>{$reminder->full_name}</strong>";  // ADDED
+            $message = "This is a reminder for {$patientName}'s vaccination completion checkup scheduled for tomorrow, {$date}. "  // CHANGED
                 . "Completed vaccines: {$completedVaccinesList}. "
                 . "This is for final verification and to discuss any additional vaccinations if needed.";
 
@@ -234,7 +234,8 @@ class SendAppointmentReminders extends Command
     private function buildNotificationMessage($reminder, $type, $appointmentType)
     {
         $date = Carbon::parse($reminder->appointment_date)->format('F j, Y (l)');
-        $baseMessage = "You have a {$appointmentType} scheduled for tomorrow, {$date}.";
+        $patientName = "<strong>{$reminder->full_name}</strong>";  // ADDED
+        $baseMessage = "This is a reminder for {$patientName}'s {$appointmentType} scheduled for tomorrow, {$date}.";  // CHANGED
 
         if ($type === 'vaccination') {
             $nextDose = ($reminder->dose_number ?? 0) + 1;

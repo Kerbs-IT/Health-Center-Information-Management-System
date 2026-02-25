@@ -26,7 +26,7 @@
         selectedIndicator: document.getElementById("selectedPatientIndicator"),
         displayPatientId: document.getElementById("displayPatientId"),
 
-        // Form fields to lock
+        // Form fields - NO LOCKING, just for population
         formFields: {
             email: document.getElementById("email"),
             firstName: document.getElementById("first_name"),
@@ -55,7 +55,7 @@
      */
     function init() {
         if (!elements.searchInput) {
-            // Search input not on this page — stop silently
+            console.error("Patient record search input not found");
             return;
         }
 
@@ -66,14 +66,11 @@
      * Attach event listeners
      */
     function attachEventListeners() {
+        // Search input
         elements.searchInput.addEventListener("input", handleSearchInput);
-        document.addEventListener("click", handleOutsideClick);
 
-        elements.searchInput.addEventListener("focus", function () {
-            if (isPatientSelected) {
-                this.blur();
-            }
-        });
+        // Click outside to close results
+        document.addEventListener("click", handleOutsideClick);
     }
 
     /**
@@ -82,15 +79,19 @@
     function handleSearchInput(e) {
         const query = e.target.value.trim();
 
+        // Clear previous timeout
         clearTimeout(searchTimeout);
 
+        // Hide results if query is too short
         if (query.length < CONFIG.minSearchLength) {
             hideResults();
             return;
         }
 
+        // Show loading
         showLoading();
 
+        // Debounce search
         searchTimeout = setTimeout(() => {
             searchPatients(query);
         }, CONFIG.debounceDelay);
@@ -113,7 +114,9 @@
                 },
             );
 
-            if (!response.ok) throw new Error("Search request failed");
+            if (!response.ok) {
+                throw new Error("Search request failed");
+            }
 
             const patients = await response.json();
             displayResults(patients);
@@ -129,8 +132,6 @@
      * Display search results
      */
     function displayResults(patients) {
-        if (!elements.resultsList) return;
-
         if (!patients || patients.length === 0) {
             elements.resultsList.innerHTML = `
                 <div class="p-3 text-center text-muted">
@@ -155,12 +156,14 @@
      * Create HTML for a single patient result item
      */
     function createPatientResultItem(patient) {
+        // Get active case types
         const activeCases =
             patient.medical_record_case
                 ?.filter((c) => c.status === "Active")
                 ?.map((c) => formatCaseType(c.type_of_case))
                 ?.join(", ") || "No active cases";
 
+        // Format name with suffix
         const fullName = [
             patient.first_name,
             patient.middle_initial,
@@ -171,7 +174,7 @@
             .join(" ");
 
         return `
-        <div class="patient-result-item border-bottom p-3 cursor-pointer d-flex justify-content-between align-items-center"
+        <div class="patient-result-item border-bottom p-3 cursor-pointer d-flex justify-content-between align-items-center" 
              onclick="window.selectPatientRecord(${patient.id})"
              style="cursor: pointer; transition: background-color 0.2s;"
              onmouseenter="this.style.backgroundColor='#f8f9fa'"
@@ -200,8 +203,6 @@
      * Display error message
      */
     function displayError(message) {
-        if (!elements.resultsList) return;
-
         elements.resultsList.innerHTML = `
             <div class="p-3 text-center text-danger">
                 <small>${message}</small>
@@ -215,6 +216,7 @@
      */
     window.selectPatientRecord = async function (patientId) {
         try {
+            // Fetch full patient details
             const response = await fetch(
                 `${CONFIG.searchEndpoint}?patient_id=${patientId}`,
                 {
@@ -227,27 +229,24 @@
                 },
             );
 
-            if (!response.ok)
+            if (!response.ok) {
                 throw new Error("Failed to fetch patient details");
+            }
 
             const patients = await response.json();
             const patient = patients.find((p) => p.id === patientId);
 
-            if (!patient) throw new Error("Patient not found");
+            if (!patient) {
+                throw new Error("Patient not found");
+            }
 
-            // Populate form
+            // Populate form (NO LOCKING)
             populatePatientForm(patient);
 
-            // Lock fields
-            lockPatientFields();
-
             // Update UI
-            if (elements.selectedPatientId)
-                elements.selectedPatientId.value = patient.id;
-            if (elements.displayPatientId)
-                elements.displayPatientId.textContent = patient.id;
-            if (elements.selectedIndicator)
-                elements.selectedIndicator.style.display = "block";
+            elements.selectedPatientId.value = patient.id;
+            elements.displayPatientId.textContent = patient.id;
+            elements.selectedIndicator.style.display = "block";
 
             // Update search input
             const fullName = [
@@ -258,16 +257,15 @@
             ]
                 .filter(Boolean)
                 .join(" ");
+            elements.searchInput.value = `${fullName} (ID: ${patient.id})`;
 
-            if (elements.searchInput) {
-                elements.searchInput.value = `${fullName} (ID: ${patient.id})`;
-                elements.searchInput.disabled = true;
-                elements.searchInput.style.backgroundColor = "#e9ecef";
-            }
-
+            // Hide results
             hideResults();
+
+            // Set state
             isPatientSelected = true;
 
+            // Focus on type of patient
             document.getElementById("type-of-patient")?.focus();
         } catch (error) {
             console.error("Error selecting patient:", error);
@@ -276,42 +274,55 @@
     };
 
     /**
-     * Populate form with patient data
+     * Populate form with patient data (NO LOCKING - fields remain editable)
      */
     function populatePatientForm(patient) {
+        // Set hidden patient ID
         const selectedPatientId = document.getElementById("selectedPatientId");
-        if (selectedPatientId) selectedPatientId.value = patient.id;
-
-        const email = document.getElementById("email");
-        if (email && patient.email) {
-            email.value = patient.email;
-            email.dispatchEvent(new Event("change"));
+        if (selectedPatientId) {
+            selectedPatientId.value = patient.id;
         }
 
+        // Email
+       const email = document.getElementById("email");
+       if (email) {
+           const emailValue = patient?.user?.email ?? "";
+           console.log(emailValue);
+           if (typeof emailValue === "string" && emailValue.trim()) {
+               email.value = emailValue.trim();
+               email.dispatchEvent(new Event("change"));
+           }
+       }
+
+        // First Name
         const firstName = document.getElementById("first_name");
         if (firstName && patient.first_name) {
             firstName.value = patient.first_name;
             firstName.dispatchEvent(new Event("change"));
         }
 
+        // Middle Initial/Name
         const middleInitial = document.getElementById("middle_initial");
         if (middleInitial && patient.middle_initial) {
             middleInitial.value = patient.middle_initial;
             middleInitial.dispatchEvent(new Event("change"));
         }
 
+        // Last Name
         const lastName = document.getElementById("last_name");
         if (lastName && patient.last_name) {
             lastName.value = patient.last_name;
             lastName.dispatchEvent(new Event("change"));
         }
 
+        // Suffix
         const suffix = document.getElementById("add_suffix");
         if (suffix && patient.suffix) {
             suffix.value = patient.suffix;
             suffix.dispatchEvent(new Event("change"));
         }
 
+        // Date of Birth
         const birthdate = document.getElementById("birthdate");
         if (birthdate && patient.date_of_birth) {
             const date = new Date(patient.date_of_birth);
@@ -319,13 +330,14 @@
             birthdate.dispatchEvent(new Event("change"));
         }
 
+        // Place of Birth
         const placeOfBirth = document.getElementById("place_of_birth");
         if (placeOfBirth && patient.place_of_birth) {
             placeOfBirth.value = patient.place_of_birth;
             placeOfBirth.dispatchEvent(new Event("change"));
         }
 
-        // Age (visible — always disabled, just populate value)
+        // Age (visible)
         const age = document.getElementById("age");
         if (age && patient.age) {
             age.value = patient.age;
@@ -338,6 +350,7 @@
             hiddenAge.value = patient.age;
         }
 
+        // Sex
         if (patient.sex) {
             const maleRadio = document.getElementById("male");
             const femaleRadio = document.getElementById("female");
@@ -351,18 +364,21 @@
             }
         }
 
+        // Contact Number
         const contactNumber = document.getElementById("contact_number");
         if (contactNumber && patient.contact_number) {
             contactNumber.value = patient.contact_number;
             contactNumber.dispatchEvent(new Event("change"));
         }
 
+        // Nationality
         const nationality = document.querySelector('input[name="nationality"]');
         if (nationality && patient.nationality) {
             nationality.value = patient.nationality;
             nationality.dispatchEvent(new Event("change"));
         }
 
+        // Date of Registration
         const dateOfRegistration =
             document.getElementById("dateOfRegistration");
         if (dateOfRegistration && patient.date_of_registration) {
@@ -371,7 +387,9 @@
             dateOfRegistration.dispatchEvent(new Event("change"));
         }
 
+        // Address - Handle properly
         if (patient.address) {
+            // Street (House Number + Street combined)
             const street = document.getElementById("street");
             if (street) {
                 const blk_n_street = [
@@ -379,7 +397,7 @@
                     patient.address.street,
                 ]
                     .filter(Boolean)
-                    .join(" ")
+                    .join(", ") // Changed to comma for consistency with form input
                     .trim();
 
                 if (blk_n_street) {
@@ -388,6 +406,7 @@
                 }
             }
 
+            // Barangay/Purok
             const brgy = document.getElementById("brgy");
             if (brgy && patient.address.purok) {
                 brgy.value = patient.address.purok;
@@ -397,109 +416,34 @@
     }
 
     /**
-     * Lock patient demographic fields
-     */
-    function lockPatientFields() {
-        const fieldsToLock = [
-            "email",
-            "firstName",
-            "middleInitial",
-            "lastName",
-            "suffix",
-            "birthdate",
-            "placeOfBirth",
-            "age",
-            "maleRadio",
-            "femaleRadio",
-            "contactNumber",
-            "nationality",
-            "dateOfRegistration",
-            "street",
-            "brgy",
-        ];
-
-        fieldsToLock.forEach((fieldKey) => {
-            const field = elements.formFields[fieldKey];
-            if (field) {
-                field.disabled = true;
-                field.style.backgroundColor = "#f8f9fa";
-                field.style.cursor = "not-allowed";
-            }
-        });
-
-        const handledBySelect = document.getElementById("handled_by");
-        const handledByBackup = document.getElementById("handled_by_backup");
-
-        if (handledBySelect && handledByBackup) {
-            handledByBackup.value = handledBySelect.value;
-            handledBySelect.disabled = true;
-        }
-    }
-
-    /**
-     * Unlock patient fields
-     * FIX: Changed Object.values to Object.entries so 'key' is available.
-     *      Added key === "age" check to keep age always disabled.
-     */
-    function unlockPatientFields() {
-        Object.entries(elements.formFields).forEach(([key, field]) => {
-            if (!field) return;
-            if (key === "age") return; // age is always disabled — computed from birthdate
-
-            field.disabled = false;
-            field.style.backgroundColor = "";
-            field.style.cursor = "";
-        });
-
-        const handledBySelect = document.getElementById("handled_by");
-        const handledByBackup = document.getElementById("handled_by_backup");
-
-        if (handledBySelect) {
-            handledBySelect.disabled = false;
-            handledBySelect.style.backgroundColor = "";
-            handledBySelect.style.cursor = "";
-        }
-
-        if (handledByBackup) {
-            handledByBackup.value = "";
-        }
-    }
-
-    /**
      * Clear patient record selection
-     * FIX: Added early return if searchInput doesn't exist on the page.
      */
     window.clearPatientRecordSelection = function () {
-        // Fail-safe: if search input doesn't exist on this page, do nothing
-        if (!elements.searchInput) return;
+        // Clear hidden field
+        elements.selectedPatientId.value = "";
 
-        if (elements.selectedPatientId) elements.selectedPatientId.value = "";
-
+        // Clear and re-enable search
         elements.searchInput.value = "";
-        elements.searchInput.disabled = false;
-        elements.searchInput.style.backgroundColor = "";
 
-        if (elements.selectedIndicator)
-            elements.selectedIndicator.style.display = "none";
+        // Hide indicator
+        elements.selectedIndicator.style.display = "none";
 
-        unlockPatientFields();
+        // Clear form
         clearForm();
 
+        // Reset state
         isPatientSelected = false;
 
+        // Focus on search
         elements.searchInput.focus();
     };
 
     /**
      * Clear form fields
-     * FIX: Changed Object.values to Object.entries so 'key' is available.
-     *      Added try/catch per field so one bad field doesn't stop the rest.
      */
     function clearForm() {
-        Object.entries(elements.formFields).forEach(([key, field]) => {
-            if (!field) return; // skip missing elements silently
-
-            try {
+        Object.values(elements.formFields).forEach((field) => {
+            if (field) {
                 if (field.type === "radio" || field.type === "checkbox") {
                     field.checked = false;
                 } else if (field.tagName === "SELECT") {
@@ -507,11 +451,10 @@
                 } else {
                     field.value = "";
                 }
-            } catch (e) {
-                console.warn(`Could not clear field: ${key}`, e);
             }
         });
 
+        // Clear type of patient
         const typeSelect = document.getElementById("type-of-patient");
         if (typeSelect) typeSelect.value = "";
     }
@@ -520,34 +463,28 @@
      * Show/hide results
      */
     function showResults() {
-        if (elements.resultsContainer)
-            elements.resultsContainer.style.display = "block";
+        elements.resultsContainer.style.display = "block";
     }
 
     function hideResults() {
-        if (elements.resultsContainer)
-            elements.resultsContainer.style.display = "none";
+        elements.resultsContainer.style.display = "none";
     }
 
     /**
      * Show/hide loading spinner
      */
     function showLoading() {
-        if (elements.loadingSpinner)
-            elements.loadingSpinner.style.display = "block";
+        elements.loadingSpinner.style.display = "block";
     }
 
     function hideLoading() {
-        if (elements.loadingSpinner)
-            elements.loadingSpinner.style.display = "none";
+        elements.loadingSpinner.style.display = "none";
     }
 
     /**
      * Handle clicks outside search area
      */
     function handleOutsideClick(e) {
-        if (!elements.searchInput || !elements.resultsContainer) return;
-
         if (
             !elements.searchInput.contains(e.target) &&
             !elements.resultsContainer.contains(e.target)

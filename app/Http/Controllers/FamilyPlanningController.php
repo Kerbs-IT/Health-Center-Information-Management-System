@@ -68,26 +68,25 @@ class FamilyPlanningController extends Controller
                 'patient_id'           => 'nullable|exists:patients,id',
                 'type_of_patient'      => 'required',
                 'first_name'           => [
-                    'required_without:patient_id',
+                    'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
                     })->ignore($request->patient_id)
                 ],
-                'last_name'            => 'required_without:patient_id|nullable|string',
+                'last_name'            => 'required|string',
                 'middle_initial'       => 'sometimes|nullable|string',
-                'date_of_birth'        => 'required_without:patient_id|date|before_or_equal:today',
+                'date_of_birth'        => 'required|date|before_or_equal:today',
                 'place_of_birth'       => 'sometimes|nullable|string',
-                'age'                  => 'required_without:patient_id|numeric|min:10|max:49',
+                'age'                  => 'sometimes|nullable|numeric|min:10|max:49',
                 'sex'                  => 'sometimes|nullable|string',
-                'contact_number'       => 'required_without:patient_id|digits_between:7,12',
+                'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required_without:patient_id|date',
-                'handled_by'           => 'nullable|exists:users,id',
-                'handled_by_backup'    => 'nullable|exists:users,id',
-                'street'               => 'required_without:patient_id',
-                'brgy'                 => 'required_without:patient_id',
+                'date_of_registration' => 'required|date',
+                'handled_by'           => 'required|exists:users,id',
+                'street'               => 'required|string',
+                'brgy'                 => 'required|string',
                 'civil_status'         => 'sometimes|nullable|string',
                 'suffix'               => 'sometimes|nullable|string',
 
@@ -109,23 +108,22 @@ class FamilyPlanningController extends Controller
             ], [
                 'patient_id.exists'                     => 'The selected patient record does not exist.',
                 'type_of_patient.required'              => 'The type of patient field is required.',
-                'first_name.required_without'           => 'The first name field is required.',
+                'first_name.required'                   => 'The first name field is required.',
                 'first_name.string'                     => 'The first name must be a string.',
                 'first_name.unique'                     => 'This patient already exists.',
-                'last_name.required_without'            => 'The last name field is required.',
+                'last_name.required'                    => 'The last name field is required.',
                 'last_name.string'                      => 'The last name must be a string.',
                 'middle_initial.string'                 => 'The middle initial must be a string.',
-                'date_of_birth.required_without'        => 'The date of birth field is required.',
+                'date_of_birth.required'                => 'The date of birth field is required.',
                 'date_of_birth.date'                    => 'The date of birth must be a valid date.',
                 'date_of_birth.before_or_equal'         => 'The date of birth must be today or earlier.',
                 'place_of_birth.string'                 => 'The place of birth must be a string.',
-                'age.required_without'                  => 'The age field is required.',
                 'age.numeric'                           => 'The age must be a number.',
                 'age.min'                               => 'The age must be at least :min.',
                 'age.max'                               => 'The age may not be greater than :max.',
-                'contact_number.required_without'       => 'The contact number field is required.',
+                'contact_number.required'               => 'The contact number field is required.',
                 'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
-                'date_of_registration.required_without' => 'The date of registration field is required.',
+                'date_of_registration.required'         => 'The date of registration field is required.',
                 'date_of_registration.date'             => 'The date of registration must be a valid date.',
                 'handled_by.exists'                     => 'The selected health worker does not exist.',
                 'handled_by_backup.exists'              => 'The selected health worker does not exist.',
@@ -387,15 +385,46 @@ class FamilyPlanningController extends Controller
                     ], 422);
                 }
 
-                $familyPlanningPatientRecordId = $familPlanningPatient->id;
+                $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle     = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
+                $fullName   = ucwords(trim(implode(' ', array_filter([
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null,
+                ]))));
 
+                $familPlanningPatient->update([
+                    'first_name'           => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial'       => $middleName,
+                    'last_name'            => ucwords(strtolower($patientData['last_name'])),
+                    'full_name'            => $fullName,
+                    'suffix'               => $patientData['suffix'] ?? '',
+                    'contact_number'       => $patientData['contact_number'],
+                    'nationality'          => $patientData['nationality'] ?? $familPlanningPatient->nationality,
+                    'date_of_birth'        => $patientData['date_of_birth'],
+                    'age'                  => isset($patientData['date_of_birth']) ? \Carbon\Carbon::parse($patientData['date_of_birth'])->age : $familPlanningPatient->age,
+                    'place_of_birth'       => $patientData['place_of_birth'] ?? $familPlanningPatient->place_of_birth,
+                    'civil_status'         => $patientData['civil_status'] ?? $familPlanningPatient->civil_status,
+                    'date_of_registration' => $patientData['date_of_registration'],
+                ]);
+
+                $blk_n_street = explode(',', $patientData['street']);
                 $patientAddress = $familPlanningPatient->address;
+
                 if (!$patientAddress) {
                     return response()->json([
                         'message' => 'Patient address not found.',
                         'errors'  => ['patient_id' => ['The selected patient does not have an address record.']]
                     ], 422);
                 }
+
+                $patientAddress->update([
+                    'house_number' => $blk_n_street[0],
+                    'street'       => $blk_n_street[1] ?? null,
+                    'purok'        => $patientData['brgy'],
+                ]);
 
                 $patientAddress->refresh();
                 $fullAddress = collect([
@@ -407,6 +436,7 @@ class FamilyPlanningController extends Controller
                     $patientAddress->province ?? null,
                 ])->filter()->join(', ');
 
+                $familyPlanningPatientRecordId = $familPlanningPatient->id;
                 $message = 'Family Planning case added to existing patient successfully.';
             } else {
                 // ============================================================================
@@ -473,7 +503,7 @@ class FamilyPlanningController extends Controller
                     'middle_initial'       => $middleName,
                     'last_name'            => ucwords(strtolower($patientData['last_name'])),
                     'full_name'            => $fullName,
-                    'age'                  => $patientData['age'] ?? null,
+                    'age'                  => isset($patientData['date_of_birth']) ? \Carbon\Carbon::parse($patientData['date_of_birth'])->age : null,
                     'sex'                  => 'Female',
                     'civil_status'         => $patientData['civil_status'] ?? null,
                     'contact_number'       => $patientData['contact_number'] ?? null,

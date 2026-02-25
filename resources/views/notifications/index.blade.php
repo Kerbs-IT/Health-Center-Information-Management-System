@@ -92,7 +92,7 @@
                                                                 <span class="badge bg-primary">New</span>
                                                                 @endif
                                                             </h5>
-                                                            <p class="mb-2">{{ $notification->message }}</p>
+                                                            <p class="mb-2">{!! $notification->message !!}</p>
                                                             <small class="text-muted">
                                                                 <i class="far fa-clock"></i> {{ $notification->created_at->diffForHumans() }}
                                                             </small>

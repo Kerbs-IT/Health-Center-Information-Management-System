@@ -225,6 +225,8 @@ document.addEventListener("click", async (e) => {
     // if there are no errors
     const data = await response.json();
 
+    
+
     if (data) {
         const brgy = document.getElementById("edit_patient_purok_dropdown");
         const street = document.getElementById("edit_blk_n_street");
@@ -278,8 +280,48 @@ document.addEventListener("click", async (e) => {
             street.value = blk_n_street;
         }
     }
+
+    // Populate guardian/family members table
+    populateGuardianPatients(data.guardian_patients);
 });
 
+
+//============================================== FOR GUARDIAN APPROACH ===============================================================
+function populateGuardianPatients(patients) {
+    const tableBody = document.getElementById("family-member-table-body");
+
+    if (!patients || patients.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4">No record</td></tr>';
+        return;
+    }
+
+    tableBody.innerHTML = patients
+        .map((patient) => {
+            const birthDate = patient.date_of_birth
+                ? new Date(patient.date_of_birth).toLocaleDateString()
+                : "N/A";
+
+            // Get type_of_case from medical_record_case relationship
+            const typeOfCase =
+                patient.medical_record_case &&
+                patient.medical_record_case.length > 0
+                    ? patient.medical_record_case[0].type_of_case // Show first case
+                    : "N/A";
+
+            return `
+            <tr>
+                <td>${patient.full_name || "N/A"}</td>
+                <td>${birthDate}</td>
+                <td>${patient.sex || "N/A"}</td>
+                <td>${typeOfCase}</td>
+            </tr>
+        `;
+        })
+        .join("");
+}
+
+
+// ====================================== SHOWING THE GUARDIAN RELATIONSHIP ========================================================
 if (submitBtn) {
     submitBtn.addEventListener("click", async (e) => {
         e.preventDefault();

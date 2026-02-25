@@ -96,6 +96,11 @@ class User extends Authenticatable implements CanResetPassword
     {
         return $this->hasOne(patients::class, 'user_id', 'id');
     }
+    // guardian
+    public function guardian()
+    {
+        return $this->hasMany(patients::class, 'guardian_user_id', 'id');
+    }
     public function medicineRequest()
     {
         return $this->hasMany(MedicineRequest::class, 'user_id', 'id');

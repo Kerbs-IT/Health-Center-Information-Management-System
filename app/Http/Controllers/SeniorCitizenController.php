@@ -55,31 +55,31 @@ class SeniorCitizenController extends Controller
                 'patient_id'           => 'nullable|exists:patients,id',
                 'type_of_patient'      => 'required',
                 'first_name'           => [
-                    'required_without:patient_id',
+                    'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
                     })->ignore($request->patient_id)
                 ],
-                'last_name'            => 'required_without:patient_id|nullable|string',
+                'last_name'            => 'required|string',
                 'middle_initial'       => 'sometimes|nullable|string',
                 'date_of_birth'        => [
-                    'required_without:patient_id',
+                    'required',
                     'date',
                     'before_or_equal:' . now()->subYears(60)->format('Y-m-d'),
                     'before_or_equal:today',
                 ],
                 'place_of_birth'       => 'sometimes|nullable|string',
                 'age'                  => 'sometimes|nullable|numeric|min:60',
-                'sex'                  => 'required_without:patient_id|string',
-                'contact_number'       => 'required_without:patient_id|digits_between:7,12',
+                'sex'                  => 'required|string',
+                'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required_without:patient_id|date',
+                'date_of_registration' => 'required|date',
                 'handled_by'           => 'nullable|exists:users,id',
                 'handled_by_backup'    => 'nullable|exists:users,id',
-                'street'               => 'required_without:patient_id',
-                'brgy'                 => 'required_without:patient_id',
+                'street'               => 'required',
+                'brgy'                 => 'required',
                 'civil_status'         => 'sometimes|nullable|string',
                 'suffix'               => 'sometimes|nullable|string',
 
@@ -185,7 +185,7 @@ class SeniorCitizenController extends Controller
             // ============================================================================
             if ($request->filled('patient_id')) {
 
-                $seniorCitizenPatient = patients::findOrFail($patientData['patient_id']);
+                $seniorCitizenPatient = patients::with('address')->findOrFail($patientData['patient_id']);
 
                 $existingCase = medical_record_cases::where('patient_id', $seniorCitizenPatient->id)
                     ->where('type_of_case', $patientData['type_of_patient'])
@@ -197,6 +197,43 @@ class SeniorCitizenController extends Controller
                         'message' => 'Validation failed.',
                         'errors'  => ['type_of_patient' => ['This patient already has an active Senior Citizen case.']]
                     ], 422);
+                }
+
+                $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle     = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
+                $fullName   = ucwords(trim(implode(' ', array_filter([
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null,
+                ]))));
+
+                $seniorCitizenPatient->update([
+                    'first_name'           => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial'       => $middleName,
+                    'last_name'            => ucwords(strtolower($patientData['last_name'])),
+                    'full_name'            => $fullName,
+                    'suffix'               => $patientData['suffix'] ?? '',
+                    'contact_number'       => $patientData['contact_number'],
+                    'nationality'          => $patientData['nationality'] ?? $seniorCitizenPatient->nationality,
+                    'date_of_birth'        => $patientData['date_of_birth'],
+                    'age'                  => isset($patientData['date_of_birth']) ? \Carbon\Carbon::parse($patientData['date_of_birth'])->age : $seniorCitizenPatient->age,
+                    'place_of_birth'       => $patientData['place_of_birth'] ?? $seniorCitizenPatient->place_of_birth,
+                    'civil_status'         => $patientData['civil_status'] ?? $seniorCitizenPatient->civil_status,
+                    'sex'                  => isset($patientData['sex']) ? ucfirst(strtolower($patientData['sex'])) : $seniorCitizenPatient->sex,
+                    'date_of_registration' => $patientData['date_of_registration'],
+                ]);
+
+                $blk_n_street         = explode(',', $patientData['street']);
+                $seniorCitizenAddress = $seniorCitizenPatient->address;
+
+                if ($seniorCitizenAddress) {
+                    $seniorCitizenAddress->update([
+                        'house_number' => $blk_n_street[0],
+                        'street'       => $blk_n_street[1] ?? null,
+                        'purok'        => $patientData['brgy'],
+                    ]);
                 }
 
                 $seniorCitizenPatientId = $seniorCitizenPatient->id;
@@ -268,7 +305,7 @@ class SeniorCitizenController extends Controller
                     'middle_initial'       => $middleName,
                     'last_name'            => ucwords(strtolower($patientData['last_name'])),
                     'full_name'            => $fullName,
-                    'age'                  => $patientData['age'] ?? null,
+                    'age'                  => isset($patientData['date_of_birth']) ? \Carbon\Carbon::parse($patientData['date_of_birth'])->age : null,
                     'sex'                  => $sex,
                     'civil_status'         => $patientData['civil_status'] ?? null,
                     'contact_number'       => $patientData['contact_number'] ?? null,

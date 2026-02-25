@@ -60,8 +60,15 @@ class patients extends Model
     }
 
     // user
-    public function user(){
-        return $this->belongsTo(User::class,'patient_record_id','id');
+    public function user()
+    {
+        return $this->hasOne(User::class, 'patient_record_id', 'id');
+    }
+
+    // guardians
+
+    public function guardian(){
+        return $this->belongsTo(User::class,'guardian_user_id','id');
     }
 
     public function isBound()

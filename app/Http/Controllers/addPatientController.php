@@ -82,29 +82,28 @@ class addPatientController extends Controller
                 'patient_id'              => 'nullable|exists:patients,id',
                 'type_of_patient'         => 'required',
                 'first_name'              => [
-                    'required_without:patient_id',
+                    'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
                     })->ignore($request->patient_id)
                 ],
-                'last_name'               => 'required_without:patient_id|string',
+                'last_name'               => 'required|string',
                 'middle_initial'          => 'sometimes|nullable|string',
-                'date_of_birth'           => 'required_without:patient_id|date|before_or_equal:today',
+                'date_of_birth'           => 'required|date|before_or_equal:today',
                 'place_of_birth'          => 'sometimes|nullable|string',
-                'age'                     => 'required_without:patient_id|numeric',
-                'sex'                     => 'required_without:patient_id|string',
-                'contact_number'          => 'required_without:patient_id|digits_between:7,12',
+                'age'                     => 'sometimes|nullable|numeric',
+                'sex'                     => 'required|string',
+                'contact_number'          => 'required|digits_between:7,12',
                 'nationality'             => 'sometimes|nullable|string',
-                'date_of_registration'    => 'required_without:patient_id|date',
-                'handled_by'              => 'nullable|exists:users,id',
-                'handled_by_backup'       => 'nullable|exists:users,id',
+                'date_of_registration'    => 'required|date',
+                'handled_by'              => 'required|exists:users,id',
                 'mother_name'             => 'sometimes|nullable|string',
                 'father_name'             => 'sometimes|nullable|string',
                 'civil_status'            => 'sometimes|nullable|string',
-                'street'                  => 'required_without:patient_id',
-                'brgy'                    => 'required_without:patient_id',
+                'street'                  => 'required|string',
+                'brgy'                    => 'required|string',
                 'vaccination_height'      => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight'      => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'date_of_vaccination'     => 'required|date',
@@ -124,7 +123,7 @@ class addPatientController extends Controller
                 // Email: required only if NOT using guardian and NOT existing patient
                 'email' => array_filter([
                     !$request->filled('guardian_account_id') && !$request->filled('patient_id')
-                        ? 'required'
+                        ? 'required_without:patient_id'
                         : 'nullable',
                     'email',
                     !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
@@ -135,18 +134,24 @@ class addPatientController extends Controller
                 'user_account'            => 'sometimes|nullable|numeric',
             ], [
                 'patient_id.exists'                  => 'The selected patient record does not exist.',
-                'first_name.required_without'        => 'The first name field is required.',
-                'last_name.required_without'         => 'The last name field is required.',
-                'date_of_birth.required_without'     => 'The date of birth field is required.',
-                'age.required_without'               => 'The age field is required.',
-                'sex.required_without'               => 'The sex field is required.',
-                'contact_number.required_without'    => 'The contact number field is required.',
-                'date_of_registration.required_without' => 'The date of registration field is required.',
-                'street.required_without'            => 'The street field is required.',
-                'brgy.required_without'              => 'The barangay field is required.',
+                'first_name.required'                => 'The first name field is required.',
+                'first_name.string'                  => 'The first name must be a string.',
+                'first_name.unique'                  => 'This patient already exists.',
+                'last_name.required'                 => 'The last name field is required.',
+                'last_name.string'                   => 'The last name must be a string.',
+                'date_of_birth.required'             => 'The date of birth field is required.',
+                'date_of_birth.date'                 => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal'      => 'The date of birth must be today or earlier.',
+                'sex.required'                       => 'The sex field is required.',
+                'contact_number.required'            => 'The contact number field is required.',
+                'contact_number.digits_between'      => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'      => 'The date of registration field is required.',
+                'date_of_registration.date'          => 'The date of registration must be a valid date.',
+                'street.required'                    => 'The street field is required.',
+                'brgy.required'                      => 'The barangay field is required.',
                 'email.required'                     => 'The email field is required.',
+                'handled_by.required'                => 'The health worker field is required.',
                 'handled_by.exists'                  => 'The selected health worker does not exist.',
-                'handled_by_backup.exists'           => 'The selected health worker does not exist.',
                 'guardian_account_id.exists'         => 'The selected guardian account does not exist.',
                 'vaccination_height.required'        => 'The birth height field is required.',
                 'vaccination_height.numeric'         => 'The birth height must be a number.',
@@ -198,7 +203,6 @@ class addPatientController extends Controller
             // HANDLE EXISTING PATIENT RECORD
             // ============================================================================
             if ($request->filled('patient_id')) {
-
                 $vaccinationPatient = patients::with('address')->findOrFail($data['patient_id']);
 
                 $existingCase = medical_record_cases::where('patient_id', $vaccinationPatient->id)
@@ -213,9 +217,51 @@ class addPatientController extends Controller
                     ], 422);
                 }
 
+                // -----------------------------------------------------------------------
+                // UPDATE existing patient information (ported from Doc 2)
+                // -----------------------------------------------------------------------
+                $middle        = substr($data['middle_initial'] ?? '', 0, 1);
+                $middle        = $middle ? strtoupper($middle) . '.' : null;
+                $middleInitial = $data['middle_initial'] ? ucwords($data['middle_initial']) : '';
+                $fullName      = ucwords(trim(implode(' ', array_filter([
+                    strtolower($data['first_name']),
+                    $middle,
+                    strtolower($data['last_name']),
+                    $data['suffix'] ?? null,
+                ]))));
+                $ageInYears = Carbon::parse($data['date_of_birth'])->age;
+
+                $vaccinationPatient->update([
+                    'first_name'           => ucwords(strtolower($data['first_name'])),
+                    'middle_initial'       => $middleInitial,
+                    'last_name'            => ucwords(strtolower($data['last_name'])),
+                    'full_name'            => $fullName,
+                    'age'                  => $ageInYears ?? 0,
+                    'age_in_months'        => $this->calculateAgeInMonths($data['date_of_birth']),
+                    'sex'                  => isset($data['sex']) ? ucfirst($data['sex']) : $vaccinationPatient->sex,
+                    'civil_status'         => $data['civil_status'] ?? $vaccinationPatient->civil_status,
+                    'contact_number'       => $data['contact_number'] ?? null,
+                    'date_of_birth'        => $data['date_of_birth'] ?? null,
+                    'nationality'          => $data['nationality'] ?? null,
+                    'date_of_registration' => $data['date_of_registration'] ?? null,
+                    'place_of_birth'       => $data['place_of_birth'] ?? null,
+                    'suffix'               => $data['suffix'] ?? null,
+                ]);
+
+                // UPDATE address if it exists
+                $blk_n_street = explode(',', $data['street']);
+                if ($vaccinationPatient->address) {
+                    $vaccinationPatient->address->update([
+                        'house_number' => $blk_n_street[0],
+                        'street'       => $blk_n_street[1] ?? null,
+                        'purok'        => $data['brgy'],
+                    ]);
+                }
+                // -----------------------------------------------------------------------
+
                 $vaccinationPatientId = $vaccinationPatient->id;
 
-                $patientAddress = $vaccinationPatient->address;
+                $patientAddress = $vaccinationPatient->fresh('address')->address;
                 if (!$patientAddress) {
                     return response()->json([
                         'message' => 'Patient address not found.',
@@ -223,7 +269,7 @@ class addPatientController extends Controller
                     ], 422);
                 }
 
-                $message = 'Vaccination case added to existing patient successfully.';
+                $message = 'Vaccination case added and patient information updated successfully.';
             } else {
                 // ============================================================================
                 // CREATE NEW PATIENT RECORD

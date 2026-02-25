@@ -73,26 +73,25 @@ class PrenatalController extends Controller
                 'patient_id'           => 'nullable|exists:patients,id',
                 'type_of_patient'      => 'required',
                 'first_name'           => [
-                    'required_without:patient_id',
+                    'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
                     })->ignore($request->patient_id)
                 ],
-                'last_name'            => 'required_without:patient_id|string',
+                'last_name'            => 'required|string',
                 'middle_initial'       => 'sometimes|nullable|string',
-                'date_of_birth'        => 'required_without:patient_id|date|before_or_equal:today',
+                'date_of_birth'        => 'required|date|before_or_equal:today',
                 'place_of_birth'       => 'sometimes|nullable|string',
-                'age'                  => 'required_without:patient_id|numeric',
+                'age'                  => 'required|numeric',
                 'sex'                  => 'sometimes|nullable|string',
-                'contact_number'       => 'required_without:patient_id|digits_between:7,12',
+                'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required_without:patient_id|date',
+                'date_of_registration' => 'required|date',
                 'handled_by'           => 'nullable|exists:users,id',
-                'handled_by_backup'    => 'nullable|exists:users,id',
-                'street'               => 'required_without:patient_id',
-                'brgy'                 => 'required_without:patient_id',
+                'street'               => 'required|string',
+                'brgy'                 => 'required',
                 'suffix'               => 'sometimes|nullable|string',
 
                 // Guardian account — optional, only used when notification_mode = guardian
@@ -128,7 +127,6 @@ class PrenatalController extends Controller
                 'date_of_registration.required_without' => 'The date of registration field is required.',
                 'date_of_registration.date'             => 'The date of registration must be a valid date.',
                 'handled_by.exists'                     => 'The selected health worker does not exist.',
-                'handled_by_backup.exists'              => 'The selected health worker does not exist.',
                 'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
                 'street.required_without'               => 'The street field is required.',
                 'brgy.required_without'                 => 'The barangay field is required.',
@@ -305,6 +303,32 @@ class PrenatalController extends Controller
                     ], 422);
                 }
 
+                $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle     = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
+                $fullName   = ucwords(trim(implode(' ', array_filter([
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null,
+                ]))));
+
+                $prenatalPatient->update([
+                    'first_name'           => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial'       => $middleName,
+                    'last_name'            => ucwords(strtolower($patientData['last_name'])),
+                    'full_name'            => $fullName,
+                    'suffix'               => $patientData['suffix'] ?? '',
+                    'contact_number'       => $patientData['contact_number'],
+                    'nationality'          => $patientData['nationality'] ?? $prenatalPatient->nationality,
+                    'date_of_birth'        => $patientData['date_of_birth'],
+                    'age'                  => isset($patientData['date_of_birth']) ? \Carbon\Carbon::parse($patientData['date_of_birth'])->age : $prenatalPatient->age,
+                    'place_of_birth'       => $patientData['place_of_birth'] ?? $prenatalPatient->place_of_birth,
+                    'civil_status'         => $patientData['civil_status'] ?? $prenatalPatient->civil_status,
+                    'date_of_registration' => $patientData['date_of_registration'],
+                ]);
+
+
                 $prenatalPatientId = $prenatalPatient->id;
 
                 $patientAddress = $prenatalPatient->address;
@@ -313,6 +337,15 @@ class PrenatalController extends Controller
                         'message' => 'Patient address not found.',
                         'errors'  => ['patient_id' => ['The selected patient does not have an address record.']]
                     ], 422);
+                }
+
+                $blk_n_street = explode(',', $patientData['street']);
+                if ($prenatalPatient->address) {
+                    $prenatalPatient->address->update([
+                        'house_number' => $blk_n_street[0],
+                        'street'       => $blk_n_street[1] ?? null,
+                        'purok'        => $patientData['brgy'],
+                    ]);
                 }
 
                 $patientAddress->refresh();

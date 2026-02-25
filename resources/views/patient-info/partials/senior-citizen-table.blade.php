@@ -2,7 +2,7 @@
     <table class="w-100 table">
         <thead class="table-header">
             <tr class="text-nowrap">
-                <th>Record Id.</th>
+                <th>#</th>
                 <th>Service Type</th>
                 <th>Type of Record</th>
                 <th>Date Registered</th>
@@ -12,7 +12,7 @@
         <tbody>
             @forelse($allRecords as $record)
             <tr>
-                <td>{{ $record->id }}</td>
+                <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                 <td>Senior Citizen</td>
                 <td>Case Record</td>
                 <td>{{ $record->created_at?->format('Y-m-d') ?? 'N/A' }}</td>

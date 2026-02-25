@@ -220,6 +220,24 @@
                                         <small class="text-danger error-element patient-type-error"></small>
                                     </div>
                                 </div>
+                                <div class="mb-3">
+                                    <h5>Family Members(s)</h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>BirthDate</th>
+                                                <th>Sex</th>
+                                                <th>Type of Patient</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="" id="family-member-table-body">
+                                            <tr>
+                                                <td colspan="12">No record</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end gap-2 mt-4">

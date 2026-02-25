@@ -14,6 +14,7 @@ use App\Models\tb_dots_maintenance_medicines;
 use App\Models\tb_dots_medical_records;
 use App\Models\User;
 use App\Services\PatientUpdateService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -54,126 +55,102 @@ class TbDotsController extends Controller
     {
         try {
             $patientData = $request->validate([
-                'patient_id'           => 'nullable|exists:patients,id',
-                'type_of_patient'      => 'required',
-                'first_name'           => [
-                    'required_without:patient_id',
+                'patient_id' => 'nullable|exists:patients,id',
+                'type_of_patient' => 'required',
+                'first_name' => [
+                    'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
                         return $query->where('first_name', $request->first_name)
                             ->where('last_name', $request->last_name);
                     })->ignore($request->patient_id)
                 ],
-                'last_name'            => 'required_without:patient_id|nullable|string',
-                'middle_initial'       => 'sometimes|nullable|string',
-                'date_of_birth'        => 'required_without:patient_id|date|before_or_equal:today',
-                'place_of_birth'       => 'sometimes|nullable|string',
-                'age'                  => 'sometimes|nullable|numeric',
-                'sex'                  => 'required_without:patient_id|string',
-                'contact_number'       => 'required_without:patient_id|digits_between:7,12',
-                'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required_without:patient_id|date',
-                'handled_by'           => 'nullable|exists:users,id',
-                'handled_by_backup'    => 'nullable|exists:users,id',
-                'street'               => 'required_without:patient_id|string',
-                'brgy'                 => 'required_without:patient_id|string',
-                'civil_status'         => 'sometimes|nullable|string',
-                'suffix'               => 'sometimes|nullable|string',
-
-                // Guardian account — optional, only used when notification_mode = guardian
-                'guardian_account_id'  => 'nullable|exists:users,id',
-
-                // Email: not required when guardian is linked or existing patient
+                'last_name' => 'required|string',
+                'middle_initial' => 'sometimes|nullable|string',
+                'date_of_birth' => 'required|date|before_or_equal:today',
+                'place_of_birth' => 'sometimes|nullable|string',
+                'age' => 'sometimes|nullable|numeric',
+                'sex' => 'required|string',
+                'contact_number' => 'required|digits_between:7,12',
+                'nationality' => 'sometimes|nullable|string',
+                'date_of_registration' => 'required|date',
+                'handled_by' => 'required|exists:users,id',
+                'street' => 'required|string',
+                'brgy' => 'required|string',
+                'civil_status' => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string',
                 'email' => array_filter([
-                    !$request->filled('guardian_account_id') && !$request->filled('patient_id')
-                        ? 'required_without:patient_id'
-                        : 'nullable',
+                    'required_without:patient_id',
                     'email',
-                    !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
-                        ? Rule::unique('users', 'email')
-                        : null,
+                    !$request->user_account && !$request->patient_id ? Rule::unique('users', 'email') : null,
                 ]),
-
-                'user_account'         => 'sometimes|nullable|numeric',
+                'user_account' => 'sometimes|nullable|numeric'
             ], [
-                'patient_id.exists'                     => 'The selected patient record does not exist.',
-                'type_of_patient.required'              => 'The type of patient field is required.',
-                'first_name.required_without'           => 'The first name field is required.',
-                'first_name.string'                     => 'The first name must be a string.',
-                'first_name.unique'                     => 'This patient already exists.',
-                'last_name.required_without'            => 'The last name field is required.',
-                'date_of_birth.required_without'        => 'The date of birth field is required.',
-                'date_of_birth.date'                    => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal'         => 'The date of birth must be today or earlier.',
-                'contact_number.required_without'       => 'The contact number field is required.',
-                'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
+                'patient_id.exists' => 'The selected patient record does not exist.',
+                'type_of_patient.required' => 'The type of patient field is required.',
+                'first_name.required_without' => 'The first name field is required.',
+                'first_name.unique' => 'This patient already exists.',
+                'last_name.required_without' => 'The last name field is required.',
+                'date_of_birth.required_without' => 'The date of birth field is required.',
+                'contact_number.required_without' => 'The contact number field is required.',
                 'date_of_registration.required_without' => 'The date of registration field is required.',
-                'handled_by.exists'                     => 'The selected health worker does not exist.',
-                'handled_by_backup.exists'              => 'The selected health worker does not exist.',
-                'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
+                'handled_by.required' => 'The health worker field is required.',
+                'handled_by.exists' => 'The selected health worker does not exist.',
             ]);
 
-            // ============================================================================
-            // DETERMINE handled_by
-            // ============================================================================
-            $handledBy = $patientData['handled_by'] ?? $patientData['handled_by_backup'] ?? null;
+            $handledBy = $patientData['handled_by'];
 
             if (!$handledBy) {
                 return response()->json([
                     'message' => 'Validation failed.',
-                    'errors'  => ['handled_by' => ['The health worker field is required.']]
+                    'errors' => [
+                        'handled_by' => ['The health worker field is required.']
+                    ]
                 ], 422);
             }
 
-            // ============================================================================
-            // DETERMINE notification mode
-            // ============================================================================
-            $guardianAccountId = $patientData['guardian_account_id'] ?? null;
-            $isGuardianMode    = !empty($guardianAccountId);
-
             $caseData = $request->validate([
-                'tb_type'                            => 'required|string',
-                'tb_case_type'                       => 'required|string',
-                'tb_date_of_diagnosis'               => 'required|date',
-                'name_of_physician'                  => 'sometimes|nullable|string',
-                'sputum_result'                      => 'sometimes|nullable|string',
-                'treatment_medicine_name'            => 'sometimes|nullable|string',
+                'tb_type' => 'required|string',
+                'tb_case_type' => 'required|string',
+                'tb_date_of_diagnosis' => 'required|date',
+                'name_of_physician' => 'sometimes|nullable|string',
+                'sputum_result' => 'sometimes|nullable|string',
+                'treatment_medicine_name' => 'sometimes|nullable|string',
                 'tb_date_of_medication_administered' => 'required|date',
-                'treatment_side_effect'              => 'sometimes|nullable|string',
-                'tb_outcome'                         => 'sometimes|nullable|string',
-                'tb_remarks'                         => 'sometimes|nullable|string',
-            ], [
-                'tb_type.required'                            => 'The TB type field is required.',
-                'tb_case_type.required'                       => 'The TB case type field is required.',
-                'tb_date_of_diagnosis.required'               => 'The date of diagnosis field is required.',
-                'tb_date_of_medication_administered.required' => 'The date of medication administered field is required.',
+                'treatment_side_effect' => 'sometimes|nullable|string',
+                'tb_outcome' => 'sometimes|nullable|string',
+                'tb_remarks' => 'sometimes|nullable|string',
             ]);
 
             $maintenanceMedicationData = $request->validate([
-                'medicines'            => 'sometimes|nullable|array',
+                'medicines' => 'sometimes|nullable|array',
                 'dosage_n_frequencies' => 'sometimes|nullable|array',
-                'medicine_quantity'    => 'sometimes|nullable|array',
-                'start_date'           => 'sometimes|nullable|array',
-                'end_date'             => 'sometimes|nullable|array',
+                'medicine_quantity' => 'sometimes|nullable|array',
+                'start_date' => 'sometimes|nullable|array',
+                'end_date' => 'sometimes|nullable|array'
             ]);
 
             $patientMedicalRecord = $request->validate([
-                'philhealth_id'    => 'sometimes|nullable|string',
-                'blood_pressure'   => ['sometimes', 'nullable', 'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'],
-                'temperature'      => 'nullable|numeric|between:30,45',
-                'pulse_rate'       => 'nullable|string|max:20',
+                'philhealth_id' => 'sometimes|nullable|string',
+                'blood_pressure' => [
+                    'sometimes',
+                    'nullable',
+                    'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
+                ],
+                'temperature' => 'nullable|numeric|between:30,45',
+                'pulse_rate' => 'nullable|string|max:20',
                 'respiratory_rate' => 'nullable|integer|min:5|max:60',
-                'height'           => 'nullable|numeric|between:1,250',
-                'weight'           => 'nullable|numeric|between:1,250',
+                'height' => 'nullable|numeric|between:1,250',
+                'weight' => 'nullable|numeric|between:1,250',
             ]);
 
             // ============================================================================
             // HANDLE EXISTING PATIENT RECORD
             // ============================================================================
             if ($request->filled('patient_id')) {
+                $tbDotsPatient = patients::with('address')->findOrFail($patientData['patient_id']);
 
-                $tbDotsPatient = patients::findOrFail($patientData['patient_id']);
-
+                // Check for duplicate case type
                 $existingCase = medical_record_cases::where('patient_id', $tbDotsPatient->id)
                     ->where('type_of_case', $patientData['type_of_patient'])
                     ->where('status', 'Active')
@@ -182,32 +159,60 @@ class TbDotsController extends Controller
                 if ($existingCase) {
                     return response()->json([
                         'message' => 'Validation failed.',
-                        'errors'  => ['type_of_patient' => ['This patient already has an active TB-DOTS case.']]
+                        'errors' => [
+                            'type_of_patient' => ['This patient already has an active TB-DOTS case.']
+                        ]
                     ], 422);
                 }
 
+                // UPDATE patient information
+                $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
+                $fullName = ucwords(trim(implode(' ', array_filter([
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null
+                ]))));
+
+                $tbDotsPatient->update([
+                    'first_name' => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial' => $middleName,
+                    'last_name' => ucwords(strtolower($patientData['last_name'])),
+                    'full_name' => $fullName,
+                    'suffix' => $patientData['suffix'] ?? '',
+                    'contact_number' => $patientData['contact_number'],
+                    'nationality' => $patientData['nationality'],
+                    'date_of_birth' => $patientData['date_of_birth'],
+                    'place_of_birth' => $patientData['place_of_birth'],
+                    'age' => Carbon::parse($patientData['date_of_birth'])->age,
+                    'sex' => isset($patientData['sex']) ? ucfirst(strtolower($patientData['sex'])) : $tbDotsPatient->sex,
+                    'civil_status' => $patientData['civil_status'] ?? $tbDotsPatient->civil_status,
+                    'date_of_registration' => $patientData['date_of_registration'],
+                ]);
+
+                // UPDATE address
+                $blk_n_street = explode(',', $patientData['street']);
+                if ($tbDotsPatient->address) {
+                    $tbDotsPatient->address->update([
+                        'house_number' => $blk_n_street[0],
+                        'street' => $blk_n_street[1] ?? null,
+                        'purok' => $patientData['brgy'],
+                    ]);
+                }
+
                 $tbDotsPatientId = $tbDotsPatient->id;
-                $message = 'TB-DOTS case added to existing patient successfully.';
+                $message = 'TB-DOTS case added and patient information updated successfully.';
             } else {
                 // ============================================================================
                 // CREATE NEW PATIENT RECORD
                 // ============================================================================
 
-                $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
-                $middle     = $middle ? strtoupper($middle) . '.' : null;
-                $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
-                $parts      = [
-                    strtolower($patientData['first_name']),
-                    $middle,
-                    strtolower($patientData['last_name']),
-                    $patientData['suffix'] ?? null,
-                ];
-                $blk_n_street = explode(',', $patientData['street']);
-                $fullName     = ucwords(trim(implode(' ', array_filter($parts))));
-
-                // Validate user account matching (only if patient account linked, not guardian mode)
-                if ($patientData['user_account'] && !$isGuardianMode) {
+                // Validate user account if provided
+                if ($patientData['user_account']) {
                     $errors = [];
+                    $blk_n_street = explode(',', $patientData['street']);
 
                     try {
                         $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
@@ -222,7 +227,9 @@ class TbDotsController extends Controller
 
                         if (isset($blk_n_street[1]) && !empty(trim($blk_n_street[1]))) {
                             if (trim($blk_n_street[1]) != $user->user_address->street) {
-                                if (!isset($errors['street'])) $errors['street'] = [];
+                                if (!isset($errors['street'])) {
+                                    $errors['street'] = [];
+                                }
                                 $errors['street'][] = "Street doesn't match the patient account records.";
                             }
                         }
@@ -234,107 +241,110 @@ class TbDotsController extends Controller
                         if (!empty($errors)) {
                             return response()->json([
                                 'message' => 'The given data does not match our records.',
-                                'errors'  => $errors
+                                'errors' => $errors
                             ], 422);
                         }
                     } catch (ModelNotFoundException $e) {
                         return response()->json([
                             'message' => 'Patient account not found.',
-                            'errors'  => ['user_account' => ['The selected patient account does not exist.']]
+                            'errors' => [
+                                'user_account' => ['The selected patient account does not exist.']
+                            ]
                         ], 404);
                     }
                 }
 
-                // Create patient record
+                $middle = substr($patientData['middle_initial'] ?? '', 0, 1);
+                $middle = $middle ? strtoupper($middle) . '.' : null;
+                $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
+                $parts = [
+                    strtolower($patientData['first_name']),
+                    $middle,
+                    strtolower($patientData['last_name']),
+                    $patientData['suffix'] ?? null
+                ];
+                $blk_n_street = explode(',', $patientData['street']);
+                $fullName = ucwords(trim(implode(' ', array_filter($parts))));
+
                 $tbDotsPatient = patients::create([
-                    'user_id'              => null,
-                    'guardian_user_id'     => $isGuardianMode ? $guardianAccountId : null, // NEW
-                    'first_name'           => ucwords(strtolower($patientData['first_name'])),
-                    'middle_initial'       => $middleName,
-                    'last_name'            => ucwords(strtolower($patientData['last_name'])),
-                    'full_name'            => $fullName,
-                    'age'                  => $patientData['age'] ?? null,
-                    'sex'                  => isset($patientData['sex']) ? ucfirst(strtolower($patientData['sex'])) : null,
-                    'civil_status'         => $patientData['civil_status'] ?? null,
-                    'contact_number'       => $patientData['contact_number'] ?? null,
-                    'date_of_birth'        => $patientData['date_of_birth'] ?? null,
-                    'profile_image'        => 'images/default_profile.png',
-                    'nationality'          => $patientData['nationality'] ?? null,
+                    'user_id' => null,
+                    'first_name' => ucwords(strtolower($patientData['first_name'])),
+                    'middle_initial' => $middleName,
+                    'last_name' => ucwords(strtolower($patientData['last_name'])),
+                    'full_name' => $fullName,
+                    'age' => Carbon::parse($patientData['date_of_birth'])->age,
+                    'sex' => isset($patientData['sex']) ? ucfirst(strtolower($patientData['sex'])) : null,
+                    'civil_status' => $patientData['civil_status'] ?? null,
+                    'contact_number' => $patientData['contact_number'] ?? null,
+                    'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                    'profile_image' => 'images/default_profile.png',
+                    'nationality' => $patientData['nationality'] ?? null,
                     'date_of_registration' => $patientData['date_of_registration'] ?? null,
-                    'place_of_birth'       => $patientData['place_of_birth'] ?? null,
-                    'suffix'               => $patientData['suffix'] ?? '',
-                    'status'               => 'Active',
+                    'place_of_birth' => $patientData['place_of_birth'] ?? null,
+                    'suffix' => $patientData['suffix'] ?? '',
+                    'status' => 'Active',
                 ]);
 
-                // ----------------------------------------------------------------
-                // ACCOUNT HANDLING: Guardian mode vs Patient account vs New account
-                // ----------------------------------------------------------------
-                if ($isGuardianMode) {
-                    // GUARDIAN MODE: no user account created for the patient
-                    // guardian_user_id already set above on the patient record
-                    // Notifications will go to the guardian's account
-
-                } elseif ($patientData['user_account']) {
-                    // EXISTING USER ACCOUNT: link and update
+                // Handle user account
+                if ($patientData['user_account']) {
                     try {
                         $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
 
                         $user->update([
                             'patient_record_id' => $tbDotsPatient->id,
-                            'first_name'        => ucwords(strtolower($patientData['first_name'])),
-                            'middle_initial'    => $middleName,
-                            'last_name'         => ucwords(strtolower($patientData['last_name'])),
-                            'full_name'         => $fullName,
-                            'email'             => $patientData['email'],
-                            'contact_number'    => $patientData['contact_number'] ?? null,
-                            'date_of_birth'     => $patientData['date_of_birth'] ?? null,
-                            'suffix'            => $patientData['suffix'] ?? null,
-                            'patient_type'      => $patientData['type_of_patient'],
-                            'role'              => 'patient',
-                            'status'            => 'active',
+                            'first_name' => ucwords(strtolower($patientData['first_name'])),
+                            'middle_initial' => $middleName,
+                            'last_name' => ucwords(strtolower($patientData['last_name'])),
+                            'full_name' => $fullName,
+                            'email' => $patientData['email'],
+                            'contact_number' => $patientData['contact_number'] ?? null,
+                            'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                            'suffix' => $patientData['suffix'] ?? null,
+                            'patient_type' => $patientData['type_of_patient'],
+                            'role' => 'patient',
+                            'status' => 'active'
                         ]);
 
                         $tbDotsPatient->update(['user_id' => $user->id]);
 
                         if ($user->user_address) {
                             $user->user_address->update([
-                                'patient_id'   => $tbDotsPatient->id,
+                                'patient_id' => $tbDotsPatient->id,
                                 'house_number' => $blk_n_street[0],
-                                'street'       => $blk_n_street[1] ?? null,
-                                'purok'        => $patientData['brgy'],
+                                'street' => $blk_n_street[1] ?? null,
+                                'purok' => $patientData['brgy']
                             ]);
                         } else {
                             $user->user_address()->create([
-                                'patient_id'   => $tbDotsPatient->id,
+                                'patient_id' => $tbDotsPatient->id,
                                 'house_number' => $blk_n_street[0],
-                                'street'       => $blk_n_street[1] ?? null,
-                                'purok'        => $patientData['brgy'],
+                                'street' => $blk_n_street[1] ?? null,
+                                'purok' => $patientData['brgy']
                             ]);
                         }
                     } catch (ModelNotFoundException $e) {
                         return response()->json([
                             'message' => 'Patient account not found.',
-                            'errors'  => ['user_account' => ['The selected patient account does not exist.']]
+                            'errors' => ['user_account' => ['The selected patient account does not exist.']]
                         ], 404);
                     }
                 } else {
-                    // NEW ACCOUNT: create fresh user account and send credentials
                     $temporaryPassword = $this->generateSecurePassword(8);
                     try {
                         $user = User::create([
                             'patient_record_id' => $tbDotsPatient->id,
-                            'first_name'        => ucwords(strtolower($patientData['first_name'])),
-                            'middle_initial'    => $middleName,
-                            'last_name'         => ucwords(strtolower($patientData['last_name'])),
-                            'full_name'         => $fullName,
-                            'email'             => $patientData['email'],
-                            'contact_number'    => $patientData['contact_number'] ?? null,
-                            'date_of_birth'     => $patientData['date_of_birth'] ?? null,
-                            'suffix'            => $patientData['suffix'] ?? null,
-                            'patient_type'      => $patientData['type_of_patient'],
-                            'password'          => Hash::make($temporaryPassword),
-                            'role'              => 'patient',
-                            'status'            => 'active',
+                            'first_name' => ucwords(strtolower($patientData['first_name'])),
+                            'middle_initial' => $middleName,
+                            'last_name' => ucwords(strtolower($patientData['last_name'])),
+                            'full_name' => $fullName,
+                            'email' => $patientData['email'],
+                            'contact_number' => $patientData['contact_number'] ?? null,
+                            'date_of_birth' => $patientData['date_of_birth'] ?? null,
+                            'suffix' => $patientData['suffix'] ?? null,
+                            'patient_type' => $patientData['type_of_patient'],
+                            'password' => Hash::make($temporaryPassword),
+                            'role' => 'patient',
+                            'status' => 'active'
                         ]);
 
                         $tbDotsPatient->update(['user_id' => $user->id]);
@@ -342,15 +352,15 @@ class TbDotsController extends Controller
                         Mail::to($user->email)->send(new PatientAccountCreated($user, $temporaryPassword));
 
                         $user->user_address()->create([
-                            'patient_id'   => $tbDotsPatient->id,
+                            'patient_id' => $tbDotsPatient->id,
                             'house_number' => $blk_n_street[0],
-                            'street'       => $blk_n_street[1] ?? null,
-                            'purok'        => $patientData['brgy'],
+                            'street' => $blk_n_street[1] ?? null,
+                            'purok' => $patientData['brgy']
                         ]);
                     } catch (\Exception $e) {
                         return response()->json([
                             'message' => 'An error occurred while creating patient account.',
-                            'errors'  => ['server' => ['Please try again or contact support.']]
+                            'errors' => ['server' => ['Please try again or contact support.']]
                         ], 500);
                     }
                 }
@@ -358,59 +368,59 @@ class TbDotsController extends Controller
                 $tbDotsPatientId = $tbDotsPatient->id;
 
                 patient_addresses::create([
-                    'patient_id'   => $tbDotsPatientId,
+                    'patient_id' => $tbDotsPatientId,
                     'house_number' => $blk_n_street[0] ?? $patientData['blk_n_street'],
-                    'street'       => $blk_n_street[1] ?? null,
-                    'purok'        => $patientData['brgy'],
-                    'postal_code'  => '4109',
-                    'latitude'     => null,
-                    'longitude'    => null,
+                    'street' => $blk_n_street[1] ?? null,
+                    'purok' => $patientData['brgy'],
+                    'postal_code' => '4109',
+                    'latitude' => null,
+                    'longitude' => null,
                 ]);
 
                 $message = 'TB-DOTS patient information added successfully.';
             }
 
             // ============================================================================
-            // CREATE MEDICAL CASE RECORD (Common for both new and existing patients)
+            // CREATE MEDICAL CASE RECORD (Common for both)
             // ============================================================================
 
             $medicalCase = medical_record_cases::create([
-                'patient_id'   => $tbDotsPatientId,
+                'patient_id' => $tbDotsPatientId,
                 'type_of_case' => $patientData['type_of_patient'],
-                'status'       => 'Active',
+                'status' => 'Active',
             ]);
 
             $medicalCaseId = $medicalCase->id;
 
             tb_dots_medical_records::create([
                 'medical_record_case_id' => $medicalCaseId,
-                'health_worker_id'       => $handledBy,
-                'patient_name'           => $tbDotsPatient->full_name,
-                'philhealth_id_no'       => $patientMedicalRecord['philhealth_id'] ?? null,
-                'blood_pressure'         => $patientMedicalRecord['blood_pressure'] ?? null,
-                'temperature'            => $patientMedicalRecord['temperature'] ?? null,
-                'pulse_rate'             => $patientMedicalRecord['pulse_rate'] ?? null,
-                'respiratory_rate'       => $patientMedicalRecord['respiratory_rate'] ?? null,
-                'height'                 => $patientMedicalRecord['height'] ?? null,
-                'weight'                 => $patientMedicalRecord['weight'] ?? null,
-                'type_of_record'         => 'Medical Record',
+                'health_worker_id' => $handledBy,
+                'patient_name' => $tbDotsPatient->full_name,
+                'philhealth_id_no' => $patientMedicalRecord['philhealth_id'] ?? null,
+                'blood_pressure' => $patientMedicalRecord['blood_pressure'] ?? null,
+                'temperature' => $patientMedicalRecord['temperature'] ?? null,
+                'pulse_rate' => $patientMedicalRecord['pulse_rate'] ?? null,
+                'respiratory_rate' => $patientMedicalRecord['respiratory_rate'] ?? null,
+                'height' => $patientMedicalRecord['height'] ?? null,
+                'weight' => $patientMedicalRecord['weight'] ?? null,
+                'type_of_record' => 'Medical Record'
             ]);
 
             $tbDotsCaseRecord = tb_dots_case_records::create([
                 'medical_record_case_id' => $medicalCaseId,
-                'health_worker_id'       => $handledBy,
-                'patient_name'           => $tbDotsPatient->full_name,
-                'type_of_tuberculosis'   => $caseData['tb_type'],
-                'type_of_tb_case'        => $caseData['tb_case_type'],
-                'date_of_diagnosis'      => $caseData['tb_date_of_diagnosis'],
-                'name_of_physician'      => $caseData['name_of_physician'],
-                'sputum_test_results'    => $caseData['sputum_result'],
-                'treatment_category'     => $caseData['treatment_medicine_name'],
-                'date_administered'      => $caseData['tb_date_of_medication_administered'],
-                'side_effect'            => $caseData['treatment_side_effect'] ?? null,
-                'remarks'                => $caseData['tb_remarks'] ?? null,
-                'outcome'                => $caseData['tb_outcome'] ?? null,
-                'type_of_record'         => 'Case Record',
+                'health_worker_id' => $handledBy,
+                'patient_name' => $tbDotsPatient->full_name,
+                'type_of_tuberculosis' => $caseData['tb_type'],
+                'type_of_tb_case' => $caseData['tb_case_type'],
+                'date_of_diagnosis' => $caseData['tb_date_of_diagnosis'],
+                'name_of_physician' => $caseData['name_of_physician'],
+                'sputum_test_results' => $caseData['sputum_result'],
+                'treatment_category' => $caseData['treatment_medicine_name'],
+                'date_administered' => $caseData['tb_date_of_medication_administered'],
+                'side_effect' => $caseData['treatment_side_effect'] ?? null,
+                'remarks' => $caseData['tb_remarks'] ?? null,
+                'outcome' => $caseData['tb_outcome'] ?? null,
+                'type_of_record' => 'Case Record',
             ]);
 
             $caseId = $tbDotsCaseRecord->id;
@@ -418,24 +428,26 @@ class TbDotsController extends Controller
             if (!empty($maintenanceMedicationData['medicines'])) {
                 foreach ($maintenanceMedicationData['medicines'] as $index => $value) {
                     tb_dots_maintenance_medicines::create([
-                        'tb_dots_case_id'    => $caseId,
-                        'medicine_name'      => $value,
+                        'tb_dots_case_id' => $caseId,
+                        'medicine_name' => $value,
                         'dosage_n_frequency' => $maintenanceMedicationData['dosage_n_frequencies'][$index],
-                        'quantity'           => $maintenanceMedicationData['medicine_quantity'][$index],
-                        'start_date'         => $maintenanceMedicationData['start_date'][$index],
-                        'end_date'           => $maintenanceMedicationData['end_date'][$index],
+                        'quantity' => $maintenanceMedicationData['medicine_quantity'][$index],
+                        'start_date' => $maintenanceMedicationData['start_date'][$index],
+                        'end_date' => $maintenanceMedicationData['end_date'][$index],
                     ]);
                 }
             }
 
             return response()->json(['message' => $message], 200);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('TB-DOTS Patient Creation Error: ' . $e->getMessage());
             return response()->json([
                 'message' => 'An unexpected error occurred.',
-                'errors'  => ['server' => ['Please try again or contact support.']]
+                'errors' => ['server' => ['Please try again or contact support.']]
             ], 500);
         }
     }
@@ -539,7 +551,7 @@ class TbDotsController extends Controller
                 'full_name' => $fullName ?? ucwords(strtolower($tbDotsRecord->patient->full_name)),
                 'age' => $data['age'] ?? $tbDotsRecord->patient->age,
                 'sex' => $sex ? ucfirst(strtolower($sex)) : null,
-                'civil_status' => $data['civil_status'] ??null,
+                'civil_status' => $data['civil_status'] ?? null,
                 'contact_number' => $data['contact_number'] ?? $tbDotsRecord->patient->contact_number,
                 'date_of_birth' => $data['date_of_birth'] ?? $tbDotsRecord->patient->date_of_birth,
                 'nationality' => $data['nationality'] ?? null,

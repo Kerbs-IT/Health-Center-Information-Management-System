@@ -23,7 +23,7 @@ class PatientRecord extends Controller
             $query = patients::where('status', 'Active')
                 ->with(['medical_record_case' => function ($q) {
                     $q->where('status', 'Active');
-                }, 'address']);
+                }, 'address', 'user']);
 
             // If searching by ID, return that specific patient
             if ($patientId) {
