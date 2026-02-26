@@ -118,7 +118,7 @@
 
                             <!-- User Information Section -->
                             <div class="col-12 col-lg-8">
-                                <h4 class="mb-3">Personal Info</h4>
+                                <h4 class="mb-3 fw-bold">Personal Info</h4>
 
                                 <!-- Name Fields -->
                                 <div class="row g-2 mb-3">
@@ -221,7 +221,7 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <h5>Family Member(s)</h4>
+                                    <h5 class="fw-bold">Family Member(s)</h4>
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
