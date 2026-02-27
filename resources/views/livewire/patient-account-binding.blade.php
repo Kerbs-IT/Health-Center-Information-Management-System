@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <div class="left-con d-flex align-items-center gap-2">
             <h3 class="mb-0">Patient Accounts</h3>
-           
+
         </div>
 
         <div class="right-side-con ms-auto mt-ms-0 mt-2">
@@ -80,6 +80,7 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
+                        <th>#</th>
                         <th>Name</th>
                         <th>Type of Patient</th>
                         <th>Email</th>
@@ -92,6 +93,7 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr>
+                        <td>{{ $user->firstItem() + $loop->index }}</td>
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>

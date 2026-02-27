@@ -125,17 +125,17 @@
                                     <div class="col-12 col-md-3">
                                         <label for="edit_first_name" class="w-100">First Name<span class="text-danger">*</span></label>
                                         <input type="text" id="edit_first_name" placeholder="Enter First Name" class="form-control" name="first_name" value="">
-                                        <small class="text-danger error-element"  id="fname-error"></small>
+                                        <small class="text-danger error-element" id="fname-error"></small>
                                     </div>
                                     <div class="col-12 col-md-3">
                                         <label for="edit_middle_initial" class="w-100">Middle Name</label>
                                         <input type="text" id="edit_middle_initial" placeholder="Enter Middle Name" class="form-control" name="middle_initial" value="">
-                                        <small class="text-danger error-element"  id="middle-initial-error"></small>
+                                        <small class="text-danger error-element" id="middle-initial-error"></small>
                                     </div>
                                     <div class="col-12 col-md-3">
                                         <label for="edit_last_name" class="w-100">Last Name<span class="text-danger">*</span></label>
                                         <input type="text" id="edit_last_name" placeholder="Enter Last Name" class="form-control" name="last_name" value="">
-                                        <small class="text-danger error-element"  id="lname-error"></small>
+                                        <small class="text-danger error-element" id="lname-error"></small>
                                     </div>
                                     <div class="col-12 col-md-3">
                                         <label for="edit_suffix" class="w-100">Suffix</label>
@@ -148,7 +148,7 @@
                                             <option value="IV.">IV</option>
                                             <option value="V.">V</option>
                                         </select>
-                                        <small class="text-danger error-element"  id="edit-suffix-error"></small>
+                                        <small class="text-danger error-element" id="edit-suffix-error"></small>
                                     </div>
                                 </div>
 
@@ -157,7 +157,7 @@
                                     <div class="col-12 col-md-12">
                                         <label for="birthdate" class="form-label">Date of Birth<span class="text-danger">*</span></label>
                                         <input type="date" id="edit_date_of_birth" class="form-control w-100" name="date_of_birth" value="" max="{{date('Y-m-d')}}">
-                                        <small class="text-danger error-element"  id="birthdate-error"></small>
+                                        <small class="text-danger error-element" id="birthdate-error"></small>
                                     </div>
 
                                 </div>
@@ -168,7 +168,7 @@
                                     <div class="col-12 col-md-12">
                                         <label for="contact_num" class="form-label">Contact Number<span class="text-danger">*</span></label>
                                         <input type="number" placeholder="Enter the contact number" class="form-control w-100" id="edit_contact_number" name="contact_number" value="">
-                                        <small class="text-danger error-element"  id="contact-error"></small>
+                                        <small class="text-danger error-element" id="contact-error"></small>
                                     </div>
 
                                 </div>
@@ -179,7 +179,7 @@
                                     <div class="col-12 col-md-12">
                                         <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
                                         <input type="email" placeholder="Enter the email" id="edit_email" class="form-control" name="email" value="">
-                                        <small class="text-danger error-element"  id="email-error"></small>
+                                        <small class="text-danger error-element" id="email-error"></small>
                                     </div>
                                 </div>
 
@@ -192,7 +192,7 @@
                                             <label for="edit_blk_n_street" class="form-label text-muted small">House No., Street,<span class="text-danger">*</span></label>
                                             <input type="text" id="edit_blk_n_street" name="blk_n_street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="form-control">
 
-                                            <small class="text-danger error-element" ></small>
+                                            <small class="text-danger error-element"></small>
 
                                         </div>
                                         <div class="col-12 col-md-6">
@@ -201,7 +201,7 @@
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
 
-                                            <small class="text-danger error-element"  id="street-error"></small>
+                                            <small class="text-danger error-element" id="street-error"></small>
 
                                         </div>
                                     </div>
@@ -222,21 +222,21 @@
                                 </div>
                                 <div class="mb-3">
                                     <h5 class="fw-bold">Family Member(s)</h4>
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>BirthDate</th>
-                                                <th>Sex</th>
-                                                <th>Type of Patient</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="" id="family-member-table-body">
-                                            <tr>
-                                                <td colspan="12">No record</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>BirthDate</th>
+                                                    <th>Sex</th>
+                                                    <th>Type of Patient</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="" id="family-member-table-body">
+                                                <tr>
+                                                    <td colspan="12">No record</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                 </div>
 
                                 <!-- Action Buttons -->
@@ -300,7 +300,7 @@
                                         <option value="IV.">IV</option>
                                         <option value="V.">V</option>
                                     </select>
-                                    <small class="text-danger error-element"  id="add-suffix-error"></small>
+                                    <small class="text-danger error-element" id="add-suffix-error"></small>
                                 </div>
                             </div>
                             <small class="text-danger error-element fname-error"></small>
@@ -343,7 +343,7 @@
                                 <input type="password" placeholder="Confirm the password" name="password_confirmation" class="py-2 px-2 w-100 fs-5 bg-light" id="re-type-pass">
                                 <i class="fa-solid fa-eye p-3 bg-primary text-white" id="Retype-eye-icon"></i>
                             </div>
-                            <small class="text-danger error-element" ></small>
+                            <small class="text-danger error-element"></small>
                         </div>
                         <!-- hidden input -->
                         <input type="text" name="role" value="patient" hidden>
