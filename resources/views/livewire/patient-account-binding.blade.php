@@ -93,7 +93,7 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr>
-                        <td>{{ $user->firstItem() + $loop->index }}</td>
+                        <td>{{ $users->firstItem() + $loop->index }}</td>
                         <td>{{ $user->full_name }}</td>
                         <td>{{ $user->patient_type ?? 'none' }}</td>
                         <td>{{ $user->email }}</td>
