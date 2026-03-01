@@ -212,9 +212,9 @@
                                         <i class="fa-solid fa-child-reaching fs-3 d-block mb-1"></i>
                                         <small>
                                             @if($childSearch)
-                                                No children found matching "{{ $childSearch }}"
+                                                No Family Member(s) found matching "{{ $childSearch }}"
                                             @else
-                                                No children linked to your account
+                                                No Family Member(s) linked to your account
                                             @endif
                                         </small>
                                     </div>
