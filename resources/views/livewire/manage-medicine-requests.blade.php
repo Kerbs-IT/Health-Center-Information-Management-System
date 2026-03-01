@@ -228,8 +228,8 @@
                                     @foreach($user->patients as $child)
                                         <option value="child:{{ $child->id }}" class="text-muted">
                                             {{ $child->full_name }}
-                                            ({{ $child->age_display ?? ($child->age . ' yrs') }})
-                                            — child of {{ $user->full_name }}
+                                            <!-- ({{ $child->age_display ?? ($child->age . ' yrs') }}) -->
+                                            Family Members of {{ $user->full_name }}
                                         </option>
                                     @endforeach
                                 @endforeach
