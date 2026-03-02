@@ -503,55 +503,82 @@ class RecordsController extends Controller
         try {
             $patient = patients::findOrFail($id);
 
-            if (!$patient) return;
+            $activeCases = medical_record_cases::where('patient_id', $id)
+                ->where('status', 'Active')
+                ->get();
 
-            if ($typeOfPatient === 'familyPlanning') {
-                $activeCases = medical_record_cases::where('patient_id', $id)
-                    ->where('status', 'Active')
-                    ->get();
+            // Map route type to case type used in medical_record_cases
+            $caseTypeMap = [
+                'vaccination'    => 'vaccination',
+                'prenatal'       => 'prenatal',
+                'family-planning' => 'family-planning',
+                'familyPlanning' => 'family-planning',
+                'seniorCitizen'  => 'senior-citizen',
+                'tbDots'         => 'tb-dots',
+            ];
 
-                $hasActivePrenatal       = $activeCases->contains('type_of_case', 'prenatal');
-                $hasActiveFamilyPlanning = $activeCases->contains('type_of_case', 'family-planning');
+            $caseType = $caseTypeMap[$typeOfPatient] ?? $typeOfPatient;
 
-                if ($hasActivePrenatal && $hasActiveFamilyPlanning) {
-                    $familyPlanningCase = $activeCases->firstWhere('type_of_case', 'family-planning');
-                    $familyPlanningCase->update(['status' => 'Archived']);
+            // Find the specific active case to archive
+            $targetCase = $activeCases->firstWhere('type_of_case', $caseType);
 
-                    $prenatalCase = $activeCases->firstWhere('type_of_case', 'prenatal');
-                    $prenatalMedicalRecord = $prenatalCase?->prenatal_medical_record;
-
-                    if ($prenatalMedicalRecord) {
-                        $prenatalMedicalRecord->update(['family_planning_decision' => 'no']);
-                    }
-
-                    return response()->json(['message' => 'Family Planning record has been archived successfully']);
-                }
+            if ($targetCase) {
+                $targetCase->update(['status' => 'Archived']);
             }
 
-            // ↓ Only reaches here if NOT the dual-case scenario
-            $patient->update(['status' => 'Archived']);
+            // --- Side effects per type ---
 
             if ($typeOfPatient === 'vaccination') {
                 $vaccinationMasterlistRecord = vaccination_masterlists::where('patient_id', $id)->first();
-
                 if ($vaccinationMasterlistRecord) {
                     $vaccinationMasterlistRecord->update(['status' => 'Archived']);
                 }
             }
 
-            if ($typeOfPatient === 'prenatal' || $typeOfPatient === 'familyPlanning') {
+            if ($typeOfPatient === 'prenatal' || $typeOfPatient === 'familyPlanning' || $typeOfPatient === 'family-planning') {
                 $wraMasterlistRecord = wra_masterlists::where('patient_id', $id)->first();
-
                 if ($wraMasterlistRecord) {
                     $wraMasterlistRecord->update(['status' => 'Archived']);
                 }
             }
 
-            return response()->json(['message' => 'Patient Record has been deleted successfully']);
+            // Special case: archiving family-planning should remove it from prenatal record
+            if ($typeOfPatient === 'familyPlanning' || $typeOfPatient === 'family-planning') {
+                $prenatalCase = $activeCases->firstWhere('type_of_case', 'prenatal');
+                $prenatalMedicalRecord = $prenatalCase?->prenatal_medical_record;
+                if ($prenatalMedicalRecord) {
+                    $prenatalMedicalRecord->update(['family_planning_decision' => 'no']);
+                }
+            }
+
+            // --- Archive patient if no more active cases remain ---
+            $remainingActiveCases = medical_record_cases::where('patient_id', $id)
+                ->where('status', 'Active')
+                ->count();
+
+            if ($remainingActiveCases === 0) {
+                $patient->update(['status' => 'Archived']);
+            }
+
+            // Build a readable display name for the message
+            $displayNameMap = [
+                'vaccination'    => 'Vaccination',
+                'prenatal'       => 'Prenatal',
+                'family-planning' => 'Family Planning',
+                'familyPlanning' => 'Family Planning',
+                'seniorCitizen'  => 'Senior Citizen',
+                'tbDots'         => 'TB-DOTS',
+            ];
+
+            $displayName = $displayNameMap[$typeOfPatient] ?? ucfirst($typeOfPatient);
+
+            return response()->json([
+                'message' => "{$displayName} record has been archived successfully."
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Unexpected error occurred',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 422);
         }
     }

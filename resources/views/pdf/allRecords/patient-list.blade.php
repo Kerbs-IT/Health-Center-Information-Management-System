@@ -204,7 +204,7 @@
                 <td>{{ $row->contact_number ?? '—' }}</td>
                 <td>{{ $row->type_of_case ? ucwords(str_replace('-', ' ', $row->type_of_case)) : '—' }}</td>
                 <td>{{ $row->purok ?? '—' }}</td>
-                <td>{{ $row->status }}</td>
+                <td>{{ $row->case_status }}</td>
                 <td>{{ $row->created_at ? \Carbon\Carbon::parse($row->created_at)->format('m/d/Y') : '—' }}</td>
             </tr>
             @empty

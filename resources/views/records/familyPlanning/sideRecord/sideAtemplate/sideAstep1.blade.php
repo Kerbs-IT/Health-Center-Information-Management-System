@@ -55,7 +55,7 @@
                                 <div class="input-form flex-fill lg:w-[50%]">
                                     <label for="side_A_add_client_suffix" class="">Suffix<span class="text-danger">*</span></label>
                                     <select name="side_A_add_client_suffix" id="side_A_add_client_suffix" class="form-select py-2 ">
-                                        <option value="" disabled>Select Suffix</option>
+                                        <option value="" >Select Suffix</option>
                                         <option value="Jr.">Jr</option>
                                         <option value="Sr.">Sr</option>
                                         <option value="II.">II</option>
@@ -161,7 +161,7 @@
                             <div class="input-form flex-fill">
                                 <label for="side_A_add_spouse_lname" class="">Suffix</label>
                                 <select name="side_A_add_spouse_suffix" id="side_A_add_spouse_suffix" class="form-select py-2 ">
-                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="" >Select Suffix</option>
                                     <option value="Jr.">Jr</option>
                                     <option value="Sr.">Sr</option>
                                     <option value="II.">II</option>
@@ -214,9 +214,9 @@
                         <label for="" class="form-label text-nowrap mb-0">Plan To Have More Children?</label>
                         <div class="radio-con d-flex gap-2 form-radio">
                             <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_yes" value="Yes">
-                            <label for="children_plan_yes">Yes</label>
+                            <label for="side_A_add_children_plan_yes">Yes</label>
                             <input type="radio" name="side_A_add_plan_to_have_more_children" id="side_A_add_children_plan_no" value="No">
-                            <label for="children_plan_no">No</label>
+                            <label for="side_A_add_children_plan_no">No</label>
                         </div>
                     </div>
                     <small class="text-danger error-text" id="side_A_add_plan_to_have_more_children_error"></small>

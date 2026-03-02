@@ -135,7 +135,7 @@
                     <td>{{ $record->patient->created_at ? $record->patient->created_at->format('M j, Y') : '' }}</td>
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">
-                            <button onclick="confirmActivate({{ $record->patient->id }})" class="text-success fs-2 fw-bold" title="Restore Patient">
+                            <button onclick="confirmActivate({{ $record->patient->id }}, {{ $record->id }})" class="text-success fs-2 fw-bold" title="Restore Patient">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </button>
                         </div>
@@ -154,40 +154,40 @@
     </div>
 </div>
 
-    <script>
-        function confirmActivate(patientId) {
-            Swal.fire({
-                title: 'Activate Patient?',
-                text: "This patient will be moved to active status.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, activate it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    @this.activatePatient(patientId);
-                }
-            });
-        }
-
-        window.addEventListener('patientActivated', event => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Activated!',
-                text: 'Patient Record has been restored successfully.',
-                timer: 2000,
-                showConfirmButton: false
-            });
+<script>
+    function confirmActivate(patientId, caseId) {
+        Swal.fire({
+            title: 'Activate Patient?',
+            text: "This patient will be moved to active status.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, activate it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                @this.activatePatient(patientId, caseId);
+            }
         });
+    }
 
-        window.addEventListener('activationError', event => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Cannot Restore',
-                text: event.detail.message,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'OK'
-            });
+    window.addEventListener('patientActivated', event => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Activated!',
+            text: 'Patient Record has been restored successfully.',
+            timer: 2000,
+            showConfirmButton: false
         });
-    </script>
+    });
+
+    window.addEventListener('activationError', event => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Cannot Restore',
+            text: event.detail.message,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        });
+    });
+</script>

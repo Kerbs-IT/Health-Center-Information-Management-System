@@ -126,36 +126,48 @@ class PatientList extends Component
     /* ------------------------------------------------------------------ */
     /*  Archive / Activate                                                  */
     /* ------------------------------------------------------------------ */
-    public function archivePatient($patientId)
+    public function archivePatient($patientId, $caseId)
     {
-        $patient = patients::findOrFail($patientId);
-        $patient->update(['status' => 'Archived']);
+        $case = medical_record_cases::findOrFail($caseId);
+        $case->update(['status' => 'Archived']);
 
-        $this->syncMasterlistStatus($patientId, 'Archived');
+        $this->syncMasterlistStatus($caseId, 'Archived');
+
+        // Archive patient only if all cases are archived
+        $remainingActive = medical_record_cases::where('patient_id', $patientId)
+            ->where('status', 'Active')
+            ->count();
+
+        if ($remainingActive === 0) {
+            patients::findOrFail($patientId)->update(['status' => 'Archived']);
+        }
+
         $this->dispatch('patientArchived');
     }
 
-    public function activatePatient($patientId)
+    public function activatePatient($patientId, $caseId)
     {
-        $patient = patients::findOrFail($patientId);
-        $patient->update(['status' => 'Active']);
+        $case = medical_record_cases::findOrFail($caseId);
+        $case->update(['status' => 'Active']);
 
-        $this->syncMasterlistStatus($patientId, 'Active');
+        $this->syncMasterlistStatus($caseId, 'Active');
+
+        // Restore patient status if it was archived
+        patients::findOrFail($patientId)->update(['status' => 'Active']);
+
         $this->dispatch('patientActivated');
     }
 
-    private function syncMasterlistStatus(int $patientId, string $status): void
+    private function syncMasterlistStatus(int $caseId, string $status): void
     {
-        $records = medical_record_cases::where('patient_id', $patientId)->get();
+        $record = medical_record_cases::findOrFail($caseId);
 
-        foreach ($records as $record) {
-            if (in_array($record->type_of_case, ['prenatal', 'family-planning'])) {
-                wra_masterlists::where('medical_record_case_id', $record->id)
-                    ->update(['status' => $status]);
-            } elseif ($record->type_of_case === 'vaccination') {
-                vaccination_masterlists::where('medical_record_case_id', $record->id)
-                    ->update(['status' => $status]);
-            }
+        if (in_array($record->type_of_case, ['prenatal', 'family-planning'])) {
+            wra_masterlists::where('medical_record_case_id', $caseId)
+                ->update(['status' => $status]);
+        } elseif ($record->type_of_case === 'vaccination') {
+            vaccination_masterlists::where('medical_record_case_id', $caseId)
+                ->update(['status' => $status]);
         }
     }
 
@@ -174,7 +186,9 @@ class PatientList extends Component
             ->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
             ->select(
                 'patients.*',
+                'medical_record_cases.id as case_id',        // ← add this
                 'medical_record_cases.type_of_case',
+                'medical_record_cases.status as case_status', // ← add this
                 'patient_addresses.purok'
             );
 
@@ -199,7 +213,7 @@ class PatientList extends Component
 
         // ── Status filter ─────────────────────────────────────────────────
         if ($this->statusFilter !== 'all') {
-            $query->where('patients.status', ucfirst(strtolower($this->statusFilter)));
+            $query->where('medical_record_cases.status', ucfirst(strtolower($this->statusFilter)));
         }
 
         // ── Purok filter ──────────────────────────────────────────────────

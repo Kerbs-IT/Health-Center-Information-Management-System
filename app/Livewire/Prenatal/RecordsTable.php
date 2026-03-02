@@ -74,6 +74,7 @@ class RecordsTable extends Component
         $allRecords = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'prenatal')
+            ->where('medical_record_cases.status', 'Active')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
             ->where('patients.status', '!=', 'Archived')
             ->when($this->patient_id, function ($query) {

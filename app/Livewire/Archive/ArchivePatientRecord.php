@@ -105,7 +105,7 @@ class ArchivePatientRecord extends Component
     {
         $query = medical_record_cases::select('medical_record_cases.*')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
-            ->where('patients.status', 'Archived') // Only archived patients
+            ->where('medical_record_cases.status', 'Archived') // ← base filter on CASE status, not patient
             ->where('patients.full_name', 'like', '%' . $this->search . '%');
 
         // Only filter by type if NOT showing all types
@@ -113,13 +113,11 @@ class ArchivePatientRecord extends Component
             $query->where('medical_record_cases.type_of_case', $this->type_of_case);
         }
 
-        // Apply other filters
         $archivedRecords = $query
             ->when($this->patient_id, function ($query) {
                 $query->where('patients.id', $this->patient_id);
             })
             ->when(Auth::user()->role == 'staff' && !$this->showAllTypes, function ($query) {
-                // Only apply health worker filter when viewing specific type
                 $this->applyHealthWorkerFilter($query);
             })
             ->when($this->sortField === 'age', function ($query) {
@@ -137,8 +135,7 @@ class ArchivePatientRecord extends Component
             'type_of_case' => $this->type_of_case,
             'showAllTypes' => $this->showAllTypes,
         ]);
-    }
-
+    }           
     private function applyHealthWorkerFilter($query)
     {
         switch ($this->type_of_case) {
@@ -169,11 +166,12 @@ class ArchivePatientRecord extends Component
         }
     }
 
-    public function activatePatient($patientId)
+    public function activatePatient($patientId, $caseId)
     {
         $patient = patients::findOrFail($patientId);
+        $case    = medical_record_cases::findOrFail($caseId);
 
-        // Check if there's an active patient with the same first_name and last_name
+        // Check for duplicate active patient
         $duplicatePatient = patients::where('status', '!=', 'Archived')
             ->where('first_name', $patient->first_name)
             ->where('last_name', $patient->last_name)
@@ -187,116 +185,112 @@ class ArchivePatientRecord extends Component
             return;
         }
 
-        $patient->update(['status' => 'Active']);
+        // Restore the specific case
+        $case->update(['status' => 'Active']);
 
-        // Update masterlist
-        $medicalRecord = medical_record_cases::where("patient_id", $patientId)->get();
+        // --- Side effects per case type ---
 
-        if ($medicalRecord) {
-            foreach ($medicalRecord as $record) {
-                if ($record->type_of_case == 'prenatal' || $record->type_of_case == 'family-planning') {
-                    $wra_masterlist = wra_masterlists::where('patient_id', $record->patient_id)->first();
+        if ($case->type_of_case === 'prenatal' || $case->type_of_case === 'family-planning') {
+            $wraMasterlist = wra_masterlists::where('patient_id', $patientId)->first();
 
-                    if ($wra_masterlist) {
-                        $wra_masterlist->update(['status' => 'Active']);
-                    } else {
-                        Log::warning("WRA masterlist missing on recovery for patient_id: {$record->patient_id}. Type: {$record->type_of_case}.");
-                    }
-                } else {
-                    if ($record->type_of_case == 'vaccination') {
-                        $vaccination_masterlist = vaccination_masterlists::where('medical_record_case_id', $record->id)->first();
+            if ($wraMasterlist) {
+                $wraMasterlist->update(['status' => 'Active']);
+            } else {
+                Log::warning("WRA masterlist missing on recovery for patient_id: {$patientId}. Type: {$case->type_of_case}.");
+            }
+        }
 
-                        // ✅ Fix 1: query by patient_id, not primary key
-                        $medicalCase = medical_record_cases::with('vaccination_medical_record')
-                            ->where('patient_id', $patient->id)
-                            ->where('type_of_case', 'vaccination')
-                            ->firstOrFail();
+        if ($case->type_of_case === 'vaccination') {
+            $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $case->id)->first();
 
-                        // ✅ Fix 2: query by patient_id, not primary key
-                        $patientAddress = patient_addresses::where('patient_id', $patient->id)->firstOrFail();
+            if ($vaccinationMasterlist) {
+                $vaccinationMasterlist->update(['status' => 'Active']);
+            } else {
+                // Masterlist missing — recreate it
+                $patientAddress = patient_addresses::where('patient_id', $patientId)->firstOrFail();
 
-                        if ($vaccination_masterlist) {
-                            $vaccination_masterlist->update([
-                                'status' => 'Active'
+                $medicalCase = medical_record_cases::with('vaccination_medical_record')
+                    ->where('patient_id', $patientId)
+                    ->where('type_of_case', 'vaccination')
+                    ->firstOrFail();
+
+                $fullAddress   = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
+                $ageInMonths   = ($patient->age == 0 && $patient->date_of_birth)
+                    ? $this->calculateAgeInMonths($patient->date_of_birth)
+                    : null;
+
+                $nurse         = User::where('role', 'nurse')->first();
+                $nurseInfo     = nurses::where('user_id', $nurse->id)->first();
+                $nurseFullname = ucwords($nurseInfo->full_name);
+
+                $vaccinationMasterlist = vaccination_masterlists::create([
+                    'brgy_name'              => $patientAddress->purok,
+                    'midwife'                => "Nurse " . $nurseFullname ?? null,
+                    'health_worker_id'       => $medicalCase->vaccination_medical_record->handled_by,
+                    'medical_record_case_id' => $medicalCase->id,
+                    'name_of_child'          => $patient->full_name,
+                    'patient_id'             => $patientId,
+                    'address_id'             => $patientAddress->id,
+                    'Address'                => trim($fullAddress),
+                    'sex'                    => $patient->sex,
+                    'age'                    => $patient->age,
+                    'age_in_months'          => $ageInMonths,
+                    'date_of_birth'          => $patient->date_of_birth,
+                ]);
+
+                $validVaccineColumns  = [
+                    'BCG',
+                    'Hepatitis B',
+                    'PENTA_1',
+                    'PENTA_2',
+                    'PENTA_3',
+                    'OPV_1',
+                    'OPV_2',
+                    'OPV_3',
+                    'PCV_1',
+                    'PCV_2',
+                    'PCV_3',
+                    'IPV_1',
+                    'IPV_2',
+                    'MCV_1',
+                    'MCV_2',
+                ];
+                $noDoseSuffixVaccines = ['Hepatitis B', 'BCG'];
+
+                $vaccinationCaseRecords = vaccination_case_records::where('medical_record_case_id', $medicalCase->id)
+                    ->where('status', '!=', 'Archived')
+                    ->get();
+
+                foreach ($vaccinationCaseRecords as $caseRecord) {
+                    $vaccineTypes = explode(',', $caseRecord->vaccine_type);
+
+                    foreach ($vaccineTypes as $type) {
+                        $type    = trim($type);
+                        $vaccine = vaccines::where('vaccine_acronym', $type)->first();
+
+                        if (!$vaccine) continue;
+
+                        $itemColumn = in_array($vaccine->vaccine_acronym, $noDoseSuffixVaccines)
+                            ? $vaccine->vaccine_acronym
+                            : Str::upper($vaccine->vaccine_acronym) . '_' . $caseRecord->dose_number;
+
+                        if (in_array($itemColumn, $validVaccineColumns)) {
+                            $vaccinationMasterlist->update([
+                                $itemColumn => $caseRecord->date_of_vaccination,
                             ]);
-                        } else {
-                            $fullAddress = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
-
-                            $ageInMonths = null;
-                            if ($patient->age == 0 && $patient->date_of_birth) {
-                                $ageInMonths = $this->calculateAgeInMonths($patient->date_of_birth);
-                            }
-
-                            $nurse         = User::where("role", 'nurse')->first();
-                            $nurseInfo     = nurses::where("user_id", $nurse->id)->first();
-                            $nurseFullname = ucwords($nurseInfo->full_name);
-
-                            $vaccinationMasterlist = vaccination_masterlists::create([
-                                'brgy_name'              => $patientAddress->purok,
-                                'midwife'                => "Nurse " . $nurseFullname ?? null,
-                                'health_worker_id'       => $medicalCase->vaccination_medical_record->handled_by,
-                                'medical_record_case_id' => $medicalCase->id,
-                                'name_of_child'          => $patient->full_name,
-                                'patient_id'             => $patient->id,
-                                'address_id'             => $patientAddress->id,
-                                'Address'                => trim($fullAddress),
-                                'sex'                    => $patient->sex,
-                                'age'                    => $patient->age,
-                                'age_in_months'          => $ageInMonths,
-                                'date_of_birth'          => $patient->date_of_birth,
-                            ]);
-
-                            $validVaccineColumns = [
-                                'BCG',
-                                'Hepatitis B',
-                                'PENTA_1',
-                                'PENTA_2',
-                                'PENTA_3',
-                                'OPV_1',
-                                'OPV_2',
-                                'OPV_3',
-                                'PCV_1',
-                                'PCV_2',
-                                'PCV_3',
-                                'IPV_1',
-                                'IPV_2',
-                                'MCV_1',
-                                'MCV_2',
-                            ];
-
-                            $noDoseSuffixVaccines = ['Hepatitis B', 'BCG'];
-
-                            $vaccinationCaseRecords = vaccination_case_records::where("medical_record_case_id", $medicalCase->id)->where('status','!=','Archived')->get();
-
-                            // ✅ Fix 3: renamed to $caseRecord to avoid shadowing outer $record
-                            foreach ($vaccinationCaseRecords as $caseRecord) {
-                                $vaccineTypes = explode(",", $caseRecord->vaccine_type);
-
-                                foreach ($vaccineTypes as $type) {
-                                    $type = trim($type);
-
-                                    $vaccine = vaccines::where("vaccine_acronym", $type)->first();
-
-                                    if (!$vaccine) {
-                                        continue;
-                                    }
-
-                                    $itemColumn = in_array($vaccine->vaccine_acronym, $noDoseSuffixVaccines)
-                                        ? $vaccine->vaccine_acronym
-                                        : Str::upper($vaccine->vaccine_acronym) . "_" . $caseRecord->dose_number;
-
-                                    if (in_array($itemColumn, $validVaccineColumns)) {
-                                        $vaccinationMasterlist->update([
-                                            $itemColumn => $caseRecord->date_of_vaccination,
-                                        ]);
-                                    }
-                                }
-                            }
                         }
                     }
-                    
                 }
             }
+        }
+
+        // --- Restore patient status only if no archived cases remain ---
+        $remainingArchivedCases = medical_record_cases::where('patient_id', $patientId)
+            ->where('status', 'Archived')
+            ->count();
+
+        if ($remainingArchivedCases === 0) {
+            $patient->update(['status' => 'Active']);
         }
 
         $this->dispatch('patientActivated');

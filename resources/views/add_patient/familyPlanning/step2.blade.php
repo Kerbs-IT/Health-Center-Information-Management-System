@@ -8,7 +8,7 @@
                  <input type="text" class="form-control flex-fill" name="spouse_MI" placeholder="Enter the Middle Initial">
                  <div class="input-field w-50">
                      <select name="spouse_suffix" id="spouse_suffix" class="form-select py-2">
-                         <option value="" disabled selected>Select Suffix</option>
+                         <option value="" selected>Select Suffix</option>
                          <option value="Jr.">Jr</option>
                          <option value="Sr.">Sr</option>
                          <option value="II.">II</option>

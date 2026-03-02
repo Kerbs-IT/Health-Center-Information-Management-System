@@ -74,8 +74,7 @@
                     <div class="date-range-filter col-md-3">
                         <label class="filter-label fw-bold w-100" for="dateRange">Date Range:</label>
                         <input type="text" id="dateRange"
-                            class="filter-select border-1 border-black form-control"
-                           />
+                            class="filter-select border-1 border-black form-control" />
                     </div>
 
                     {{-- Download PDF --}}
@@ -151,7 +150,7 @@
                                 </td>
                                 <td>{{ $patient->purok ?? '—' }}</td>
                                 <td>
-                                    @if($patient->status === 'Active')
+                                    @if($patient->case_status === 'Active')
                                     <span class="badge bg-success">Active</span>
                                     @else
                                     <span class="badge bg-danger">Archived</span>
@@ -165,13 +164,13 @@
                                             <i class="fas fa-edit"></i> Edit
                                         </button>
                                         {{-- Archive / Activate --}}
-                                        @if($patient->status === 'Active')
-                                        <button onclick="confirmArchive({{ $patient->id }})"
+                                        @if($patient->case_status === 'Active')
+                                        <button onclick="confirmArchive({{ $patient->id }}, {{ $patient->case_id }})"
                                             class="btn btn-sm btn-danger text-nowrap">
                                             <i class="fas fa-archive"></i> Archive
                                         </button>
                                         @else
-                                        <button onclick="confirmActivate({{ $patient->id }})"
+                                        <button onclick="confirmActivate({{ $patient->id }}, {{ $patient->case_id }})"
                                             class="btn btn-sm btn-success text-nowrap">
                                             <i class="fas fa-check-circle"></i> Activate
                                         </button>
@@ -372,7 +371,7 @@
     </div>
 
     <script>
-        function confirmArchive(patientId) {
+        function confirmArchive(patientId, caseId) {
             Swal.fire({
                 title: 'Archive Patient?',
                 text: "This patient will be moved to archived status.",
@@ -383,12 +382,12 @@
                 confirmButtonText: 'Yes, archive it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    @this.archivePatient(patientId);
+                    @this.archivePatient(patientId, caseId);
                 }
             });
         }
 
-        function confirmActivate(patientId) {
+        function confirmActivate(patientId, caseId) {
             Swal.fire({
                 title: 'Activate Patient?',
                 text: "This patient will be moved to active status.",
@@ -399,7 +398,7 @@
                 confirmButtonText: 'Yes, activate it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    @this.activatePatient(patientId);
+                    @this.activatePatient(patientId, caseId);
                 }
             });
         }

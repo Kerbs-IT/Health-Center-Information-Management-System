@@ -5,7 +5,7 @@
             <!-- spouse info-->
             <div class="family-inputs mb-md-2 mb-1 d-flex flex-column gap-1 w-100">
                 <div class="client-info mb-2">
-                   
+
                     <h5>Client Information</h5>
                     <div class="family-planning-inputs d-flex gap-1 flex-wrap flex-lg-nowrap">
                         <div class="input-field flex-fill lg:w-[50%]">
@@ -54,7 +54,7 @@
                             <div class="input-form flex-fill lg:w-[50%]">
                                 <label for="edit_client_suffix" class="">Suffix</label>
                                 <select name="edit_client_suffix" id="edit_client_suffix" class="form-select py-2 ">
-                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="" >Select Suffix</option>
                                     <option value="Jr.">Jr</option>
                                     <option value="Sr.">Sr</option>
                                     <option value="II.">II</option>
@@ -144,7 +144,7 @@
                 <h5>Spouse Information</h5>
                 <div class="mb-md-2 mb-1">
                     <div class=" w-100 ">
-                        
+
                         <div class="group d-flex  justify-content-center gap-2 flex-wrap flex-lg-nowrap">
                             <div class="input-form flex-fill">
                                 <label for="edit_spouse_fname" class="">First Name</label>
@@ -166,7 +166,7 @@
                             <div class="input-form flex-fill">
                                 <label for="edit_spouse_lname" class="">Suffix</label>
                                 <select name="edit_spouse_suffix" id="edit_spouse_suffix" class="form-select py-2 ">
-                                    <option value="" disabled>Select Suffix</option>
+                                    <option value="">Select Suffix</option>
                                     <option value="Jr.">Jr</option>
                                     <option value="Sr.">Sr</option>
                                     <option value="II.">II</option>
@@ -211,9 +211,9 @@
                     <label for="" class="form-label text-nowrap mb-0">Plan To Have More Children?</label>
                     <div class="radio-con d-flex gap-2 form-radio">
                         <input type="radio" name="edit_plan_to_have_more_children" id="edit_children_plan_yes" value="Yes">
-                        <label for="children_plan_yes">Yes</label>
+                        <label for="edit_children_plan_yes">Yes</label>
                         <input type="radio" name="edit_plan_to_have_more_children" id="edit_children_plan_no" value="No">
-                        <label for="children_plan_no">No</label>
+                        <label for="edit_children_plan_no">No</label>
                     </div>
                     <small class="text-danger error-text" id="edit_number_of_living_children_error"></small>
                 </div>
