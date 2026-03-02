@@ -242,8 +242,8 @@
                                                     <div>
                                                         <strong class="d-block mb-1">Existing patient record linked</strong>
                                                         <small class="text-muted">
-                                                            Patient Name: <span id="displayPatientId" class="fw-bold"></span> 
-                                                            
+                                                            Patient Name: <span id="displayPatientId" class="fw-bold"></span>
+
                                                         </small>
                                                     </div>
                                                 </div>
@@ -340,8 +340,9 @@
                                                     <input type="radio" id="female" class="mb-0" name="sex" value="female" class="mb-0">
                                                     <label for="female">Female</label>
                                                 </div>
-                                                <small class="text-danger error-text" id="sex_error"></small>
+
                                             </div>
+                                            <small class="text-danger error-text" id="sex_error"></small>
                                         </div>
                                         <!-- contact -->
                                         <div class="input-field flex-fill xl:w-[50%]">
