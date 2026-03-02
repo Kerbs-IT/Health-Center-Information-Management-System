@@ -22,7 +22,6 @@ class HealthCenterDashboard extends Controller
 
                 $baseQuery = medical_record_cases::query()
                     ->join('patients', 'medical_record_cases.patient_id', '=', 'patients.id')
-                    ->where('patients.status', 'Active')
                     ->where('medical_record_cases.status','Active');
 
                 $totalPatient = (clone $baseQuery)
