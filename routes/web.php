@@ -482,6 +482,10 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     Route::get("/patient-record/link",[PatientRecord::class,'search'])-> name('patient.record.search');
 
+
+    // inventory page
+    Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
+
 });
 // ---------------------------- home page
 // Route to homepage
@@ -588,7 +592,7 @@ Route::get('/inventory', function () {
 })->name('inventory');
 
 
-Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
+
 
 // GENERATE THE RECORD
 Route::get('/vaccination/records/pdf', [PdfController::class, 'generateVaccinationPdf'])
