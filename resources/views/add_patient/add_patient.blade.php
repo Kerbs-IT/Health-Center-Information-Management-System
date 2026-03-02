@@ -242,8 +242,8 @@
                                                     <div>
                                                         <strong class="d-block mb-1">Existing patient record linked</strong>
                                                         <small class="text-muted">
-                                                            Patient ID: <span id="displayPatientId" class="fw-bold"></span> •
-                                                            Patient information is locked (read-only)
+                                                            Patient Name: <span id="displayPatientId" class="fw-bold"></span> 
+                                                            
                                                         </small>
                                                     </div>
                                                 </div>

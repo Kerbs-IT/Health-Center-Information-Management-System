@@ -24,7 +24,7 @@
         loadingSpinner: document.getElementById("patientRecordLoading"),
         selectedPatientId: document.getElementById("selectedPatientId"),
         selectedIndicator: document.getElementById("selectedPatientIndicator"),
-        displayPatientId: document.getElementById("displayPatientId"),
+        displayPatientName: document.getElementById("displayPatientId"),
 
         // Form fields - NO LOCKING, just for population
         formFields: {
@@ -245,7 +245,7 @@
 
             // Update UI
             elements.selectedPatientId.value = patient.id;
-            elements.displayPatientId.textContent = patient.id;
+            elements.displayPatientName.textContent = patient.full_name;
             elements.selectedIndicator.style.display = "block";
 
             // Update search input
@@ -257,7 +257,7 @@
             ]
                 .filter(Boolean)
                 .join(" ");
-            elements.searchInput.value = `${fullName} (ID: ${patient.id})`;
+            elements.searchInput.value = `${fullName}`;
 
             // Hide results
             hideResults();

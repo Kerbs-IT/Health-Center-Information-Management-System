@@ -416,6 +416,9 @@
         }
 
        function clearGuardianSelection() {
+           // ✅ Capture whether a guardian was actually selected BEFORE clearing
+           const hadGuardian = !!guardianIdInput?.value;
+
            if (guardianIdInput) guardianIdInput.value = "";
            if (guardianIndicator) guardianIndicator.style.display = "none";
 
@@ -438,15 +441,20 @@
                ?.closest(".mb-2");
            if (emailWrapper) emailWrapper.style.display = "block";
 
-           // Clear auto-populated guardian fields safely
-           const fieldsToClear = ["contact_number", "street", "brgy"];
-           fieldsToClear.forEach((id) => {
-               const el = document.getElementById(id);
-               if (el && !el.disabled) {
-                   el.value = "";
-                   el.dispatchEvent(new Event("change"));
-               }
-           });
+           // ✅ Only wipe shared fields if a guardian was actually linked.
+           // This prevents the setInterval from wiping brgy/street/contact_number
+           // that were populated by the patient account search.
+           // When a guardian IS selected and then cleared, this still runs normally.
+           if (hadGuardian) {
+               const fieldsToClear = ["contact_number", "street", "brgy"];
+               fieldsToClear.forEach((id) => {
+                   const el = document.getElementById(id);
+                   if (el && !el.disabled) {
+                       el.value = "";
+                       el.dispatchEvent(new Event("change"));
+                   }
+               });
+           }
        }
 
         // Expose globally so it can be called externally if needed

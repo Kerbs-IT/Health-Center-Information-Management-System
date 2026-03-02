@@ -1014,10 +1014,10 @@ function showInfoPerTypeOfPatient() {
         sexContainer.style.display = "none";
 
         // Auto-select female and make it not required (since it's implicit)
-        sexInputs.forEach((input) => {
-            input.required = false;
-            if (input.value === "female") input.checked = true;
-        });
+        // sexInputs.forEach((input) => {
+        //     input.required = false;
+        //     if (input.value === "female") input.checked = true;
+        // });
 
         // Reset birthdate to normal range
         birthdate.min = "1950-01-01";
