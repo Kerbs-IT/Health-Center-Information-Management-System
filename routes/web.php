@@ -42,9 +42,7 @@ use Illuminate\Support\Facades\Route;
 use LDAP\Result;
 
 use App\Http\Controllers\InventoryReportController;
-use App\Http\Controllers\NoficationScheduleController;
 use App\Http\Controllers\PatientAccountController;
-use App\Http\Controllers\PatientRecord;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -140,12 +138,6 @@ Route::middleware(['role:nurse'])->group(function () {
         Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
             ->name('health-workers.swap');
     });
-
-
-    Route::patch(
-        '/notification-schedules/{id}',
-        [NoficationScheduleController::class, 'update']
-    )->name('notification-schedules.update');
 });
 
 // =============== health worker only
@@ -160,13 +152,7 @@ Route::get('/dashboard/staff', function () {
 Route::middleware(['auth', 'verified', 'role:patient'])->group(function () {
     Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
     // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-   
-    Route::get('/user-account/medical-record', [patientController::class, 'renderOverview'])
-        ->name('patient.record.overview');
-
-
-    Route::get('/user-account/medical-record/{patientId}/{caseType}', [patientController::class, 'renderData'])
-        ->name('patient.record.case');
+    Route::get('/user-account/medical-record/{userId}', [patientController::class, 'renderData'])->name('view.medical.record');
 });
 
 
@@ -447,7 +433,6 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // get the user list for the add patient search bar
     Route::get('/get-user-list',[PatientAccountController::class,'search'])->name('users.search');
-    Route::get('/get-guardian-account-list',[PatientAccountController::class,'searchGuardian']);
 
     // for archived record
     Route::get('/archive-records',function(){
@@ -477,10 +462,7 @@ Route::middleware(['role:nurse,staff'])->group(function () {
         return view('records.archivedRecord.family-planning-case-archive', ['page' => 'Archive Records', 'isActive' => true, 'medicalRecordCaseId' => $caseId]);
     })->name('family.planning.case.record.archive');
 
-
-    // search patient record in add patient
-
-    Route::get("/patient-record/link",[PatientRecord::class,'search'])-> name('patient.record.search');
+    Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
 
 });
 // ---------------------------- home page
@@ -588,7 +570,7 @@ Route::get('/inventory', function () {
 })->name('inventory');
 
 
-Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
+// Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
 
 // GENERATE THE RECORD
 Route::get('/vaccination/records/pdf', [PdfController::class, 'generateVaccinationPdf'])
@@ -690,7 +672,7 @@ Route::get('run-command', function () {
 });
 
 
-// get the assigned area for select 
+// get the assigned area for select
 
 Route::get('/add-patient/get-assigned-area/{staffId}', [healthWorkerController::class, 'getAssignedArea']);
 Route::post('/get-health-worker', [healthWorkerController::class, 'getHealthWorker']);
