@@ -224,12 +224,12 @@
                                         @endif
                                     </option>
 
-                                    {{-- Children linked to this user as guardian --}}
+                                    {{-- Family Members linked to this user as guardian --}}
                                     @foreach($user->patients as $child)
                                         <option value="child:{{ $child->id }}" class="text-muted">
                                             {{ $child->full_name }}
-                                            ({{ $child->age_display ?? ($child->age . ' yrs') }})
-                                            — child of {{ $user->full_name }}
+                                            <!-- ({{ $child->age_display ?? ($child->age . ' yrs') }}) -->
+                                            Family Member(s) of {{ $user->full_name }}
                                         </option>
                                     @endforeach
                                 @endforeach

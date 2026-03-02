@@ -56,7 +56,7 @@
                 <table class="table table-hover" id="medicineTable">
                     <thead class="table-header">
                         <tr class="text-nowrap">
-                            <th class="text-center" scope="col"><button class="sort-btn">No.</button></th>
+                            <!-- <th class="text-center" scope="col"><button class="sort-btn">No.</button></th> -->
                             <th class="text-center" scope="col">Requested For</th>
                             <th class="text-center" scope="col"><button>Medicine Name</button></th>
                             <th class="text-center" scope="col"><button>Quantity</button></th>
@@ -68,7 +68,7 @@
                     <tbody>
                         @forelse ($myRequests as $index => $request)
                             <tr>
-                            <td class="text-center">{{ $index + 1 }}</td>
+                            <!-- <td class="text-center">{{ $index + 1 }}</td> -->
                             <td class="text-center">
                                 @php
                                     $user    = auth()->user();
@@ -160,14 +160,14 @@
                                     <input class="form-check-input" type="radio" wire:model.live="requestFor"
                                         id="requestForSelf" value="self">
                                     <label class="form-check-label" for="requestForSelf">
-                                        <i class="fa-solid fa-user me-1 text-success"></i>Myself
+                                        Myself
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" wire:model.live="requestFor"
                                         id="requestForChild" value="child">
                                     <label class="form-check-label" for="requestForChild">
-                                        <i class="fa-solid fa-child me-1 text-primary"></i>My Child
+                                        Family Member(s)
                                     </label>
                                 </div>
                             </div>
@@ -212,9 +212,9 @@
                                         <i class="fa-solid fa-child-reaching fs-3 d-block mb-1"></i>
                                         <small>
                                             @if($childSearch)
-                                                No children found matching "{{ $childSearch }}"
+                                                No Family Member(s) found matching "{{ $childSearch }}"
                                             @else
-                                                No children linked to your account
+                                                No Family Member(s) linked to your account
                                             @endif
                                         </small>
                                     </div>
