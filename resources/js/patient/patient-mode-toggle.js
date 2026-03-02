@@ -10,6 +10,7 @@
      * All DOM references are null-checked for safety.
      */
 
+
     (function () {
         "use strict";
 
@@ -99,6 +100,8 @@
                 const userAccount = document.getElementById("user_account");
                 if (userAccount) userAccount.value = "";
             }
+
+           window.syncHandledByView();
         }
 
         modeNewRadio?.addEventListener("change", handleModeToggle);

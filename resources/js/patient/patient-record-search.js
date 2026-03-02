@@ -287,7 +287,7 @@
        const email = document.getElementById("email");
        if (email) {
            const emailValue = patient?.user?.email ?? "";
-           console.log(emailValue);
+        //    console.log(emailValue);
            if (typeof emailValue === "string" && emailValue.trim()) {
                email.value = emailValue.trim();
                email.dispatchEvent(new Event("change"));
@@ -413,6 +413,8 @@
                 brgy.dispatchEvent(new Event("change"));
             }
         }
+
+        window.syncHandledByView();
     }
 
     /**

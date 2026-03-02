@@ -698,7 +698,7 @@
 
                                 <div class="mb-md-2 mb-1 w-100">
                                     <div class="mb-md-2 mb-1 w-100">
-                                        <label for="patient_name">handled By</label>
+                                        <label for="patient_name">Handled By</label>
                                         <input type="text" class="form-control w-100 bg-light" disabled placeholder="health worker name" id="handle_by_view_input">
                                     </div>
                                 </div>

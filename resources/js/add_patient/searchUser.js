@@ -242,6 +242,8 @@ function populateFormFields(userData) {
             purok.dispatchEvent(new Event("change"));
         }
     }
+
+    window.syncHandledByView();
 }
 
 // Close results when clicking outside

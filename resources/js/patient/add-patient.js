@@ -3,6 +3,22 @@ import { addVaccineInteraction } from "../patient/healthWorkerList";
 import { automateAge } from "../automateAge";
 import changeLmp from "../LMP/lmp";
 window.currentStep = 1;
+
+window.syncHandledByView = function () {
+    const handled_by = document.getElementById("handled_by");
+    const handledByViewInput = document.getElementById("handle_by_view_input");
+
+    if (!handled_by || !handledByViewInput) return;
+
+    if (handled_by.tagName.toLowerCase() === "select") {
+        const selectedOption = Array.from(handled_by.options).find(
+            (opt) => opt.value === handled_by.value,
+        );
+        handledByViewInput.value = selectedOption?.text || "";
+    } else if (handled_by.type === "hidden") {
+        handledByViewInput.value = handled_by.dataset.healthWorkerName || "";
+    }
+};
 document.addEventListener("DOMContentLoaded", () => {
     const typeSelect = document.getElementById("type-of-patient");
 
@@ -377,24 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const handled_by = document.getElementById("handled_by");
-    const handledByViewInput = document.getElementById("handle_by_view_input");
-
-    if (handled_by && handledByViewInput) {
-        if (handled_by.tagName.toLowerCase() === "select") {
-            handled_by.addEventListener("change", (e) => {
-                if (typeSelect.value === "vaccination") {
-                    const selectedText =
-                        handled_by.options[handled_by.selectedIndex].text;
-                    handledByViewInput.value = selectedText;
-                }
-            });
-        } else if (handled_by.type === "hidden") {
-            handledByViewInput.value =
-                handled_by.dataset.healthWorkerName || "";
-        }
-    }
-
     typeSelect.addEventListener("change", function () {
         disableSubmitBtn(typeSelect.value);
 
@@ -480,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             return;
         }
-// Handle handled_by field for nurses
+        // Handle handled_by field for nurses
         const handledBySelect = document.getElementById("handled_by");
         const handledByBackup = document.getElementById("handled_by_backup");
 
@@ -574,6 +572,9 @@ document.addEventListener("DOMContentLoaded", () => {
 const date_of_birth = document.getElementById("birthdate");
 const age = document.getElementById("age");
 const hiddenAge = document.getElementById("hiddenAge");
+
+window.syncHandledByView();
+handled_by.addEventListener("change", () => window.syncHandledByView());
 
 if (date_of_birth && age) {
     automateAge(date_of_birth, age, hiddenAge);
@@ -736,7 +737,16 @@ if (brgyElement && isHealthWorker == true) {
 
             const data = await response.json();
             if (response.ok) {
-                healthWorkerElement.value = data.health_worker_id;
+                const handledByViewInput = document.getElementById(
+                    "handle_by_view_input",
+                );
+                if (response.ok) {
+                    healthWorkerElement.value = data.health_worker_id;
+                    const handledByViewInput = document.getElementById(
+                        "handle_by_view_input",
+                    );
+                   window.syncHandledByView();
+                }
             } else {
                 console.error("Failed to fetch health worker:", data);
             }
@@ -958,7 +968,7 @@ function familyPlanVitalSign() {
 }
 
 function initializeVaccinationMasks() {
-    console.log("running kaba");
+    // console.log("running kaba");
     Inputmask({
         alias: "decimal",
         digits: 2,
@@ -1039,3 +1049,18 @@ function showInfoPerTypeOfPatient() {
         birthdate.max = today.toISOString().split("T")[0];
     }
 }
+window.syncHandledByView = function () {
+    const handled_by = document.getElementById("handled_by");
+    const handledByViewInput = document.getElementById("handle_by_view_input");
+
+    if (!handled_by || !handledByViewInput) return;
+
+    if (handled_by.tagName.toLowerCase() === "select") {
+        const selectedOption = Array.from(handled_by.options).find(
+            (opt) => opt.value === handled_by.value,
+        );
+        handledByViewInput.value = selectedOption?.text || "";
+    } else if (handled_by.type === "hidden") {
+        handledByViewInput.value = handled_by.dataset.healthWorkerName || "";
+    }
+};
