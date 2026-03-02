@@ -922,7 +922,8 @@ class patientController extends Controller
                 'isActive' => true,
                 'page' => 'RECORD',
                 'typeOfPatient' => 'vaccination',
-                'vaccination_case_record' => $vaccination_case_records
+                'vaccination_case_record' => $vaccination_case_records,
+                'medicalCaseId' => $medicalCase->id
             ]);
         }
         if ($caseType === 'prenatal') {

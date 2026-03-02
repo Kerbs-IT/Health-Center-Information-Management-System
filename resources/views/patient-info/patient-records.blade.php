@@ -42,9 +42,18 @@
             <main class="flex-column p-md-3 p-2 overflow-y-auto">
                 <h1>PATIENT CASES</h1>
                 <!-- body part -->
-                <a href="{{ route('patient.record.overview') }}" class="btn btn-danger px-4 fs-5 mb-3">
-                    Back
-                </a>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('patient.record.overview') }}" class="btn btn-danger px-4 fs-5 mb-3">
+                        Back
+                    </a>
+                    @if(($typeOfPatient ?? null) === 'vaccination')
+                    <button type="button" class="btn btn-info text-white px-4 fs-6 mb-3"
+                        onclick="loadImmunizationCard('{{ $medicalCaseId }}')">
+                        View Immunization Card
+                    </button>
+                    @endif
+                </div>
+
                 <div class="mb-3 w-100 px-lg-5 px-md-3 px-2 min-h-[700px] record-con">
 
                     <div class="filters d-flex justify-content-between w-100">
@@ -103,9 +112,57 @@
     @endif
 
     @if(isset($typeOfPatient) && $typeOfPatient == 'vaccination')
+    <div class="modal fade" id="immunizationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Immunization Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalContent">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-info" role="status"></div>
+                            <p class="mt-2">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="pdfDownloadBtn" class="btn btn-success" target="_blank">Download PDF</a>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        function loadImmunizationCard(medicalCaseId) {
+            const modal = new bootstrap.Modal(document.getElementById('immunizationModal'));
+            modal.show();
+
+            document.getElementById('pdfDownloadBtn').href = `/immunization/pdf/${medicalCaseId}`;
+            document.getElementById('modalContent').innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="mt-2">Loading...</p>
+            </div>`;
+
+            fetch(`/immunization/card-content/${medicalCaseId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('modalContent').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalContent').innerHTML =
+                        '<div class="alert alert-danger">Error loading immunization card. Please try again.</div>';
+                });
+        }
+    </script>
     @endif
-
     @if($isActive)
     <script>
         // load all of the content first
@@ -116,6 +173,7 @@
                 con.classList.add('active');
             }
         })
+
     </script>
     @endif
 

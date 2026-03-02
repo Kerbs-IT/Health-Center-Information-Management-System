@@ -291,10 +291,20 @@ class PrenatalController extends Controller
 
                 $prenatalPatient = patients::with('address')->findOrFail($patientData['patient_id']);
 
+                // ADD THIS CHECK
+                if (empty($prenatalPatient->sex) || strtolower($prenatalPatient->sex) !== 'female') {
+                    return response()->json([
+                        'message' => 'Validation failed.',
+                        'errors'  => ['patient_id' => ['Only female patients can be registered for a prenatal case.']]
+                    ], 422);
+                }
+                
                 $existingCase = medical_record_cases::where('patient_id', $prenatalPatient->id)
                     ->where('type_of_case', $patientData['type_of_patient'])
                     ->where('status', 'Active')
                     ->first();
+
+
 
                 if ($existingCase) {
                     return response()->json([
@@ -302,6 +312,7 @@ class PrenatalController extends Controller
                         'errors'  => ['type_of_patient' => ['This patient already has an active prenatal case.']]
                     ], 422);
                 }
+               
 
                 $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
                 $middle     = $middle ? strtoupper($middle) . '.' : null;

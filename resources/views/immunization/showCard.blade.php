@@ -12,7 +12,7 @@
             </div>
             <div class="info-field">
                 <label>DATE OF BIRTH:</label>
-                <span>{{ $caseRecord->date_of_birth ?? 'N/A' }}</span>
+                <span>{{ $caseRecord->date_of_birth?->format('Y-m-d') ?? 'N/A' }}</span>
             </div>
             <div class="info-field">
                 <label>PLACE OF BIRTH:</label>

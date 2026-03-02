@@ -373,6 +373,13 @@ class FamilyPlanningController extends Controller
 
                 $familPlanningPatient = patients::with('address')->findOrFail($patientData['patient_id']);
 
+                if (empty($familPlanningPatient->sex) || strtolower($familPlanningPatient->sex) !== 'female') {
+                    return response()->json([
+                        'message' => 'Validation failed.',
+                        'errors'  => ['patient_id' => ['Only female patients can be registered for a famiy planning case.']]
+                    ], 422);
+                }
+
                 $existingCase = medical_record_cases::where('patient_id', $familPlanningPatient->id)
                     ->where('type_of_case', $patientData['type_of_patient'])
                     ->where('status', 'Active')
@@ -384,6 +391,7 @@ class FamilyPlanningController extends Controller
                         'errors'  => ['type_of_patient' => ['This patient already has an active Family Planning case.']]
                     ], 422);
                 }
+                
 
                 $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
                 $middle     = $middle ? strtoupper($middle) . '.' : null;

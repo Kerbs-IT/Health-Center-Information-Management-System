@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immunization Card</title>
     <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,85 +20,58 @@
 
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
+            padding: 10px;
             background: white;
+            font-size: 13px;
         }
-
 
         .card-container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            background: white;
-            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+            padding: 10px;
         }
 
         .header {
             background: #1e3c72;
             color: white;
-            padding: 20px;
+            padding: 8px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             border-radius: 5px;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: bold;
             letter-spacing: 2px;
             color: white;
         }
 
-        .patient-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 5px;
-        }
-
-        .info-field {
-            display: flex;
-            gap: 10px;
-        }
-
-        .info-field label {
-            font-weight: bold;
-            min-width: 150px;
-        }
-
-        .info-field span {
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 2px;
-        }
-
         .vaccine-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .vaccine-table th {
             background: #f57c00;
             color: black;
-            padding: 12px;
+            padding: 6px;
             text-align: left;
             font-weight: bold;
             border: 1px solid #ddd;
+            font-size: 13px;
         }
 
         .vaccine-table td {
-            padding: 10px;
+            padding: 4px 6px;
             border: 1px solid #ddd;
             background: #fafafa;
         }
 
         td {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .vaccine-table tr:hover td {
@@ -106,7 +84,7 @@
 
         .dose-cell {
             text-align: center;
-            min-width: 80px;
+            min-width: 70px;
             position: relative;
         }
 
@@ -123,28 +101,28 @@
         .category-header {
             background: #ff9800 !important;
             color: black;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .remarks-cell {
-            max-width: 200px;
+            max-width: 150px;
             word-wrap: break-word;
         }
 
         .action-buttons {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             display: flex;
             gap: 10px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             display: inline-block;
         }
@@ -179,9 +157,11 @@
             }
         }
 
+        h4 {
+            text-align: center;
+            font-size: 14px;
+        }
 
-
-        /* header */
         h4 {
             text-align: center;
         }
@@ -204,14 +184,12 @@
             text-transform: uppercase;
             float: left;
             padding-top: 50px;
-            /* Adjust to vertically center text */
         }
     </style>
 </head>
 
 <body>
-    @vite([
-    'resources/css/app.css'])
+    @vite(['resources/css/app.css'])
     <header>
         <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="Logo">
         <div class="header-text">
@@ -220,64 +198,66 @@
         </div>
         <div style="clear: both;"></div>
     </header>
+
     <div class="card-container">
 
         <div class="header">
             <h1 class="mb-0 text-white">IMMUNIZATION CARD</h1>
         </div>
 
-        <table style="width: 100%; border: none; margin-bottom: 20px; border-collapse: collapse;">
+        <table style="width: 100%; border: none; margin-bottom: 10px; border-collapse: collapse;">
             <tr>
                 <td style="width: 50%; vertical-align: top; padding-right: 10px; border: none;">
                     <table style="width: 100%; border: none;">
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">NAME:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->full_name ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $caseRecord->full_name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">DATE OF BIRTH:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->date_of_birth ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">DATE OF BIRTH:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $caseRecord->date_of_birth?->format('Y-m-d') ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">PLACE OF BIRTH:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->place_of_birth ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">PLACE OF BIRTH:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $caseRecord->place_of_birth ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">Address:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $fullAddress ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">ADDRESS:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $fullAddress ?? 'N/A' }}</td>
                         </tr>
                     </table>
                 </td>
                 <td style="width: 50%; vertical-align: top; padding-left: 10px; border: none;">
                     <table style="width: 100%; border: none;">
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">MOTHER'S NAME:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->mother_name ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">MOTHER'S NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $medicalRecord->vaccination_medical_record->mother_name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">FATHER'S NAME:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->father_name ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">FATHER'S NAME:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $medicalRecord->vaccination_medical_record->father_name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">BIRTH HEIGHT:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->birth_height ?? 'N/A' }} cm</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">BIRTH HEIGHT:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $medicalRecord->vaccination_medical_record->birth_height ?? 'N/A' }} cm</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">BIRTH WEIGHT:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $medicalRecord->vaccination_medical_record->birth_weight ?? 'N/A' }} kg</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">BIRTH WEIGHT:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $medicalRecord->vaccination_medical_record->birth_weight ?? 'N/A' }} kg</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">SEX:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->sex ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">SEX:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $caseRecord->sex ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; width: 150px; border: none; padding: 5px 0;">CONTACT NO.:</td>
-                            <td style="border-bottom: 1px solid #ddd; padding: 5px 0; border-top: none; border-left: none; border-right: none;">{{ $caseRecord->contact_number ?? 'N/A' }}</td>
+                            <td style="font-weight: bold; width: 130px; border: none; padding: 2px 0; font-size: 13px;">CONTACT NO.:</td>
+                            <td style="border-bottom: 1px solid #ddd; padding: 2px 0; border-top: none; border-left: none; border-right: none; font-size: 13px;">{{ $caseRecord->contact_number ?? 'N/A' }}</td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>
+
         <table class="vaccine-table">
             <thead>
                 <tr>
@@ -296,7 +276,6 @@
             </thead>
             <tbody>
                 @php
-                // Group vaccines by category based on vaccine_acronym or type
                 $infantVaccines = collect([
                 ['id' => 1, 'name' => 'BCG Vaccine', 'acronym' => 'BCG'],
                 ['id' => 2, 'name' => 'Hepatitis B Vaccine', 'acronym' => 'Hepatitis B'],
@@ -346,7 +325,6 @@
 
                     @for($dose = 1; $dose <= 3; $dose++)
                         @php
-                        // Find vaccination record for this vaccine and dose
                         $record=$vaccineAdministered->first(function($item) use ($vaccine, $dose) {
                         return $item->vaccine_id == $vaccine['id'] && $item->dose_number == $dose;
                         });
@@ -360,12 +338,9 @@
 
                         <td class="remarks-cell">
                             @php
-                            // Collect all remarks for this vaccine
                             $remarks = $vaccineAdministered
                             ->where('vaccine_id', $vaccine['id'])
-                            ->map(function($item) {
-                            return $item->vaccination_case_record->remarks ?? null;
-                            })
+                            ->map(fn($item) => $item->vaccination_case_record->remarks ?? null)
                             ->filter()
                             ->unique()
                             ->implode(', ');
@@ -417,9 +392,7 @@
                             @php
                             $remarks = $vaccineAdministered
                             ->where('vaccine_id', $vaccine['id'])
-                            ->map(function($item) {
-                            return $item->vaccination_case_record->remarks ?? null;
-                            })
+                            ->map(fn($item) => $item->vaccination_case_record->remarks ?? null)
                             ->filter()
                             ->unique()
                             ->implode(', ');
@@ -456,9 +429,7 @@
                             @php
                             $remarks = $vaccineAdministered
                             ->where('vaccine_id', $vaccine['id'])
-                            ->map(function($item) {
-                            return $item->vaccination_case_record->remarks ?? null;
-                            })
+                            ->map(fn($item) => $item->vaccination_case_record->remarks ?? null)
                             ->filter()
                             ->unique()
                             ->implode(', ');
@@ -467,6 +438,7 @@
                         </td>
                 </tr>
                 @endforeach
+
             </tbody>
         </table>
     </div>
