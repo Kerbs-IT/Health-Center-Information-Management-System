@@ -229,7 +229,7 @@ class RecordsTable extends Component
                     'status'        => 'due_today',
                     'badge'         => 'Due Today',
                     'class'         => 'table-success',
-                    'badge_class'   => 'badge bg-success text-dark',
+                    'badge_class'   => 'badge bg-success',
                     'due_vaccines'  => $dueVaccines,
                     'next_dosage'   => $nextDosage,
                     'sort_priority' => 2,
