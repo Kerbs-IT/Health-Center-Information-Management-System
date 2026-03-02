@@ -233,7 +233,9 @@
                                                 @elseif(Auth::user()-> role == 'staff')
                                                 <div class="mb-2 w-100">
                                                     <label for="administered_by">Handled By <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control bg-light" disabled placeholder="Nurse" value="Nurse Joy">
+                                                    <input type="text" class="form-control bg-light" id="update_handled_by" disabled placeholder="Nurse" value="">
+                                                    <input type="hidden" name="update_handled_by" value="{{ auth()->id() }}">
+                                                    <small class="text-danger error-text" id="update_handled_by_error"></small>
                                                 </div>
                                                 @endif
 

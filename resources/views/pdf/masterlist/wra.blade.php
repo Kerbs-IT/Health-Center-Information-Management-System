@@ -169,7 +169,7 @@
             <tr>
                 <td style="font-size:15px !important;"><strong>Barangay:</strong> <span class="underline">{{$selectedBrgy == '' ? 'All Barangays' : $selectedBrgy}}</span></td>
                 <td style="font-size:15px !important;"><strong>Name of BHS Midwife:</strong> <span class="underline">{{$midwifeName ?? ''}}</span></td>
-                <td style="font-size:15px !important;"><strong>Date Prepared:</strong> <span class="underline">{{date('Y-m-d')}}</span></td>
+                <td style="font-size:15px !important;"><strong>Date Prepared:</strong> <span class="underline">{{date('M d Y')}}</span></td>
             </tr>
         </table>
     </div>
