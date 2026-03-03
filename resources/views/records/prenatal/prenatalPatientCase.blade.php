@@ -496,7 +496,7 @@
                                                             </div>
                                                             <div class="mb-2 w-100">
                                                                 <label for="expected_delivery">Menarche</label>
-                                                                <input type="text" name="menarche" class="form-control w-100" placeholder="trece" id="menarche_input">
+                                                                <input type="text" name="menarche" class="form-control w-100" placeholder="Enter the number" id="menarche_input">
                                                                 <small class="text-danger error-text error-text" id="menarche_error"></small>
                                                             </div>
                                                         </div>
