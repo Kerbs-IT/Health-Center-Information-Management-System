@@ -120,7 +120,11 @@
     </div>
     <div class="mb-3 d-flex justify-content-between flex-wrap">
         <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
-        <h4 class="flex-fill text-center">Name of Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h4>
+        @php
+        $nurse = App\Models\User::where('role','nurse')->first();
+        $nurseName = $nurse -> full_name??'Gladys';
+        @endphp
+        <h4 class="flex-fill text-center">Name of Midwife: <span class="fw-light text-decoration-underline">{{$nurseName}}</span></h4>
     </div>
     <div class="table-con" wire:key="table-container-{{ $refreshKey }}">
         <table>

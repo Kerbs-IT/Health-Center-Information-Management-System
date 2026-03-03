@@ -132,7 +132,11 @@
                             </div>
                             <div class="mb-3 d-flex w-100 gap-5">
                                 <h6 class="mb-0 ">Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h6>
-                                <h6 class="mb-0 ">Name of BHS Midwife: <span class="fw-light text-decoration-underline">Nurse Joy</span></h6>
+                                @php
+                                $nurse = App\Models\User::where('role','nurse')->first();
+                                $nurseName = $nurse -> full_name??'Gladys';
+                                @endphp
+                                <h6 class="mb-0 ">Name of BHS Midwife: <span class="fw-light text-decoration-underline">{{$nurseName}}</span></h6>
                                 <h6 class="mb-0 ">Date Prepared: <span class="fw-light text-decoration-underline">{{date('M d Y')}}</span></h6>
                             </div>
                         </th>
