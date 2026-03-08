@@ -776,6 +776,7 @@ class PrenatalController extends Controller
                         'acknowledgement_consent_signature_image' => null,
                         'date_of_acknowledgement_consent'     => null,
                         'current_user_type'                   => null,
+                        'status' => 'Active'
                     ]);
 
                     $caseId = $caseRecord->id;
@@ -863,6 +864,7 @@ class PrenatalController extends Controller
                         'menstrual_period_in_seven_days_question'   => null,
                         'miscarriage_or_abortion_question'          => null,
                         'contraceptive_question'                    => null,
+                        'status' => 'Active'
                     ]);
 
                     if ($prenatalPatient->age >= 10) {
@@ -889,6 +891,7 @@ class PrenatalController extends Controller
                             'wra_accept_any_modern_FP_method' => null,
                             'selected_modern_FP_method'      => null,
                             'date_when_FP_method_accepted'   => null,
+                            'status' => 'Active'
                         ]);
                     }
                 }
@@ -917,6 +920,7 @@ class PrenatalController extends Controller
                         'wra_accept_any_modern_FP_method' => null,
                         'selected_modern_FP_method'      => null,
                         'date_when_FP_method_accepted'   => null,
+                        'status' => 'Active'
                     ]);
                 }
             }
@@ -1151,7 +1155,12 @@ class PrenatalController extends Controller
 
                     if ($existingFamilyPlan->status == 'Archived') {
                         $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
-                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)->first() ?? null;
+
+                        // Get all archived side B records
+                        $family_planning_sideB_records = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                            ->where('status', 'Archived')
+                            ->get();
+
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
                         $existingFamilyPlan->update([
@@ -1159,7 +1168,7 @@ class PrenatalController extends Controller
                             'created_at' => now()
                         ]);
 
-                        if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
+                        if ($family_planning_sideA && $family_planning_sideB_records->isNotEmpty() && $wra_record) {
                             $family_planning_sideA->update([
                                 'client_name'        => $prenatalRecord->patient->full_name,
                                 'client_first_name'  => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
@@ -1176,7 +1185,22 @@ class PrenatalController extends Controller
                                 'status' => 'Active',
                             ]);
 
-                            $family_planning_sideB->update(['status' => 'Active']);
+                            // Restore side B records with duplicate date_of_visit restriction
+                            $processedDates = [];
+
+                            // Group by date_of_visit
+                            $groupedByDate = $family_planning_sideB_records->groupBy('date_of_visit');
+
+                            foreach ($groupedByDate as $dateOfVisit => $records) {
+                                if ($records->count() > 1) {
+                                    // Multiple records with same date - restore only the newest based on created_at
+                                    $newestRecord = $records->sortByDesc('created_at')->first();
+                                    $newestRecord->update(['status' => 'Active']);
+                                } else {
+                                    // Only one record with this date - restore it
+                                    $records->first()->update(['status' => 'Active']);
+                                }
+                            }
 
                             $wra_record->update([
                                 'plan_to_have_more_children_yes'   => null,
@@ -1259,10 +1283,10 @@ class PrenatalController extends Controller
                 }
 
                 $previoulyMethod = null;
-                $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)
                     ->where('status', '!=', 'Archived')
                     ->first();
-                $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)
                     ->where('status', '!=', 'Archived')
                     ->first();
 
@@ -1486,14 +1510,14 @@ class PrenatalController extends Controller
                         $family_planning_sideA = family_planning_case_records::where('medical_record_case_id', $existingFamilyPlan->id)
                             ->where('status', '!=', 'Archived')
                             ->first() ?? null;
-                        $family_planning_sideB = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
+                        $family_planning_sideB_records = family_planning_side_b_records::where('medical_record_case_id', $existingFamilyPlan->id)
                             ->where('status', '!=', 'Archived')
-                            ->first() ?? null;
+                            ->get();
                         $wra_record = wra_masterlists::where('patient_id', $prenatalRecord->patient->id)->first();
 
                         $existingFamilyPlan->update(['status' => 'Archived']);
 
-                        if ($family_planning_sideA && $family_planning_sideB && $wra_record) {
+                        if ($family_planning_sideA && $family_planning_sideB_records->isNotEmpty() && $wra_record) {
                             $family_planning_sideA->update([
                                 'client_name'        => $prenatalRecord->patient->full_name,
                                 'client_first_name'  => ucwords($data['first_name']) ?? ucwords($prenatalRecord->patient->first_name),
@@ -1502,7 +1526,9 @@ class PrenatalController extends Controller
                                 'status'             => 'Archived',
                             ]);
 
-                            $family_planning_sideB->update(['status' => 'Archived']);
+                            $family_planning_sideB_records->each(function ($record) {
+                                $record->update(['status' => 'Archived']);
+                            });
 
                             $wra_record->update([
                                 'plan_to_have_more_children_yes'   => null,

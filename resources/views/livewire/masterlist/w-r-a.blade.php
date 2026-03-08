@@ -325,7 +325,7 @@
 
         @if(Auth::user() -> role == 'staff')
         <div class="mb-3">
-            <h2>Name of BHM:<span>{{Auth::user() -> staff -> fullName}}</span></h2>
+            <h2>Name of BHW: <span>{{Auth::user() -> staff -> full_name}}</span></h2>
         </div>
         @endif
     </div>

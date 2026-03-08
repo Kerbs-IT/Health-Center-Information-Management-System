@@ -196,7 +196,7 @@
 
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Puroks<span class="text-danger">*</span></label>
+                                            <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                             <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>

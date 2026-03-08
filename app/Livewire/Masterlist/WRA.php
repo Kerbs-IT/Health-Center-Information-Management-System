@@ -24,7 +24,7 @@ class WRA extends Component
     public $search = '';
     public $selectedBrgy = '';
     public $selectedMonth = '';
-    public $selectedYear = '2025';
+    public $selectedYear = ''; // CHANGED: Default to empty string for "All Years"
     public $withUnmetNeed = '';
 
     // ADDED: Force re-render on filter changes
@@ -38,11 +38,19 @@ class WRA extends Component
         'search' => ['except' => ''],
         'selectedBrgy' => ['except' => ''],
         'selectedMonth' => ['except' => ''],
-        'selectedYear' => ['except' => '2025'],
+        'selectedYear' => ['except' => ''], // CHANGED: Exception to empty string
         'withUnmetNeed' => ['except' => '']
     ];
 
     protected $listeners = ['wraMasterlistRefreshTable' => '$refresh'];
+
+    // ADDED: Initialize with current year
+    public function mount()
+    {
+        if (empty($this->selectedYear)) {
+            $this->selectedYear = date('Y');
+        }
+    }
 
     // CHANGED: From updatingXXX to updatedXXX
     public function updatedEntries()
@@ -94,7 +102,8 @@ class WRA extends Component
 
     public function clearFilters()
     {
-        $this->reset(['search', 'selectedBrgy', 'selectedMonth', 'selectedYear', 'withUnmetNeed']);
+        $this->reset(['search', 'selectedBrgy', 'selectedMonth', 'withUnmetNeed']);
+        $this->selectedYear = date('Y'); // CHANGED: Reset to current year instead of empty
         $this->resetPage();
         $this->refreshKey++;
     }
@@ -126,7 +135,8 @@ class WRA extends Component
             $query->whereMonth('created_at', $this->selectedMonth);
         }
 
-        if (!empty($this->selectedYear)) {
+        // CHANGED: Only apply year filter if a specific year is selected
+        if (!empty($this->selectedYear) && $this->selectedYear !== '') {
             $query->whereYear('created_at', $this->selectedYear);
         }
 

@@ -361,7 +361,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-md-row flex-column">
                                         <div class="input-field flex-grow-1 flex-fill xl:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5" min="1950-01-01" max="{{date('Y-m-d')}}" name="date_of_registration" value="">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <!-- administered by -->
@@ -596,7 +596,7 @@
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
                                             <div class="mb-2 w-100 w-md-50">
-                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
+                                                <label for="brgy">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                                 @php
                                                 $brgy = \App\Models\brgy_unit::orderBy('brgy_unit')->get();
                                                 $user = auth()->user();
@@ -854,13 +854,19 @@
     </script>
     @endif
     <script>
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateOfRegistration').value = today;
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const dateOfRegistration = document.getElementById('dateOfRegistration');
+            const dateOfVaccination = document.getElementById('date_of_vaccination');
 
-        // check if the date of vaccination input is present to avoid error
-        if (document.getElementById('date_of_vaccination')) {
-            document.getElementById('date_of_vaccination').value = today;
-        };
+            if (dateOfRegistration) {
+                dateOfRegistration.value = today;
+            }
+
+            if (dateOfVaccination) {
+                dateOfVaccination.value = today;
+            }
+        });
     </script>
 </body>
 
