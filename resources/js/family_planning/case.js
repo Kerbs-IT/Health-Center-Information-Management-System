@@ -837,7 +837,7 @@ side_b_save_record_btn.addEventListener("click", async (e) => {
      }
 
     const response = await fetch(
-        "/patient-record/family-planning/add/side-b-record/",
+        "/patient-record/family-planning/add/side-b-record",
         {
             method: "POST",
             headers: {

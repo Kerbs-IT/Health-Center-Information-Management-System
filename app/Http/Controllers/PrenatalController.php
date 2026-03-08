@@ -1329,6 +1329,7 @@ class PrenatalController extends Controller
                         'acknowledgement_consent_signature_image' => null,
                         'date_of_acknowledgement_consent'         => null,
                         'current_user_type'                       => null,
+                        'status' => 'Active'
                     ]);
 
                     $caseId = $caseRecord->id;
@@ -1416,6 +1417,7 @@ class PrenatalController extends Controller
                         'menstrual_period_in_seven_days_question'        => null,
                         'miscarriage_or_abortion_question'               => null,
                         'contraceptive_question'                         => null,
+                        'status' => 'Active'
                     ]);
                 }
 
@@ -1491,6 +1493,7 @@ class PrenatalController extends Controller
                             'wra_accept_any_modern_FP_method'  => null,
                             'selected_modern_FP_method'        => null,
                             'date_when_FP_method_accepted'     => null,
+                            'status' => 'Active'
                         ]);
                     }
                 }
@@ -1587,6 +1590,7 @@ class PrenatalController extends Controller
                             'wra_accept_any_modern_FP_method'  => null,
                             'selected_modern_FP_method'        => null,
                             'date_when_FP_method_accepted'     => null,
+                            'status' => 'Active'
                         ]);
                     }
                 }
