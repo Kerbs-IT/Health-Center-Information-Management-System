@@ -54,6 +54,9 @@
                             <button type="button" class="btn btn-success text-nowrap" id="add-health-worker-modal" data-bs-toggle="modal" data-bs-target="#addModal">
                                 Add Health Worker
                             </button>
+                            <a href="{{ route('health-worker.archive') }}" class="btn btn-danger">
+                                <i class="fa-solid fa-box-archive"></i> View Archived
+                            </a>
                         </div>
                     </div>
 
@@ -274,7 +277,6 @@
         </div>
     </div>
     <!-- add health worker -->
-
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class healthWorkerController extends Controller
@@ -107,6 +108,8 @@ class healthWorkerController extends Controller
                 'add_contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
             ]);
 
+            // ✅ Start transaction
+            DB::beginTransaction();
 
 
             $data['status'] = 'active';
@@ -157,7 +160,7 @@ class healthWorkerController extends Controller
 
             $age = Carbon::parse($data['add_date_of_birth'])->age;
 
-            staff::create([
+            $newStaff = staff::create([
                 'user_id' => $userId,
                 'first_name' => ucwords(strtolower($data['first_name'])),
                 'middle_initial' => $middleInitial,
@@ -174,6 +177,13 @@ class healthWorkerController extends Controller
                 'nationality' => null,
                 'suffix' => $data['add_suffix'] ?? null
             ]);
+
+            // ✅ Transfer records from archived staff (if any exist)
+            $this->transferFromArchivedStaff($userId, $data['assigned_area']);
+
+            // ✅ Commit transaction
+            DB::commit();
+
 
             return response()->json(['message' => 'New Health Worker has been added'], 201);
         } catch (ValidationException $e) {
@@ -370,5 +380,45 @@ class healthWorkerController extends Controller
             ], 402);
         }
        
+    }
+
+
+    private function transferFromArchivedStaff($newStaffId, $areaId)
+    {
+        // Find archived staff with this area
+        $archivedStaffIds = DB::table('users')
+            ->join('staff', 'users.id', '=', 'staff.user_id')
+            ->where('users.status', 'archived')
+            ->where('staff.assigned_area_id', $areaId)
+            ->pluck('staff.user_id')
+            ->toArray();
+
+        // ✅ Don't transfer if no archived staff (keeps it simple)
+        if (empty($archivedStaffIds)) {
+            return;
+        }
+
+        $tables = [
+            'family_planning_case_records',
+            'family_planning_medical_records',
+            'family_planning_side_b_records',
+            'pregnancy_checkups',
+            'prenatal_case_records',
+            'prenatal_medical_records',
+            'senior_citizen_case_records',
+            'senior_citizen_medical_records',
+            'tb_dots_case_records',
+            'tb_dots_medical_records',
+            'tb_dots_check_ups',
+            'vaccination_case_records',
+            'vaccination_masterlists',
+            'vaccination_medical_records',
+            'wra_masterlists', 
+        ];
+        foreach ($tables as $table) {
+            DB::table($table)
+                ->whereIn('health_worker_id', $archivedStaffIds)
+                ->update(['health_worker_id' => $newStaffId]);
+        }
     }
 }

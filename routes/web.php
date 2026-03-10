@@ -45,6 +45,7 @@ use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\NoficationScheduleController;
 use App\Http\Controllers\PatientAccountController;
 use App\Http\Controllers\PatientRecord;
+use App\Livewire\ArchivedHealthWorker;
 // livewireCOmponent
 use App\Livewire\CategoriesTable;
 use App\Livewire\Medicines;
@@ -146,6 +147,11 @@ Route::middleware(['role:nurse'])->group(function () {
         '/notification-schedules/{id}',
         [NoficationScheduleController::class, 'update']
     )->name('notification-schedules.update');
+
+    // for archived record
+    Route::get('/health-worker/archive', function () {
+        return view('archived-health-worker', ['page' => 'HEALTH WORKER']);
+    })->name('health-worker.archive')->middleware(['auth']);
 });
 
 // =============== health worker only
