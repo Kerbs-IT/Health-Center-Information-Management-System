@@ -562,7 +562,7 @@ class PatientList extends Component
             $assignedPurok = $assignedArea->brgy_unit;
         }
 
-        $puroks = brgy_unit::orderBy('brgy_unit')->pluck('brgy_unit');
+        $puroks = brgy_unit::where('status','Active')->orderBy('brgy_unit')->pluck('brgy_unit');
 
         $caseTypes = [
             'vaccination',

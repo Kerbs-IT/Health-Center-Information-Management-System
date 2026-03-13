@@ -194,7 +194,7 @@
 
                                             </div>
                                             <div class="mb-2  w-[100%] md:w-[50%]">
-                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
+                                                <label for="brgy">Purok<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select py-2" data-bs-purok="{{optional($address)->purok??'none'}}" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}">
                                                     <option value="" selected disabled>Select a brgy</option>
                                                 </select>

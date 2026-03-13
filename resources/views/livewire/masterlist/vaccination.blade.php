@@ -71,9 +71,9 @@
         <!-- Barangay Filter (only for nurses) -->
         @if((Auth::user()->role) == 'nurse')
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-            <label class="form-label">Barangay</label>
+            <label class="form-label">Purok</label>
             <select wire:model.live="selectedBrgy" class="form-select bg-light rounded">
-                <option value="">All Barangay</option>
+                <option value="">All Puroks</option>
                 @foreach($brgys as $brgy)
                 <option value="{{ $brgy->brgy_unit }}">{{ $brgy->brgy_unit }}</option>
                 @endforeach

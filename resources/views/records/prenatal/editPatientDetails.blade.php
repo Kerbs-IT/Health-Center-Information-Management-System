@@ -236,7 +236,7 @@
                                                 <small class="text-danger error-text" id="street_error"></small>
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
-                                                <label for="brgy">Barangay<span class="text-danger">*</span></label>
+                                                <label for="brgy">Purok<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select py-2 bg-light border-dark" data-bs-selected-brgy="{{ $address->purok }}" data-health-worker-assigned-area-id="{{ optional(Auth::user())->staff?->assigned_area_id }}">
                                                     <option value="">Select a brgy</option>
                                                 </select>

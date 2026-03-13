@@ -152,7 +152,7 @@ class WRA extends Component
 
         $wra_masterList = $query->latest()->paginate($this->entries);
 
-        $brgyList = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
+        $brgyList = brgy_unit::where('status','Active') -> orderBy('brgy_unit', 'ASC')->get();
 
         $availableYears = wra_masterlists::selectRaw('YEAR(created_at) as year')
             ->where('status', '!=', 'Archived')

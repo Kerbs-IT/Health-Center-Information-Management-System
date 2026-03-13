@@ -882,7 +882,8 @@ class PdfController extends Controller
             }
             $vaccinationMasterlist = $query->orderBy('name_of_child', 'ASC')->get();
 
-            $brgys = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
+            $brgys = brgy_unit::orderBy('brgy_unit', 'ASC')
+            ->where('status','Active')->get();
 
             // Generate year options (last 10 years)
             $years = range(date('Y'), date('Y') - 10);
@@ -995,7 +996,8 @@ class PdfController extends Controller
                 ->get();
 
             // Get barangay list for dropdown
-            $brgyList = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
+            $brgyList = brgy_unit::orderBy('brgy_unit', 'ASC')
+            ->where('status','Active')->get();
 
             // Get available years from data
             $availableYears = wra_masterlists::selectRaw('YEAR(created_at) as year')
@@ -1438,7 +1440,8 @@ class PdfController extends Controller
                     ->whereDate('patients.created_at', '<=', $endDate);
             }
 
-            $brgyUnits = brgy_unit::get();
+            $brgyUnits = brgy_unit::
+            where('status','Active')->get();
 
             if (Auth::user()->role == 'nurse') {
                 foreach ($brgyUnits as $unit) {

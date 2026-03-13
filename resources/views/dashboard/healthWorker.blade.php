@@ -54,6 +54,9 @@
                             <button type="button" class="btn btn-success text-nowrap" id="add-health-worker-modal" data-bs-toggle="modal" data-bs-target="#addModal">
                                 Add Health Worker
                             </button>
+                            <a href="{{route('manage.puroks')}}" class="btn btn-success">
+                                Puroks
+                            </a>
                             <a href="{{ route('health-worker.archive') }}" class="btn btn-danger">
                                 <i class="fa-solid fa-box-archive"></i> View Archived
                             </a>

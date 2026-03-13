@@ -69,7 +69,7 @@ class PatientAccountBinding extends Component
             }
         }
 
-        $puroks = brgy_unit::orderBy('brgy_unit')->get();
+        $puroks = brgy_unit::where('status','Active') -> orderBy('brgy_unit')->get();
 
         return view('livewire.patient-account-binding', [
             'users'        => $users,

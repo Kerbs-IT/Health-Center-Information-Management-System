@@ -449,7 +449,9 @@ class HealthCenterDashboard extends Controller
                 ->whereDate('patients.created_at', '>=', $startDate)
                 ->whereDate('patients.created_at', '<=', $endDate);
 
-            $brgyUnits = brgy_unit::get();
+            $brgyUnits = brgy_unit::
+                        where('status','Active')
+                        ->get();
 
             if (Auth::user()->role == 'nurse') {
                 foreach ($brgyUnits as $unit) {

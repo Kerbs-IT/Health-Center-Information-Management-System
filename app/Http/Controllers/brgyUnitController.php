@@ -9,7 +9,9 @@ class brgyUnitController extends Controller
 {
     //
     public function showBrgyUnit(){
-        $data = brgy_unit::orderBy('brgy_unit','asc')->get();
+        $data = brgy_unit::orderBy('brgy_unit','asc')
+        ->where('status','Active')
+        ->get();
 
         return response()->json($data);
     }

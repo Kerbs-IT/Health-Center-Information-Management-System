@@ -598,7 +598,7 @@
                                             <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                                 @php
-                                                $brgy = \App\Models\brgy_unit::orderBy('brgy_unit')->get();
+                                                $brgy = \App\Models\brgy_unit::where('status','Active')->orderBy('brgy_unit')->get();
                                                 $user = auth()->user();
                                                 $isStaff = $user->role === 'staff'; // or however you check if user is staff
                                                 $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID

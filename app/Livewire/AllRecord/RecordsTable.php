@@ -68,7 +68,7 @@ class RecordsTable extends Component
             }
         } else {
             // For admin/other roles, load all puroks
-            $this->availablePuroks = brgy_unit::orderBy('brgy_unit', 'asc')
+            $this->availablePuroks = brgy_unit::where('status','Active')->orderBy('brgy_unit', 'asc')
                 ->pluck('brgy_unit', 'brgy_unit')
                 ->toArray();
         }

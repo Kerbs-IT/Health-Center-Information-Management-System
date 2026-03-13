@@ -168,7 +168,7 @@ class Vaccination extends Component
         $vaccination_masterlist = $query->orderBy('name_of_child', 'ASC')
             ->paginate($this->entries);
 
-        $brgys = brgy_unit::orderBy('brgy_unit', 'ASC')->get();
+        $brgys = brgy_unit::orderBy('brgy_unit', 'ASC')->where('status','Active')->get();
         $years = range(date('Y'), date('Y') - 10);
 
         return view('livewire.masterlist.vaccination', [

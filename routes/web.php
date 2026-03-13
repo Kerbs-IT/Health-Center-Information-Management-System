@@ -152,6 +152,14 @@ Route::middleware(['role:nurse'])->group(function () {
     Route::get('/health-worker/archive', function () {
         return view('archived-health-worker', ['page' => 'HEALTH WORKER']);
     })->name('health-worker.archive')->middleware(['auth']);
+
+    Route::get('/manage-puroks', function (){
+        return view('purokManagement.purok',['page'=> 'Manage Barangay Puroks']);
+    })-> name('manage.puroks');
+
+    Route::get('/puroks/archived', function () {
+        return view('purokManagement.purok-archive', ['page' => 'Archived Barangay Puroks']);
+    })->name('puroks.archived');
 });
 
 // =============== health worker only
