@@ -435,6 +435,7 @@ class SeniorCitizenController extends Controller
                 'patient_id'   => $seniorCitizenPatientId,
                 'type_of_case' => $patientData['type_of_patient'],
                 'status'       => 'Active',
+                'date_of_registration' => $patientData['date_of_registration'],
             ]);
 
             $medicalCaseId = $medicalCase->id;

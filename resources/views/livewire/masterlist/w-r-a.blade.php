@@ -40,6 +40,16 @@
                         class="form-control rounded bg-light"
                         placeholder="Search by name...">
                 </div>
+                {{-- Age Filter --}}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    <label for="ageRange" class="form-label small mb-1">Age Range</label>
+                    <select wire:model.live="selectedAge" id="ageRange" class="form-select rounded bg-light">
+                        <option value="">All Ages</option>
+                        <option value="10-14">10-14</option>
+                        <option value="15-19">15-19</option>
+                        <option value="20-49">20-49</option>
+                    </select>
+                </div>
 
                 {{-- Barangay Filter (Only for Nurses) --}}
                 @if(Auth::user()->role == 'nurse')

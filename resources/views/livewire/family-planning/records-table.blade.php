@@ -85,7 +85,7 @@
                     <th>Follow-up Status</th>
 
                     <!-- Date Registered -->
-                    <th style="cursor:pointer;" wire:click="sortBy('created_at')">
+                    <th style="cursor:pointer;" wire:click="sortBy('date_of_registration')">
                         Date Registered
                         @if ($sortField === 'created_at')
                         {{ $sortDirection === 'asc' ? '▲' : '▼' }}
@@ -122,7 +122,7 @@
                         @endif
                     </td>
 
-                    <td>{{ optional($record->patient)->created_at?->format('M d, Y') ?? 'N/A' }}</td>
+                    <td>{{$record->date_of_registration?->format('M d, Y') ?? 'N/A' }}</td>
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">
                             @php

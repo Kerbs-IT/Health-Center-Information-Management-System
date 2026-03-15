@@ -26,6 +26,7 @@ class WRA extends Component
     public $selectedMonth = '';
     public $selectedYear = ''; // CHANGED: Default to empty string for "All Years"
     public $withUnmetNeed = '';
+    public $selectedAge = '';
 
     // ADDED: Force re-render on filter changes
     public $refreshKey = 0;
@@ -39,7 +40,8 @@ class WRA extends Component
         'selectedBrgy' => ['except' => ''],
         'selectedMonth' => ['except' => ''],
         'selectedYear' => ['except' => ''], // CHANGED: Exception to empty string
-        'withUnmetNeed' => ['except' => '']
+        'withUnmetNeed' => ['except' => ''],
+        'selectedAge' => ['except'=> '']
     ];
 
     protected $listeners = ['wraMasterlistRefreshTable' => '$refresh'];
@@ -85,6 +87,10 @@ class WRA extends Component
 
     public function updatedWithUnmetNeed()
     {
+        $this->resetPage();
+        $this->refreshKey++;
+    }
+    public function updatedSelectedAge(){
         $this->resetPage();
         $this->refreshKey++;
     }
@@ -144,6 +150,12 @@ class WRA extends Component
             $query->where('wra_with_MFP_unmet_need', $this->withUnmetNeed);
         }
 
+        // for the age filter
+        if (!empty($this->selectedAge)) {
+            [$min, $max] = explode('-', $this->selectedAge);
+            $query->whereBetween('age', [(int)$min, (int)$max]);
+        }
+
         if (Auth::user()->role == 'staff') {
             $query->where('health_worker_id', Auth::id());
         }
@@ -181,7 +193,8 @@ class WRA extends Component
             'sortField' => $this->sortField,
             'sortDirection' => $this->sortDirection,
             'entries' => $this->entries,
-            'withUnmetNeed' => $this->withUnmetNeed
+            'withUnmetNeed' => $this->withUnmetNeed,
+            'selectedAge' => $this->selectedAge,
         ];
 
         $url = route('wra-masterlist.pdf', $params);

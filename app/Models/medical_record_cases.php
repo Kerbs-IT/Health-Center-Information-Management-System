@@ -11,7 +11,12 @@ class medical_record_cases extends Model
         'patient_id',
         'type_of_case',
         'status',
-        'schedule_status'
+        'schedule_status',
+        'date_of_registration'
+    ];
+
+    protected $casts = [
+        'date_of_registration' => 'date'
     ];
 
     public function patient(){

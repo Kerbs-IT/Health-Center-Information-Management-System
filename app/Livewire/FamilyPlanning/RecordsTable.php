@@ -87,8 +87,8 @@ class RecordsTable extends Component
                 $query->join('family_planning_medical_records', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('family_planning_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $this->start_date)
-            ->whereDate('patients.created_at', '<=', $this->end_date)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date)
             ->orderBy("patients.$this->sortField", $this->sortDirection)
             ->get();
 

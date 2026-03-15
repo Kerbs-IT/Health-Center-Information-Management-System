@@ -89,7 +89,7 @@
                     <th>Vaccination Status</th>
 
                     <!-- Date Registered -->
-                    <th style="cursor:pointer;" wire:click="sortBy('created_at')">
+                    <th style="cursor:pointer;" wire:click="sortBy('date_of_registration')">
                         Date Registered
                         @if ($sortField === 'created_at')
                         {{ $sortDirection === 'asc' ? '▲' : '▼' }}
@@ -128,7 +128,7 @@
                         @endif
                     </td>
 
-                    <td>{{ $record->patient->created_at ? $record->patient->created_at->format('M j, Y') : '' }}</td>
+                    <td>{{ $record->patient->created_at ? $record->date_of_registration->format('M j, Y') : '' }}</td>
 
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">

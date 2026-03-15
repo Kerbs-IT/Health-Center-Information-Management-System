@@ -982,6 +982,10 @@ class PdfController extends Controller
                 $query->where('wra_with_MFP_unmet_need', $request->withUnmetNeed);
             }
 
+            if ($request->filled('selectedAge')) {
+                [$min, $max] = explode('-', $request->selectedAge);
+                $query->whereBetween('age', [(int)$min, (int)$max]);
+            }
 
             if (Auth::user()->role == 'staff') {
                 $query->where('health_worker_id', Auth::id());

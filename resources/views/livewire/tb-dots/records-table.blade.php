@@ -88,7 +88,7 @@
                         <th>Checkup Status</th>
 
                         <!-- Date Registered -->
-                        <th style="cursor:pointer;" wire:click="sortBy('created_at')">
+                        <th style="cursor:pointer;" wire:click="sortBy('date_of_registration')">
                             Date Registered
                             @if ($sortField === 'created_at')
                             {{ $sortDirection === 'asc' ? '▲' : '▼' }}
@@ -125,7 +125,7 @@
                             @endif
                         </td>
 
-                        <td>{{ $record->patient->created_at?->format('M d Y') }}</td>
+                        <td>{{ $record->date_of_registration?->format('M d Y') }}</td>
                         <td>
                             @php
                             $backParams = http_build_query(array_filter([

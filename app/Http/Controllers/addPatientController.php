@@ -468,6 +468,7 @@ class addPatientController extends Controller
                 'patient_id'   => $vaccinationPatientId,
                 'type_of_case' => $data['type_of_patient'],
                 'status'       => 'Active',
+                'date_of_registration' => $data['date_of_registration'],
             ]);
 
             $medicalCaseId = $medicalCase->id;

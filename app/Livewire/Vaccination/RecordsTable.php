@@ -92,8 +92,8 @@ class RecordsTable extends Component
             }, function ($query) {
                 $query->orderBy($this->sortField, $this->sortDirection);
             })
-            ->whereDate('patients.created_at', '>=', $this->start_date)
-            ->whereDate('patients.created_at', '<=', $this->end_date)
+            ->whereDate('patients.date_of_registration', '>=', $this->start_date)
+            ->whereDate('patients.date_of_registration', '<=', $this->end_date)
             ->get();
 
         // Step 2: Calculate vaccination status for ALL records
