@@ -170,7 +170,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 flex-fill xl:w-[50%]">
                                             <label for="handled_by">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{optional($tbDotsRecord-> tb_dots_medical_record)->health_worker_id??''}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
+                                            <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{ optional($tbDotsRecord->tb_dots_medical_record->first())->health_worker_id ?? '' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" disabled>Select a person</option>
                                             </select>
 

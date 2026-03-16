@@ -159,7 +159,7 @@
                                         <!-- administered by -->
                                         <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                             <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select bg-light " data-bs-health-worker-id="{{optional($familyPlanningRecord->family_planning_medical_record)->health_worker_id??''}}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
+                                            <select name="handled_by" id="handled_by" class="form-select bg-light " data-bs-health-worker-id="{{ optional($familyPlanningRecord->family_planning_medical_record->first())->health_worker_id ?? '' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" disabled>Select a person</option>
                                             </select>
 

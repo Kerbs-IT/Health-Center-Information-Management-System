@@ -926,7 +926,11 @@ class RecordsController extends Controller
     }
     public function editSeniorCitizenDetail($id)
     {
-        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->findOrFail($id);
+        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])
+            ->where('id', $id)
+            ->where('type_of_case', 'senior-citizen')
+            ->where('status', 'Active')
+            ->findOrFail($id);
         // address
         $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
         return view('records.seniorCitizen.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'seniorCitizenRecord' => $seniorCitizenRecord, 'address' => $address]);
@@ -972,7 +976,11 @@ class RecordsController extends Controller
     }
     public function editFamilyPlanningDetail($id)
     {
-        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
+        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])
+            ->where('id', $id)
+            ->where('type_of_case', 'family-planning')
+            ->where('status', 'Active')
+            ->findOrFail($id);
         $address = patient_addresses::where('patient_id', $familyPlanningRecords->patient->id)->firstOrFail();
         return view('records.familyPlanning.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecord' => $familyPlanningRecords, 'address' => $address]);
     }
