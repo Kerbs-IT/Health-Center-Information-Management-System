@@ -11,6 +11,7 @@ use App\Models\senior_citizen_maintenance_meds;
 use App\Models\senior_citizen_medical_records;
 use App\Models\User;
 use App\Services\PatientUpdateService;
+use App\Services\WraMasterlistService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -483,6 +484,28 @@ class SeniorCitizenController extends Controller
                     ]);
                 }
             }
+
+            $seniorCitizenAddress = $seniorCitizenPatient->fresh('address')->address;
+
+            $fullAddress = collect([
+                $seniorCitizenAddress->house_number,
+                $seniorCitizenAddress->street,
+                $seniorCitizenAddress->purok,
+                $seniorCitizenAddress->barangay ?? null,
+                $seniorCitizenAddress->city ?? null,
+                $seniorCitizenAddress->province ?? null,
+            ])->filter()->join(', ');
+
+            $WraMasterlistService = new WraMasterlistService();
+
+            $WraMasterlistService->createIfNotExists([
+                'patient'                => $seniorCitizenPatient,
+                'patient_address'        => $seniorCitizenAddress,
+                'full_address'           => $fullAddress,
+                'health_worker_id'       => $handledBy,
+                'medical_record_case_id' => $medicalCaseId,
+                'wra_with_MFP_unmet_need' => 'yes',
+            ]);
 
             return response()->json(['message' => $message], 200);
         } catch (ValidationException $e) {

@@ -14,6 +14,7 @@ use App\Models\tb_dots_maintenance_medicines;
 use App\Models\tb_dots_medical_records;
 use App\Models\User;
 use App\Services\PatientUpdateService;
+use App\Services\WraMasterlistService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -438,6 +439,28 @@ class TbDotsController extends Controller
                     ]);
                 }
             }
+
+            $tbDotsAddress = $tbDotsPatient->fresh('address')->address;
+
+            $fullAddress = collect([
+                $tbDotsAddress->house_number,
+                $tbDotsAddress->street,
+                $tbDotsAddress->purok,
+                $tbDotsAddress->barangay ?? null,
+                $tbDotsAddress->city ?? null,
+                $tbDotsAddress->province ?? null,
+            ])->filter()->join(', ');
+
+            $wraMasterlistService = new WraMasterlistService();
+
+            $wraMasterlistService->createIfNotExists([
+                'patient'                => $tbDotsPatient,
+                'patient_address'        => $tbDotsAddress,
+                'full_address'           => $fullAddress,
+                'health_worker_id'       => $handledBy,
+                'medical_record_case_id' => $medicalCaseId,
+                'wra_with_MFP_unmet_need' => 'yes',
+            ]);
 
             return response()->json(['message' => $message], 200);
         } catch (ValidationException $e) {

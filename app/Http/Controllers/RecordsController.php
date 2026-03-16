@@ -523,12 +523,12 @@ class RecordsController extends Controller
 
             // Map route type to case type used in medical_record_cases
             $caseTypeMap = [
-                'vaccination'    => 'vaccination',
-                'prenatal'       => 'prenatal',
+                'vaccination'     => 'vaccination',
+                'prenatal'        => 'prenatal',
                 'family-planning' => 'family-planning',
-                'familyPlanning' => 'family-planning',
-                'seniorCitizen'  => 'senior-citizen',
-                'tbDots'         => 'tb-dots',
+                'familyPlanning'  => 'family-planning',
+                'seniorCitizen'   => 'senior-citizen',
+                'tbDots'          => 'tb-dots',
             ];
 
             $caseType = $caseTypeMap[$typeOfPatient] ?? $typeOfPatient;
@@ -549,16 +549,15 @@ class RecordsController extends Controller
                 }
             }
 
-            if ($typeOfPatient === 'prenatal' || $typeOfPatient === 'familyPlanning' || $typeOfPatient === 'family-planning') {
-                $wraMasterlistRecord = wra_masterlists::where('patient_id', $id)->first();
-                if ($wraMasterlistRecord) {
-                    $wraMasterlistRecord->update(['status' => 'Archived']);
-                }
+            // Archive WRA masterlist record if exists (applies to all patient types)
+            $wraMasterlistRecord = wra_masterlists::where('patient_id', $id)->first();
+            if ($wraMasterlistRecord) {
+                $wraMasterlistRecord->update(['status' => 'Archived']);
             }
 
             // Special case: archiving family-planning should remove it from prenatal record
             if ($typeOfPatient === 'familyPlanning' || $typeOfPatient === 'family-planning') {
-                $prenatalCase = $activeCases->firstWhere('type_of_case', 'prenatal');
+                $prenatalCase          = $activeCases->firstWhere('type_of_case', 'prenatal');
                 $prenatalMedicalRecord = $prenatalCase?->prenatal_medical_record;
                 if ($prenatalMedicalRecord) {
                     $prenatalMedicalRecord->update(['family_planning_decision' => 'no']);
@@ -576,12 +575,12 @@ class RecordsController extends Controller
 
             // Build a readable display name for the message
             $displayNameMap = [
-                'vaccination'    => 'Vaccination',
-                'prenatal'       => 'Prenatal',
+                'vaccination'     => 'Vaccination',
+                'prenatal'        => 'Prenatal',
                 'family-planning' => 'Family Planning',
-                'familyPlanning' => 'Family Planning',
-                'seniorCitizen'  => 'Senior Citizen',
-                'tbDots'         => 'TB-DOTS',
+                'familyPlanning'  => 'Family Planning',
+                'seniorCitizen'   => 'Senior Citizen',
+                'tbDots'          => 'TB-DOTS',
             ];
 
             $displayName = $displayNameMap[$typeOfPatient] ?? ucfirst($typeOfPatient);

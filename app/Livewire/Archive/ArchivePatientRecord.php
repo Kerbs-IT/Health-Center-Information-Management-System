@@ -190,14 +190,11 @@ class ArchivePatientRecord extends Component
 
         // --- Side effects per case type ---
 
-        if ($case->type_of_case === 'prenatal' || $case->type_of_case === 'family-planning') {
-            $wraMasterlist = wra_masterlists::where('patient_id', $patientId)->first();
-
-            if ($wraMasterlist) {
-                $wraMasterlist->update(['status' => 'Active']);
-            } else {
-                Log::warning("WRA masterlist missing on recovery for patient_id: {$patientId}. Type: {$case->type_of_case}.");
-            }
+        $wraMasterlist = wra_masterlists::where('patient_id', $patientId)->first();
+        if ($wraMasterlist) {
+            $wraMasterlist->update(['status' => 'Active']);
+        } else {
+            Log::warning("WRA masterlist missing on recovery for patient_id: {$patientId}. Type: {$case->type_of_case}.");
         }
 
         if ($case->type_of_case === 'vaccination') {

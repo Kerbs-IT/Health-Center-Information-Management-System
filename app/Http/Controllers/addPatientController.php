@@ -15,6 +15,7 @@ use App\Models\vaccination_masterlists;
 use App\Models\vaccination_medical_records;
 use App\Models\vaccineAdministered;
 use App\Models\vaccines;
+use App\Services\WraMasterlistService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -549,6 +550,16 @@ class addPatientController extends Controller
                 'age'                    => $vaccinationPatient->age,
                 'age_in_months'          => $ageInMonths,
                 'date_of_birth'          => $vaccinationPatient->date_of_birth,
+            ]);
+
+            $wraMasterlistService = new WraMasterlistService();
+            $wraMasterlistService->createIfNotExists([
+                'patient'                => $vaccinationPatient,
+                'patient_address'        => $patientAddress,
+                'full_address'           => $fullAddress,
+                'health_worker_id'       => $handledBy,
+                'medical_record_case_id' => $medicalCaseId,
+                'wra_with_MFP_unmet_need' => 'yes',
             ]);
 
             foreach ($vaccines as $vaccineId) {

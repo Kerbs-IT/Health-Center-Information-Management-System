@@ -868,7 +868,7 @@ class PrenatalController extends Controller
                         'status' => 'Active'
                     ]);
 
-                    if ($prenatalPatient->age >= 10) {
+                    if ($prenatalPatient->age >= 10 && $prenatalPatient->age <= 49) {
                         wra_masterlists::create([
                             'medical_record_case_id'         => $familyPlanningMedicalCaseId,
                             'health_worker_id'               => $handledBy,
@@ -897,7 +897,7 @@ class PrenatalController extends Controller
                     }
                 }
             } else {
-                if ($prenatalPatient->age >= 10) {
+                if ($prenatalPatient->age >= 10 && $prenatalPatient->age <= 49) {
                     wra_masterlists::create([
                         'medical_record_case_id'         => null,
                         'health_worker_id'               => $handledBy,
