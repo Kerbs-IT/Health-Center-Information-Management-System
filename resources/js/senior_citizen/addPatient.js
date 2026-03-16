@@ -93,95 +93,105 @@ if (tableBody) {
     });
 }
 
-// upload the data
 const seniorCitizenBtn = document.getElementById(
-    "senior_citizen_save_record_btn"
+    "senior_citizen_save_record_btn",
 );
 
 seniorCitizenBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-     const handledBySelect = document.getElementById("handled_by");
-     const handledByBackup = document.getElementById("handled_by_backup");
+    // --- Disable button and show Bootstrap spinner ---
+    const originalHTML = seniorCitizenBtn.innerHTML;
+    seniorCitizenBtn.disabled = true;
+    seniorCitizenBtn.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Submitting...
+    `;
 
-     if (handledBySelect && handledByBackup) {
-         handledByBackup.value = handledBySelect.value;
-         // console.log("wandled by value set to:", handledBySelect.value);
-         // console.log("Backup value set to:", handledByBackup.value); // debug
-     }
+    const restoreBtn = () => {
+        seniorCitizenBtn.disabled = false;
+        seniorCitizenBtn.innerHTML = originalHTML;
+    };
 
-    const form = document.getElementById("add-patient-form");
-    const formData = new FormData(form);
+    try {
+        const handledBySelect = document.getElementById("handled_by");
+        const handledByBackup = document.getElementById("handled_by_backup");
 
-    const response = await fetch("/patient-record/add/senior-citizen-record", {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
-
-    const data = await response.json();
-
-    // get all the error elements
-    const errorElements = document.querySelectorAll(".error-text");
-
-    if (response.ok) {
-         errorElements.forEach((element) => {
-             element.textContent = "";
-         });
-        
-        Swal.fire({
-            title: "Prenatal Patient",
-            text: "Patient is Successfully added.", // this will make the text capitalize each word
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Reset existing patient selection
-                if (typeof window.clearPatientRecordSelection === "function") {
-                    window.clearPatientRecordSelection();
-                }
-                // reset the steps
-                form.reset();
-                window.currentStep = 1;
-                window.showStep(window.currentStep);
-            }
-        });
-    } else {
-        // reset first
-         errorElements.forEach((element) => {
-             element.textContent = "";
-         });
-        
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
-            }
-        });
-
-        let message = "";
-
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
-            } else {
-                message = data.errors;
-            }
-        } else {
-            message = "An unexpected error occurred.";
+        if (handledBySelect && handledByBackup) {
+            handledByBackup.value = handledBySelect.value;
         }
 
-        Swal.fire({
-            title: "Senior Citizen Patient",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
+        const form = document.getElementById("add-patient-form");
+        const formData = new FormData(form);
+
+        const response = await fetch(
+            "/patient-record/add/senior-citizen-record",
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
+            },
+        );
+
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
+
+        if (response.ok) {
+            errorElements.forEach((el) => (el.textContent = ""));
+
+            await Swal.fire({
+                title: "Senior Citizen Patient",
+                text: "Patient is Successfully added.",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (
+                        typeof window.clearPatientRecordSelection === "function"
+                    ) {
+                        window.clearPatientRecordSelection();
+                    }
+                    form.reset();
+                    window.currentStep = 1;
+                    window.showStep(window.currentStep);
+                }
+            });
+        } else {
+            errorElements.forEach((el) => (el.textContent = ""));
+
+            Object.entries(data.errors).forEach(([key, value]) => {
+                const el = document.getElementById(`${key}_error`);
+                if (el) el.textContent = value;
+            });
+
+            let message = "";
+            if (data.errors) {
+                message =
+                    typeof data.errors === "object"
+                        ? Object.values(data.errors).flat().join("\n")
+                        : data.errors;
+            } else {
+                message = "An unexpected error occurred.";
+            }
+
+            await Swal.fire({
+                title: "Senior Citizen Patient",
+                text: capitalizeEachWord(message),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+        }
+    } catch (err) {
+        console.error("Submission error:", err);
+    } finally {
+        restoreBtn();
     }
 });
 

@@ -186,121 +186,134 @@ const saveBTN = document.getElementById("family_planning_submit_btn");
 saveBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
-       const handledBySelect = document.getElementById("handled_by");
-       const handledByBackup = document.getElementById("handled_by_backup");
+    // --- Disable button and show Bootstrap spinner ---
+    const originalHTML = saveBTN.innerHTML;
+    saveBTN.disabled = true;
+    saveBTN.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Submitting...
+    `;
 
-       if (handledBySelect && handledByBackup) {
-           handledByBackup.value = handledBySelect.value;
-           // console.log("wandled by value set to:", handledBySelect.value);
-           // console.log("Backup value set to:", handledByBackup.value); // debug
-       }    
-    const form = document.getElementById("add-patient-form");
-    const formData = new FormData(form);
-    const hiddenSignature = document.getElementById(
-        "add_family_planning_signature_data"
-    );
-    if (hiddenSignature && hiddenSignature.value) {
-        formData.set(
+    const restoreBtn = () => {
+        saveBTN.disabled = false;
+        saveBTN.innerHTML = originalHTML;
+    };
+
+    try {
+        const handledBySelect = document.getElementById("handled_by");
+        const handledByBackup = document.getElementById("handled_by_backup");
+
+        if (handledBySelect && handledByBackup) {
+            handledByBackup.value = handledBySelect.value;
+        }
+
+        const form = document.getElementById("add-patient-form");
+        const formData = new FormData(form);
+
+        const hiddenSignature = document.getElementById(
             "add_family_planning_signature_data",
-            hiddenSignature.value
         );
-        // console.log("✅ Manually added signature data");
-    }
+        if (hiddenSignature && hiddenSignature.value) {
+            formData.set(
+                "add_family_planning_signature_data",
+                hiddenSignature.value,
+            );
+        }
 
-    // signature consent
-    const hiddenSignatureConsent = document.getElementById(
-        "add_family_planning_consent_signature_data"
-    );
-    if (hiddenSignatureConsent && hiddenSignatureConsent.value) {
-        formData.set(
+        const hiddenSignatureConsent = document.getElementById(
             "add_family_planning_consent_signature_data",
-            hiddenSignatureConsent.value
         );
-        // console.log("✅ Manually added signature data");
-    }
+        if (hiddenSignatureConsent && hiddenSignatureConsent.value) {
+            formData.set(
+                "add_family_planning_consent_signature_data",
+                hiddenSignatureConsent.value,
+            );
+        }
 
-    // side b
-    const sideBsignature = document.getElementById(
-        "add_side_b_name_n_signature_data"
-    );
-    if (sideBsignature && sideBsignature.value) {
-        formData.set("add_side_b_name_n_signature_data", sideBsignature.value);
-        // console.log("✅ Manually added signature data");
-    }
-    
+        const sideBsignature = document.getElementById(
+            "add_side_b_name_n_signature_data",
+        );
+        if (sideBsignature && sideBsignature.value) {
+            formData.set(
+                "add_side_b_name_n_signature_data",
+                sideBsignature.value,
+            );
+        }
 
-    const response = await fetch("/patient-record/family-planning/add-record", {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
+        const response = await fetch(
+            "/patient-record/family-planning/add-record",
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
+            },
+        );
 
-    const data = await response.json();
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
 
-    // get all the error elements
-    const errorElements = document.querySelectorAll(".error-text");
-    if (response.ok) {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Swal.fire({
-            title: "Family Planning Patient",
-            text: data.message, // this will make the text capitalize each word
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Reset existing patient selection
-                if (typeof window.clearPatientRecordSelection === "function") {
-                    window.clearPatientRecordSelection();
+        if (response.ok) {
+            errorElements.forEach((el) => (el.textContent = ""));
+
+            await Swal.fire({
+                title: "Family Planning Patient",
+                text: data.message,
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (
+                        typeof window.clearPatientRecordSelection === "function"
+                    ) {
+                        window.clearPatientRecordSelection();
+                    }
+                    form.reset();
+                    window.currentStep = 1;
+                    window.showStep(window.currentStep);
                 }
-                // reset the steps
-                form.reset();
-                window.currentStep = 1;
-                window.showStep(window.currentStep);
-            }
-        });
-        if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("wraMasterlistRefreshTable");
-        } else {
-            console.warn("Livewire is not available");
-        }
-    } else {
-        // reset
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // handles the validation error
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
-            }
-        });
+            });
 
-        let message = "";
-
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
+            if (typeof Livewire !== "undefined") {
+                Livewire.dispatch("wraMasterlistRefreshTable");
             } else {
-                message = data.errors;
+                console.warn("Livewire is not available");
             }
         } else {
-            message = "An unexpected error occurred.";
-        }
+            errorElements.forEach((el) => (el.textContent = ""));
 
-        Swal.fire({
-            title: "Prenatal Patient",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
+            Object.entries(data.errors).forEach(([key, value]) => {
+                const el = document.getElementById(`${key}_error`);
+                if (el) el.textContent = value;
+            });
+
+            let message = "";
+            if (data.errors) {
+                message =
+                    typeof data.errors === "object"
+                        ? Object.values(data.errors).flat().join("\n")
+                        : data.errors;
+            } else {
+                message = "An unexpected error occurred.";
+            }
+
+            await Swal.fire({
+                title: "Family Planning Patient",
+                text: capitalizeEachWord(message),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+        }
+    } catch (err) {
+        console.error("Submission error:", err);
+    } finally {
+        restoreBtn();
     }
 });
 
