@@ -940,7 +940,11 @@ class PrenatalController extends Controller
     public function updateDetails(Request $request, $id)
     {
         try {
-            $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])->where('id', $id)->firstOrFail();
+            $prenatalRecord = medical_record_cases::with(['patient', 'prenatal_medical_record'])
+                ->where('id', $id)
+                ->where('type_of_case', 'prenatal')
+                ->where('status', 'Active')
+                ->firstOrFail();
             $address = patient_addresses::where('patient_id', $prenatalRecord->patient->id)->firstOrFail();
             $caseRecord = prenatal_case_records::where('medical_record_case_id', $prenatalRecord->id)->firstOrFail();
             $data = $request->validate([
@@ -1063,6 +1067,9 @@ class PrenatalController extends Controller
                 'suffix' => $data['suffix'] ?? '',
             ]);
 
+            $prenatalRecord->update([
+                'date_of_registration' => $data['date_of_registration'] ?? $prenatalRecord->patient->date_of_registration
+            ]);
             // update the address
             // Parse address - limit to 2 parts maximum
             $blk_n_street = explode(',', $data['street'], 2);

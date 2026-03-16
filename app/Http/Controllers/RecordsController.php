@@ -252,7 +252,12 @@ class RecordsController extends Controller
     }
     public function vaccinationEditDetails($id)
     {
-        $info = patients::with('medical_record_case.vaccination_medical_record')->findOrFail($id);
+        $info = patients::with([
+            'medical_record_case' => function ($query) {
+                $query->where('type_of_case', 'vaccination')->where('status', 'Active');
+            },
+            'medical_record_case.vaccination_medical_record'
+        ])->findOrFail($id);
         $address = patient_addresses::where('patient_id', $id)->firstorFail();
         $street = $address->house_number . ($address->street ? ', ' . $address->street : '');
         return view('records.vaccination.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'info' => $info, 'address' => $address, 'street' => $street]);
@@ -261,7 +266,11 @@ class RecordsController extends Controller
     {
         try {
             $patient = patients::findorFail($id);
-            $medical_record_case = medical_record_cases::with('patient')->where('patient_id', $id)->firstOrFail();
+            $medical_record_case = medical_record_cases::with('patient')
+                ->where('patient_id', $id)
+                ->where('type_of_case', 'vaccination')
+                ->where('status', 'Active')
+                ->firstOrFail();
             $vaccination_medical_record = vaccination_medical_records::where('medical_record_case_id', $medical_record_case->id);
             $patient_address = patient_addresses::where('patient_id', $id)->firstOrFail();
             // update the full name of vaccination case record
@@ -387,6 +396,11 @@ class RecordsController extends Controller
                 'birth_height' => $data['vaccination_height'] ?? null,
                 'birth_weight' => $data['vaccination_weight'] ?? null,
             ]);
+
+            $medical_record_case->update([
+                'date_of_registration' => $data['date_of_registration'],
+            ]);
+
             $blk_n_street = explode(',', $data['street'], 2); // Limit to 2 parts
 
             $patient_address->update([
@@ -813,7 +827,11 @@ class RecordsController extends Controller
                 $query->where('status', '!=', 'Archived')
                     ->with('pregnancy_history_questions');
             }
-        ])->where('id', $id)->firstOrFail();
+        ])
+            ->where('id', $id)
+            ->where('type_of_case', 'prenatal')
+            ->where('status', 'Active')
+            ->firstOrFail();
 
         $caseRecord = prenatal_case_records::where('medical_record_case_id', $id)
             ->where('status', '!=', 'Archived')
@@ -896,7 +914,11 @@ class RecordsController extends Controller
     }
     public function seniorCitizenDetail($id)
     {
-        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->findOrFail($id);
+        $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])
+            ->where('id', $id)
+            ->where('type_of_case', 'senior-citizen')
+            ->where('status', 'Active')
+            ->findOrFail($id);
         // address
         $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
         $fullAddress = $address->house_number . ',' . $address->street . ', ' . $address->purok . ', ' . $address->barangay . ', ' . $address->city . ', ' . $address->province;
@@ -941,7 +963,11 @@ class RecordsController extends Controller
     }
     public function familyPlanningDetail($id)
     {
-        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
+        $familyPlanningRecords = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])
+            ->where('id', $id)
+            ->where('type_of_case', 'family-planning')
+            ->where('status', 'Active')
+            ->findOrFail($id);
         return view('records.familyPlanning.viewPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'familyPlanningRecord' => $familyPlanningRecords]);
     }
     public function editFamilyPlanningDetail($id)
@@ -996,7 +1022,11 @@ class RecordsController extends Controller
     public function editTb_dotsDetail($id)
     {
         try {
-            $tbRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])->findOrFail($id);
+            $tbRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])
+                ->where('id', $id)
+                ->where('type_of_case', 'tb-dots')
+                ->where('status', 'Active')
+                ->findOrFail($id);
 
             $address = patient_addresses::where('patient_id', $tbRecord->patient->id)->firstorFail();
             return view('records.tb-dots.editTb_dotsDetails', ['isActive' => true, 'page' => 'RECORD', 'tbDotsRecord' => $tbRecord, 'address' => $address]);

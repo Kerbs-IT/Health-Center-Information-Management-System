@@ -127,7 +127,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-full md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{ optional($prenatalRecord)->patient?->date_of_registration->format('Y-m-d') ?? '' }}" min="1950-01-01" max="{{ date('Y-m-d') }}">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 bg-light border-dark" name="date_of_registration" value="{{ optional($prenatalRecord)->date_of_registration?->format('Y-m-d') ?? '' }}" min="1950-01-01" max="{{ date('Y-m-d') }}">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
                                         </div>
                                         <div class="mb-2 w-full md:w-[50%]">
@@ -291,7 +291,7 @@
                                                 <div class="mb-4 px-2 d-flex">
                                                     <label for="number_of" class="w-100 fs-5" class="w-50">Bilang ng Pagbubuntis:</label>
                                                     <select name="number_of_children" id="number_of_children" class="form-select w-50 text-center">
-                                                        <option value=""  selected>Select the number</option>
+                                                        <option value="" selected>Select the number</option>
                                                         <option value="1" {{ optional($pregnancyHistory)->number_of_children == 1 ? 'selected' : '' }}>1</option>
                                                         <option value="2" {{ optional($pregnancyHistory)->number_of_children == 2 ? 'selected' : '' }}>2</option>
                                                         <option value="3" {{ optional($pregnancyHistory)->number_of_children == 3 ? 'selected' : '' }}>3</option>

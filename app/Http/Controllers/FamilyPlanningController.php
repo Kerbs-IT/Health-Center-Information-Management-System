@@ -916,7 +916,10 @@ class FamilyPlanningController extends Controller
     {
         try {
 
-            $familyPlanningRecord = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])->findOrFail($id);
+            $familyPlanningRecord = medical_record_cases::with(['patient', 'family_planning_case_record', 'family_planning_medical_record'])
+            ->where('type_of_case','family-planning')
+            ->where('status','Active')
+            ->findOrFail($id);
             $familyPlanningMedicalRecord = family_planning_medical_records::where("medical_record_case_id", $familyPlanningRecord->id)->first();
             $familyPlanningCaseRecord = family_planning_case_records::where("medical_record_case_id", $familyPlanningRecord->id)->where("status", "!=", 'Archived')->first();
             $address = patient_addresses::where('patient_id', $familyPlanningRecord->patient->id)->firstOrFail();
@@ -996,6 +999,10 @@ class FamilyPlanningController extends Controller
                 'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? ''
+            ]);
+
+            $familyPlanningRecord ->update([
+                'date_of_registration' => $data['date_of_registration'] ?? $familyPlanningRecord->patient->date_of_registration
             ]);
 
             $patientUpdateService = new PatientUpdateService();

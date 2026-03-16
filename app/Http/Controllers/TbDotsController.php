@@ -456,8 +456,10 @@ class TbDotsController extends Controller
     public function updatePatientDetails(Request $request, $id)
     {
         try {
-            $tbDotsRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])->findOrFail($id);
-
+            $tbDotsRecord = medical_record_cases::with(['patient', 'tb_dots_medical_record'])
+                ->where('type_of_case', 'tb-dots')
+                ->where('status', 'Active')
+                ->findOrFail($id);
             $tbDotsCase = tb_dots_case_records::where('medical_record_case_id', $id)->get();
             // address
             $address = patient_addresses::where('patient_id', $tbDotsRecord->patient->id)->firstorFail();
@@ -560,6 +562,10 @@ class TbDotsController extends Controller
                 'place_of_birth' => $data['place_of_birth'] ?? null,
                 'suffix' => $data['suffix'] ?? ''
 
+            ]);
+
+            $tbDotsRecord->update([
+                'date_of_registration' => $data['date_of_registration'] ?? $tbDotsRecord->patient->date_of_registration
             ]);
 
             $patientUpdateService = new PatientUpdateService();

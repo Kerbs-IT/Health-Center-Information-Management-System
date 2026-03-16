@@ -153,7 +153,7 @@
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-full md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration</label>
-                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" min="1950-01-01" max="{{date('Y-m-d')}}" value="{{optional($seniorCitizenRecord -> patient)->date_of_registration?-> format('Y-m-d')??''}}">
+                                            <input type="date" id="date_of_registration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" min="1950-01-01" max="{{date('Y-m-d')}}" value="{{ optional($seniorCitizenRecord)->date_of_registration?->format('Y-m-d') ?? '' }}">
 
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 

@@ -146,10 +146,11 @@
 
                                         </div>
                                     </div>
+
                                     <div class="mb-2 d-flex gap-1 flex-wrap flex-md-nowrap">
                                         <div class="input-field w-[100%] md:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
-                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{optional($info)-> created_at?->format('Y-m-d') ?? ''}}" min="1950-01-01" max="{{date('Y-m-d')}}">
+                                            <input type="date" id="dateOfRegistration" placeholder="20" class="form-control text-center w-100 px-5 " name="date_of_registration" value="{{ optional($info->medical_record_case->first())->date_of_registration?->format('Y-m-d') ?? '' }}" min="1950-01-01" max="{{date('Y-m-d')}}">
                                             <small class="text-danger error-text" id="date_of_registration_error"></small>
 
                                         </div>

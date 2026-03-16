@@ -499,7 +499,10 @@ class SeniorCitizenController extends Controller
     public function updateDetails(Request $request, $id)
     {
         try {
-            $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record', 'senior_citizen_case_record'])->findOrFail($id);
+            $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record', 'senior_citizen_case_record'])
+            ->where('type_of_case','senior-citizen')
+            ->where('status', 'Active')
+            ->findOrFail($id);
             $seniorCitizenCase = senior_citizen_case_records::where('medical_record_case_id', $id)->get();
             // address
             $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
@@ -607,6 +610,10 @@ class SeniorCitizenController extends Controller
                 'date_of_registration' => $data['date_of_registration'] ?? $seniorCitizenRecord->patient->date_of_registration,
                 'place_of_birth' => $data['place_of_birth'] ?? '',
                 'suffix' => $data['suffix'] ?? '',
+            ]);
+
+            $seniorCitizenRecord->update([
+                'date_of_registration' => $data['date_of_registration'],
             ]);
 
             $patientUpdateService = new PatientUpdateService();
