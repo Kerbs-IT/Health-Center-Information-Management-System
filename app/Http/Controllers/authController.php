@@ -63,6 +63,12 @@ class authController extends Controller
             // Delete the old unverified user and create fresh
             $existingUser->delete();
         }
+        // Clean up ghost unverified user with same name (e.g. user went back and changed email)
+        User::where('first_name', ucwords(strtolower($request->first_name)))
+            ->where('last_name', ucwords(strtolower($request->last_name)))
+            ->where('is_verified', false)
+            ->where('status', 'Pending')
+            ->delete();
 
         $data = $request->validate([
             'email' => ['required', 'email', 'unique:users,email'],

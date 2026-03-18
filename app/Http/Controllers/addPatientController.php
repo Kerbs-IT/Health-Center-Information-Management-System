@@ -533,9 +533,8 @@ class addPatientController extends Controller
 
             $fullAddress = "$patientAddress->house_number $patientAddress->street $patientAddress->purok $patientAddress->barangay $patientAddress->city $patientAddress->province";
 
-            $nurse         = User::where("role", 'nurse')->first();
-            $nurseInfo     = nurses::where("user_id", $nurse->id)->first();
-            $nurseFullname = ucwords($nurseInfo->full_name);
+            $nurse         = User::with('nurse')->where('role', 'nurse')->first();
+            $nurseFullname = ucwords($nurse->nurse->full_name);
 
             $vaccinationMasterlist = vaccination_masterlists::create([
                 'brgy_name'              => $patientAddress->purok,
