@@ -3,7 +3,7 @@ import { puroks } from "../patient/healthWorkerList.js";
 import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
 
-const healthWorkerDropDown = document.getElementById("edit_handled_by");
+const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
 // console.log("health-worker-id", healthWorkerId);

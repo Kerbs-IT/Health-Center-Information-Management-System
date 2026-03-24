@@ -258,9 +258,23 @@ class RecordsController extends Controller
             },
             'medical_record_case.vaccination_medical_record'
         ])->findOrFail($id);
+
         $address = patient_addresses::where('patient_id', $id)->firstorFail();
         $street = $address->house_number . ($address->street ? ', ' . $address->street : '');
-        return view('records.vaccination.editPatientDetails', ['isActive' => true, 'page' => 'RECORD', 'info' => $info, 'address' => $address, 'street' => $street]);
+
+        $vaccinationCase = $info->medical_record_case->first();
+        $healthWorkerId = optional(optional($vaccinationCase)->vaccination_medical_record)->health_worker_id ?? null;
+
+       
+        return view('records.vaccination.editPatientDetails', [
+            'isActive'        => true,
+            'page'            => 'RECORD',
+            'info'            => $info,
+            'address'         => $address,
+            'street'          => $street,
+            'vaccinationCase' => $vaccinationCase,
+            'healthWorkerId'  => $healthWorkerId,
+        ]);
     }
     public function vaccinationUpdateDetails(Request $request, $id)
     {
@@ -390,6 +404,7 @@ class RecordsController extends Controller
             }
 
             $vaccination_medical_record->update([
+                'health_worker_id' => $data['handled_by'],
                 'date_of_registration' => $data['date_of_registration'] ?? $medical_record_case->date_of_registration,
                 'mother_name' => $data['mother_name'] ? ucwords($data['mother_name']) : '',
                 'father_name' => $data['father_name'] ? ucwords($data['father_name']) : '',

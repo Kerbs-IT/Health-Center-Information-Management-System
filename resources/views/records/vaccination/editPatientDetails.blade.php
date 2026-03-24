@@ -18,7 +18,8 @@
     'resources/js/header.js',
     'resources/css/profile.css',
     'resources/css/patient/record.css',
-    'resources/js/patient/editPatientDetails.js'])
+    'resources/js/patient/editPatientDetails.js',
+    'resources/js/brgy_sync/brgy-&-healthWorker-sync.js'])
     @include('sweetalert::alert')
     <div class="patient-details min-vh-100 d-flex">
         <aside>
@@ -157,7 +158,8 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-[100%] md:w-[50%] ">
                                             <label for="healthWorkersDropDown">Handled by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="healthWorkersDropDown" class="form-select" data-bs-selected-Health-Worker="{{ optional($info->medical_record_case->first()->vaccination_medical_record->first())->health_worker_id ?? 'N/A' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
+                                            
+                                            <select name="handled_by" id="handled_by" class="form-select" data-bs-selected-Health-Worker="{{ $healthWorkerId ?? 'N/A' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" selected disabled>Select a person</option>
                                             </select>
 

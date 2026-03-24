@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 // call the function from the healthworker list
 // it fetch the list of health workers from the database
 const healthWorkers = fetchHealthworkers();
-const healthWorkerDropDown = document.getElementById("healthWorkersDropDown");
+const healthWorkerDropDown = document.getElementById("handled_by");
 const healthWorkerId = healthWorkerDropDown.dataset.bsSelectedHealthWorker;
 const dropdown = document.getElementById("brgy"); // the brgy input dropdown
 // console.log(healthWorkerId);

@@ -67,7 +67,7 @@
 
         <!-- profile -->
         <div class="wrapper w-100 d-flex justify-content-center d-flex justify-content-center flex-column">
-            <a href="{{ route('page.profile') }}" class="menu-option menu-itemsn d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="profile">
+            <a href="{{ route('page.profile') }}" class="menu-option menu-items  d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="profile">
                 <i class="fa-solid fs-5 fa-user"></i>
                 <h4 class="mb-0 fs-5">Profile</h4>
             </a>

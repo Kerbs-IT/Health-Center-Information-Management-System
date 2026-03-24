@@ -76,7 +76,11 @@
           <h6 class="mb-0 text-muted fw-light">{{Auth::user()->role ?? 'none'}}</h6>
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">
+          @if(Auth::user()->role === 'patient')
+          <a href="{{ route('dashboard.patient') }}" class="text-decoration-none text-black">view profile</a>
+          @else
           <a href="{{ route('page.profile') }}" class="text-decoration-none text-black">view profile</a>
+          @endif
           <a href="{{route('logout')}}" class="text-decoration-none text-black" id="headerLogOut">Logout</a>
         </div>
       </div>

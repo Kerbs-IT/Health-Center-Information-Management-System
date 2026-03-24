@@ -55,6 +55,7 @@
                         <option value="senior-citizen">Senior Citizen</option>
                         <option value="tb-dots">TB DOTS</option>
                         <option value="family-planning">Family Planning</option>
+                        <option value="general-consultation">General Consultation</option>
                     </select>
                 </div>
                 <div class="col-md-3">

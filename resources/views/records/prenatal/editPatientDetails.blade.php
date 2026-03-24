@@ -17,7 +17,8 @@
     'resources/css/profile.css',
     'resources/css/patient/record.css',
     'resources/js/prenatal/editPrenatalDetails.js',
-    'resources/js/vitalSign.js'])
+    'resources/js/vitalSign.js',
+    'resources/js/brgy_sync/brgy-&-healthWorker-sync.js'])
 
     @include('sweetalert::alert')
     <div class="patient-details vh-100 d-flex ">
@@ -132,7 +133,7 @@
                                         </div>
                                         <div class="mb-2 w-full md:w-[50%]">
                                             <label for="edit_handled_by">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="edit_handled_by" class="form-select bg-light border-dark"
+                                            <select name="handled_by" id="handled_by" class="form-select bg-light border-dark"
                                                 data-bs-health-worker-id="{{ optional($activeCaseRecord)->health_worker_id ?? '' }}"
                                                 data-staff-id="{{ Auth::user()->role == 'staff' ? Auth::user()->id : null }}">
                                                 <option value="" disabled>Select a person</option>

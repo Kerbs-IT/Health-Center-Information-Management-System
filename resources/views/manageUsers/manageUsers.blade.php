@@ -216,6 +216,7 @@
                                             <option value="tb-dots">Tb-dots</option>
                                             <option value="senior-citizen">Senior Citizen</option>
                                             <option value="family-planning">Family Planning</option>
+                                            <option value="general-consultation">General Consultation</option>
                                         </select>
                                         <small class="text-danger error-element patient-type-error"></small>
                                     </div>
@@ -356,7 +357,7 @@
                                 <option value="tb-dots">Tb-dots</option>
                                 <option value="senior-citizen">Senior Citizen</option>
                                 <option value="family-planning">Family Planning</option>
-                                <option value="check-up">Check-up</option>
+                                <option value="general-consultation">General Consultation</option>
                             </select>
                             <small class="text-danger error-element patient-type-error"></small>
                         </div>

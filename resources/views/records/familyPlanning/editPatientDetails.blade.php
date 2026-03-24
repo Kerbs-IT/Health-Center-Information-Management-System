@@ -17,7 +17,8 @@
     'resources/css/profile.css',
     'resources/css/patient/record.css',
     'resources/js/family_planning/editPatientDetails.js',
-    'resources/js/vitalSign.js'])
+    'resources/js/vitalSign.js',
+    'resources/js/brgy_sync/brgy-&-healthWorker-sync.js'])
     <div class="patient-details vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
@@ -159,7 +160,7 @@
                                         <!-- administered by -->
                                         <div class="mb-md-2 mb-0 flex-fill xl:w-[50%]">
                                             <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            <select name="handled_by" id="handled_by" class="form-select bg-light " data-bs-health-worker-id="{{ optional($familyPlanningRecord->family_planning_medical_record->first())->health_worker_id ?? '' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
+                                            <select name="handled_by" id="handled_by" class="form-select bg-light " data-bs-health-worker-id="{{ optional($familyPlanningRecord->family_planning_medical_record)->health_worker_id ?? '' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" disabled>Select a person</option>
                                             </select>
 

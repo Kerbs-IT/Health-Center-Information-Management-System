@@ -82,18 +82,19 @@ class RecordsTable extends Component
             ->when($this->patient_id, function ($query) {
                 $query->where('patients.id', $this->patient_id);
             })
-            ->when(Auth::user()->role == 'staff', function ($query) {
-                $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
-                    ->where('vaccination_medical_records.health_worker_id', Auth::id());
-            })
             ->when($this->sortField === 'age', function ($query) {
                 $query->orderBy('patients.age', $this->sortDirection)
                     ->orderBy('patients.age_in_months', $this->sortDirection);
             }, function ($query) {
                 $query->orderBy($this->sortField, $this->sortDirection);
             })
-            ->whereDate('patients.date_of_registration', '>=', $this->start_date)
-            ->whereDate('patients.date_of_registration', '<=', $this->end_date)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date)
+            ->when(Auth::user()->role == 'staff', function ($query) {
+                $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('vaccination_medical_records.health_worker_id', Auth::id());
+            })
+            
             ->get();
 
         // Step 2: Calculate vaccination status for ALL records

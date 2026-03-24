@@ -128,7 +128,7 @@
                         @endif
                     </td>
 
-                    <td>{{ $record->patient->created_at ? $record->date_of_registration->format('M j, Y') : '' }}</td>
+                    <td>{{ $record->date_of_registration ? $record->date_of_registration->format('M j, Y') : '' }}</td>
 
                     <td>
                         <div class="actions d-flex gap-2 justify-content-center align-items-center">
