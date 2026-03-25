@@ -10,6 +10,7 @@ use App\Http\Controllers\colorPalleteController;
 use App\Http\Controllers\FamilyPlanningController;
 use App\Http\Controllers\forgotPassController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\GeneralConsultation;
 use App\Http\Controllers\HealthCenterDashboard;
 use App\Http\Controllers\healthWorkerController;
 use App\Http\Controllers\HeatMapController;
@@ -59,7 +60,7 @@ use Termwind\Components\Raw;
 
 Route::get('/', function () {
     return view('layout.app');
-});
+})->name('homepage');
 
 Route::get('/color-pallete', [colorPalleteController::class, 'getInfo'])->name('color-pallete');
 Route::put('/update-color-pallete', [colorPalleteController::class, 'updateInfo'])->name('update-color-pallete');
@@ -276,6 +277,9 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // --------------------------------------------ADD PATIENT ROUTE SECTION-----------------------------------------------------
     Route::get('/add-patients', [addPatientController::class, 'dashboard'])->name('add-patient');
+
+    // -------------------------------------------- GENERAL CONSULTATION --------------------------------------------------------
+    Route::get('/patient-record/general-consultation/view-records', [GeneralConsultation::class,'index'])->name('record.general.consultation');
 
     // --------------------------------------------VACCINATION RECORDS --------------------------------------------------------------------
     Route::get('/patient-record/vaccination/view-records', [RecordsController::class, 'vaccinationRecord'])->name('record.vaccination');

@@ -8,7 +8,9 @@
     </div>
 
     <div class="logo-con d-flex justify-content-center mb-1 px-3 ">
-        <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
+        <a href="{{route('homepage')}}">
+            <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
+        </a>
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
         <!-- Dashboard -->
@@ -106,7 +108,7 @@
                     <i class="fa-solid fs-5 fa-list"></i>
                     <h5 class="mb-0">All records</h5>
                 </a>
-                
+
 
                 <a href="{{ route('record.vaccination')}}" class="menu-items sub-menu-bar-item d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
                     <i class="fa-solid fs-5 fa-syringe"></i>
