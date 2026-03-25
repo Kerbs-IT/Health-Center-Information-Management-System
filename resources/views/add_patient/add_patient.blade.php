@@ -263,6 +263,7 @@
                                             <option value="tb-dots">TB DOTS</option>
                                             <option value="senior-citizen">Senior Citizen</option>
                                             <option value="family-planning">Family Planning</option>
+                                            <!-- <option value="general-consultation">General Consultation</option> -->
                                         </select>
                                     </div>
                                     <h4>Personal Info</h4>
@@ -686,6 +687,7 @@
                     </div>
                     <!-- step 2 -->
                     <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
+                        
                         <!-- vaccination -->
                         <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
                             <div class="vaccination-content">
