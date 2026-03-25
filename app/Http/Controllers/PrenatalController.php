@@ -718,8 +718,10 @@ class PrenatalController extends Controller
 
                 if (!$existingFPMedicalCase) {
                     $familyPlanningMedicalCase = medical_record_cases::create([
-                        'patient_id'   => $prenatalPatient->id,
-                        'type_of_case' => 'family-planning',
+                        'patient_id'           => $prenatalPatient->id,
+                        'type_of_case'         => 'family-planning',
+                        'date_of_registration' => $patientData['date_of_registration'], // ✅ add this
+                        'status'               => 'Active',                              // ✅ add this
                     ]);
 
                     $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id;
@@ -930,10 +932,15 @@ class PrenatalController extends Controller
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Prenatal Patient Creation Error: ' . $e->getMessage());
             return response()->json([
-                'message' => 'An unexpected error occurred.',
-                'errors'  => ['server' => ['Please try again or contact support.']]
+                'message' => $e->getMessage(),
+                'errors'  => [
+                    'server' => [
+                        $e->getMessage(),
+                        'Line: ' . $e->getLine(),
+                        'File: ' . $e->getFile()
+                    ]
+                ]
             ], 500);
         }
     }
@@ -1264,9 +1271,12 @@ class PrenatalController extends Controller
                     $familyPlanningMedicalCase = $existingFamilyPlan;
                 } else {
                     $familyPlanningMedicalCase = medical_record_cases::create([
-                        'patient_id'   => $prenatalRecord->patient->id,
-                        'type_of_case' => 'family-planning',
+                        'patient_id'           => $prenatalRecord->patient->id, // ✅
+                        'type_of_case'         => 'family-planning',
+                        'date_of_registration' => $data['date_of_registration'], // ✅
+                        'status'               => 'Active',
                     ]);
+                    
                 }
 
                 $familyPlanningMedicalCaseId = $familyPlanningMedicalCase->id;
