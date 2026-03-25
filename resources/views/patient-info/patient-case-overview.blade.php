@@ -329,83 +329,86 @@
                     </div>
                     @else
                     <div class="table-card bg-white">
-                        <table class="table records-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="row-num text-center">#</th>
-                                    <th>Patient Name</th>
-                                    <th>Type of Case</th>
-                                    <th>Date Registered</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($rows as $row)
-                                @php
-                                $initials = collect(explode(' ', $row['patient_name']))
-                                ->filter()
-                                ->take(2)
-                                ->map(fn($w) => strtoupper($w[0]))
-                                ->implode('');
+                        <div class="table-responsive">
+                            <table class="table records-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="row-num text-center">#</th>
+                                        <th>Patient Name</th>
+                                        <th>Type of Case</th>
+                                        <th>Date Registered</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($rows as $row)
+                                    @php
+                                    $initials = collect(explode(' ', $row['patient_name']))
+                                    ->filter()
+                                    ->take(2)
+                                    ->map(fn($w) => strtoupper($w[0]))
+                                    ->implode('');
 
-                                $badgeClass = match($row['type_of_case']) {
-                                'vaccination' => 'badge-vaccination',
-                                'prenatal' => 'badge-prenatal',
-                                'tb-dots' => 'badge-tb-dots',
-                                'senior-citizen' => 'badge-senior-citizen',
-                                'family-planning' => 'badge-family-planning',
-                                default => 'badge-default',
-                                };
+                                    $badgeClass = match($row['type_of_case']) {
+                                    'vaccination' => 'badge-vaccination',
+                                    'prenatal' => 'badge-prenatal',
+                                    'tb-dots' => 'badge-tb-dots',
+                                    'senior-citizen' => 'badge-senior-citizen',
+                                    'family-planning' => 'badge-family-planning',
+                                    default => 'badge-default',
+                                    };
 
-                                $caseLabel = match($row['type_of_case']) {
-                                'vaccination' => 'Vaccination',
-                                'prenatal' => 'Prenatal',
-                                'tb-dots' => 'TB-DOTS',
-                                'senior-citizen' => 'Senior Citizen',
-                                'family-planning' => 'Family Planning',
-                                default => ucfirst($row['type_of_case']),
-                                };
-                                @endphp
-                                <tr>
-                                    {{-- Row number --}}
-                                    <td class="row-num">{{ $loop->iteration }}</td>
+                                    $caseLabel = match($row['type_of_case']) {
+                                    'vaccination' => 'Vaccination',
+                                    'prenatal' => 'Prenatal',
+                                    'tb-dots' => 'TB-DOTS',
+                                    'senior-citizen' => 'Senior Citizen',
+                                    'family-planning' => 'Family Planning',
+                                    default => ucfirst($row['type_of_case']),
+                                    };
+                                    @endphp
+                                    <tr>
+                                        {{-- Row number --}}
+                                        <td class="row-num">{{ $loop->iteration }}</td>
 
-                                    {{-- Patient name with avatar --}}
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="patient-name-cell">{{ $row['patient_name'] }}</span>
-                                        </div>
-                                    </td>
+                                        {{-- Patient name with avatar --}}
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="patient-name-cell">{{ $row['patient_name'] }}</span>
+                                            </div>
+                                        </td>
 
-                                    {{-- Case type badge --}}
-                                    <td>
-                                        <span class="case-badge {{ $badgeClass }}">
-                                            <span class="badge-dot"></span>
-                                            {{ $caseLabel }}
-                                        </span>
-                                    </td>
+                                        {{-- Case type badge --}}
+                                        <td>
+                                            <span class="case-badge {{ $badgeClass }}">
+                                                <span class="badge-dot"></span>
+                                                {{ $caseLabel }}
+                                            </span>
+                                        </td>
 
-                                    {{-- Date --}}
-                                    <td class="date-cell">
-                                        <i class="fa-regular fa-calendar me-1 opacity-50"></i>
-                                        {{ \Carbon\Carbon::parse($row['date_registered'])->format('M d, Y') }}
-                                    </td>
+                                        {{-- Date --}}
+                                        <td class="date-cell">
+                                            <i class="fa-regular fa-calendar me-1 opacity-50"></i>
+                                            {{ \Carbon\Carbon::parse($row['date_registered'])->format('M d, Y') }}
+                                        </td>
 
-                                    {{-- Action --}}
-                                    <td class="text-center">
-                                        <a href="{{ route('patient.record.case', [
+                                        {{-- Action --}}
+                                        <td class="text-center">
+                                            <a href="{{ route('patient.record.case', [
                                                     'patientId' => $row['patient_id'],
                                                     'caseType'  => $row['type_of_case'],
                                                 ]) }}"
-                                            class="btn-view-record">
-                                            <i class="fa-solid fa-folder-open" style="font-size:0.75rem;"></i>
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                                class="btn-view-record">
+                                                <i class="fa-solid fa-folder-open" style="font-size:0.75rem;"></i>
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                     @endif
                 </div>
