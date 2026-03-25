@@ -108,6 +108,7 @@ export default defineConfig({
                 "resources/js/manage-medicine.js",
                 "resources/js/patient/patient-record-search.js",
                 "resources/js/patient/patient-mode-toggle.js",
+                "resources/js/brgy_sync/brgy-&-healthWorker-sync.js",
             ],
             refresh: true,
         }),
