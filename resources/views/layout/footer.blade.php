@@ -1,10 +1,10 @@
-<footer class="bg-dark text-light pt-5 pb-3">
+<footer class="text-light pt-5 pb-3" style="background-color: #004225;">
     <div class="container-fluid">
         <div class="row">
 
             {{-- Logo & Tagline --}}
             <div class="col-md-4 mb-4 home">
-                <h5 class="text-info fw-bold">Health Center IMS</h5>
+                <h5 class="fw-bold" >Health Center IMS</h5>
                 <p class="small">Empowering health centers with secure, digital record-keeping and smart tools.</p>
             </div>
 
@@ -26,7 +26,7 @@
                 <h6 class="text-uppercase fw-bold">Contact Information</h6>
                 <p class="mb-1">Barangay Hugo Perez</p>
                 <p class="mb-1">Trece Martires City, Cavite</p>
-                <p class="mb-1">Phone: 0950-023-9450</p>
+                <p class="mb-1">Phone: 09167956646</p>
                 <p class="mb-0">Email: hugoperezhc@gmail.com</p>
             </div>
         </div>

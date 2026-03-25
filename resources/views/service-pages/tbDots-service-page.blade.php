@@ -78,8 +78,8 @@
                     <h5 class=" contact-info-text fw-bold">Contact Information</h5>
                     <p class="mb-1"><strong>Health Center:</strong> Barangay Hugo Perez Health Center</p>
                     <p class="mb-1"><strong>TB DOTS Clinic Hours:</strong> Mon–Fri, 8:00 AM – 5:00 PM</p>
-                    <p class="mb-2"><strong>Hotline:</strong> 0912-345-6789</p>
-                    <a href="#" class="btn btn-sm w-100">Contact Us</a>
+                    <p class="mb-2"><strong>Phone Number:</strong> 09167956646</p>
+                    <!-- <a href="#" class="btn btn-sm w-100">Contact Us</a> -->
                 </div>
 
                 <!-- Requirements -->
@@ -97,11 +97,11 @@
         </div>
 
         <!-- BACK BUTTON -->
-        <div class="text-end mt-5">
+        <!-- <div class="text-end mt-5">
             <a href="#" class="btn px-4">
                 ← Back to Services
             </a>
-        </div>
+        </div> -->
 
     </div>
 </section>

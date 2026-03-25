@@ -85,7 +85,7 @@
 </section>
 
 <!-- Services -->
-<section class="services fullscreen-section py-5" id="services" style="background-color: #EBF9FF;">
+<section class="services fullscreen-section py-5" id="services" style="background-color: #E8F5E9;">
     <div class="container py-5">
         <div class="text-center mb-5">
             <span class="badge rounded-pill text-success border border-success px-3 py-2 fs-6">Our Health Services</span>
@@ -289,8 +289,6 @@
         </div>
     </div>
 </section>
-
-<!-- Our specialist -->
 <section class="slider-content container  px-3 px-md-5" id="specialist">
     <h2 class="mb-2 mb-md-5">Our Specialists</h2>
     <p class="specialist-text mb-1 mb-md-4 text-center">
@@ -302,44 +300,80 @@
 
             <!-- Slide 1 -->
             <div class="swiper-slide specialist-card">
-                <div class="img-slider">
+                <!-- <div class="img-slider">
                     <div class="img-overlay"></div>
                     <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
-                </div>
-                <h3 class="slide-title">Joy Andala</h3>
+                </div> -->
+                <h3 class="slide-title">Kamille</h3>
                 <p class="slide-text">Kaia Homesp</p>
                 <p class="slide-text">Nurse</p>
             </div>
 
             <!-- Slide 2 -->
             <div class="swiper-slide specialist-card">
-                <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt="">
-                <h3 class="slide-title">Gina Lopez</h3>
-                <p class="slide-text">Purok 2</p>
+                <!-- <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Ronalyn D. Anakan</h3>
+                <p class="slide-text">Beverly Homes 1</p>
                 <p class="slide-text">BHW</p>
             </div>
 
             <!-- Slide 3 -->
             <div class="swiper-slide specialist-card">
-                <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt="">
-                <h3 class="slide-title">Katrina Mae Apostol</h3>
+                <!-- <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Jovelyn Serato</h3>
+                <p class="slide-text">Purok 5</p>
+                <p class="slide-text">BHW</p>
+            </div>
+
+            <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Ana Maria Ago</h3>
+                <p class="slide-text">Green Forbes City ( BLK 16 - 32 )</p>
+                <p class="slide-text">BHW</p>
+            </div>
+
+
+            <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Dolsora Mercado</h3>
+                <p class="slide-text">Karlaville Park Homes Phase 1</p>
+                <p class="slide-text">BHW</p>
+            </div>
+            <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Rodora Herrera</h3>
+                <p class="slide-text">Green Forbes City (BLK 1 - 15 )</p>
+                <p class="slide-text">BHW</p>
+            </div>
+            <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Noraida Dela Torre</h3>
+                <p class="slide-text">Gawad Kalinga</p>
+                <p class="slide-text">BHW</p>
+            </div>
+            <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Anabel Andres</h3>
+                <p class="slide-text">Heneral DOS</p>
+                <p class="slide-text">BHW</p>
+            </div>
+           <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Kathlyn Kate Siy</h3>
+                <p class="slide-text">Purok 1</p>
+                <p class="slide-text">BHW</p>
+            </div>
+           <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Emily Pornia</h3>
+                <p class="slide-text">Karlaville Park Homes Phase 2</p>
+                <p class="slide-text">BHW</p>
+            </div>
+           <div class="swiper-slide specialist-card">
+                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
+                <h3 class="slide-title">Shirley Ulitin</h3>
                 <p class="slide-text">Purok 3</p>
                 <p class="slide-text">BHW</p>
-            </div>
-
-            <div class="swiper-slide specialist-card">
-                <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt="">
-                <h3 class="slide-title">Trisha Cortez</h3>
-                <p class="slide-text">Golden Horizon</p>
-                <p class="slide-text">BHW</p>
-            </div>
-
-
-            <div class="swiper-slide specialist-card">
-                <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt="">
-                <h3 class="slide-title">Gerge Salimbago</h3>
-                <p class="slide-text">Pabahay</p>
-                <p class="slide-text">Staff</p>
             </div>
         </div>
 
@@ -350,8 +384,9 @@
         <div class="swiper-button-prev"></div>
     </div>
 </section>
+
 <!-- FAQs -->
-<section id="faq" class="faqs fullscreen-section" style="background-color: #EBF9FF;">
+<section id="faq" class="faqs fullscreen-section" style="background-color: #E8F5E9;">
     <div class="container-fluid">
         <div class="container text-white">
             <div class="text-center pm-5 mb-2 mb-md-5">
@@ -396,7 +431,7 @@
                             </button>
                             <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Phase 2
+                                   Ito ang lokasyon ng health center: 7VGQ+VF3, Perez (Lucbanan), Trece Martires City. Katabi lamang ito ng Barangay Hall.
                                 </div>
                             </div>
                         </div>
@@ -404,7 +439,7 @@
                         <!-- Accordion Item 3 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(3)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>Ano Ang mga kailangan Dalhin</span>
+                                <span>Paano ako makakapag-register sa system?</span>
                                 <span id="icon-3" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -413,14 +448,15 @@
                             </button>
                             <div id="content-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    valid ID
+                                    Maaaring mag-register sa pamamagitan ng pagpunta sa login button at pinutin ang sign-up kung wala pang account. Mag-fill out ng online registration form at ibigay ang tamang personal na impormasyon.
+                                    Pagtapos nito ay magkasesend ng OTP sa iyong gmail para makapag create ka ng account.
                                 </div>
                             </div>
                         </div>
                         <!-- Accordion Item 4 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(4)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>Sino ang pwedeng tawagan?</span>
+                                <span>Sino ang pwede kong tawagan kung may concern ako?</span>
                                 <span id="icon-4" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -429,14 +465,21 @@
                             </button>
                             <div id="content-4" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Ang aming barangay health Workers
+                                    Maaaring makipag-ugnayan sa Health Center ng Barangay Hugo Perez Proper sa pamamagitan ng mga sumusunod:
+
+                                   <li>Barangay Health Center hotline number</li>
+                                   <li>Barangay office contact number</li>
+                                   <li>Assigned Barangay Health Worker (BHW) sa inyong lugar</li>
+                                   <li>Official Facebook page o email ng barangay</li>
+
+
                                 </div>
                             </div>
                         </div>
                         <!-- Accordion Item 5 -->
                         <div class="mt-2">
                             <button onclick="toggleAccordion(5)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>Ano ang inooffer na services</span>
+                                <span>Anong mga Services ang offer ng Health Center?</span>
                                 <span id="icon-5" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -445,7 +488,13 @@
                             </button>
                             <div id="content-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                    Material Tailwind allows you to quickly build modern, responsive websites with a focus on design.
+                                    Ang Health Center ng Barangay Hugo Perez Proper ay nagbibigay ng iba’t ibang serbisyong pangkalusugan para sa mga residente, kabilang ang:
+                                   <li>Libreng konsultasyon at basic check-up</li>
+                                    <li>Immunization o pagbabakuna (para sa bata at matatanda)</li>
+                                    <li>Maternal at child care (prenatal at postnatal services)</li>
+                                    <li>Family planning services</li>
+                                    <li>TB Dots Patients</li>
+                                   <li>Pamimigay ng maintenance medicines (kung available)</li>
                                 </div>
                             </div>
                         </div>
@@ -482,7 +531,7 @@
                         </div>
                         <div class="mt-2">
                             <button onclick="toggleAccordion(8)" class="w-full flex justify-between items-center py-3 text-slate-800">
-                                <span>May libreng gamot po ba?</span>
+                                <span>May libreng gamot ba sa Health Center?</span>
                                 <span id="icon-8" class="transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
@@ -491,7 +540,8 @@
                             </button>
                             <div id="content-8" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-3 text-sm">
-                                    Opo, may limitadong libreng gamot depende sa availability.
+                                    Oo, ang Health Center ng Barangay Hugo Perez Proper ay nagbibigay ng libreng gamot para sa mga residente, depende sa availability ng supply. Kadalasan, ito ay para sa mga common na sakit tulad ng ubo, sipon, lagnat, at maintenance na gamot para sa mga may hypertension o diabetes.
+                                    Pinapayuhan ang mga residente na magpakonsulta muna sa health center upang mabigyan ng tamang reseta at maiwasan ang maling pag-inom ng gamot.
                                 </div>
                             </div>
                         </div>
@@ -510,7 +560,7 @@
     </div>
 </section>
 <!-- Events -->
-<section id="events" class="events fullscreen-section">
+<!-- <section id="events" class="events fullscreen-section">
     <div class="container text-center my-5">
         <div class="mb-3">
             <span class="">
@@ -520,7 +570,6 @@
         <h5 class="mb-4">Stay informed about important medical services and community health initiatives.</h5>
 
         <div class="row  gap-4 gap-md-0 gap-lg-0">
-            <!-- Event Card -->
             <div class=" col-12 col-md-6 col-lg-4">
                 <div class="card event-card h-100">
                     <img src="{{ asset('images/mpox.jpg') }} " class="card-img-top event-image" alt="Vaccination Image">
@@ -557,7 +606,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 {{-- Add more sections: Specialists, FAQ, Events --}}
 

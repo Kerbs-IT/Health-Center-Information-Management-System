@@ -64,7 +64,7 @@
     <div class="text-center mt-16">
         <h2 class="text-2xl font-semibold mb-3">Need More Information?</h2>
         <p class="mb-6 text-gray-700">
-            Feel free to contact our health center staff for inquiries or appointments.
+            Feel free to contact our health center barangay healthworker or staff for inquiries.
         </p>
     </div>
 
