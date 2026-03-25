@@ -16,7 +16,7 @@
             <!-- WHAT WE OFFER -->
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0 p-4">
-                    <h4 class="fw-bold text-primary mb-3">What We Offer</h4>
+                    <h4 class="fw-bold text-success mb-3">What We Offer</h4>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">✔ Regular Health Check-ups</li>
                         <li class="list-group-item">✔ Free Maintenance Medicine Dispensing</li>
@@ -29,7 +29,7 @@
 
                 <!-- SPECIAL PROGRAMS -->
                 <div class="card shadow-sm border-0 p-4 mt-4">
-                    <h4 class="fw-bold text-primary mb-3">Special Programs</h4>
+                    <h4 class="fw-bold text-success mb-3">Special Programs</h4>
 
                     <p><strong>1. Home Visit Check-Up</strong></p>
                     <p class="text-muted">
@@ -53,16 +53,15 @@
 
                 <!-- Contact Info -->
                 <div class="card shadow-sm border-0 p-4 mb-4">
-                    <h5 class="fw-bold text-primary">Contact Information</h5>
+                    <h5 class="fw-bold text-success">Contact Information</h5>
                     <p class="mb-1"><strong>Health Center:</strong> Barangay Hugo Perez Health Center</p>
                     <p class="mb-1"><strong>Office Hours:</strong> Mon–Fri, 8:00 AM – 5:00 PM</p>
                     <p class="mb-2"><strong>Contact Number:</strong> 0912-345-6789</p>
-                    <a href="#" class="btn btn-primary btn-sm w-100">Contact Us</a>
                 </div>
 
                 <!-- Requirements -->
                 <div class="card shadow-sm border-0 p-4">
-                    <h5 class="fw-bold text-primary">Requirements</h5>
+                    <h5 class="fw-bold text-success">Requirements</h5>
                     <ul>
                         <li>Senior Citizen ID</li>
                         <li>Valid ID (Government-issued)</li>
@@ -71,14 +70,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- BACK BUTTON -->
-        <div class="text-center mt-5">
-            <a href="#" class="btn btn-outline-primary px-4">
-                ← Back to Services
-            </a>
-        </div>
-
     </div>
 </section>
 @endsection
