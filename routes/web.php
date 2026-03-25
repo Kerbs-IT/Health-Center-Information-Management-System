@@ -36,6 +36,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SwapHealthWorkerController;
 use App\Http\Controllers\MedicinePdfController;
 use App\Http\Controllers\PasswordResetController;
+
+use App\Http\Controllers\HomePageController;
 use App\Models\color_pallete;
 use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Route;
@@ -174,7 +176,7 @@ Route::get('/dashboard/staff', function () {
 Route::middleware(['auth', 'verified', 'role:patient'])->group(function () {
     Route::get('/dashboard/patient', [patientController::class, 'dashboard'])->name('dashboard.patient');
     // ------------------------------------------- Patient Account Record --------------------------------------------------------------
-   
+
     Route::get('/user-account/medical-record', [patientController::class, 'renderOverview'])
         ->name('patient.record.overview');
 
@@ -708,7 +710,10 @@ Route::get('run-command', function () {
 });
 
 
-// get the assigned area for select 
+// get the assigned area for select
 
 Route::get('/add-patient/get-assigned-area/{staffId}', [healthWorkerController::class, 'getAssignedArea']);
 Route::post('/get-health-worker', [healthWorkerController::class, 'getHealthWorker']);
+
+
+Route::get('/', [HomePageController::class, 'index'])->name('homepage');

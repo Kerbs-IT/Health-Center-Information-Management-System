@@ -138,7 +138,7 @@ if (roleFilter) {
       scrollPosition = 0;
       cardCarousel.scrollTo({ left: 0, behavior: "smooth" });
       resetAutoSlide();
-  });  
+  });
 }
 
 
