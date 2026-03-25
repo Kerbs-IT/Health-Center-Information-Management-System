@@ -118,6 +118,18 @@ function hexToRgb(hex, rootElement) {
     }
 }
 
+
+
+const signInBtn = document.getElementById("sign-in")
+
+if (signInBtn) {
+    document.getElementById("sign-in").addEventListener("click", function (e) {
+        localStorage.removeItem("activeMenuItem");
+    });
+}
+
+
+
 currentColorPallete();
 
 // Sidebar responsive

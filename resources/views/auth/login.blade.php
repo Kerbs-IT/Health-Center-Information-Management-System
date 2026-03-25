@@ -33,7 +33,7 @@
                 </div>
                 <!-- Right Form -->
                 <div class="col-12 col-lg-6 login-form-con">
-                    <form action="{{route('auth.login')}}" method="POST" class="rounded d-flex flex-column m-0 p-4 bg-white h-100">
+                    <form action="{{route('auth.login')}}" method="POST" class="rounded d-flex flex-column m-0 p-4 bg-white h-100" id="login-form">
                         @csrf
                         <h1 class="text-center fs-1 fw-bold">Login</h1>
 
@@ -71,7 +71,7 @@
                         <small class="text-danger">{{$message}}</small>
                         @enderror
                         <div class="form-group mb-3 w-95">
-                            <input type="submit" value="Sign-in" class="d-block btn btn-success py-1 m-auto  fs-6">
+                            <input type="submit" value="Sign-in" class="d-block btn btn-success py-1 m-auto  fs-6" id="sign-in">
                         </div>
 
                         <div class="form-group mb-3 w-95">
