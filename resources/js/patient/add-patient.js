@@ -19,7 +19,9 @@ window.syncHandledByView = function () {
         handledByViewInput.value = handled_by.dataset.healthWorkerName || "";
     }
 };
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    // here the vaccine configuration
+    await loadVaccineDoseConfig();
     const typeSelect = document.getElementById("type-of-patient");
 
     window.showStep = function (step) {
@@ -244,6 +246,13 @@ document.addEventListener("DOMContentLoaded", () => {
             document
                 .querySelector(".family-planning-inputs")
                 .classList.replace("d-flex", "d-none");
+            
+             document
+                 .querySelector(".senior-citizen-inputs")
+                 .classList.replace("d-flex", "d-none");
+             document
+                 .querySelector(".tb-dots-inputs")
+                 .classList.replace("d-flex", "d-none");
             // vital sign
             document
                 .querySelector(".first-row")
@@ -408,27 +417,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const vaccineInput = document.getElementById("vaccine_input");
 
-    addVaccineInteraction(
-        addVaccineBtn,
-        vaccineInput,
-        vaccinesContainer,
-        selectedVaccinesCon,
-        selectedVaccines,
-    );
+   addVaccineInteraction(
+       addVaccineBtn,
+       vaccineInput,
+       vaccinesContainer,
+       selectedVaccinesCon,
+       selectedVaccines,
+       updateDoseDropdown, // ✅ pass your dynamic version as callback
+   );
 
     if (vaccinesContainer) {
         vaccinesContainer.addEventListener("click", (e) => {
-            console.log("before deletion:", selectedVaccines);
+            
             if (e.target.closest(".vaccine")) {
                 const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-                console.log("id of element:", vaccineId);
+               
                 const deleteBtn = e.target.closest(".delete-icon");
                 if (deleteBtn) {
                     if (selectedVaccines.includes(Number(vaccineId))) {
                         const selectedElement = selectedVaccines.indexOf(
                             Number(vaccineId),
                         );
-                        console.log("index", selectedElement);
                         selectedVaccines.splice(selectedElement, 1);
                         selectedVaccinesCon.value = selectedVaccines.join(",");
                     }
@@ -440,8 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     e.target.closest(".vaccine").remove();
                 }
 
-                console.log("update with deleted id:", selectedVaccines);
-                console.log("updated value:", selectedVaccinesCon.value);
+                
             }
         });
     }
@@ -769,57 +777,28 @@ function capitalizeEachWord(str) {
 }
 
 // add a validation for he vaccine doses
-const vaccineDoseConfig = {
-    1: { maxDoses: 1, description: "at birth", name: "BCG Vaccine" },
-    2: { maxDoses: 1, description: "at birth", name: "Hepatitis B Vaccine" },
-    3: {
-        maxDoses: 3,
-        description: "doses 1-3",
-        name: "Pentavalent Vaccine (DPT-HEP B-HIB)",
-    },
-    4: {
-        maxDoses: 3,
-        description: "doses 1-3",
-        name: "Oral Polio Vaccine (OPV)",
-    },
-    5: {
-        maxDoses: 2,
-        description: "doses 1-2",
-        name: "Inactived Polio Vaccine (IPV)",
-    },
-    6: {
-        maxDoses: 3,
-        description: "doses 1-3",
-        name: "Pnueumococcal Conjugate Vaccine (PCV)",
-    },
-    7: {
-        maxDoses: 2,
-        description: "doses 1-2",
-        name: "Measles, Mumps, Rubella Vaccine (MMR)",
-    },
-    8: {
-        maxDoses: 1,
-        description: "dose 1",
-        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 1)",
-    },
-    9: {
-        maxDoses: 2,
-        description: "doses 1-2",
-        name: "Measles Containing Vaccine (MCV) MR/MMR (Grade 7)",
-    },
-    10: {
-        maxDoses: 2,
-        description: "doses 1-2",
-        name: "Tetanus Diphtheria (TD)",
-    },
-    11: {
-        maxDoses: 2,
-        description: "doses 1-2",
-        name: "Human Papiliomavirus Vaccine",
-    },
-    12: { maxDoses: 3, description: "doses 1-3", name: "Influenza Vaccine" },
-    13: { maxDoses: 3, description: "doses 1-3", name: "Pnuemococcal Vaccine" },
-};
+let vaccineDoseConfig = {};
+
+async function loadVaccineDoseConfig() {
+    try {
+        const res = await fetch("/api/vaccines/active");
+        const data = await res.json();
+        data.vaccines.forEach((vaccine) => {
+            vaccineDoseConfig[vaccine.id] = {
+                maxDoses: vaccine.max_doses,
+                name: vaccine.type_of_vaccine,
+                description:
+                    vaccine.max_doses === 1
+                        ? "dose 1"
+                        : `doses 1-${vaccine.max_doses}`,
+            };
+        });
+
+       
+    } catch (err) {
+        console.error("Failed to load vaccine config:", err);
+    }
+}
 
 function updateDoseDropdown(selectedVaccines) {
     const doseDropdown = document.getElementById("dose");

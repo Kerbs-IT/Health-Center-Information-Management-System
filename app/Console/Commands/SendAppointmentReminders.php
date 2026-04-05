@@ -10,14 +10,21 @@ use App\Mail\AppointmentReminderMail;
 use App\Models\notifications;
 use App\Models\NotificationSchedule;
 use App\Models\User;
+use App\Models\vaccines;  // ✅ ADD THIS
 
 class SendAppointmentReminders extends Command
 {
     protected $signature = 'appointments:send-reminders';
     protected $description = 'Send email and in-app reminders to patients with appointments tomorrow (Runs at 8:00 PM)';
 
+    // ✅ REMOVE the hardcoded array - we'll load it dynamically
+    private $vaccineDoseConfig = [];
+
     public function handle()
     {
+        // ✅ LOAD vaccine config from database at the start
+        $this->loadVaccineDoseConfig();
+
         $tomorrow = Carbon::tomorrow()->format('Y-m-d');
         $remindersSent = 0;
 
@@ -69,10 +76,31 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
+    // ✅ NEW: Load vaccine config from database
+    // =========================================================================
+    private function loadVaccineDoseConfig()
+    {
+        try {
+            $vaccines = vaccines::all();
+
+            foreach ($vaccines as $vaccine) {
+                // Use vaccine_acronym as the key (matches how it's stored in vaccine_type field)
+                $this->vaccineDoseConfig[$vaccine->vaccine_acronym] = [
+                    'maxDoses' => $vaccine->max_doses,
+                    'name'     => $vaccine->type_of_vaccine,
+                ];
+            }
+
+            $this->info("✓ Loaded " . count($this->vaccineDoseConfig) . " vaccine configurations from database");
+        } catch (\Exception $e) {
+            $this->error("✗ Failed to load vaccine config: " . $e->getMessage());
+            // Fallback to empty array - no reminders will be sent if vaccines can't be loaded
+            $this->vaccineDoseConfig = [];
+        }
+    }
+
+    // =========================================================================
     // PROCESS REMINDER
-    // CHANGE: Now calls createNotificationsForAll() instead of single
-    //         createInAppNotification(). This ensures both patient and
-    //         guardian receive in-app notifications.
     // =========================================================================
     private function processReminder($reminder, $type)
     {
@@ -103,18 +131,14 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // NEW: createNotificationsForAll
-    // Loops through both the patient's own user_id and guardian_user_id,
-    // calling the provided $callback for each valid recipient.
+    // createNotificationsForAll
     // =========================================================================
     private function createNotificationsForAll($reminder, callable $callback)
     {
-        // Notify patient's own account if they have one
         if (!empty($reminder->user_id)) {
             $callback($reminder->user_id, $reminder->patient_id);
         }
 
-        // Notify guardian's account if one is linked
         if (!empty($reminder->guardian_user_id)) {
             $callback($reminder->guardian_user_id, $reminder->patient_id);
         }
@@ -122,10 +146,6 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // SEND EMAIL
-    // CHANGE: Now also sends email to guardian if guardian_user_id exists.
-    //         Guardian email is fetched via User::find().
-    //         Added 'is_guardian' flag in emailData for the Mailable to use
-    //         if you want a slightly different subject/body for guardians.
     // =========================================================================
     private function sendEmail($reminder, $type, $appointmentType)
     {
@@ -143,13 +163,11 @@ class SendAppointmentReminders extends Command
                 $emailData['dose_number']  = ($reminder->dose_number ?? 0) + 1;
             }
 
-            // Send to patient's own email
             if (!empty($reminder->email)) {
                 Mail::to($reminder->email)->send(new AppointmentReminderMail($emailData));
                 $this->info("✓ Email sent to patient: {$reminder->full_name} ({$reminder->email}) - {$appointmentType}");
             }
 
-            // Send to guardian's email if linked
             if (!empty($reminder->guardian_user_id)) {
                 $guardian = User::find($reminder->guardian_user_id);
                 if ($guardian && $guardian->email) {
@@ -164,10 +182,7 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // NEW: createInAppNotificationForUser
-    // CHANGE: Replaces old createInAppNotification($reminder, $type, $appointmentType).
-    //         Now accepts explicit $userId and $patientId so it can be called
-    //         for both the patient and the guardian separately.
+    // createInAppNotificationForUser
     // =========================================================================
     private function createInAppNotificationForUser($reminder, $type, $appointmentType, $userId, $patientId)
     {
@@ -194,18 +209,15 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // NEW: createCompletionCheckupNotificationForUser
-    // CHANGE: Replaces old createCompletionCheckupNotification($reminder).
-    //         Same reason — accepts explicit $userId/$patientId so guardian
-    //         can also receive the vaccination completion notification.
+    // createCompletionCheckupNotificationForUser
     // =========================================================================
     private function createCompletionCheckupNotificationForUser($reminder, $userId, $patientId)
     {
         try {
             $completedVaccinesList = implode(', ', $reminder->completed_vaccines);
             $date = Carbon::parse($reminder->appointment_date)->format('F j, Y (l)');
-            $patientName = "<strong>{$reminder->full_name}</strong>";  // ADDED
-            $message = "This is a reminder for {$patientName}'s vaccination completion checkup scheduled for tomorrow, {$date}. "  // CHANGED
+            $patientName = "<strong>{$reminder->full_name}</strong>";
+            $message = "This is a reminder for {$patientName}'s vaccination completion checkup scheduled for tomorrow, {$date}. "
                 . "Completed vaccines: {$completedVaccinesList}. "
                 . "This is for final verification and to discuss any additional vaccinations if needed.";
 
@@ -229,13 +241,13 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // BUILD NOTIFICATION MESSAGE — unchanged
+    // BUILD NOTIFICATION MESSAGE
     // =========================================================================
     private function buildNotificationMessage($reminder, $type, $appointmentType)
     {
         $date = Carbon::parse($reminder->appointment_date)->format('F j, Y (l)');
-        $patientName = "<strong>{$reminder->full_name}</strong>";  // ADDED
-        $baseMessage = "This is a reminder for {$patientName}'s {$appointmentType} scheduled for tomorrow, {$date}.";  // CHANGED
+        $patientName = "<strong>{$reminder->full_name}</strong>";
+        $baseMessage = "This is a reminder for {$patientName}'s {$appointmentType} scheduled for tomorrow, {$date}.";
 
         if ($type === 'vaccination') {
             $nextDose = ($reminder->dose_number ?? 0) + 1;
@@ -258,7 +270,7 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // GET APPOINTMENT TYPE NAME — unchanged
+    // GET APPOINTMENT TYPE NAME
     // =========================================================================
     private function getAppointmentTypeName($type)
     {
@@ -273,29 +285,10 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // GET VACCINATION REMINDERS
-    // CHANGE: Removed ->whereNotNull('p.user_id').
-    //         Added ->where(fn($q) => ...) to include patients that have
-    //         either a user_id OR a guardian_user_id.
-    //         Added 'p.guardian_user_id' to select().
+    // ✅ NOW USES $this->vaccineDoseConfig loaded from database
     // =========================================================================
     private function getVaccinationReminders($tomorrow)
     {
-        $vaccineDoseConfig = [
-            'BCG'                   => ['maxDoses' => 1,  'name' => 'BCG Vaccine'],
-            'Hepatitis B'           => ['maxDoses' => 1,  'name' => 'Hepatitis B Vaccine'],
-            'PENTA'                 => ['maxDoses' => 3,  'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
-            'OPV'                   => ['maxDoses' => 3,  'name' => 'Oral Polio Vaccine (OPV)'],
-            'IPV'                   => ['maxDoses' => 2,  'name' => 'Inactived Polio Vaccine (IPV)'],
-            'PCV'                   => ['maxDoses' => 3,  'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
-            'MMR'                   => ['maxDoses' => 2,  'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
-            'MCV'                   => ['maxDoses' => 1,  'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
-            'MCV_7'                 => ['maxDoses' => 2,  'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 7)'],
-            'TD'                    => ['maxDoses' => 2,  'name' => 'Tetanus Diphtheria (TD)'],
-            'Human Papiliomavirus'  => ['maxDoses' => 2,  'name' => 'Human Papiliomavirus Vaccine'],
-            'Influenza Vaccine'     => ['maxDoses' => 3,  'name' => 'Influenza Vaccine'],
-            'Pnuemococcal Vaccine'  => ['maxDoses' => 3,  'name' => 'Pnuemococcal Vaccine'],
-        ];
-
         $rawReminders = DB::table('vaccination_case_records as vcr')
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'vcr.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
@@ -303,7 +296,6 @@ class SendAppointmentReminders extends Command
             ->where('vcr.status', '!=', 'Archived')
             ->where('vcr.vaccination_status', 'completed')
             ->whereDate('vcr.date_of_comeback', $tomorrow)
-            // CHANGED: include patients with user_id OR guardian_user_id
             ->where(function ($q) {
                 $q->whereNotNull('p.user_id')
                     ->orWhereNotNull('p.guardian_user_id');
@@ -313,7 +305,7 @@ class SendAppointmentReminders extends Command
                 'p.full_name',
                 'u.id as user_id',
                 'u.email',
-                'p.guardian_user_id',   // ADDED
+                'p.guardian_user_id',
                 'vcr.date_of_comeback as appointment_date',
                 'vcr.vaccine_type',
                 'vcr.dose_number',
@@ -322,7 +314,7 @@ class SendAppointmentReminders extends Command
             ->distinct()
             ->get();
 
-        return $rawReminders->map(function ($reminder) use ($vaccineDoseConfig) {
+        return $rawReminders->map(function ($reminder) {
             $vaccines = explode(',', $reminder->vaccine_type ?? '');
             $currentDose = $reminder->dose_number;
             $hasIncompleteVaccine = false;
@@ -331,9 +323,11 @@ class SendAppointmentReminders extends Command
 
             foreach ($vaccines as $vaccine) {
                 $vaccineAcronym = trim($vaccine);
-                if (isset($vaccineDoseConfig[$vaccineAcronym])) {
-                    $maxDoses   = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
-                    $vaccineName = $vaccineDoseConfig[$vaccineAcronym]['name'];
+                // ✅ Use the dynamically loaded config
+                if (isset($this->vaccineDoseConfig[$vaccineAcronym])) {
+                    $maxDoses    = $this->vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
+                    $vaccineName = $this->vaccineDoseConfig[$vaccineAcronym]['name'];
+
                     if ($currentDose < $maxDoses) {
                         $hasIncompleteVaccine = true;
                         $incompleteVaccines[] = $vaccineName;
@@ -343,8 +337,8 @@ class SendAppointmentReminders extends Command
                 }
             }
 
-            $reminder->is_all_complete    = !$hasIncompleteVaccine;
-            $reminder->completed_vaccines = $completedVaccines;
+            $reminder->is_all_complete     = !$hasIncompleteVaccine;
+            $reminder->completed_vaccines  = $completedVaccines;
             $reminder->incomplete_vaccines = $incompleteVaccines;
 
             return $reminder;
@@ -353,8 +347,6 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // GET PRENATAL REMINDERS
-    // CHANGE: Removed ->whereNotNull('p.user_id').
-    //         Added OR condition and 'p.guardian_user_id' to select().
     // =========================================================================
     private function getPrenatalReminders($tomorrow)
     {
@@ -364,7 +356,6 @@ class SendAppointmentReminders extends Command
             ->leftJoin('users as u', 'u.id', '=', 'p.user_id')
             ->where('pc.status', '!=', 'Archived')
             ->whereDate('pc.date_of_comeback', $tomorrow)
-            // CHANGED
             ->where(function ($q) {
                 $q->whereNotNull('p.user_id')
                     ->orWhereNotNull('p.guardian_user_id');
@@ -374,7 +365,7 @@ class SendAppointmentReminders extends Command
                 'p.full_name',
                 'u.id as user_id',
                 'u.email',
-                'p.guardian_user_id',   // ADDED
+                'p.guardian_user_id',
                 'pc.date_of_comeback as appointment_date',
                 'mrc.id as medical_record_case_id'
             )
@@ -384,8 +375,6 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // GET SENIOR CITIZEN REMINDERS
-    // CHANGE: Removed ->whereNotNull('p.user_id').
-    //         Added OR condition and 'p.guardian_user_id' to select().
     // =========================================================================
     private function getSeniorCitizenReminders($tomorrow)
     {
@@ -395,7 +384,6 @@ class SendAppointmentReminders extends Command
             ->leftJoin('users as u', 'u.id', '=', 'p.user_id')
             ->where('sccr.status', '!=', 'Archived')
             ->whereDate('sccr.date_of_comeback', $tomorrow)
-            // CHANGED
             ->where(function ($q) {
                 $q->whereNotNull('p.user_id')
                     ->orWhereNotNull('p.guardian_user_id');
@@ -405,7 +393,7 @@ class SendAppointmentReminders extends Command
                 'p.full_name',
                 'u.id as user_id',
                 'u.email',
-                'p.guardian_user_id',   // ADDED
+                'p.guardian_user_id',
                 'sccr.date_of_comeback as appointment_date',
                 'mrc.id as medical_record_case_id'
             )
@@ -415,8 +403,6 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // GET TB DOTS REMINDERS
-    // CHANGE: Removed ->whereNotNull('p.user_id').
-    //         Added OR condition and 'p.guardian_user_id' to select().
     // =========================================================================
     private function getTbDotsReminders($tomorrow)
     {
@@ -426,7 +412,6 @@ class SendAppointmentReminders extends Command
             ->leftJoin('users as u', 'u.id', '=', 'p.user_id')
             ->where('tdcu.status', '!=', 'Archived')
             ->whereDate('tdcu.date_of_comeback', $tomorrow)
-            // CHANGED
             ->where(function ($q) {
                 $q->whereNotNull('p.user_id')
                     ->orWhereNotNull('p.guardian_user_id');
@@ -436,7 +421,7 @@ class SendAppointmentReminders extends Command
                 'p.full_name',
                 'u.id as user_id',
                 'u.email',
-                'p.guardian_user_id',   // ADDED
+                'p.guardian_user_id',
                 'tdcu.date_of_comeback as appointment_date',
                 'mrc.id as medical_record_case_id'
             )
@@ -446,8 +431,6 @@ class SendAppointmentReminders extends Command
 
     // =========================================================================
     // GET FAMILY PLANNING REMINDERS
-    // CHANGE: Removed ->whereNotNull('p.user_id').
-    //         Added OR condition and 'p.guardian_user_id' to select().
     // =========================================================================
     private function getFamilyPlanningReminders($tomorrow)
     {
@@ -457,7 +440,6 @@ class SendAppointmentReminders extends Command
             ->leftJoin('users as u', 'u.id', '=', 'p.user_id')
             ->where('fpsbr.status', '!=', 'Archived')
             ->whereDate('fpsbr.date_of_follow_up_visit', $tomorrow)
-            // CHANGED
             ->where(function ($q) {
                 $q->whereNotNull('p.user_id')
                     ->orWhereNotNull('p.guardian_user_id');
@@ -467,7 +449,7 @@ class SendAppointmentReminders extends Command
                 'p.full_name',
                 'u.id as user_id',
                 'u.email',
-                'p.guardian_user_id',   // ADDED
+                'p.guardian_user_id',
                 'fpsbr.date_of_follow_up_visit as appointment_date',
                 'mrc.id as medical_record_case_id'
             )
@@ -476,8 +458,7 @@ class SendAppointmentReminders extends Command
     }
 
     // =========================================================================
-    // SEND COMPLETION CHECKUP REMINDER (vaccination)
-    // CHANGE: Now also sends to guardian email if linked.
+    // SEND COMPLETION CHECKUP REMINDER
     // =========================================================================
     private function sendCompletionCheckupReminder($reminder)
     {
@@ -493,13 +474,11 @@ class SendAppointmentReminders extends Command
                 'is_guardian'        => false,
             ];
 
-            // Send to patient
             if (!empty($reminder->email)) {
                 Mail::to($reminder->email)->send(new AppointmentReminderMail($emailData));
                 $this->info("✓ Completion checkup email sent to patient: {$reminder->full_name} ({$reminder->email})");
             }
 
-            // Send to guardian
             if (!empty($reminder->guardian_user_id)) {
                 $guardian = User::find($reminder->guardian_user_id);
                 if ($guardian && $guardian->email) {

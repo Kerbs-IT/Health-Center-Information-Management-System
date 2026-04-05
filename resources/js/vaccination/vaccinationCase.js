@@ -4,25 +4,188 @@ import { addVaccineInteraction } from "../patient/healthWorkerList";
 import { removeVaccine } from "../patient/healthWorkerList";
 import Swal from "sweetalert2";
 
-// get the element of the view icon
-const viewIcon = document.querySelectorAll(".view-case-info");
-const handledByDropdown = document.getElementById("");
+// =============================================================================
+// VACCINE DOSE CONFIG — loaded from DB once at startup
+// =============================================================================
+let vaccineDoseConfig = {};
 
-// add the interaction to the add btn of vaccine
-// these are the variables need for the adding and removing vaccine in the edit section
+async function loadVaccineDoseConfig() {
+    try {
+        const res = await fetch("/api/vaccines/active");
+        const data = await res.json();
+        data.vaccines.forEach((vaccine) => {
+            vaccineDoseConfig[String(vaccine.id)] = {
+                maxDoses: vaccine.max_doses,
+                name: vaccine.type_of_vaccine,
+                description:
+                    vaccine.max_doses === 1
+                        ? "dose 1"
+                        : `doses 1-${vaccine.max_doses}`,
+            };
+        });
+    } catch (err) {
+        console.error("Failed to load vaccine config:", err);
+    }
+}
+
+// =============================================================================
+// DOSE DROPDOWN — explicit doseDropdownId to avoid wrong modal update
+// =============================================================================
+function updateDoseDropdown(selectedVaccines, doseDropdownId) {
+    const doseDropdown = document.getElementById(doseDropdownId);
+    if (!doseDropdown) return;
+
+    let maxDose = 1;
+    selectedVaccines.forEach((id) => {
+        const config = vaccineDoseConfig[String(id)];
+        if (config) maxDose = Math.max(maxDose, config.maxDoses);
+    });
+
+    const currentValue = doseDropdown.value;
+    doseDropdown.innerHTML = '<option value="">Select Dose</option>';
+
+    for (let i = 1; i <= maxDose; i++) {
+        const option = document.createElement("option");
+        option.value = `${i}`;
+        option.textContent = `Dose ${i}`;
+        doseDropdown.appendChild(option);
+    }
+
+    if (currentValue && parseInt(currentValue) <= maxDose) {
+        doseDropdown.value = currentValue;
+    }
+}
+
+// =============================================================================
+// DOSE VALIDATION
+// =============================================================================
+function validateVaccinesWithDose(selectedVaccines, selectedDose) {
+    const invalidVaccines = [];
+
+    selectedVaccines.forEach((id) => {
+        const config = vaccineDoseConfig[String(id)];
+        if (config && selectedDose > config.maxDoses) {
+            invalidVaccines.push({
+                name: config.name,
+                maxDoses: config.maxDoses,
+                description: config.description,
+            });
+        }
+    });
+
+    return invalidVaccines;
+}
+
+// =============================================================================
+// ELEMENT REFERENCES
+// =============================================================================
 const addVaccineBtn = document.getElementById("update-add-vaccine-btn");
 let selectedVaccinesCon = document.getElementById("update_selected_vaccine");
 let selectedVaccines = [];
 const vaccineInputDropdown = document.getElementById("update_vaccine_type");
-const deleteIcon = document.querySelectorAll(".vaccine");
+const healthWorkerDropdown = document.getElementById("update_handled_by");
+const editvaccinesContainer = document.querySelector(
+    ".update-vaccine-container",
+);
+let vaccineAdministered;
 
-// view the case record
-// === ADD EVENT DELEGATION FOR VIEW VACCINE
+const vaccineContainer = document.getElementById("add-vaccine-container");
+const addselectedVaccineCon = document.getElementById("add-selected-vaccines");
+let addSelectedVaccine = [];
+const vaccineDropdown = document.getElementById("add_vaccine_type");
+const newRecordAddVaccineBtn = document.getElementById("add-vaccination-btn");
+
+// =============================================================================
+// INIT — await config before registering any vaccine interactions
+// =============================================================================
+async function init() {
+    await loadVaccineDoseConfig();
+    // console.log("vaccine config loaded:", vaccineDoseConfig);
+
+    // ✅ ADD CASE - Handle it directly, don't use shared function
+    if (vaccineDropdown && newRecordAddVaccineBtn) {
+        getVaccines().then((item) => {
+            item.vaccines.forEach((vaccine) => {
+                vaccineDropdown.innerHTML += `<option value='${vaccine.id}'>${vaccine.type_of_vaccine}</option>`;
+            });
+        });
+
+        // ✅ Direct event listener - no shared function
+        newRecordAddVaccineBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const selectedText =
+                vaccineDropdown.options[vaccineDropdown.selectedIndex].text;
+            const selectedId = Number(
+                vaccineDropdown.options[vaccineDropdown.selectedIndex].value,
+            );
+
+            if (!vaccineDropdown.value) {
+                Swal.fire({
+                    title: "Vaccine Type",
+                    text: "The input field is empty. Please provide a valid value.",
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+                return;
+            }
+
+            if (addSelectedVaccine.includes(selectedId)) {
+                Swal.fire({
+                    title: "Vaccine Type",
+                    text: "The selected vaccine is already added. Please select another type of vaccine.",
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+                vaccineDropdown.value = "";
+                return;
+            }
+
+            if (selectedId) {
+                vaccineContainer.innerHTML += `
+                    <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${selectedId}>
+                        <p class="mb-0">${selectedText}</p>
+                        <div class="delete-icon d-flex align-items-center justify-content-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
+                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/>
+                            </svg>
+                        </div>
+                    </div>`;
+
+                addSelectedVaccine.push(selectedId);
+                addselectedVaccineCon.value = addSelectedVaccine.join(",");
+
+                // ✅ UPDATE DOSE DROPDOWN IMMEDIATELY
+                updateDoseDropdown(addSelectedVaccine, "add-dose");
+            }
+
+            vaccineDropdown.value = "";
+        });
+    }
+
+    // Edit case vaccine interaction - keep using shared function
+    addVaccineInteraction(
+        addVaccineBtn,
+        vaccineInputDropdown,
+        editvaccinesContainer,
+        selectedVaccinesCon,
+        selectedVaccines,
+        (vaccines) => updateDoseDropdown(vaccines, "edit-dose"),
+    );
+}
+
+init();
+
+// =============================================================================
+// VIEW CASE RECORD
+// =============================================================================
 document.addEventListener("click", async (e) => {
     const viewIcon = e.target.closest(".view-case-info");
     if (!viewIcon) return;
+
     const caseId = viewIcon.dataset.bsCaseId;
-    // handle error
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
         alert("Unable to load case details: Invalid ID");
@@ -32,56 +195,44 @@ document.addEventListener("click", async (e) => {
     try {
         const response = await fetch(`/vaccination-case/record/${caseId}`);
         const data = await response.json();
-        // console.log(data);
 
-        // get the elements
         const patientName = document.getElementById("view-patient-name");
         const dateOfVaccination = document.getElementById(
-            "view-date-of-vaccination"
-        );
-        const timeOfVaccination = document.getElementById(
-            "view-time-of-vaccination"
+            "view-date-of-vaccination",
         );
         const typeOfVaccine = document.getElementById("view-vaccine-type");
         const doseNumber = document.getElementById("view-dose-number");
         const remarks = document.getElementById("view-case-remarks");
-        // handled by name
-        // const handledBy = document.getElementById("view-handled-by");
         const height = document.getElementById("view-height");
         const weight = document.getElementById("view-weight");
         const temperature = document.getElementById("view-temperature");
         const dateOfComeback = document.getElementById("view-date-of-comeback");
 
-        // if (handledBy) {
-        //     handledBy.innerHTML = data.healthWorkerName??'n/a';
-        // }
-
-        // populate the data
-
         patientName.innerHTML = data.vaccinationCase.patient_name ?? "none";
+
         dateOfVaccination.innerHTML = data.vaccinationCase.date_of_vaccination
             ? new Date(
-                  data.vaccinationCase.date_of_vaccination
+                  data.vaccinationCase.date_of_vaccination,
               ).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
               })
             : "none";
+
         dateOfComeback.innerHTML = data.vaccinationCase.date_of_comeback
             ? new Date(
-                  data.vaccinationCase.date_of_comeback
+                  data.vaccinationCase.date_of_comeback,
               ).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
               })
             : "none";
-        // timeOfVaccination.innerHTML = data.vaccinationCase.time ?? "none";
+
         typeOfVaccine.innerHTML = data.vaccinationCase.vaccine_type ?? "none";
-        (doseNumber.innerHTML = data.vaccinationCase.dose_number ?? "none"),
-            (remarks.innerHTML = data.vaccinationCase.remarks ?? "none");
-        // height,weight
+        doseNumber.innerHTML = data.vaccinationCase.dose_number ?? "none";
+        remarks.innerHTML = data.vaccinationCase.remarks ?? "none";
         height.innerHTML = `${data.vaccinationCase.height} cm` ?? "none";
         weight.innerHTML = `${data.vaccinationCase.weight} kg` ?? "none";
         temperature.innerHTML =
@@ -97,178 +248,128 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// load the healthworker list for the update
-
-const caseEditBtn = document.querySelectorAll(".case-edit-btn");
-const healthWorkerDropdown = document.getElementById("update_handled_by");
-const editvaccinesContainer = document.querySelector(".update-vaccine-container");
-let vaccineAdministered;
-
-// ADD VACCINATION CASE SECTION
-
-// this variables needs to be reset every time clicking the add btn so i place it in the top
-const vaccineContainer = document.getElementById("add-vaccine-container");
-const addselectedVaccineCon = document.getElementById("add-selected-vaccines");
-let addSelectedVaccine = [];
-
+// =============================================================================
+// ADD VACCINATION CASE — open modal, reset state
+// =============================================================================
 const addCaseBtn = document.getElementById("add-vaccination-case-record-btn");
 const addCaseForm = document.getElementById("add-vaccination-case-form");
+
 if (addCaseBtn) {
     addCaseBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        // reset the container and value
+
         vaccineContainer.innerHTML = "";
         addselectedVaccineCon.value = "";
         addCaseForm.reset();
         addSelectedVaccine.length = 0;
-        // reset the errors when clicked
+
+        // Reset dose dropdown
+        updateDoseDropdown([], "add-dose");
+
         const vaccinationCaseErrors = document.querySelectorAll(
-            ".add_vaccination_case_record_errors"
+            ".add_vaccination_case_record_errors",
         );
         if (vaccinationCaseErrors) {
             vaccinationCaseErrors.forEach((error) => (error.innerHTML = ""));
         }
-        // populating the health workder input
+
         const addHealthWorkerDropDown = document.getElementById(
-            "dissabled_add_handled_by"
+            "dissabled_add_handled_by",
         );
         const selectedHealthWorkerId = addCaseBtn.dataset.healthWorkerId;
-
-        // console.log('selected health worker id: ', selectedHealthWorkerId);
-
-        // hidden input for handled by
-
         const hidden_handled_by_input = document.getElementById(
-            "hidden_add_handled_by"
+            "hidden_add_handled_by",
         );
 
         hidden_handled_by_input.value = selectedHealthWorkerId;
-        // console.log('hidden add_handled_by: ', hidden_handled_by_input.value);
 
-        // disable the selection of healthworker id
         if (addHealthWorkerDropDown) {
             addHealthWorkerDropDown.disabled = true;
-
-            // use the function to load the health workers from the database
             fetchHealthworkers().then((result) => {
-                // console.log(result);
                 result.healthWorkers.forEach((worker) => {
-                    addHealthWorkerDropDown.innerHTML += `<option value="${
-                        worker.id
-                    }" ${
+                    addHealthWorkerDropDown.innerHTML += `<option value="${worker.id}" ${
                         selectedHealthWorkerId == worker.id ? "selected" : ""
                     }>${worker.staff.full_name}</option>`;
                 });
             });
         }
 
-        // -------------------------- END OF POPULATING HEALTH WORKER DROPDOWN--------------------------------------------
-
-        // ----------- ADD VALUE TO THE DATE ---------------------
-        // MAKE IT THE TODAY'S DATE
         const dateCon = document.getElementById("add-date-of-vaccination");
         const today = new Date();
-        let currentDate = today.toISOString().split("T")[0];
+        dateCon.value = today.toISOString().split("T")[0];
 
-        // provide the value
-        dateCon.value = currentDate;
-        // ----------- END OF ADDING NEW DATE -------------------
-
-        // ------- PROVIDE VALUE TO THE CURRENT TIME -----------------
-        // LET USE THE VARIABLE WE USE IN THE DATE
         const timeCon = document.getElementById("add-time-of-vaccination");
-        // Get hours and minutes
-        let hours = today.getHours().toString().padStart(2, "0");
-        let minutes = today.getMinutes().toString().padStart(2, "0");
-
-        // Format HH:MM
-        let currentTime = `${hours}:${minutes}`;
-
-        // console.log(currentTime);
-
-        // provide the value
-        timeCon.value = currentTime;
-
-        // ----------- END OF ADDING THE TIME ------------------
+        timeCon.value = `${today.getHours().toString().padStart(2, "0")}:${today.getMinutes().toString().padStart(2, "0")}`;
     });
 }
 
-// -----------------------------------------------------------------------------------------------------------------
-// ----------- SELECTING VACCINE ----------------------
-const vaccineDropdown = document.getElementById("add_vaccine_type");
-
-const newRecordAddVaccineBtn = document.getElementById("add-vaccination-btn");
-if (vaccineDropdown) {
-    getVaccines().then((item) => {
-        item.vaccines.forEach((vaccine) => {
-            vaccineDropdown.innerHTML += `<option value='${vaccine.id}'>${vaccine.type_of_vaccine}</option>`;
-        });
-    });
-
-    // add vaccine interaction
-    addVaccineInteraction(
-        newRecordAddVaccineBtn,
-        vaccineDropdown,
-        vaccineContainer,
-        addselectedVaccineCon,
-        addSelectedVaccine
-    );
-}
-
+// =============================================================================
+// ADD CASE — remove vaccine from container
+// =============================================================================
 if (vaccineContainer) {
     vaccineContainer.addEventListener("click", (e) => {
-        //   console.log(
-        //       "before deletion selected input:",
-        //       addselectedVaccineCon.value
-        //   );
-        //   console.log("before deletion:", addSelectedVaccine);
         if (e.target.closest(".vaccine")) {
             const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-            //   console.log("id of element:", vaccineId);
             const deleteBtn = e.target.closest(".delete-icon");
+
             if (deleteBtn) {
                 if (addSelectedVaccine.includes(Number(vaccineId))) {
-                    const selectedElement = addSelectedVaccine.indexOf(
-                        Number(vaccineId)
-                    );
-                    //   console.log("index", selectedElement);
-                    addSelectedVaccine.splice(selectedElement, 1);
+                    const idx = addSelectedVaccine.indexOf(Number(vaccineId));
+                    addSelectedVaccine.splice(idx, 1);
                     addselectedVaccineCon.value = addSelectedVaccine.join(",");
                 }
                 e.target.closest(".vaccine").remove();
+                // ✅ ADD THIS LINE - update immediately without setTimeout
+                updateDoseDropdown(addSelectedVaccine, "add-dose");
             }
-
-            //   console.log("update with deleted id:", addSelectedVaccine);
-            //   console.log("updated value:", addselectedVaccineCon.value);
         }
     });
 }
-// removing selected vaccines
 
-// --------------- END OF REMOVING VACCINE ------------------------
-
+// =============================================================================
+// ADD CASE — submit with dose validation
+// =============================================================================
 const vaccinationSubmitCaseBtn = document.getElementById("add_case_save_btn");
 
 if (vaccinationSubmitCaseBtn) {
     vaccinationSubmitCaseBtn.addEventListener("click", async (e) => {
         e.preventDefault();
-        // form data
+
+        // Dose validation before submit
+        const addDoseDropdown = document.getElementById("add-dose");
+        const selectedDose = parseInt(addDoseDropdown?.value);
+
+        if (addSelectedVaccine.length > 0 && selectedDose) {
+            const invalidVaccines = validateVaccinesWithDose(
+                addSelectedVaccine,
+                selectedDose,
+            );
+            if (invalidVaccines.length > 0) {
+                const invalidList = invalidVaccines
+                    .map((v) => `• ${v.name} (${v.description})`)
+                    .join("<br>");
+                Swal.fire({
+                    title: "Dose Mismatch",
+                    html: `The following vaccines cannot have Dose ${selectedDose}:<br><br>${invalidList}<br><br><strong>Please separate these vaccines or select an appropriate dose number.</strong>`,
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+                return;
+            }
+        }
+
         const addCaseForm = document.getElementById(
-            "add-vaccination-case-form"
+            "add-vaccination-case-form",
         );
         const caseFormData = new FormData(addCaseForm);
         const caseId = e.target.dataset.bsCaseId;
-        // console.log(caseId);
-
-        // for (let [key, value] of caseFormData.entries()) {
-        //     console.log(`${key}: ${value}`);
-        // }
 
         const response = await fetch(`/add-vaccination-case/${caseId}`, {
-            method: "POST", // Yes, use POST
+            method: "POST",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
+                    'meta[name="csrf-token"]',
                 ).content,
                 Accept: "application/json",
             },
@@ -276,20 +377,19 @@ if (vaccinationSubmitCaseBtn) {
         });
 
         const data = await response.json();
+
         if (!response.ok) {
             const vaccinationCaseErrors = document.querySelectorAll(
-                ".add_vaccination_case_record_errors"
+                ".add_vaccination_case_record_errors",
             );
             if (vaccinationCaseErrors) {
                 vaccinationCaseErrors.forEach(
-                    (error) => (error.innerHTML = "")
+                    (error) => (error.innerHTML = ""),
                 );
             }
-            // Format errors for display
 
             let errorMessage = "";
             if (typeof data.errors === "string") {
-                // Handle encoded HTML entities
                 errorMessage = data.errors
                     .replace(/&lt;br&gt;/g, "<br>")
                     .replace(/&lt;br\/&gt;/g, "<br>")
@@ -305,6 +405,7 @@ if (vaccinationSubmitCaseBtn) {
                     })
                     .join("<br>");
             }
+
             Swal.fire({
                 title: "Adding New Vaccination Case",
                 html: errorMessage,
@@ -313,18 +414,17 @@ if (vaccinationSubmitCaseBtn) {
                 confirmButtonText: "OK",
             });
 
-            // errors variables
             const healthWorkerError = document.getElementById(
-                "add-health-worker-error"
+                "add-health-worker-error",
             );
             const dateError = document.getElementById("add-date-error");
             const timeError = document.getElementById("add-time-error");
             const selectedVaccineError = document.getElementById(
-                "selected-vaccine-error"
+                "selected-vaccine-error",
             );
             const doseError = document.getElementById("add-dose-error");
             const dateOfComebackError = document.getElementById(
-                "add-date-of-comeback-error"
+                "add-date-of-comeback-error",
             );
 
             healthWorkerError.innerHTML = data.errors?.add_handled_by ?? "";
@@ -338,7 +438,6 @@ if (vaccinationSubmitCaseBtn) {
                     data.errors?.add_date_of_comeback ?? "";
             }
 
-            // if the cancele btn is click
             const cancelBtn = document.getElementById("add-cancel-btn");
             cancelBtn.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -351,93 +450,79 @@ if (vaccinationSubmitCaseBtn) {
 
             return;
         }
-        // add the livewire dispatch
+
         Livewire.dispatch("refreshTable");
 
-        // reset error since it pass the errors
-
         const vaccinationCaseErrors = document.querySelectorAll(
-            ".add_vaccination_case_record_errors"
+            ".add_vaccination_case_record_errors",
         );
         if (vaccinationCaseErrors) {
             vaccinationCaseErrors.forEach((error) => (error.innerHTML = ""));
         }
 
-        // if there's no error
         Swal.fire({
             title: "Adding New Vaccination Case",
-            text: data.message, // this will make the text capitalize each word,
+            text: data.message,
             icon: "success",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
                 const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("vaccinationModal")
+                    document.getElementById("vaccinationModal"),
                 );
                 modal.hide();
             }
         });
+
         addCaseForm.reset();
     });
 }
 
-// END OF ADDING VACCINATION CASE SECTION
-
-// editvaccineCase modal
+// =============================================================================
+// EDIT CASE — open modal, load data
+// =============================================================================
 const editCaseModal = document.getElementById("editVaccinationModal");
-// this functionality empty the selected vaccines to avoid the redundancy when open and closing the modal
-
-// id of the record
 let caseRecordId = document.getElementById("case_record_id");
 selectedVaccines = [];
 
-// === EDIT CASE EVENT DELEGATION
 document.addEventListener("click", async (e) => {
     const caseEditBtn = e.target.closest(".case-edit-btn");
     if (!caseEditBtn) return;
 
     const caseId = caseEditBtn.dataset.bsCaseId;
-    // handle error
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
         alert("Unable to load case details: Invalid ID");
         return;
     }
-    // RESET THE ERROR
+
     const errorElements = document.querySelectorAll(".error-text");
-    errorElements.forEach(error => error.innerHTML = "");
+    errorElements.forEach((error) => (error.innerHTML = ""));
 
     selectedVaccines.length = 0;
-
-    //  getVaccine function is use to get the list of the vaccines
-    const vaccineCon = document.getElementById("update_vaccine_type");
-
-    // empty the vaccine container to avoid the redundancy from open and closing of the edit modal
     editvaccinesContainer.innerHTML = "";
+
+    // Clear previous options to avoid duplicates on re-open
+    const vaccineCon = document.getElementById("update_vaccine_type");
+    vaccineCon.innerHTML = '<option value="">Select Vaccine</option>';
+
     try {
         caseRecordId.value = caseId;
 
         const response = await fetch(`/vaccination-case/record/${caseId}`);
         const data = await response.json();
-        // console.log(data);
-        vaccineAdministered = data.vaccineAdministered;
-        // console.log(vaccineAdministered);
 
-        // get the id from the data we got from the database
+        vaccineAdministered = data.vaccineAdministered;
         const healthWorkerId = data.vaccinationCase.health_worker_id;
 
-        // since the function fetch Health workers is will return promises we need to use the 'then' to use the properties of it.
-        // then loop through the result, it is collection of healthworkers
         if (healthWorkerDropdown) {
+            healthWorkerDropdown.innerHTML = "";
             fetchHealthworkers().then((result) => {
                 result.healthWorkers.forEach((element) => {
-                    // console.log(element);
-                    healthWorkerDropdown.innerHTML += `<option value="${
-                        element.id
-                    }" ${healthWorkerId == element.id ? "selected" : ""}>${
-                        element.staff.full_name
-                    }</option>`;
+                    healthWorkerDropdown.innerHTML += `<option value="${element.id}" ${
+                        healthWorkerId == element.id ? "selected" : ""
+                    }>${element.staff.full_name}</option>`;
                 });
             });
         }
@@ -448,14 +533,14 @@ document.addEventListener("click", async (e) => {
             });
         });
 
-        // load the current selected vaccines
-        const vaccines = data.vaccineAdministered;
-        vaccines.forEach((vaccine) => {
-            editvaccinesContainer.innerHTML += ` <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${vaccine.vaccine_id}>
+        // Load current selected vaccines
+        data.vaccineAdministered.forEach((vaccine) => {
+            editvaccinesContainer.innerHTML += `
+                <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${vaccine.vaccine_id}>
                     <p class="mb-0">${vaccine.vaccine_type}</p>
                     <div class="delete-icon d-flex align-items-center justify-content-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
-                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/>
                         </svg>
                     </div>
                 </div>`;
@@ -463,28 +548,25 @@ document.addEventListener("click", async (e) => {
             selectedVaccinesCon.value = selectedVaccines.join();
         });
 
-        // console.log("currently seleected:", selectedVaccines);
-        // console.log("hidden input value:", selectedVaccinesCon.value);
+        // Update edit dose dropdown based on loaded vaccines
+        updateDoseDropdown(selectedVaccines, "edit-dose");
 
-        // LOAD OTHER DATA OF THE PATIENT
         const doseSelect = document.getElementById("edit-dose");
         const patientName = document.getElementById("edit-patient-name");
         const date0fVaccination = document.getElementById(
-            "edit_date_of_vaccination"
+            "edit_date_of_vaccination",
         );
         const timeOfVaccination = document.getElementById(
-            "edit-time-of-vaccination"
+            "edit-time-of-vaccination",
         );
         const remarks = document.getElementById("edit-remarks");
-
         const height = document.getElementById("edit-height");
         const weight = document.getElementById("edit-weight");
         const temperature = document.getElementById("edit-temperature");
         const date_of_comeback = document.getElementById(
-            "edit-date-of-comeback"
+            "edit-date-of-comeback",
         );
 
-        // provide the values
         patientName.value = data.vaccinationCase.patient_name;
         date0fVaccination.value = data.vaccinationCase.date_of_vaccination;
         timeOfVaccination.value = data.vaccinationCase.time;
@@ -495,14 +577,13 @@ document.addEventListener("click", async (e) => {
         date_of_comeback.value = data.vaccinationCase.date_of_comeback;
 
         for (let option of doseSelect.options) {
-            // console.log(data.vaccinationCase.dose_number);
             if (option.value == data.vaccinationCase.dose_number) {
                 option.selected = true;
                 break;
             }
         }
     } catch (error) {
-        console.error("Error viewing case:", error);
+        console.error("Error loading edit case:", error);
         Swal.fire({
             title: "Error",
             text: `Failed to view record: ${error.message}`,
@@ -512,113 +593,112 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// this is the function for the adding of selected vaccine in the option
-addVaccineInteraction(
-    addVaccineBtn,
-    vaccineInputDropdown,
-    editvaccinesContainer,
-    selectedVaccinesCon,
-    selectedVaccines
-);
-
-// const vaccineAdministered = document.getElementById("vaccine-administered");
-// console.log(vaccineAdministered.dataset.bsVaccineData);
-// function to remove the vaccine from the selected
-
+// =============================================================================
+// EDIT CASE — remove vaccine from container
+// =============================================================================
 editvaccinesContainer.addEventListener("click", (e) => {
-    // console.log("before deletion:", selectedVaccines);
     if (e.target.closest(".vaccine")) {
         const vaccineId = e.target.closest(".vaccine").dataset.bsId;
-        // console.log("id of element:", vaccineId);
         const deleteBtn = e.target.closest(".delete-icon");
+
         if (deleteBtn) {
             if (selectedVaccines.includes(Number(vaccineId))) {
-                const selectedElement = selectedVaccines.indexOf(
-                    Number(vaccineId)
-                );
-                // console.log("index", selectedElement);
-                selectedVaccines.splice(selectedElement, 1);
+                const idx = selectedVaccines.indexOf(Number(vaccineId));
+                selectedVaccines.splice(idx, 1);
                 selectedVaccinesCon.value = selectedVaccines.join(",");
             }
             e.target.closest(".vaccine").remove();
+            setTimeout(
+                () => updateDoseDropdown(selectedVaccines, "edit-dose"),
+                100,
+            );
         }
-
-        // console.log("update with deleted id:", selectedVaccines);
-        // console.log("updated value:", selectedVaccinesCon.value);
     }
 });
 
-// --------------------------------------------------------------------------------------------------------------
-// handles the update form of the vaccination case
-// get the update save btn
+// =============================================================================
+// EDIT CASE — submit with dose validation
+// =============================================================================
 const updateSaveBtn = document.getElementById("update-save-btn");
 
 updateSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+
+    // Dose validation before submit
+    const editDoseDropdown = document.getElementById("edit-dose");
+    const selectedDose = parseInt(editDoseDropdown?.value);
+
+    if (selectedVaccines.length > 0 && selectedDose) {
+        const invalidVaccines = validateVaccinesWithDose(
+            selectedVaccines,
+            selectedDose,
+        );
+        if (invalidVaccines.length > 0) {
+            const invalidList = invalidVaccines
+                .map((v) => `• ${v.name} (${v.description})`)
+                .join("<br>");
+            Swal.fire({
+                title: "Dose Mismatch",
+                html: `The following vaccines cannot have Dose ${selectedDose}:<br><br>${invalidList}<br><br><strong>Please separate these vaccines or select an appropriate dose number.</strong>`,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+            return;
+        }
+    }
+
     try {
         const form = document.getElementById("edit-vaccination-case-form");
         const formData = new FormData(form);
-        //   for (let [key, value] of formData.entries()) {
-        //       console.log(`${key}: ${value}`);
-        //   }
-
         const caseId = document.getElementById("case_record_id");
 
         const response = await fetch(
             `/vaccine/update/case-record/${caseId.value}`,
             {
-                method: "POST", // Yes, use POST
+                method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
                 body: formData,
-            }
+            },
         );
 
         const data = await response.json();
-        // error elements
         const errorElements = document.querySelectorAll(".error-text");
+
         if (!response.ok) {
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
+
             Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`update_${key}_error`)) {
-                    document.getElementById(`update_${key}_error`).textContent =
-                        value;
-                }
+                const el = document.getElementById(`update_${key}_error`);
+                if (el) el.textContent = value;
             });
 
-            let message = "";
-
-            if (data.errors) {
-                if (typeof data.errors == "object") {
-                    message = Object.values(data.errors).flat().join("\n");
-                } else {
-                    message = data.errors;
-                }
-            } else {
-                message = "An unexpected error occurred.";
-            }
+            const message = data.errors
+                ? typeof data.errors == "object"
+                    ? Object.values(data.errors).flat().join("\n")
+                    : data.errors
+                : "An unexpected error occurred.";
 
             Swal.fire({
                 title: "Update Case Information",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
         } else {
-            // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
             Livewire.dispatch("refreshTable");
-
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
-            // if there's no error
+
             Swal.fire({
                 title: "Update",
                 text: data.message,
@@ -628,37 +708,35 @@ updateSaveBtn.addEventListener("click", async (e) => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("editVaccinationModal")
+                        document.getElementById("editVaccinationModal"),
                     );
                     modal.hide();
                 }
             });
-
-            // close the modal
         }
     } catch (error) {
         console.error(error);
     }
 });
 
-// ARCHIVE FUNCTIONALITY
-
-// === Archived event delegation
-const archiveBtns = document.querySelectorAll(".archive-record-icon");
-
+// =============================================================================
+// ARCHIVE CASE
+// =============================================================================
 document.addEventListener("click", async (e) => {
     const archiveBtn = e.target.closest(".archive-record-icon");
     if (!archiveBtn) return;
+
     const caseId = archiveBtn.dataset.bsCaseId;
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
         alert("Unable to load case details: Invalid ID");
         return;
     }
+
     try {
         Swal.fire({
             title: "Are you sure?",
-            text: "The Vaccination Case Record will be moved to achived status.",
+            text: "The Vaccination Case Record will be moved to archived status.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
@@ -673,53 +751,43 @@ document.addEventListener("click", async (e) => {
                             method: "DELETE",
                             headers: {
                                 "X-CSRF-TOKEN": document.querySelector(
-                                    'meta[name="csrf-token"]'
+                                    'meta[name="csrf-token"]',
                                 ).content,
                             },
-                        }
+                        },
                     );
 
                     if (response.ok) {
                         const data = await response.json();
-
-                        // Remove the row from the table
                         e.target.closest("tr").remove();
 
-                        // Refresh Livewire table
                         if (typeof Livewire !== "undefined") {
                             Livewire.dispatch(
-                                "vaccinationMasterlistRefreshTable"
+                                "vaccinationMasterlistRefreshTable",
                             );
-                        } else {
-                            console.warn("Livewire is not available");
                         }
 
-                        // Show success message
                         Swal.fire({
                             icon: "success",
-                            title: "Deleted!",
+                            title: "Archived!",
                             text:
                                 data.message ||
-                                "Vaccination case has been deleted successfully.",
+                                "Vaccination case has been archived successfully.",
                             timer: 1000,
                             showConfirmButton: false,
                         });
                     } else {
                         const data = await response.json();
-
-                        // Show error message from server
                         Swal.fire({
                             icon: "error",
-                            title: "Delete Failed",
+                            title: "Archive Failed",
                             text:
                                 data.message ||
-                                "Failed to delete vaccination case. Please try again.",
+                                "Failed to archive vaccination case. Please try again.",
                         });
                     }
                 } catch (error) {
-                    console.error("Error deleting vaccination case:", error);
-
-                    // Show error message for network or other errors
+                    console.error("Error archiving vaccination case:", error);
                     Swal.fire({
                         icon: "error",
                         title: "Error",
@@ -729,16 +797,19 @@ document.addEventListener("click", async (e) => {
             }
         });
     } catch (error) {
-        console.error("Error deleting case:", error);
+        console.error("Error archiving case:", error);
         Swal.fire({
             title: "Error",
-            text: `Failed to delete record: ${error.message}`,
+            text: `Failed to archive record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
     }
 });
 
+// =============================================================================
+// HELPERS
+// =============================================================================
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

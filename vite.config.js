@@ -112,6 +112,7 @@ export default defineConfig({
                 "resources/js/general_consultation/addPatient.js",
                 "resources/js/general_consultation/editPatientDetails.js",
                 "resources/js/general_consultation/gcCase.js",
+                "resources/js/manageVaccines/manage-vaccines.js",
             ],
             refresh: true,
         }),

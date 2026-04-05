@@ -84,8 +84,18 @@ class SendOverdueNotifications extends Command
         $overdueData = [];
         $isStaff = $staff->role === 'staff';
 
-        // 1. VACCINATION OVERDUE - Check only the last record for each patient
-        // Get last vaccination record per medical record case
+        // =========================================================
+        // 1. VACCINATION OVERDUE
+        // =========================================================
+
+        // DYNAMIC: Load vaccine config from DB instead of hardcoded array
+        // Keys are vaccine_acronym (e.g. 'BCG', 'PENTA'), values are max_doses
+        $vaccineDoseConfig = DB::table('vaccines')
+            ->where('status', 'Active')
+            ->pluck('max_doses', 'vaccine_acronym')
+            ->map(fn($doses) => (int) $doses)
+            ->toArray();
+
         $lastVaccinationSubquery = DB::table('vaccination_case_records as vcr')
             ->select(
                 'vcr.medical_record_case_id',
@@ -95,14 +105,13 @@ class SendOverdueNotifications extends Command
             ->where('vcr.vaccination_status', 'completed')
             ->groupBy('vcr.medical_record_case_id');
 
-        // Build the main query with staff filtering
         $vaccinationBaseQuery = DB::table('vaccination_case_records as vcr')
             ->joinSub($lastVaccinationSubquery, 'last_vcr', function ($join) {
                 $join->on('vcr.id', '=', 'last_vcr.last_record_id');
             })
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'vcr.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-            ->whereDate('vcr.date_of_comeback', '<', $today) // Only past dates (OVERDUE, not today)
+            ->whereDate('vcr.date_of_comeback', '<', $today)
             ->where('p.status', '!=', 'Archived');
 
         if ($isStaff) {
@@ -110,93 +119,85 @@ class SendOverdueNotifications extends Command
                 ->where('vmr.health_worker_id', $staff->id);
         }
 
-        // Get all potential overdue cases WITH patient_id
         $vaccinationCases = $vaccinationBaseQuery
             ->select('vcr.*', 'mrc.id as medical_record_case_id', 'p.id as patient_id')
             ->get();
 
-        // Track unique patients
         $countedPatients = [];
-        $vaccineDoseConfig = [
-            'BCG' => ['maxDoses' => 1],
-            'Hepatitis B' => ['maxDoses' => 1],
-            'PENTA' => ['maxDoses' => 3],
-            'OPV' => ['maxDoses' => 3],
-            'IPV' => ['maxDoses' => 2],
-            'PCV' => ['maxDoses' => 3],
-            'MMR' => ['maxDoses' => 2],
-            'MCV' => ['maxDoses' => 2],
-            'TD' => ['maxDoses' => 2],
-            'Human Papiliomavirus' => ['maxDoses' => 2],
-            'Influenza Vaccine' => ['maxDoses' => 3],
-            'Pnuemococcal Vaccine' => ['maxDoses' => 3],
-        ];
 
         foreach ($vaccinationCases as $case) {
-            // Skip if patient already counted
             if (in_array($case->patient_id, $countedPatients)) {
                 continue;
             }
 
-            $vaccines = explode(',', $case->vaccine_type ?? '');
-            $currentDose = $case->dose_number;
-            $nextDosage = $currentDose + 1;
+            $vaccines = array_map('trim', explode(',', $case->vaccine_type ?? ''));
+            $currentDose = (int) $case->dose_number;
+            $nextDosage  = $currentDose + 1;
             $allVaccinesComplete = true;
             $hasPendingDose = false;
 
-            foreach ($vaccines as $vaccine) {
-                $vaccineAcronym = trim($vaccine);
+            foreach ($vaccines as $vaccineAcronym) {
+                if ($vaccineAcronym === '') {
+                    continue;
+                }
 
-                if (isset($vaccineDoseConfig[$vaccineAcronym])) {
-                    $maxDoses = $vaccineDoseConfig[$vaccineAcronym]['maxDoses'];
+                // DYNAMIC: Look up max doses from DB result; skip if vaccine not found
+                // Uses case-insensitive match to handle acronym casing differences
+                $matchedKey = collect($vaccineDoseConfig)->keys()->first(
+                    fn($key) => strtoupper($key) === strtoupper($vaccineAcronym)
+                );
 
-                    // Check if this vaccine still has doses remaining
-                    if ($currentDose < $maxDoses) {
-                        $allVaccinesComplete = false;
+                if ($matchedKey === null) {
+                    // Vaccine not in DB (e.g. archived or unknown) — skip it
+                    continue;
+                }
 
-                        // Check if next dose doesn't exist yet
-                        $nextDoseExists = DB::table('vaccination_case_records')
-                            ->where('medical_record_case_id', $case->medical_record_case_id)
-                            ->where('vaccine_type', 'LIKE', '%' . $vaccineAcronym . '%')
-                            ->where('status', '!=', 'Archived')
-                            ->where('dose_number', $nextDosage)
-                            ->exists();
+                $maxDoses = $vaccineDoseConfig[$matchedKey];
 
-                        if (!$nextDoseExists) {
-                            $hasPendingDose = true;
-                            break;
-                        }
+                if ($currentDose < $maxDoses) {
+                    $allVaccinesComplete = false;
+
+                    $nextDoseExists = DB::table('vaccination_case_records')
+                        ->where('medical_record_case_id', $case->medical_record_case_id)
+                        ->where('vaccine_type', 'LIKE', '%' . $matchedKey . '%')
+                        ->where('status', '!=', 'Archived')
+                        ->where('dose_number', $nextDosage)
+                        ->exists();
+
+                    if (!$nextDoseExists) {
+                        $hasPendingDose = true;
+                        break;
                     }
                 }
             }
 
-            // Only count unique patients
             if (!$allVaccinesComplete && $hasPendingDose) {
                 $countedPatients[] = $case->patient_id;
             }
         }
 
         $vaccinationCount = count($countedPatients);
-        // DEBUG - Remove after fixing
+
+        // DEBUG block (remove after verifying)
         $this->info("=== VACCINATION DEBUG ===");
+        $this->info("Vaccine config loaded from DB: " . count($vaccineDoseConfig) . " active vaccines");
         $this->info("Total cases found: " . $vaccinationCases->count());
         $this->info("Unique patients counted: " . $vaccinationCount);
-        if (!empty($countedPatients)) {
-            foreach ($countedPatients as $patientId) {
-                $patient = DB::table('patients')->where('id', $patientId)->first();
-                $this->info("  - Patient ID: {$patientId}, Name: {$patient->first_name} {$patient->last_name}");
-            }
+        foreach ($countedPatients as $patientId) {
+            $patient = DB::table('patients')->where('id', $patientId)->first();
+            $this->info("  - Patient ID: {$patientId}, Name: {$patient->first_name} {$patient->last_name}");
         }
-
         $this->info("=========================");
+
         $overdueData[] = [
-            'type' => 'vaccination',
+            'type'  => 'vaccination',
             'label' => 'Vaccination',
             'count' => $vaccinationCount,
-            'icon' => '💉',
+            'icon'  => '💉',
             'route' => '/patient-record/vaccination',
             'color' => '#F44336'
         ];
+
         // 2. PRENATAL OVERDUE - Check only the last record for each patient
         $lastPrenatalSubquery = DB::table('pregnancy_checkups as pc')
             ->select(

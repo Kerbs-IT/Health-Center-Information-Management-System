@@ -163,6 +163,22 @@ Route::middleware(['role:nurse'])->group(function () {
     Route::get('/puroks/archived', function () {
         return view('purokManagement.purok-archive', ['page' => 'Archived Barangay Puroks']);
     })->name('puroks.archived');
+
+    // ==================== MANAGE VACCINES ===============================
+    // Manage Vaccines page (Livewire view)
+    Route::get('/manage-vaccines', function () {
+        return view('manageVaccines.manage-vaccines',['page'=> 'Manage Vaccines']);
+    })->name('manage.vaccine.index')->middleware(['auth']);
+
+    // Vaccine API routes (called via fetch from JS)
+    Route::prefix('api/vaccines')->middleware(['auth'])->group(function () {
+        Route::get('/',         [vaccineController::class, 'getVaccines'])->name('api.vaccines.index');
+        Route::get('/active',   [vaccineController::class, 'getActiveVaccines'])->name('api.vaccines.active');
+        Route::post('/',        [vaccineController::class, 'store'])->name('api.vaccines.store');
+        Route::put('/{id}',     [vaccineController::class, 'update'])->name('api.vaccines.update');
+        Route::patch('/{id}/archive',  [vaccineController::class, 'archive'])->name('api.vaccines.archive');
+        Route::patch('/{id}/restore',  [vaccineController::class, 'restore'])->name('api.vaccines.restore');
+    });
 });
 
 // =============== health worker only

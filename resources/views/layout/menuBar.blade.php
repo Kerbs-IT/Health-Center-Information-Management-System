@@ -219,7 +219,7 @@
         @endif
         @if(Auth::user() -> role == 'nurse')
         <div class="wrapper w-100 d-flex justify-content-center">
-            <a href="{{ route('health.worker') }}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="healthWorker">
+            <a href="{{ route('manage.vaccine.index') }}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="manage_vaccines">
                 <i class="fa-solid fa-syringe"></i>
                 <h4 class="mb-0 fs-5">Manage Vaccines</h4>
             </a>

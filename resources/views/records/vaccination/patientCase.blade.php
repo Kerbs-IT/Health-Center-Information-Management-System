@@ -166,7 +166,7 @@
 
                                                 <div class="mb-2 w-100">
                                                     <label for="dose">Vaccine Dose Number:</label>
-                                                    <select id="dose" name="add_record_dose" required class="form-select" id="add_case_dose">
+                                                    <select id="add-dose" name="add_record_dose" required class="form-select">
                                                         <option value="" disabled selected>Select Dose</option>
                                                         <option value="1">1st Dose</option>
                                                         <option value="2">2nd Dose</option>
