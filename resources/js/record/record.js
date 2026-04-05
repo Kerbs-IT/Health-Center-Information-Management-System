@@ -41,6 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
             seniorCitizen: "seniorCitizen",
             tbDots: "tbDots",
             familyPlanning: "family-planning",
+            "general-consultation": "general-consultation", // ← add this
+            generalConsultation: "general-consultation",
         };
 
         const routeType = routeTypeMap[recordType] || recordType;

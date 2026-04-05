@@ -570,6 +570,7 @@ class PatientList extends Component
             'family-planning',
             'senior-citizen',
             'tb-dots',
+            'general-consultation'
         ];
 
         return view('livewire.patient-list', [

@@ -106,7 +106,7 @@ class RecordsTable extends Component
 
     public function exportPdf()
     {
-        return redirect()->route('tb-dots.pdf', [
+        return redirect()->route('general-consultation.pdf', [
             'search'        => $this->search,
             'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,

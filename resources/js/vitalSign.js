@@ -63,7 +63,7 @@ if (
     Inputmask({
         alias: "decimal",
         digits: 2,
-        min: 0.1,
+        min: 0,
         max: 500,
         rightAlign: false,
     }).mask(weight);

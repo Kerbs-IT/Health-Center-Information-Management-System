@@ -544,6 +544,7 @@ class RecordsController extends Controller
                 'familyPlanning'  => 'family-planning',
                 'seniorCitizen'   => 'senior-citizen',
                 'tbDots'          => 'tb-dots',
+                'general-consultation' => 'general-consultation'
             ];
 
             $caseType = $caseTypeMap[$typeOfPatient] ?? $typeOfPatient;
@@ -590,12 +591,13 @@ class RecordsController extends Controller
 
             // Build a readable display name for the message
             $displayNameMap = [
-                'vaccination'     => 'Vaccination',
-                'prenatal'        => 'Prenatal',
-                'family-planning' => 'Family Planning',
-                'familyPlanning'  => 'Family Planning',
-                'seniorCitizen'   => 'Senior Citizen',
-                'tbDots'          => 'TB-DOTS',
+                'vaccination'          => 'Vaccination',
+                'prenatal'             => 'Prenatal',
+                'family-planning'      => 'Family Planning',
+                'familyPlanning'       => 'Family Planning',
+                'seniorCitizen'        => 'Senior Citizen',
+                'tbDots'               => 'TB-DOTS',
+                'general-consultation' => 'General Consultation',  
             ];
 
             $displayName = $displayNameMap[$typeOfPatient] ?? ucfirst($typeOfPatient);

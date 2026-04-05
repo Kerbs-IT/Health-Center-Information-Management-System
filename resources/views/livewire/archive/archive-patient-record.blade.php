@@ -7,7 +7,8 @@
     'family-planning' => 'record.family.planning',
     'tb-dots' => 'record.tb-dots',
     'senior-citizen' => 'record.senior.citizen',
-    'vaccination' => 'record.vaccination'
+    'vaccination' => 'record.vaccination',
+    'general-consultation' => 'record.general.consultation'
     ];
 
     // If showing all types, back to "All Records", otherwise back to specific type

@@ -25,7 +25,8 @@ class staff extends Model
         'civil_status',
         'contact_number',
         'nationality',
-        'suffix'
+        'suffix',
+        'status'
 
     ];
 
@@ -46,6 +47,18 @@ class staff extends Model
     {
         return $this->hasMany(vaccination_case_records::class, 'health_worker_id', 'user_id');
     }
+
+    // general consultation
+    public function gc_medical_record()
+    {
+        return $this->hasMany(gc_medical_records::class, 'health_worker_id','user_id');
+    }
+
+    public function gc_case_record()
+    {
+        return $this->hasMany(gc_case_records::class, 'health_worker_id','user_id');
+    }
+
     // prenatal
     public function prenatal_medical_records(){
         return $this->hasMany(prenatal_medical_records::class, 'health_worker_id', 'user_id');

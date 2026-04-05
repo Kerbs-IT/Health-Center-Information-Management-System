@@ -62,7 +62,6 @@
                 <tr class="px-">
                     <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                     <td>{{ $record['type_of_record'] }}</td>
-                    <td>Nurse Joy</td>
                     <td>{{ optional($record['created_at'])->format('M j, Y') }}</td>
                     <td><span class="badge bg-secondary">{{ $record['status'] }}</span></td>
                     <td>

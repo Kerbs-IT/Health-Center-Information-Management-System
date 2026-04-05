@@ -1,4 +1,4 @@
-<div class="card shadow p-md-4 p-1 mx-1">
+<div class="card shadow p-md-4 p-1 mx-1 d-flex flex-column" style="height: 100%;">
 
     <h4>GENERAL CONSULTATION</h4>
 
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="buttons w-100 align-self-center d-flex flex-column flex-sm-row justify-content-end gap-2 mt-2">
+    <div class="buttons w-100 align-self-center d-flex flex-column flex-sm-row justify-content-end gap-2 mt-auto">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
         <button type="button" class="btn btn-success px-5 py-2 fs-5" id="gc_save_record_btn">Save Record</button>
     </div>

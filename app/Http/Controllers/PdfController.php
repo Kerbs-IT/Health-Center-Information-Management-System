@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\brgy_unit;
 use App\Models\family_planning_case_records;
 use App\Models\family_planning_side_b_records;
+use App\Models\gc_case_records;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
 use App\Models\patients;
@@ -319,6 +320,74 @@ class PdfController extends Controller
 
         return $pdf->download('tb-dots-records-' . date('Y-m-d') . '.pdf');
     }
+    public function generateGcPdf(Request $request)
+    {
+        // Get parameters - add dd() to debug
+        $search = $request->input('search', '');
+        $sortField = $request->input('sortField', 'created_at');
+        $sortDirection = $request->input('sortDirection', 'asc');
+        $entriesPerPage = $request->input('entries', 10);
+        $startDate = $request->input('startDate', Carbon::now()->subYear()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->input("endDate", Carbon::now()->subYear()->endOfYear()->format('Y-m-d'));
+        // Debug: Check what we received
+        // dd([
+        //     'search' => $search,
+        //     'sortField' => $sortField,
+        //     'sortDirection' => $sortDirection,
+        // ]);
+
+        // Define allowed sort fields
+        $allowedSortFields = [
+            'created_at',
+            'full_name',
+            'age',
+            'sex',
+            'contact_number',
+            'patients.full_name',
+            'patients.age',
+            'patients.sex',
+            'patients.contact_number'
+        ];
+
+        // Validate
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'created_at';
+        }
+
+        if (!in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+        $generalConsultation =  medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('type_of_case', 'general-consultation')
+            ->where('patients.full_name', 'like', '%' . $search . '%')
+            ->where('patients.status', '!=', 'Archived')
+            ->when(Auth::user()->role == 'staff', function ($query) {
+                // Add join to vaccination_medical_records to filter by health_worker_id
+                $query->join('gc_medical_records', 'gc_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('gc_medical_records.health_worker_id', Auth::id());
+            })
+            ->whereDate('patients.created_at', '>=', $startDate)
+            ->whereDate('patients.created_at', '<=', $endDate)
+            ->orderBy($sortField, $sortDirection)
+            ->get();
+        $recordPages =  $generalConsultation->chunk($entriesPerPage);
+
+        $pdf = Pdf::loadView('pdf.gc-records', [
+            'recordPages' => $recordPages, // Changed from vaccinationRecord
+            'totalRecords' =>  $generalConsultation->count(),
+            'entriesPerPage' => $entriesPerPage,
+            'search' => $search,
+            'sortField' => $sortField,
+            'sortDirection' => $sortDirection,
+            'startDate' => Carbon::parse($startDate)->format('M-d-Y'),
+            'endDate' => Carbon::parse($endDate)->format('M-d-Y')
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('general-consultation-records-' . date('Y-m-d') . '.pdf');
+    }
     public function generateFamilyPlanningPdf(Request $request)
     {
         // Get parameters - add dd() to debug
@@ -565,14 +634,6 @@ class PdfController extends Controller
             $DOHlogoBase64 = base64_encode(file_get_contents(public_path('images/DOH_logo.png')));
             $DOHLogoSrc = 'data:image/png;base64,' . $DOHlogoBase64;
 
-            // return view('pdf.prenatal.prenatal-case', [
-            //     'caseInfo' => $case,
-            //     'patient' => $medicalRecord->patient,
-            //     'medicalRecord' => $medicalRecord,
-            //     'address' => $fullAddress,
-            //     'treceLogo' => $treceLogoSrc,
-            //     'DOHlogo' => $DOHLogoSrc
-            // ]);
 
             $pdf = Pdf::loadView('pdf.prenatal.prenatal-case', [
                 'caseInfo' => $case,
@@ -591,15 +652,6 @@ class PdfController extends Controller
                 ->setOption('margin-left', 10)
                 ->setOption('margin-right', 10)
                 ->setOption('zoom', 0.85);
-
-            // return view('pdf.prenatal.prenatal-case', [
-            //     'caseInfo' => $case,
-            //     'patient' => $medicalRecord->patient,
-            //     'medicalRecord' => $medicalRecord,
-            //     'address' => $fullAddress,
-            //     'treceLogo' => $treceLogoSrc,
-            //     'DOHlogo' => $DOHLogoSrc
-            // ]);
 
             return $pdf->download('prenatal-case-' . Carbon::today()->format('Y-m-d') . '.pdf');
         } catch (\Exception $e) {
@@ -1620,6 +1672,66 @@ class PdfController extends Controller
             ], 422);
         }
     }
+    public function generateGcCasePdf(Request $request)
+    {
+        $id = $request->input('caseId', '');
+
+        try {
+            // Load the case with its related medical record case
+            $case = gc_case_records::with([
+                'medical_record_case.patient',
+            ])->findOrFail($id);
+
+            $medicalRecord = medical_record_cases::with('patient')
+                ->where('id', $case->medical_record_case_id)
+                ->firstOrFail();
+
+            // Build full address
+            $address = patient_addresses::where('patient_id', $medicalRecord->patient_id)->first();
+
+            $fullAddress = $address
+                ? collect([
+                    $address->house_number,
+                    $address->street,
+                    $address->purok,
+                    $address->barangay ?? null,
+                    $address->city     ?? null,
+                    $address->province ?? null,
+                ])->filter()->join(', ')
+                : 'N/A';
+
+            // Health worker
+            $healthWorker = staff::where('user_id', $case->health_worker_id)->first();
+
+            // Logo
+            $logoBase64 = base64_encode(file_get_contents(public_path('images/hugoperez_logo.png')));
+            $logoSrc    = 'data:image/png;base64,' . $logoBase64;
+
+            $pdf = Pdf::loadView('pdf.general-consultation.gc-case', [
+                'caseInfo'     => $case,
+                'patient'      => $medicalRecord->patient,
+                'medicalRecord' => $medicalRecord,
+                'address'      => $fullAddress,
+                'healthWorker' => $healthWorker,
+                'logoSrc'      => $logoSrc,
+            ])
+                ->setPaper('A4', 'portrait')
+                ->setOption('enable-local-file-access', true)
+                ->setOption('javascript-delay', 500)
+                ->setOption('margin-top', 10)
+                ->setOption('margin-bottom', 10)
+                ->setOption('margin-left', 12)
+                ->setOption('margin-right', 12)
+                ->setOption('zoom', 0.85);
+
+            return $pdf->download('gc-case-' . Carbon::today()->format('Y-m-d') . '.pdf');
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
 
     private function monthlyPatientStats()
     {

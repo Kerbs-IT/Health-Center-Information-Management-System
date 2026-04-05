@@ -47,6 +47,9 @@ class healthWorkerController extends Controller
         $user->update([
             'status' => 'archived'
         ]);
+        $staff = $user->staff->update([
+            'status' => 'Archived'
+        ]);
 
         return response()->json(['message' => 'Health worker deleted successfully.']);
     }
@@ -370,7 +373,10 @@ class healthWorkerController extends Controller
         try{
             $purok = $request->get("assigned_area");
             $assignedAreaId = brgy_unit::where("brgy_unit", $purok)->pluck("id");
-            $healthWorkerId = staff::where("assigned_area_id", $assignedAreaId)->pluck("user_id")->first();
+            $healthWorkerId = staff::where('assigned_area_id', $assignedAreaId)
+                ->where('status', 'Active')
+                ->pluck('user_id')
+                ->first();
             return response()->json([
                 'health_worker_id' => $healthWorkerId
             ], 200);

@@ -93,7 +93,7 @@ header h1{
     color: var(--secondaryColor);
 }
 .fa-bars:hover{
-    color: var(--tertiaryColor);
+    color: var(--secondaryColor);
 
 }
 input.role-radio{
@@ -172,6 +172,7 @@ body.no-scroll{
     background-color: var(--tertiaryColor);
     transition: .3s ease-in-out;
 }
+
 .active{
     background-color: var(--tertiaryColor);
     box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.3);
@@ -301,6 +302,9 @@ input.form-control,
 }
 
 .wrapper a:hover {
+    color: var(--active-menu-text) !important;
+}
+.wrapper a:hover i {
     color: var(--active-menu-text) !important;
 }
 

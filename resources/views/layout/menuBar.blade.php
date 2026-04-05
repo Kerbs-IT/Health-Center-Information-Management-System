@@ -1,7 +1,7 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
-<div class="menu-bar min-vh-100 overflow-y-hidden">
+<div class="menu-bar min-vh-100 overflow-y-hidden ">
     <!-- Close button for mobile/tablet -->
     <div class="w-100 d-flex justify-content-end mt-3">
         <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
@@ -108,7 +108,10 @@
                     <i class="fa-solid fs-5 fa-list"></i>
                     <h5 class="mb-0">All records</h5>
                 </a>
-
+                <a href="{{ route('record.general.consultation')}}" class="menu-items sub-menu-bar-item d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_general_consultation">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    <h5 class="mb-0">General Consultation</h5>
+                </a>
 
                 <a href="{{ route('record.vaccination')}}" class="menu-items sub-menu-bar-item d-flex  gap-3 text-decoration-none  w-100 px-3 py-2" id="record_vaccination">
                     <i class="fa-solid fs-5 fa-syringe"></i>
@@ -213,6 +216,14 @@
             </div>
         </div>
 
+        @endif
+        @if(Auth::user() -> role == 'nurse')
+        <div class="wrapper w-100 d-flex justify-content-center">
+            <a href="{{ route('health.worker') }}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none  w-100 px-3 py-2" id="healthWorker">
+                <i class="fa-solid fa-syringe"></i>
+                <h4 class="mb-0 fs-5">Manage Vaccines</h4>
+            </a>
+        </div>
         @endif
         <!-- -----------------------------------PATIENT DASHBOARD CONTENT -->
         <!-- PATIENT DASHBOARD CONTENT -->

@@ -69,6 +69,9 @@ class ArchivedHealthWorker extends Component
             $user->status = 'active';
             $user->save();
 
+            $staff->status = 'Active';
+            $staff->save();
+
             // Transfer records from OTHER archived staff in this area
             $this->transferFromArchivedStaff($userId, $staff->assigned_area_id);
 

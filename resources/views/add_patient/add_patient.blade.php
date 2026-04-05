@@ -25,7 +25,8 @@
     'resources/js/family_planning/add_patient.js',
     'resources/js/add_patient/searchUser.js',
     'resources/js/patient/patient-record-search.js',
-    'resources/js/patient/patient-mode-toggle.js'
+    'resources/js/patient/patient-mode-toggle.js',
+    'resources/js/general_consultation/addPatient.js'
     ])
     @include('sweetalert::alert')
     <div class="add-patient d-flex vh-100">
@@ -263,7 +264,7 @@
                                             <option value="tb-dots">TB DOTS</option>
                                             <option value="senior-citizen">Senior Citizen</option>
                                             <option value="family-planning">Family Planning</option>
-                                            <!-- <option value="general-consultation">General Consultation</option> -->
+                                            <option value="general-consultation">General Consultation</option>
                                         </select>
                                     </div>
                                     <h4>Personal Info</h4>
@@ -372,7 +373,7 @@
                                             <select name="handled_by" id="handled_by" class="form-select " data-is-health-worker="{{Auth::user()->role='staff'?true:false}}">
                                                 <option value="" disabled selected>Select a person</option>
                                                 @foreach($healthworkers as $worker)
-                                                <option value="{{$worker->user_id}}">{{$worker->full_name}}</option>
+                                                <option value="{{$worker->id}}">{{$worker->full_name}}</option>
                                                 @endforeach
                                             </select>
                                             <small class="text-danger error-text" id="health_worker_id_error"></small>
@@ -687,7 +688,7 @@
                     </div>
                     <!-- step 2 -->
                     <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
-                        
+
                         <!-- vaccination -->
                         <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
                             <div class="vaccination-content">
@@ -788,6 +789,13 @@
                                 <button type="button" class="btn btn-success px-5 py-2 fs-5" id="vaccination-submit-btn">Save Record</button>
                             </div>
                         </div>
+                        <!-- general consultation -->
+                        <div class="general-consultation d-none patient-type overflow-x-auto h-100" id="general-consultation-con">
+                            @include('add_patient.generalConsultation.general-consultation')
+
+
+                        </div>
+
                         <!-- PRENATAL -->
                         <div class="prenatal d-none patient-type overflow-x-auto" id="prenatal-con">
                             @include('add_patient.prenatal')

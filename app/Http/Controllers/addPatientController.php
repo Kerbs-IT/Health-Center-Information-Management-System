@@ -34,7 +34,7 @@ class addPatientController extends Controller
 {
     public function dashboard()
     {
-        $healthworkers = staff::orderBy('first_name', 'ASC')->get();
+        $healthworkers = User::where('role','staff')->orderBy('first_name', 'ASC')->where('status','active')->get();
         $vaccines = vaccines::get();
         $staffFullName = '';
         if (Auth::user()->role == 'staff') {

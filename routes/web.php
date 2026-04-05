@@ -282,6 +282,18 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // -------------------------------------------- GENERAL CONSULTATION --------------------------------------------------------
     Route::get('/patient-record/general-consultation/view-records', [GeneralConsultation::class,'index'])->name('record.general.consultation');
+    Route::post('/patient-record/add-general-consultation-patient',[GeneralConsultation::class,'store'])->name('general.consultation.store');
+    Route::get('/patient-record/general-consultation/view-details/{id}', [GeneralConsultation::class, 'show'])->name('record.general.consultation.show');
+    Route::get('/patient-record/general-consultation/edit-details/{id}', [GeneralConsultation::class, 'edit'])->name('record.general.consultation.edit');
+    Route::put('/update/general-consultation/details/{id}', [GeneralConsultation::class, 'update'])->name('record.general.consultation.update');
+    Route::get('/patient-record/general-consultation/case/{id}', [GeneralConsultation::class,'patientCase'])->name('record.general.consultation.case');
+
+    Route::get('/patient-record/general-consultation/case/{id}', [GeneralConsultation::class, 'caseIndex'])->name('gc.case.index');
+    Route::get('/gc/case/record/archive', [GeneralConsultation::class, 'archiveIndex'])->name('gc.case.record.archive');
+
+    Route::get('/gc-case/record/{id}',  [GeneralConsultation::class, 'getCaseRecord']);
+    Route::post('/add-gc-case/{id}',    [GeneralConsultation::class, 'addCaseRecord'])->name('gc.case.add');
+    Route::put('/update-gc-case/{id}', [GeneralConsultation::class, 'updateCase'])->name('gc.case.update');
 
     // --------------------------------------------VACCINATION RECORDS --------------------------------------------------------------------
     Route::get('/patient-record/vaccination/view-records', [RecordsController::class, 'vaccinationRecord'])->name('record.vaccination');
@@ -625,6 +637,12 @@ Route::get('/tb-dots/records/pdf', [PdfController::class, 'generateTbDotsPdf'])
     ->name('tb-dots.pdf');
 Route::get('/family-planning/records/pdf', [PdfController::class, 'generateFamilyPlanningPdf'])
     ->name('family-planning.pdf');
+Route::get('/general-consultation/records/pdf', [PdfController::class, 'generateGcPdf'])
+    ->name('general-consultation.pdf');
+
+Route::get('/gc-case/pdf', [PdfController::class, 'generateGcCasePdf'])
+    ->name('gc-case.pdf');
+
 
 // overall records
 Route::get('/patient-list/pdf',[PdfController::class, 'generateOverallPatientList'])->name('patients.pdf');
