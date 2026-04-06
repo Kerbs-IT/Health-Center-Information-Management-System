@@ -1181,6 +1181,9 @@ class PdfController extends Controller
                         })
                         ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('gc_medical_record', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
                         });
                 });
             }
@@ -1218,12 +1221,14 @@ class PdfController extends Controller
 
             // Build result
             $caseMap = [
-                'vaccination'     => 'vaccination',
-                'prenatal'        => 'prenatal',
-                'senior'          => 'senior-citizen',
-                'tb'              => 'tb-dots',
-                'family_planning' => 'family-planning',
+                'vaccination'          => 'vaccination',
+                'prenatal'             => 'prenatal',
+                'senior'               => 'senior-citizen',
+                'tb'                   => 'tb-dots',
+                'family_planning'      => 'family-planning',
+                'general_consultation' => 'general-consultation', // add
             ];
+
 
             $patientData = [
                 'all' => [
@@ -1254,6 +1259,11 @@ class PdfController extends Controller
                 'family_planning' => [
                     'label' => 'Family Planning',
                     'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'general_consultation' => [
+                    'label' => 'General Consultation',
+                    'data'  => array_fill(0, count($uniqueMonths), 0),
                     'months' => $monthLabels
                 ],
             ];
@@ -1296,6 +1306,9 @@ class PdfController extends Controller
                         })
                         ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('gc_medical_record', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
                         });
                 });
             }
@@ -1306,6 +1319,7 @@ class PdfController extends Controller
                 'seniorCitizenCount' => (clone $baseQuery)->where('type_of_case', 'senior-citizen')->count(),
                 'tbDotsCount' => (clone $baseQuery)->where('type_of_case', 'tb-dots')->count(),
                 'familyPlanningCount' => (clone $baseQuery)->where('type_of_case', 'family-planning')->count(),
+                'generalConsultationCount' => (clone $baseQuery)->where('type_of_case', 'general-consultation')->count(),
             ];
 
             //  Calculate totals for each patient type for the bar chart
@@ -1315,6 +1329,7 @@ class PdfController extends Controller
                 'senior' => array_sum($patientData['senior']['data']),
                 'tb' => array_sum($patientData['tb']['data']),
                 'family_planning' => array_sum($patientData['family_planning']['data']),
+                'general_consultation' => array_sum($patientData['general_consultation']['data']),
             ];
 
             // Format BOTH date ranges for display
@@ -1382,6 +1397,10 @@ class PdfController extends Controller
                     ->where('medical_record_cases.type_of_case', 'senior-citizen')
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
+                $generalConsultation = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
 
 
                 return  [
@@ -1391,6 +1410,7 @@ class PdfController extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ];
             } catch (\Exception $e) {
@@ -1450,8 +1470,14 @@ class PdfController extends Controller
                     ->where('medical_record_cases.type_of_case', 'senior-citizen')
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
+                $generalConsultation = (clone $baseQuery)
+                    ->join('gc_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('g.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
 
-                $totalPatient = $vaccination + $prenatal +  $tbDots + $familyPlanning + $seniorCitizen;
+                $totalPatient = $vaccination + $prenatal + $tbDots + $familyPlanning + $seniorCitizen + $generalConsultation;
 
                 return [
                     'overallPatients' => $totalPatient,
@@ -1460,6 +1486,7 @@ class PdfController extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ];
             } catch (\Exception $e) {
@@ -1478,7 +1505,7 @@ class PdfController extends Controller
 
         try {
             $data = [];
-            $caseTypes = ['vaccination', 'prenatal', 'senior-citizen', 'tb-dots', 'family-planning'];
+            $caseTypes = ['vaccination', 'prenatal', 'senior-citizen', 'tb-dots', 'family-planning', 'general-consultation']; // add
 
             // Base query
             $baseQuery = patient_addresses::query()
@@ -1547,6 +1574,10 @@ class PdfController extends Controller
                             case 'family-planning':
                                 $query->join('family_planning_medical_records as fmr', 'fmr.medical_record_case_id', '=', 'medical_record_cases.id')
                                     ->where('fmr.health_worker_id', $staffId);
+                                break;
+                            case 'general-consultation':
+                                $query->join('gc_medical_records as gmr', 'gmr.medical_record_case_id', '=', 'medical_record_cases.id')
+                                    ->where('gmr.health_worker_id', $staffId);
                                 break;
                         }
 
@@ -1618,12 +1649,18 @@ class PdfController extends Controller
                         $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
                             ->where('f.health_worker_id', $staffId);
                     })
+                    // Add to staff leftJoin block:
+                    ->leftJoin('gc_medical_records as g', function ($join) use ($staffId) {
+                        $join->on('g.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('g.health_worker_id', $staffId);
+                    })
                     ->where(function ($q) {
                         $q->whereNotNull('v.id')
                             ->orWhereNotNull('p.id')
                             ->orWhereNotNull('s.id')
                             ->orWhereNotNull('t.id')
-                            ->orWhereNotNull('f.id');
+                            ->orWhereNotNull('f.id')
+                            ->orWhereNotNull('g.id');
                     });
             }
 
@@ -1656,6 +1693,9 @@ class PdfController extends Controller
             $seniorCitizen = (clone $baseQuery)
                 ->where('medical_record_cases.type_of_case', 'senior-citizen')
                 ->count('medical_record_cases.id');
+            $generalConsultation = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'general-consultation')
+                ->count('medical_record_cases.id');
 
             return [
                 'overallPatients'     => $totalPatient,
@@ -1664,6 +1704,7 @@ class PdfController extends Controller
                 'tbDotsCount'         => $tbDots,
                 'seniorCitizenCount'  => $seniorCitizen,
                 'familyPlanningCount' => $familyPlanning,
+                'generalConsultationCount' => $generalConsultation,
                 'types'               => $types,
             ];
         } catch (\Exception $e) {
@@ -1746,6 +1787,7 @@ class PdfController extends Controller
             'senior'          => 'senior-citizen',
             'tb'              => 'tb-dots',
             'family_planning' => 'family-planning',
+            'general_consultation' => 'general-consultation', // add
         ];
 
         // Base query
@@ -1784,6 +1826,10 @@ class PdfController extends Controller
                 $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('f.health_worker_id', '=', $staffId);
             });
+            $baseQuery->leftJoin('gc_medical_records as g', function ($join) use ($staffId) {
+                $join->on('g.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('g.health_worker_id', '=', $staffId);
+            });
 
             // ✅ Important: filter to only records where staff handled at least one case
             $baseQuery->where(function ($q) {
@@ -1791,7 +1837,8 @@ class PdfController extends Controller
                     ->orWhereNotNull('p.id')
                     ->orWhereNotNull('s.id')
                     ->orWhereNotNull('t.id')
-                    ->orWhereNotNull('f.id');
+                    ->orWhereNotNull('f.id')
+                    ->orWhereNotNull('g.id');
             });
         }
 
@@ -1813,6 +1860,7 @@ class PdfController extends Controller
             'senior' => ['label' => 'Senior Citizen', 'data' => array_fill(0, 12, 0)],
             'tb' => ['label' => 'TB Treatment', 'data' => array_fill(0, 12, 0)],
             'family_planning' => ['label' => 'Family Planning', 'data' => array_fill(0, 12, 0)],
+            'general_consultation' => ['label' => 'General Consultation', 'data' => array_fill(0, 12, 0)],
         ];
 
         // Fill values
@@ -1870,12 +1918,17 @@ class PdfController extends Controller
                     $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->where('f.health_worker_id', $staffId);
                 })
+                ->leftJoin('gc_medical_records as g', function ($join) use ($staffId) {
+                    $join->on('g.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('g.health_worker_id', $staffId);
+                })
                 ->where(function ($q) {
                     $q->whereNotNull('v.id')
                         ->orWhereNotNull('p.id')
                         ->orWhereNotNull('s.id')
                         ->orWhereNotNull('t.id')
-                        ->orWhereNotNull('f.id');
+                        ->orWhereNotNull('f.id')
+                    ->orWhereNotNull('g.id');
                 });
         }
 
@@ -1891,6 +1944,7 @@ class PdfController extends Controller
             'seniorCitizen' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
             'tbDots' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
             'familyPlanning' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'generalConsultation' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
         ];
 
         $totals = [
@@ -1961,12 +2015,17 @@ class PdfController extends Controller
                     $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->where('f.health_worker_id', $staffId);
                 })
+                ->leftJoin('gc_medical_records as g', function ($join) use ($staffId) {
+                    $join->on('g.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('g.health_worker_id', $staffId);
+                })
                 ->where(function ($q) {
                     $q->whereNotNull('v.id')
                         ->orWhereNotNull('p.id')
                         ->orWhereNotNull('s.id')
                         ->orWhereNotNull('t.id')
-                        ->orWhereNotNull('f.id');
+                        ->orWhereNotNull('f.id')
+                    ->orWhereNotNull('g.id');
                 });
         }
 

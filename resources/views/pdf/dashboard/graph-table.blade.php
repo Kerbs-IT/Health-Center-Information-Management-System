@@ -61,10 +61,11 @@
         }
 
         .header {
-            text-align: center;
             margin-bottom: 20px;
             border-bottom: 4px solid #28a745;
             padding-bottom: 15px;
+            overflow: hidden;
+            /* important so the border shows below the floated elements */
         }
 
         .header h2 {
@@ -252,11 +253,16 @@
         <div class="pdf-page" id="page1">
             <!-- Header -->
             <div class="header">
-                <h2>HEALTH CENTER INFORMATION MANAGEMENT SYSTEM</h2>
-                <h5>Brgy. Hugo Perez, Proper</h5>
-                <h3>Monthly Patient Statistics Report</h3>
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}"
+                    alt="Hugo Perez Logo"
+                    style="height: 80px; width: 80px; float: left;">
+                <div style="float: left; text-align: center; width: 80%; padding-top: 10px;">
+                    <h2>HEALTH CENTER INFORMATION MANAGEMENT SYSTEM</h2>
+                    <h5>Brgy. Hugo Perez, Proper</h5>
+                    <h3>Monthly Patient Statistics Report</h3>
+                </div>
+                <div style="clear: both;"></div>
             </div>
-
             <!-- Bar Chart Date Range -->
             <div class="date-range">Bar Chart Period: {{ $barDateRangeText }}</div>
 
@@ -300,15 +306,20 @@
                             <td class="label-col">Family Planning</td>
                             <td class="value-col">{{ $patientTypeTotals['family_planning'] ?? 0 }}</td>
                         </tr>
+                        <tr>
+                            <td class="label-col">General Consultation</td>
+                            <td class="value-col">{{ $patientTypeTotals['general_consultation'] ?? 0 }}</td>
+                        </tr>
                         <tr style="background: #e9ecef;">
                             <td class="label-col" style="font-weight: bold; font-size: 15px;">TOTAL</td>
                             <td class="value-col" style="font-size: 18px;">
                                 {{
-                                    ($patientTypeTotals['vaccination'] ?? 0) + 
-                                    ($patientTypeTotals['prenatal'] ?? 0) + 
-                                    ($patientTypeTotals['senior'] ?? 0) + 
-                                    ($patientTypeTotals['tb'] ?? 0) + 
-                                    ($patientTypeTotals['family_planning'] ?? 0) 
+                                    ($patientTypeTotals['vaccination'] ?? 0) +
+                                    ($patientTypeTotals['prenatal'] ?? 0) +
+                                    ($patientTypeTotals['senior'] ?? 0) +
+                                    ($patientTypeTotals['tb'] ?? 0) +
+                                    ($patientTypeTotals['family_planning'] ?? 0) +
+                                    ($patientTypeTotals['general_consultation'] ?? 0)
                                 }}
                             </td>
                         </tr>
@@ -326,9 +337,15 @@
         <div class="pdf-page" id="page2">
             <!-- Header -->
             <div class="header">
-                <h2>HEALTH CENTER INFORMATION MANAGEMENT SYSTEM</h2>
-                <h5>Brgy. Hugo Perez, Proper</h5>
-                <h3>Monthly Patient Statistics Report</h3>
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}"
+                    alt="Hugo Perez Logo"
+                    style="height: 80px; width: 80px; float: left;">
+                <div style="float: left; text-align: center; width: 80%; padding-top: 10px;">
+                    <h2>HEALTH CENTER INFORMATION MANAGEMENT SYSTEM</h2>
+                    <h5>Brgy. Hugo Perez, Proper</h5>
+                    <h3>Monthly Patient Statistics Report</h3>
+                </div>
+                <div style="clear: both;"></div>
             </div>
 
             <!-- Pie Chart Date Range -->
@@ -502,6 +519,7 @@
                 data.seniorCitizenCount || 0,
                 data.tbDotsCount || 0,
                 data.familyPlanningCount || 0,
+                data.generalConsultationCount || 0, // add this
             ];
 
             const canvas = document.getElementById("myPieChart");
@@ -514,7 +532,7 @@
             pieChartInstance = new Chart(pieChart, {
                 type: "doughnut",
                 data: {
-                    labels: ["Vaccination", "Prenatal", "Senior Citizen", "TB Dots", "Family Planning"],
+                    labels: ["Vaccination", "Prenatal", "Senior Citizen", "TB Dots", "Family Planning", "General Consultation"], // add
                     datasets: [{
                         label: "Patient Categories",
                         data: counts,
@@ -523,7 +541,8 @@
                             "#DC3545",
                             "#007BFF",
                             "#28A745",
-                            "#FF8C00"
+                            "#FF8C00",
+                            "#6F42C1", // add purple
                         ],
                         borderWidth: 3,
                         borderColor: "#fff",

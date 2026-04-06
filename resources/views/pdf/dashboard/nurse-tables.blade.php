@@ -91,33 +91,50 @@
             page-break-before: always;
         }
 
-        /* Header */
-        header {
-            width: 85%;
-            margin: 0 auto 20px auto;
+        .header {
             text-align: center;
+            margin-bottom: 30px;
         }
 
-        header table {
+        .header h4 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .header h4 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #34495e;
+            font-weight: normal;
+        }
+
+        header {
             width: 100%;
-            border: none;
-            margin-bottom: 0;
-        }
-
-        header table td {
-            border: none;
-            padding: 0;
-            vertical-align: middle;
         }
 
         header img {
-            height: 100px;
-            width: 100px;
+            height: 120px;
+            width: 120px;
+            float: left;
+            margin-right: 20px;
+            margin-top: 0px;
         }
 
         .header-text {
+            width: 70%;
             text-align: center;
             text-transform: uppercase;
+            float: left;
+            padding-top: 10px;
+            /* Adjust to vertically center text */
+        }
+
+        .header-text h4 {
+            font-size: 16px !important;
+            font-weight: bold;
+            margin: 4px 0;
+            color: #2c3e50;
         }
 
         .date-footer {
@@ -130,19 +147,12 @@
 <body>
     <!-- Header -->
     <header>
-        <table>
-            <tr>
-                <td style="width: 120px; text-align: center;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="hugo perez logo">
-                </td>
-                <td>
-                    <div class="header-text">
-                        <h4>Barangay Hugo Perez Proper</h4>
-                        <h4>Health Center Information Management System</h4>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="">
+        <div class="header-text">
+            <h4>Barangay Hugo Perez Proper -</h4>
+            <h4>Health Center Information Management System</h4>
+        </div>
+        <div style="clear: both;"></div>
     </header>
 
     <!-- Patient Overall Count -->
@@ -176,6 +186,10 @@
                     <tr>
                         <td>Family Planning</td>
                         <td>{{$patientCount['familyPlanningCount']??'0'}}</td>
+                    </tr>
+                    <tr>
+                        <td>General Consultation</td>
+                        <td>{{$patientCount['generalConsultationCount']??'0'}}</td>
                     </tr>
                     <tr class="table-secondary">
                         <td class="fw-bold">Overall Patient</td>
@@ -218,6 +232,10 @@
                         <td>Family Planning</td>
                         <td>{{$patientPerDay['familyPlanningCount']??'0'}}</td>
                     </tr>
+                    <tr>
+                        <td>General Consultation</td>
+                        <td>{{$patientPerDay['generalConsultationCount']??'0'}}</td>
+                    </tr>
                     <tr class="table-secondary">
                         <td class="fw-bold">Overall Patient</td>
                         <td class="fw-bold">{{$patientPerDay['overallPatients']??'0'}}</td>
@@ -230,19 +248,12 @@
     <!-- Page Break -->
     <div class="page-break"></div>
     <header>
-        <table>
-            <tr>
-                <td style="width: 120px; text-align: center;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="hugo perez logo">
-                </td>
-                <td>
-                    <div class="header-text">
-                        <h4>Barangay Hugo Perez Proper</h4>
-                        <h4>Health Center Information Management System</h4>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/hugoperez_logo.png'))) }}" alt="">
+        <div class="header-text">
+            <h4>Barangay Hugo Perez Proper -</h4>
+            <h4>Health Center Information Management System</h4>
+        </div>
+        <div style="clear: both;"></div>
     </header>
     <!-- Age Distribution Table -->
     <div class="date">
@@ -303,6 +314,14 @@
                         <td class="text-center">{{ $ageData['distribution']['familyPlanning']['18-59'] ?? 0 }}</td>
                         <td class="text-center">{{ $ageData['distribution']['familyPlanning']['60+'] ?? 0 }}</td>
                     </tr>
+                    <tr>
+                        <td>General Consultation</td>
+                        <td class="text-center">{{ $ageData['distribution']['generalConsultation']['0-11'] ?? 0 }}</td>
+                        <td class="text-center">{{ $ageData['distribution']['generalConsultation']['1-5'] ?? 0 }}</td>
+                        <td class="text-center">{{ $ageData['distribution']['generalConsultation']['6-17'] ?? 0 }}</td>
+                        <td class="text-center">{{ $ageData['distribution']['generalConsultation']['18-59'] ?? 0 }}</td>
+                        <td class="text-center">{{ $ageData['distribution']['generalConsultation']['60+'] ?? 0 }}</td>
+                    </tr>
                     <tr class="table-secondary">
                         <td class="fw-bold">TOTAL</td>
                         <td class="fw-bold text-center">{{ $ageData['totals']['0-11'] ?? 0 }}</td>
@@ -353,6 +372,11 @@
                         <td>Family Planning</td>
                         <td class="text-center">{{ $sexData['distribution']['familyPlanning']['Male'] ?? 0 }}</td>
                         <td class="text-center">{{ $sexData['distribution']['familyPlanning']['Female'] ?? 0 }}</td>
+                    </tr>
+                    <tr>
+                        <td>General Consultation</td>
+                        <td class="text-center">{{ $sexData['distribution']['generalConsultation']['Male'] ?? 0 }}</td>
+                        <td class="text-center">{{ $sexData['distribution']['generalConsultation']['Female'] ?? 0 }}</td>
                     </tr>
                     <tr class="table-secondary">
                         <td class="fw-bold">TOTAL</td>

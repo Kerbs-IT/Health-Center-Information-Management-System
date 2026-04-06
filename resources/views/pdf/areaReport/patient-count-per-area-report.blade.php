@@ -156,6 +156,7 @@
                 <th>TB-DOTS</th>
                 <th>Senior Citizen</th>
                 <th>Family Planning</th>
+                <th>General Consultation</th> {{-- add this --}}
                 <th>Total</th>
             </tr>
         </thead>
@@ -166,6 +167,7 @@
             $totalTbDots = 0;
             $totalSenior = 0;
             $totalFamilyPlanning = 0;
+            $totalGeneralConsultation = 0; // add
             $grandTotal = 0;
             @endphp
 
@@ -175,13 +177,15 @@
             ($counts['prenatal'] ?? 0) +
             ($counts['tb-dots'] ?? 0) +
             ($counts['senior-citizen'] ?? 0) +
-            ($counts['family-planning'] ?? 0);
+            ($counts['family-planning'] ?? 0) +
+            ($counts['general-consultation'] ?? 0); // add
 
             $totalVaccination += $counts['vaccination'] ?? 0;
             $totalPrenatal += $counts['prenatal'] ?? 0;
             $totalTbDots += $counts['tb-dots'] ?? 0;
             $totalSenior += $counts['senior-citizen'] ?? 0;
             $totalFamilyPlanning += $counts['family-planning'] ?? 0;
+            $totalGeneralConsultation += $counts['general-consultation'] ?? 0; // add
             $grandTotal += $rowTotal;
             @endphp
             <tr>
@@ -191,6 +195,7 @@
                 <td>{{ $counts['tb-dots'] ?? 0 }}</td>
                 <td>{{ $counts['senior-citizen'] ?? 0 }}</td>
                 <td>{{ $counts['family-planning'] ?? 0 }}</td>
+                <td>{{ $counts['general-consultation'] ?? 0 }}</td> {{-- add this --}}
                 <td><strong>{{ $rowTotal }}</strong></td>
             </tr>
             @endforeach
@@ -202,6 +207,7 @@
                 <td>{{ $totalTbDots }}</td>
                 <td>{{ $totalSenior }}</td>
                 <td>{{ $totalFamilyPlanning }}</td>
+                <td>{{ $totalGeneralConsultation }}</td> {{-- add this --}}
                 <td>{{ $grandTotal }}</td>
             </tr>
         </tbody>

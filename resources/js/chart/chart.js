@@ -441,6 +441,7 @@ async function reloadPieChart() {
                     "Senior Citizen",
                     "TB Dots",
                     "Family Planning",
+                    "General Consultation", // add this
                 ],
                 datasets: [
                     {
@@ -451,6 +452,7 @@ async function reloadPieChart() {
                             data.seniorCitizenCount || 0,
                             data.tbDotsCount || 0,
                             data.familyPlanningCount || 0,
+                            data.generalConsultationCount || 0,
                         ],
                         backgroundColor: [
                             "#FFC107",
@@ -458,6 +460,7 @@ async function reloadPieChart() {
                             "#007BFF",
                             "#2E8B57",
                             "#FF8C00",
+                            "#6F42C1", // add this (purple)
                         ],
                         borderWidth: 2,
                         borderColor: "#fff",
@@ -604,6 +607,9 @@ async function initPatientToday() {
             familyPlanning: document.getElementById(
                 "family-planning-patient-today",
             ),
+            generalConsultation: document.getElementById(
+                "general-consultation-patient-today",
+            ), // add this
         };
 
         if (elements.vaccination)
@@ -616,6 +622,9 @@ async function initPatientToday() {
             elements.tbDots.textContent = data.tbDotsCount || 0;
         if (elements.familyPlanning)
             elements.familyPlanning.textContent = data.familyPlanningCount || 0;
+        if (elements.generalConsultation)
+            elements.generalConsultation.textContent =
+                data.generalConsultationCount || 0;
     } catch (error) {
         console.error("✗ Failed to load today's patient count:", error);
     }
@@ -976,31 +985,32 @@ async function reloadAgeChart(patientType = "all") {
                         (data.prenatal["0-11"] || 0) +
                         (data.seniorCitizen["0-11"] || 0) +
                         (data.tbDots["0-11"] || 0) +
-                        (data.familyPlanning["0-11"] || 0),
-
+                        (data.familyPlanning["0-11"] || 0) +
+                        (data.generalConsultation["0-11"] || 0),
                     (data.vaccination["1-5"] || 0) +
                         (data.prenatal["1-5"] || 0) +
                         (data.seniorCitizen["1-5"] || 0) +
                         (data.tbDots["1-5"] || 0) +
-                        (data.familyPlanning["1-5"] || 0),
-
+                        (data.familyPlanning["1-5"] || 0) +
+                        (data.generalConsultation["1-5"] || 0),
                     (data.vaccination["6-17"] || 0) +
                         (data.prenatal["6-17"] || 0) +
                         (data.seniorCitizen["6-17"] || 0) +
                         (data.tbDots["6-17"] || 0) +
-                        (data.familyPlanning["6-17"] || 0),
-
+                        (data.familyPlanning["6-17"] || 0) +
+                        (data.generalConsultation["6-17"] || 0),
                     (data.vaccination["18-59"] || 0) +
                         (data.prenatal["18-59"] || 0) +
                         (data.seniorCitizen["18-59"] || 0) +
                         (data.tbDots["18-59"] || 0) +
-                        (data.familyPlanning["18-59"] || 0),
-
+                        (data.familyPlanning["18-59"] || 0) +
+                        (data.generalConsultation["18-59"] || 0),
                     (data.vaccination["60+"] || 0) +
                         (data.prenatal["60+"] || 0) +
                         (data.seniorCitizen["60+"] || 0) +
                         (data.tbDots["60+"] || 0) +
-                        (data.familyPlanning["60+"] || 0),
+                        (data.familyPlanning["60+"] || 0) +
+                        (data.generalConsultation["60+"] || 0),
                 ],
                 backgroundColor: "rgba(40, 167, 69, 0.8)",
                 borderColor: "rgba(40, 167, 69, 1)",
@@ -1064,6 +1074,18 @@ async function reloadAgeChart(patientType = "all") {
                 ],
                 backgroundColor: "rgba(255, 140, 0, 0.8)",
                 borderColor: "rgba(255, 140, 0, 1)",
+            },
+            generalConsultation: {
+                label: "General Consultation",
+                data: [
+                    data.generalConsultation["0-11"] || 0,
+                    data.generalConsultation["1-5"] || 0,
+                    data.generalConsultation["6-17"] || 0,
+                    data.generalConsultation["18-59"] || 0,
+                    data.generalConsultation["60+"] || 0,
+                ],
+                backgroundColor: "rgba(111, 66, 193, 0.8)",
+                borderColor: "rgba(111, 66, 193, 1)",
             },
         };
 

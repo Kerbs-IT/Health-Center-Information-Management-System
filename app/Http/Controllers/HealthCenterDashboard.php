@@ -57,6 +57,11 @@ class HealthCenterDashboard extends Controller
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 
+                $generalConsultation = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
 
                 return response()->json([
                     'overallPatients' => $totalPatient,
@@ -65,6 +70,7 @@ class HealthCenterDashboard extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ], 200);
             } catch (\Exception $e) {
@@ -120,14 +126,14 @@ class HealthCenterDashboard extends Controller
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 
-                $seniorCitizen = (clone $baseQuery)
-                    ->join('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
-                    ->where('s.health_worker_id', $staffId)
-                    ->where('medical_record_cases.type_of_case', 'senior-citizen')
+                $generalConsultation = (clone $baseQuery)
+                    ->join('gc_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('g.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 
-                $totalPatient = $vaccination + $prenatal +  $tbDots + $familyPlanning + $seniorCitizen;
+                $totalPatient = $vaccination + $prenatal + $tbDots + $familyPlanning + $seniorCitizen + $generalConsultation;
 
                 return response()->json([
                     'overallPatients' => $totalPatient,
@@ -136,6 +142,7 @@ class HealthCenterDashboard extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ], 200);
             } catch (\Exception $e) {
@@ -196,7 +203,10 @@ class HealthCenterDashboard extends Controller
                     ->where('medical_record_cases.type_of_case', 'senior-citizen')
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
-
+                $generalConsultation = (clone $baseQuery)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
 
                 return response()->json([
                     'overallPatients' => $totalPatient,
@@ -205,6 +215,7 @@ class HealthCenterDashboard extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ], 200);
             } catch (\Exception $e) {
@@ -266,7 +277,14 @@ class HealthCenterDashboard extends Controller
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 
-                $totalPatient = $vaccination + $prenatal +  $tbDots + $familyPlanning + $seniorCitizen;
+                $generalConsultation = (clone $baseQuery)
+                    ->join('gc_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('g.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'general-consultation')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+
+                $totalPatient = $vaccination + $prenatal + $tbDots + $familyPlanning + $seniorCitizen + $generalConsultation;
 
                 return response()->json([
                     'overallPatients' => $totalPatient,
@@ -275,6 +293,7 @@ class HealthCenterDashboard extends Controller
                     'tbDotsCount' => $tbDots,
                     'seniorCitizenCount' => $seniorCitizen,
                     'familyPlanningCount' => $familyPlanning,
+                    'generalConsultationCount' => $generalConsultation,
                     'types' => $types
                 ], 200);
             } catch (\Exception $e) {
@@ -301,6 +320,7 @@ class HealthCenterDashboard extends Controller
             'senior'          => 'senior-citizen',
             'tb'              => 'tb-dots',
             'family_planning' => 'family-planning',
+            'general_consultation' => 'general-consultation'
         ];
 
         try {
@@ -329,6 +349,9 @@ class HealthCenterDashboard extends Controller
                             $subQ->where('health_worker_id', $staffId);
                         })
                         ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
+                            $subQ->where('health_worker_id', $staffId);
+                        })
+                        ->orWhereHas('gc_medical_record', function ($subQ) use ($staffId) {
                             $subQ->where('health_worker_id', $staffId);
                         });
                 });
@@ -397,6 +420,11 @@ class HealthCenterDashboard extends Controller
                 ],
                 'family_planning' => [
                     'label' => 'Family Planning',
+                    'data' => array_fill(0, count($uniqueMonths), 0),
+                    'months' => $monthLabels
+                ],
+                'general_consultation' => [
+                    'label' => 'General Consultation',
                     'data' => array_fill(0, count($uniqueMonths), 0),
                     'months' => $monthLabels
                 ],
@@ -474,12 +502,14 @@ class HealthCenterDashboard extends Controller
                         ->leftJoin('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->leftJoin('tb_dots_medical_records as t', 't.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->leftJoin('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->leftJoin('gc_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id') // add this
                         ->where(function ($q) use ($staffId) {
                             $q->where('v.health_worker_id', $staffId)
                                 ->orWhere('p.health_worker_id', $staffId)
                                 ->orWhere('s.health_worker_id', $staffId)
                                 ->orWhere('t.health_worker_id', $staffId)
-                                ->orWhere('f.health_worker_id', $staffId);
+                                ->orWhere('f.health_worker_id', $staffId)
+                                ->orWhere('g.health_worker_id', $staffId); 
                         });
 
                     $areaData = $staffQuery
@@ -543,12 +573,17 @@ class HealthCenterDashboard extends Controller
                         $join->on('f.medical_record_case_id', '=', 'medical_record_cases.id')
                             ->where('f.health_worker_id', $staffId);
                     })
+                    ->leftJoin('gc_medical_records as g', function ($join) use ($staffId) {
+                        $join->on('g.medical_record_case_id', '=', 'medical_record_cases.id')
+                            ->where('g.health_worker_id', $staffId);
+                    })
                     ->where(function ($q) {
                         $q->whereNotNull('v.id')
                             ->orWhereNotNull('p.id')
                             ->orWhereNotNull('s.id')
                             ->orWhereNotNull('t.id')
-                            ->orWhereNotNull('f.id');
+                            ->orWhereNotNull('f.id')
+                            ->orWhereNotNull('g.id'); // add this
                     });
             }
 
@@ -582,14 +617,19 @@ class HealthCenterDashboard extends Controller
                 ->where('medical_record_cases.type_of_case', 'senior-citizen')
                 ->count('medical_record_cases.id');
 
+            $generalConsultation = (clone $baseQuery)
+                ->where('medical_record_cases.type_of_case', 'general-consultation')
+                ->count('medical_record_cases.id');
+
             return response()->json([
-                'overallPatients'     => $totalPatient,
-                'vaccinationCount'    => $vaccination,
-                'prenatalCount'       => $prenatal,
-                'tbDotsCount'         => $tbDots,
-                'seniorCitizenCount'  => $seniorCitizen,
-                'familyPlanningCount' => $familyPlanning,
-                'types'               => $types,
+                'overallPatients'           => $totalPatient,
+                'vaccinationCount'          => $vaccination,
+                'prenatalCount'             => $prenatal,
+                'tbDotsCount'               => $tbDots,
+                'seniorCitizenCount'        => $seniorCitizen,
+                'familyPlanningCount'       => $familyPlanning,
+                'generalConsultationCount'  => $generalConsultation, // add this
+                'types'                     => $types,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -629,6 +669,9 @@ class HealthCenterDashboard extends Controller
                     })
                     ->orWhereHas('family_planning_medical_record', function ($subQ) use ($staffId) {
                         $subQ->where('health_worker_id', $staffId);
+                    })
+                    ->orWhereHas('gc_medical_record', function ($subQ) use ($staffId) {
+                        $subQ->where('health_worker_id', $staffId);
                     });
             });
         }
@@ -643,6 +686,7 @@ class HealthCenterDashboard extends Controller
             'seniorCitizen' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
             'tbDots' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
             'familyPlanning' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
+            'generalConsultation' => ['0-11' => 0, '1-5' => 0, '6-17' => 0, '18-59' => 0, '60+' => 0],
         ];
 
         // Process each record
@@ -688,6 +732,7 @@ class HealthCenterDashboard extends Controller
             'senior-citizen' => 'seniorCitizen',
             'tb-dots' => 'tbDots',
             'family-planning' => 'familyPlanning',
+            'general-consultation' => 'generalConsultation'
         ];
 
         return $mapping[$typeOfCase] ?? null;
@@ -993,6 +1038,11 @@ class HealthCenterDashboard extends Controller
                     'family_planning' => (clone $baseQuery)
                         ->join('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->where('f.health_worker_id', $staffId)
+                        ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
+                    // Add this 👇
+                    'general_consultation' => (clone $baseQuery)
+                        ->join('general_consultation_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->where('g.health_worker_id', $staffId)
                         ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
                 ];
             }

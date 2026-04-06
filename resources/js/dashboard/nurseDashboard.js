@@ -26,7 +26,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         const tbDotsPatientElement =
             document.getElementById("tb-dots-count");
         const seniorCitizenElement = document.getElementById("senior-citizen-count");
-        const familyPlanningElement =  document.getElementById("family-planning-count");
+        const familyPlanningElement = document.getElementById("family-planning-count");
+        const generalConsultationElement = document.getElementById("general-consultation-count");
         // provide the values
         overallPatientElement.innerHTML = data.overallPatients??0;
         vaccinationPatientElement.innerHTML = data.vaccinationCount ?? 0;
@@ -34,9 +35,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
         tbDotsPatientElement.innerHTML = data.tbDotsCount ?? 0
         seniorCitizenElement.innerHTML = data.seniorCitizenCount ?? 0;
         familyPlanningElement.innerHTML = data.familyPlanningCount ?? 0;
-
+        generalConsultationElement.innerHTML = data.generalConsultationCount ?? 12;
         // console.log(data.baseData);
-        
 
 
         

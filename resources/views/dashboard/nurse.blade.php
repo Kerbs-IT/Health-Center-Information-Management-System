@@ -90,6 +90,15 @@
                                 </div>
                                 <h4 class="text-black text-center mt-1">Family Planning</h4>
                             </div>
+                            <div class="item rounded flex-fill">
+                                <div class="d-flex gap-3 justify-content-between px-3 ">
+                                    <div class="overall-data fs-1 align-self-center text-black p-3" id="general-consultation-count">0</div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="dashboard-icons" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                                        <path d="M48 0C21.5 0 0 21.5 0 48L0 256l144 0c8.8 0 16 7.2 16 16s-7.2 16-16 16L0 288l0 64 144 0c8.8 0 16 7.2 16 16s-7.2 16-16 16L0 384l0 80c0 26.5 21.5 48 48 48l217.9 0c-6.3-10.2-9.9-22.2-9.9-35.1c0-46.9 25.8-87.8 64-109.2l0-95.9L320 48c0-26.5-21.5-48-48-48L48 0zM152 64l16 0c8.8 0 16 7.2 16 16l0 24 24 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-24 0 0 24c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-24-24 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16l24 0 0-24c0-8.8 7.2-16 16-16zM512 272a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM288 477.1c0 19.3 15.6 34.9 34.9 34.9l218.2 0c19.3 0 34.9-15.6 34.9-34.9c0-51.4-41.7-93.1-93.1-93.1l-101.8 0c-51.4 0-93.1 41.7-93.1 93.1z" fill="#2E8B57" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-black text-center mt-1">General Consultation</h4>
+                            </div>
                         </div>
                         <div class="button-con w-100 px-4">
                             <h4 class="fw-bold text-center">Generate Report</h4>
@@ -108,7 +117,7 @@
                                 </a>
                             </div>
                         </div>
-                        
+
                         <!-- age distribution and overdue records -->
                         <div class="charts px-2 px-md-4  mb-4 charts-dashboard">
                             <div class="row g-3 ">
@@ -141,6 +150,7 @@
                                                         <option value="seniorCitizen">Senior Citizen</option>
                                                         <option value="tbDots">TB Treatment</option>
                                                         <option value="familyPlanning">Family Planning</option>
+                                                        <option value="generalConsultation">General Consultation</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -200,6 +210,7 @@
                                                 <option value="senior">Senior Citizen</option>
                                                 <option value="tb">TB Treatment</option>
                                                 <option value="family_planning">Family Planning</option>
+                                                <option value="general_consultation">General Consultation</option>
                                             </select>
                                         </div>
                                     </div>
@@ -253,6 +264,12 @@
                                     <div class="service-item">
                                         <div class="service-label">Family Planning</div>
                                         <div class="service-count" style="background-color: #065A24;" id="family-planning-patient-today">0</div>
+                                    </div>
+
+                                    <!-- Add this after the Family Planning service-item -->
+                                    <div class="service-item">
+                                        <div class="service-label">General Consultation</div>
+                                        <div class="service-count" style="background-color: #065A24;" id="general-consultation-patient-today">0</div>
                                     </div>
 
                                     <!-- Add more services here -->
