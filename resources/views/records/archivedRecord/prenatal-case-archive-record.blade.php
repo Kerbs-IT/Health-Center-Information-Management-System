@@ -33,7 +33,7 @@
     'vaccination' => 'record_vaccination'
     ];
 
-    $elementId = $elementIdMap[$typeOfCase] ?? '';
+    $elementId = $elementIdMap[$typeOfCase] ?? 'record_prenatal';
     @endphp
     <div class="vaccination min-vh-100 d-flex">
         <aside>
@@ -47,8 +47,7 @@
                 <div class="mb-3 w-100 px-md-3 px-1 px-lg-5">
                     <!-- use the livewire for sorting -->
                     <livewire:archive.prenatal-case-archive
-                        :caseId="request()->get('medical_record_id')"
-                         />
+                        :caseId="request()->get('medical_record_id')" />
                 </div>
 
             </main>

@@ -19,6 +19,21 @@
     'resources/js/record/record.js',
     'resources/js/datePicker/record.js'])
 
+    @php
+    $typeOfCase = request('type_of_case');
+
+    $elementIdMap = [
+    'general-consultation' => 'record_general_consultation',
+    'prenatal' => 'record_prenatal',
+    'family-planning' => 'record_family_planning',
+    'tb-dots' => 'record_tb_dots',
+    'senior-citizen' => 'record_senior_citizen',
+    'vaccination' => 'record_vaccination'
+    ];
+
+    $elementId = $elementIdMap[$typeOfCase] ?? 'record_general_consultation';
+    @endphp
+
     <div class="vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
