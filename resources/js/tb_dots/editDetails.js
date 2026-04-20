@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
-// console.log("health-worker-id", healthWorkerId);
 const currentLoginhealthWorkerId = healthWorkerDropDown.dataset.staffId;
 let disablerOption = null;
 if (currentLoginhealthWorkerId) {
@@ -15,7 +14,6 @@ if (currentLoginhealthWorkerId) {
 
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
-        // console.log(element);
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
         } ${healthWorkerId != element.id && disablerOption ? "disabled" : ""}>${
@@ -35,82 +33,105 @@ if (healthWorkerAssignedArea) {
 }
 
 // update patient details
-// update the infor
 const saveBtn = document.getElementById("edit-save-btn");
 
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+
     const id = saveBtn.dataset.bsMedicalId;
-    // console.log(id);
-    const form = document.getElementById("edit-tb-dots-patient-details-form");
-    const formData = new FormData(form);
+    const originalText = saveBtn.innerHTML;
 
-    const response = await fetch(
-        `/patient-record/tb-dots/update-details/${id}`,
-        {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
+    saveBtn.disabled = true;
+    saveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+    try {
+        const form = document.getElementById(
+            "edit-tb-dots-patient-details-form",
+        );
+        const formData = new FormData(form);
+
+        const response = await fetch(
+            `/patient-record/tb-dots/update-details/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
             },
-            body: formData,
-        }
-    );
+        );
 
-    const data = await response.json();
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
 
-    const errorElements = document.querySelectorAll(".error-text");
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+        if (!response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let errorMessage = "";
+
+            if (data.errors) {
+                errorMessage = Object.values(data.errors).flat().join("\n");
+            } else if (data.message) {
+                errorMessage = data.message;
+            } else {
+                errorMessage = "An unexpected error occurred.";
             }
-        });
 
-        let errorMessage = "";
+            Swal.fire({
+                title: "Update Tb Dots Patient Details",
+                text: errorMessage,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
 
-        if (data.errors) {
-            // Handle ValidationException
-            errorMessage = Object.values(data.errors)
-                .flat() // flatten nested arrays if present
-                .join("\n");
-        } else if (data.message) {
-            // Handle general backend errors
-            errorMessage = data.message;
+            // Re-enable on validation error
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         } else {
-            // Handle unexpected responses
-            errorMessage = "An unexpected error occurred.";
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Swal.fire({
+                title: "Update Tb Dots Patient Details",
+                text: capitalizeEachWord(data.message),
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            });
         }
+    } catch (error) {
+        console.error("Error updating TB Dots patient details:", error);
 
         Swal.fire({
-            title: "Update Tb Dots Patient Details",
-            text: errorMessage,
+            title: "Error",
+            text: `Failed to update record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
         });
-    } else {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Swal.fire({
-            title: "Update Tb Dots Patient Details",
-            text: capitalizeEachWord(data.message),
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
+
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
     }
 });
-// HANDLE THE AUTOMATED AGE VIA DATE OF BIRTH
 
+// HANDLE THE AUTOMATED AGE VIA DATE OF BIRTH
 const dob = document.getElementById("birthdate");
 const age = document.getElementById("age");
 const hiddenAge = document.getElementById("hiddenAge");
@@ -118,6 +139,7 @@ const hiddenAge = document.getElementById("hiddenAge");
 if (dob && age && hiddenAge) {
     automateAge(dob, age, hiddenAge);
 }
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

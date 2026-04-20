@@ -385,7 +385,9 @@
 
 
                         <div class="mb-3 w-95">
-                            <input type="submit" value="Register Patient Account" class="d-block btn btn-success py-1 m-auto fw-bold fs-5" id="add-patient-submit-btn">
+                            <button type="button" class="d-block btn btn-success py-1 m-auto fw-bold fs-5" id="add-patient-submit-btn">
+                                Register Patient Account
+                            </button>
                         </div>
 
                         @if ($errors->any())

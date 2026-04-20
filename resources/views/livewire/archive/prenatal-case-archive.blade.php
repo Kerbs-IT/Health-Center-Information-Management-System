@@ -46,7 +46,6 @@
                 <tr>
                     <th>#</th>
                     <th>Type of Record</th>
-                    <th>Nurse</th>
                     <th style="cursor:pointer;" wire:click="sortBy('created_at')">
                         Date
                         @if ($sortField === 'created_at')

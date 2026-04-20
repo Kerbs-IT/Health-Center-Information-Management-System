@@ -162,7 +162,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-full md:w-[50%]">
                                             <label for="brgy">Administered by<span class="text-danger">*</span></label>
-                                            
+
                                             <select name="handled_by" id="handled_by" class="form-select " data-bs-health-worker-id="{{ optional($seniorCitizenRecord->senior_citizen_medical_record)->health_worker_id ?? '' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="">Select a person</option>
                                             </select>
@@ -277,7 +277,10 @@
                                 </div>
                                 <!-- save btn -->
                                 <div class="save-record align-self-end mt-5">
-                                    <input type="submit" class="btn btn-success px-4 fs-5" value="Save Record" id="edit-save-btn" data-bs-medical-id="{{$seniorCitizenRecord-> id}}">
+                                    
+                                    <button type="button" id="edit-save-btn" class="btn btn-success px-4 fs-5" data-bs-medical-id="{{$seniorCitizenRecord-> id}}">
+                                        Update Record
+                                    </button>
                                 </div>
                             </div>
                         </form>

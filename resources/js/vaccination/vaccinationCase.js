@@ -100,7 +100,6 @@ const newRecordAddVaccineBtn = document.getElementById("add-vaccination-btn");
 // =============================================================================
 async function init() {
     await loadVaccineDoseConfig();
-    // console.log("vaccine config loaded:", vaccineDoseConfig);
 
     // ✅ ADD CASE - Handle it directly, don't use shared function
     if (vaccineDropdown && newRecordAddVaccineBtn) {
@@ -319,7 +318,6 @@ if (vaccineContainer) {
                     addselectedVaccineCon.value = addSelectedVaccine.join(",");
                 }
                 e.target.closest(".vaccine").remove();
-                // ✅ ADD THIS LINE - update immediately without setTimeout
                 updateDoseDropdown(addSelectedVaccine, "add-dose");
             }
         }
@@ -359,26 +357,112 @@ if (vaccinationSubmitCaseBtn) {
             }
         }
 
-        const addCaseForm = document.getElementById(
-            "add-vaccination-case-form",
-        );
-        const caseFormData = new FormData(addCaseForm);
-        const caseId = e.target.dataset.bsCaseId;
+        // Store original text and disable button
+        const originalText = vaccinationSubmitCaseBtn.innerHTML;
+        vaccinationSubmitCaseBtn.disabled = true;
+        vaccinationSubmitCaseBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
-        const response = await fetch(`/add-vaccination-case/${caseId}`, {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]',
-                ).content,
-                Accept: "application/json",
-            },
-            body: caseFormData,
-        });
+        try {
+            const addCaseForm = document.getElementById(
+                "add-vaccination-case-form",
+            );
+            const caseFormData = new FormData(addCaseForm);
+            const caseId = e.target.dataset.bsCaseId;
 
-        const data = await response.json();
+            const response = await fetch(`/add-vaccination-case/${caseId}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: caseFormData,
+            });
 
-        if (!response.ok) {
+            const data = await response.json();
+
+            if (!response.ok) {
+                const vaccinationCaseErrors = document.querySelectorAll(
+                    ".add_vaccination_case_record_errors",
+                );
+                if (vaccinationCaseErrors) {
+                    vaccinationCaseErrors.forEach(
+                        (error) => (error.innerHTML = ""),
+                    );
+                }
+
+                let errorMessage = "";
+                if (typeof data.errors === "string") {
+                    errorMessage = data.errors
+                        .replace(/&lt;br&gt;/g, "<br>")
+                        .replace(/&lt;br\/&gt;/g, "<br>")
+                        .replace(/&lt;br \/&gt;/g, "<br>");
+                } else if (typeof data.errors === "object") {
+                    errorMessage = Object.entries(data.errors)
+                        .map(([field, message]) => {
+                            const fieldName = field
+                                .replace(/^add_/, "")
+                                .replace(/_/g, " ")
+                                .replace(/\b\w/g, (char) => char.toUpperCase());
+                            return `• ${fieldName}: ${message}`;
+                        })
+                        .join("<br>");
+                }
+
+                Swal.fire({
+                    title: "Adding New Vaccination Case",
+                    html: errorMessage,
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    vaccinationSubmitCaseBtn.disabled = false;
+                    vaccinationSubmitCaseBtn.innerHTML = originalText;
+                });
+
+                const healthWorkerError = document.getElementById(
+                    "add-health-worker-error",
+                );
+                const dateError = document.getElementById("add-date-error");
+                const timeError = document.getElementById("add-time-error");
+                const selectedVaccineError = document.getElementById(
+                    "selected-vaccine-error",
+                );
+                const doseError = document.getElementById("add-dose-error");
+                const dateOfComebackError = document.getElementById(
+                    "add-date-of-comeback-error",
+                );
+
+                healthWorkerError.innerHTML = data.errors?.add_handled_by ?? "";
+                dateError.innerHTML =
+                    data.errors?.add_date_of_vaccination ?? "";
+                timeError.innerHTML =
+                    data.errors?.add_time_of_vaccination ?? "";
+                selectedVaccineError.innerHTML =
+                    data.errors?.selected_vaccine_type ?? "";
+                doseError.innerHTML = data.errors?.add_record_dose ?? "";
+                if (dateOfComebackError) {
+                    dateOfComebackError.innerHTML =
+                        data.errors?.add_date_of_comeback ?? "";
+                }
+
+                const cancelBtn = document.getElementById("add-cancel-btn");
+                cancelBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    healthWorkerError.innerHTML = "";
+                    dateError.innerHTML = "";
+                    timeError.innerHTML = "";
+                    selectedVaccineError.innerHTML = "";
+                    doseError.innerHTML = "";
+                });
+
+                return;
+            }
+
+            // Success
             const vaccinationCaseErrors = document.querySelectorAll(
                 ".add_vaccination_case_record_errors",
             );
@@ -388,94 +472,35 @@ if (vaccinationSubmitCaseBtn) {
                 );
             }
 
-            let errorMessage = "";
-            if (typeof data.errors === "string") {
-                errorMessage = data.errors
-                    .replace(/&lt;br&gt;/g, "<br>")
-                    .replace(/&lt;br\/&gt;/g, "<br>")
-                    .replace(/&lt;br \/&gt;/g, "<br>");
-            } else if (typeof data.errors === "object") {
-                errorMessage = Object.entries(data.errors)
-                    .map(([field, message]) => {
-                        const fieldName = field
-                            .replace(/^add_/, "")
-                            .replace(/_/g, " ")
-                            .replace(/\b\w/g, (char) => char.toUpperCase());
-                        return `• ${fieldName}: ${message}`;
-                    })
-                    .join("<br>");
-            }
+            addCaseForm.reset();
 
             Swal.fire({
                 title: "Adding New Vaccination Case",
-                html: errorMessage,
-                icon: "error",
+                text: data.message,
+                icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then((result) => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                vaccinationSubmitCaseBtn.disabled = false;
+                vaccinationSubmitCaseBtn.innerHTML = originalText;
+
+                // Dispatch Livewire AFTER SweetAlert to avoid mid-flight re-render
+                Livewire.dispatch("refreshTable");
+
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("vaccinationModal"),
+                    );
+                    modal.hide();
+                }
             });
-
-            const healthWorkerError = document.getElementById(
-                "add-health-worker-error",
-            );
-            const dateError = document.getElementById("add-date-error");
-            const timeError = document.getElementById("add-time-error");
-            const selectedVaccineError = document.getElementById(
-                "selected-vaccine-error",
-            );
-            const doseError = document.getElementById("add-dose-error");
-            const dateOfComebackError = document.getElementById(
-                "add-date-of-comeback-error",
-            );
-
-            healthWorkerError.innerHTML = data.errors?.add_handled_by ?? "";
-            dateError.innerHTML = data.errors?.add_date_of_vaccination ?? "";
-            timeError.innerHTML = data.errors?.add_time_of_vaccination ?? "";
-            selectedVaccineError.innerHTML =
-                data.errors?.selected_vaccine_type ?? "";
-            doseError.innerHTML = data.errors?.add_record_dose ?? "";
-            if (dateOfComebackError) {
-                dateOfComebackError.innerHTML =
-                    data.errors?.add_date_of_comeback ?? "";
-            }
-
-            const cancelBtn = document.getElementById("add-cancel-btn");
-            cancelBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                healthWorkerError.innerHTML = "";
-                dateError.innerHTML = "";
-                timeError.innerHTML = "";
-                selectedVaccineError.innerHTML = "";
-                doseError.innerHTML = "";
-            });
-
-            return;
+        } catch (error) {
+            console.error(error);
+            // Re-enable button on error
+            vaccinationSubmitCaseBtn.disabled = false;
+            vaccinationSubmitCaseBtn.innerHTML = originalText;
         }
-
-        Livewire.dispatch("refreshTable");
-
-        const vaccinationCaseErrors = document.querySelectorAll(
-            ".add_vaccination_case_record_errors",
-        );
-        if (vaccinationCaseErrors) {
-            vaccinationCaseErrors.forEach((error) => (error.innerHTML = ""));
-        }
-
-        Swal.fire({
-            title: "Adding New Vaccination Case",
-            text: data.message,
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("vaccinationModal"),
-                );
-                modal.hide();
-            }
-        });
-
-        addCaseForm.reset();
     });
 }
 
@@ -648,6 +673,12 @@ updateSaveBtn.addEventListener("click", async (e) => {
         }
     }
 
+    // Store original text and disable button
+    const originalText = updateSaveBtn.innerHTML;
+    updateSaveBtn.disabled = true;
+    updateSaveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
+
     try {
         const form = document.getElementById("edit-vaccination-case-form");
         const formData = new FormData(form);
@@ -692,9 +723,12 @@ updateSaveBtn.addEventListener("click", async (e) => {
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                updateSaveBtn.disabled = false;
+                updateSaveBtn.innerHTML = originalText;
             });
         } else {
-            Livewire.dispatch("refreshTable");
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
@@ -706,6 +740,13 @@ updateSaveBtn.addEventListener("click", async (e) => {
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             }).then((result) => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                updateSaveBtn.disabled = false;
+                updateSaveBtn.innerHTML = originalText;
+
+                // Dispatch Livewire AFTER SweetAlert to avoid mid-flight re-render
+                Livewire.dispatch("refreshTable");
+
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
                         document.getElementById("editVaccinationModal"),
@@ -716,6 +757,9 @@ updateSaveBtn.addEventListener("click", async (e) => {
         }
     } catch (error) {
         console.error(error);
+        // Re-enable button on error
+        updateSaveBtn.disabled = false;
+        updateSaveBtn.innerHTML = originalText;
     }
 });
 

@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ".edit-healthworker-info",
             );
             if (editErrors) {
-                editErrors.forEach(error => error.innerHTML = '');
+                editErrors.forEach((error) => (error.innerHTML = ""));
             }
 
             try {
@@ -181,12 +181,13 @@ if (submitBtn) {
         e.preventDefault();
         const userId = submitBtn.dataset.user;
 
+        // Store original button text and disable button
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Updating...";
+
         let form = document.getElementById("profile-form");
         let formData = new FormData(form);
-
-        // for (let [key, value] of formData.entries()) {
-        //     console.log(`${key}: ${value}`);
-        // }
 
         formData.append("_method", "PUT"); // Laravel will detect this
 
@@ -240,6 +241,10 @@ if (submitBtn) {
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
                 }).then((response) => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+
                     if (response.isConfirmed) {
                         // dismiss the modal
                         const modal = document.getElementById("profileModal");
@@ -276,6 +281,10 @@ if (submitBtn) {
                     icon: "error",
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
                 });
 
                 // Fill error fields
@@ -305,7 +314,10 @@ if (submitBtn) {
                     "No choosen File";
             }
         } catch (err) {
-            // console.error('Fetch error:', err);
+            console.error("Fetch error:", err);
+            // Re-enable button on error
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }
     });
 }
@@ -363,110 +375,113 @@ puroks();
 // add health workers
 
 // open the add health worker
-const addHealthWorkerModalBtn = document.getElementById("add-health-worker-modal");
+const addHealthWorkerModalBtn = document.getElementById(
+    "add-health-worker-modal",
+);
 
 if (addHealthWorkerModalBtn) {
-    addHealthWorkerModalBtn.addEventListener('click', () => {
-         const errorMessages = document.querySelectorAll(
-             ".add-healthworker-error",
-         );
-         // remove all error messages after submission
-         errorMessages.forEach((error) => (error.innerHTML = ""));
-    })
+    addHealthWorkerModalBtn.addEventListener("click", () => {
+        const errorMessages = document.querySelectorAll(
+            ".add-healthworker-error",
+        );
+        // remove all error messages after submission
+        errorMessages.forEach((error) => (error.innerHTML = ""));
+    });
 }
 
 const addHealthWorkerSubmitBTN = document.getElementById("add-Health-worker");
 
-addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
-    e.preventDefault();
+if (addHealthWorkerSubmitBTN) {
+    addHealthWorkerSubmitBTN.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-    // create a form
-    let form = document.getElementById("add-health-worker-form");
-    let formData = new FormData(form);
+        // Store original button text and disable button
+        const originalText = addHealthWorkerSubmitBTN.textContent;
+        addHealthWorkerSubmitBTN.disabled = true;
+        addHealthWorkerSubmitBTN.textContent = "Saving...";
 
-    // for (let [key, value] of formData.entries()) {
-    //     console.log(`${key}: ${value}`);
-    // }
+        // create a form
+        let form = document.getElementById("add-health-worker-form");
+        let formData = new FormData(form);
 
-    try {
-        // errors container
-
-        const fname_error = document.querySelector(".fname-error");
-        const middle_initial_error = document.querySelector(
-            ".middle-initial-error",
-        );
-        const lname_error = document.querySelector(".lname-error");
-        const email_error = document.querySelector(".email-error");
-        const password_error = document.querySelector(".password-error");
-        const assigned_area_error = document.querySelector(
-            ".assigned-area-error",
-        );
-        // const recovery_question_error = document.querySelector('.recovery-question-error');
-        // const recovery_answer_error = document.querySelector('.recovery-answer-error');
-
-        const response = await fetch("/add-health-worker-account", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document
-                    .querySelector('meta[name="csrf-token"]')
-                    .getAttribute("content"),
-                Accept: "application/json",
-            },
-            body: formData,
-        });
-
-        // get the response in json format
-        const data = await response.json();
-
-        if (response.ok) {
-            const errorMessages = document.querySelectorAll(
-                ".add-healthworker-error",
-            );
-            // remove all error messages after submission
-            errorMessages.forEach((error) => (error.innerHTML = ""));
-            Swal.fire({
-                title: "Add New Health Worker",
-                text: "Health Worker Account is successfully added",
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
+        try {
+            const response = await fetch("/add-health-worker-account", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    Accept: "application/json",
+                },
+                body: formData,
             });
-            // add the livewire event listener
-            if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("healthWorkerTableRefresh");
-            } else {
-                console.warn("Livewire is not available");
-            }
-            document.getElementById("add-health-worker-form").reset();
-        } else {
-            // reset the error first
-            const errorMessages = document.querySelectorAll(
-                ".add-healthworker-error",
-            );
-            // remove all error messages after submission
-            errorMessages.forEach((error) => (error.innerHTML = ""));
-            // set the errors
-            Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).innerHTML = value;
+
+            // get the response in json format
+            const data = await response.json();
+
+            if (response.ok) {
+                const errorMessages = document.querySelectorAll(
+                    ".add-healthworker-error",
+                );
+                // remove all error messages after submission
+                errorMessages.forEach((error) => (error.innerHTML = ""));
+                Swal.fire({
+                    title: "Add New Health Worker",
+                    text: "Health Worker Account is successfully added",
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    addHealthWorkerSubmitBTN.disabled = false;
+                    addHealthWorkerSubmitBTN.textContent = originalText;
+                });
+
+                // add the livewire event listener
+                if (typeof Livewire !== "undefined") {
+                    Livewire.dispatch("healthWorkerTableRefresh");
+                } else {
+                    console.warn("Livewire is not available");
                 }
-            });
-            const errorList = Object.values(data.errors)
-                .flat()
-                .map((err) => `<p>${err}</p>`)
-                .join("");
-            Swal.fire({
-                title: "Add New Health Worker",
-                html: errorList,
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+                document.getElementById("add-health-worker-form").reset();
+            } else {
+                // reset the error first
+                const errorMessages = document.querySelectorAll(
+                    ".add-healthworker-error",
+                );
+                // remove all error messages after submission
+                errorMessages.forEach((error) => (error.innerHTML = ""));
+                // set the errors
+                Object.entries(data.errors).forEach(([key, value]) => {
+                    if (document.getElementById(`${key}_error`)) {
+                        document.getElementById(`${key}_error`).innerHTML =
+                            value;
+                    }
+                });
+                const errorList = Object.values(data.errors)
+                    .flat()
+                    .map((err) => `<p>${err}</p>`)
+                    .join("");
+                Swal.fire({
+                    title: "Add New Health Worker",
+                    html: errorList,
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    addHealthWorkerSubmitBTN.disabled = false;
+                    addHealthWorkerSubmitBTN.textContent = originalText;
+                });
+            }
+        } catch (error) {
+            console.log("Error status:", error);
+            // Re-enable button on error
+            addHealthWorkerSubmitBTN.disabled = false;
+            addHealthWorkerSubmitBTN.textContent = originalText;
         }
-    } catch (error) {
-        console.log("Error status:", error);
-    }
-});
+    });
+}
 // add health worker modal reset
 const addHealthWorkerBtn = document.getElementById("add-health-worker-modal");
 

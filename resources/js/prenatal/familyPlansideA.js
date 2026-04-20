@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { puroks } from "../patient/healthWorkerList.js";
 import initSignatureCapture from "../signature/signature.js";
 import { automateAge } from "../automateAge.js";
-import { refreshToggleStates,initializeEditModal } from "../family_planning/editFamilyPlanningRadioToggle.js";
+import { refreshToggleStates, initializeEditModal } from "../family_planning/editFamilyPlanningRadioToggle.js";
 
 // Initialize the modal on page load
 initializeEditModal();
@@ -470,9 +470,9 @@ if (editIcon) {
             // assign the case id
         }
 
-          setTimeout(() => {
-                    refreshToggleStates();
-                }, 100);
+        setTimeout(() => {
+            refreshToggleStates();
+        }, 100);
 
         let editFamilyPlanningSignature = null;
         let editFamilyPlanningConsentSignature = null;
@@ -558,100 +558,126 @@ if (editSaveBtn) {
     editSaveBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const form = document.getElementById("edit-family-plan-form");
-        const formData = new FormData(form);
-        const hiddenSignature = document.getElementById(
-            "edit_family_planning_acknowledgement_signature_data"
-        );
-        if (hiddenSignature && hiddenSignature.value) {
-            formData.set(
-                "edit_family_planning_acknowledgement_signature_data",
-                hiddenSignature.value
-            );
-            // console.log("✅ Manually added signature data");
-        }
-        const hiddenConsentSignature = document.getElementById(
-            "edit_family_planning_consent_signature_data"
-        );
-        if (hiddenConsentSignature && hiddenConsentSignature.value) {
-            formData.set(
-                "edit_family_planning_consent_signature_data",
-                hiddenConsentSignature.value
-            );
-            // console.log("✅ Manually added signature data");
-        }
+        const originalText = editSaveBtn.innerHTML;
+        editSaveBtn.disabled = true;
+        editSaveBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
-        // id
-        const id = editSaveBtn.dataset.caseId;
-        // for (let [key, value] of formData.entries()) {
-        //     console.log(`${key}: ${value}`);
-        // }
-
-        const response = await fetch(
-            `/patient-case/family-planning/update-case-info/${id}`,
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content,
-                    Accept: "application/json",
-                },
-                body: formData,
+        try {
+            const form = document.getElementById("edit-family-plan-form");
+            const formData = new FormData(form);
+            const hiddenSignature = document.getElementById(
+                "edit_family_planning_acknowledgement_signature_data"
+            );
+            if (hiddenSignature && hiddenSignature.value) {
+                formData.set(
+                    "edit_family_planning_acknowledgement_signature_data",
+                    hiddenSignature.value
+                );
+                // console.log("✅ Manually added signature data");
             }
-        );
+            const hiddenConsentSignature = document.getElementById(
+                "edit_family_planning_consent_signature_data"
+            );
+            if (hiddenConsentSignature && hiddenConsentSignature.value) {
+                formData.set(
+                    "edit_family_planning_consent_signature_data",
+                    hiddenConsentSignature.value
+                );
+                // console.log("✅ Manually added signature data");
+            }
 
-        const data = await response.json();
-        const errorElements = document.querySelectorAll(".error-text");
-        if (response.ok) {
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-            Swal.fire({
-                title: "Family Planning Patient",
-                text: data.message, // this will make the text capitalize each word
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("editfamilyPlanningCaseModal")
-                    );
-                    // console.log("working dapat");
-                    if (modal) {
-                        modal.hide();
+            // id
+            const id = editSaveBtn.dataset.caseId;
+            // for (let [key, value] of formData.entries()) {
+            //     console.log(`${key}: ${value}`);
+            // }
+
+            const response = await fetch(
+                `/patient-case/family-planning/update-case-info/${id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content,
+                        Accept: "application/json",
+                    },
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+            const errorElements = document.querySelectorAll(".error-text");
+
+            if (response.ok) {
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
+                Swal.fire({
+                    title: "Family Planning Patient",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    editSaveBtn.disabled = false;
+                    editSaveBtn.innerHTML = originalText;
+
+                    if (result.isConfirmed) {
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("editfamilyPlanningCaseModal")
+                        );
+                        if (modal) {
+                            modal.hide();
+                        }
+                        form.reset();
                     }
-
-                    form.reset();
-                }
-            });
-        } else {
-            // reset
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-            // handles the validation error
-            Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).textContent = value;
-                }
-            });
-            let message = "";
-
-            if (data.errors) {
-                if (typeof data.errors == "object") {
-                    message = Object.values(data.errors).flat().join("\n");
-                } else {
-                    message = data.errors;
-                }
+                });
             } else {
-                message = "An unexpected error occurred.";
+                // reset
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
+                // handles the validation error
+                Object.entries(data.errors).forEach(([key, value]) => {
+                    if (document.getElementById(`${key}_error`)) {
+                        document.getElementById(`${key}_error`).textContent = value;
+                    }
+                });
+                let message = "";
+
+                if (data.errors) {
+                    if (typeof data.errors == "object") {
+                        message = Object.values(data.errors).flat().join("\n");
+                    } else {
+                        message = data.errors;
+                    }
+                } else {
+                    message = "An unexpected error occurred.";
+                }
+
+                Swal.fire({
+                    title: "Family Planning Patient",
+                    text: capitalizeEachWord(message),
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+
+                // Re-enable button on validation error
+                editSaveBtn.disabled = false;
+                editSaveBtn.innerHTML = originalText;
             }
+        } catch (error) {
+            console.error(error);
+            // Re-enable button on network/JS error
+            editSaveBtn.disabled = false;
+            editSaveBtn.innerHTML = originalText;
 
             Swal.fire({
-                title: "Family Planning Patient",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                title: "Error",
+                text: "An unexpected error occurred. Please try again.",
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -659,7 +685,8 @@ if (editSaveBtn) {
         }
     });
 }
-// ===== Archive side a
+
+// ===== Archive side A
 document.addEventListener("click", async (e) => {
     const archiveBtn = e.target.closest(".archive-family-plan-side-A");
     if (!archiveBtn) return;
@@ -714,7 +741,7 @@ document.addEventListener("click", async (e) => {
         // Success - refresh table
         if (typeof Livewire !== "undefined") {
             Livewire.dispatch("familyPlanningRefreshTable");
-            Livewire.dispatch("wraMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+            Livewire.dispatch("wraMasterlistRefreshTable");
         }
 
         // Remove the row from DOM
@@ -734,11 +761,13 @@ document.addEventListener("click", async (e) => {
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("editfamilyPlanningCaseModal")
                 );
-                // console.log("working dapat");
                 if (modal) {
                     modal.hide();
                 }
-                form.reset();
+                const form = document.getElementById("edit-family-plan-form");
+                if (form) {
+                    form.reset();
+                }
             }
         });
     } catch (error) {

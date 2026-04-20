@@ -2,7 +2,6 @@ import Swal from "sweetalert2";
 import { vitalSignInputMask } from "../vitalSign";
 
 const saveBtn = document.getElementById("add-check-up-save-btn");
-
 const addCheckup = document.getElementById("add-check-up-record-btn");
 
 if (addCheckup) {
@@ -12,9 +11,8 @@ if (addCheckup) {
             errors.forEach((error) => (error.innerHTML = ""));
         }
         const form = document.getElementById("add-check-up-form");
-
         form.reset();
-        // handle the vital sign
+
         const checkup_blood_pressure = document.getElementById(
             "add_checkup_blood_pressure",
         );
@@ -47,92 +45,119 @@ if (addCheckup) {
                 checkup_weight,
             );
         }
-    })
+    });
 }
+
+// ============================================================================
+// ADD CHECKUP SAVE — with button state management
+// ============================================================================
 
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const id = saveBtn.dataset.medicalId;
+    const originalText = saveBtn.innerHTML;
 
-    const form = document.getElementById("add-check-up-form");
-    const formData = new FormData(form);
+    saveBtn.disabled = true;
+    saveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
-    const response = await fetch(`/patient-record/add/check-up/tb-dots/${id}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
+    try {
+        const form = document.getElementById("add-check-up-form");
+        const formData = new FormData(form);
 
-    const data = await response.json();
+        const response = await fetch(
+            `/patient-record/add/check-up/tb-dots/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
+            },
+        );
 
-    const errorElements = document.querySelectorAll(".error-text");
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
 
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+        if (!response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let errorMessage = "";
+
+            if (data.errors) {
+                errorMessage = Object.values(data.errors).flat().join("\n");
+            } else if (data.message) {
+                errorMessage = data.message;
+            } else {
+                errorMessage = "An unexpected error occurred.";
             }
-        });
 
-        let errorMessage = "";
+            Swal.fire({
+                title: "Tb Dots Check-Up Record",
+                text: capitalizeEachWord(errorMessage),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
 
-        if (data.errors) {
-            // Handle ValidationException
-            errorMessage = Object.values(data.errors)
-                .flat() // flatten nested arrays if present
-                .join("\n");
-        } else if (data.message) {
-            // Handle general backend errors
-            errorMessage = data.message;
+            // Re-enable on validation error
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         } else {
-            // Handle unexpected responses
-            errorMessage = "An unexpected error occurred.";
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Livewire.dispatch("tbRefreshTable");
+
+            Swal.fire({
+                title: "Tb Dots Check-Up Record",
+                text: capitalizeEachWord(data.message),
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("tbDotsAddCheckUpModal"),
+                    );
+                    modal.hide();
+                }
+            });
         }
+    } catch (error) {
+        console.error("Error saving checkup:", error);
 
         Swal.fire({
-            title: "Tb Dots Check-Up Record",
-            text: capitalizeEachWord(errorMessage),
+            title: "Error",
+            text: `Failed to save record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
         });
-    } else {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // update the display record
-        Livewire.dispatch("tbRefreshTable");
-        Swal.fire({
-            title: "Tb Dots Check-Up Record",
-            text: capitalizeEachWord(data.message),
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("tbDotsAddCheckUpModal")
-                );
-                modal.hide();
-            }
-        });
+
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
     }
 });
 
-// -------------------------------- view the checkup information ------------------------------------
-
-// EVENT DELEGATION FOR VIEW
+// ============================================================================
+// VIEW CHECKUP
+// ============================================================================
 
 document.addEventListener("click", async (e) => {
     const viewBtn = e.target.closest(".tb-dots-view-check-up");
@@ -158,7 +183,6 @@ document.addEventListener("click", async (e) => {
                 document.getElementById(`view_checkup_${key}`).innerHTML =
                     value ?? "N/A";
             }
-             
         });
     }
 });
@@ -168,7 +192,6 @@ const editSaveBtn = document.getElementById("edit-checkup-save-btn");
 
 document.addEventListener("click", async (e) => {
     const editCheckUpBtn = e.target.closest(".tb-dots-edit-check-up");
-    // console.log("working");
     if (!editCheckUpBtn) return;
     const id = editCheckUpBtn.dataset.caseId ?? null;
     editSaveBtn.dataset.caseId = id;
@@ -197,7 +220,6 @@ document.addEventListener("click", async (e) => {
             }
         });
 
-        // handle the vital sign
         const checkup_blood_pressure = document.getElementById(
             "edit_checkup_blood_pressure",
         );
@@ -233,87 +255,108 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// update the data
+// ============================================================================
+// EDIT CHECKUP SAVE — with button state management
+// ============================================================================
 
 editSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const id = editSaveBtn.dataset.caseId;
-    const form = document.getElementById("edit-checkup-form");
-    const formData = new FormData(form);
+    const originalText = editSaveBtn.innerHTML;
 
-    const response = await fetch(
-        `/patient-record/tb-dots/update-checkup/${id}`,
-        {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
+    editSaveBtn.disabled = true;
+    editSaveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+    try {
+        const form = document.getElementById("edit-checkup-form");
+        const formData = new FormData(form);
+
+        const response = await fetch(
+            `/patient-record/tb-dots/update-checkup/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
             },
-            body: formData,
-        }
-    );
+        );
 
-    const data = await response.json();
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
 
-    const errorElements = document.querySelectorAll(".error-text");
+        if (!response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
 
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            let errorMessage = "";
+
+            if (data.errors) {
+                errorMessage = Object.values(data.errors).flat().join("\n");
+            } else if (data.message) {
+                errorMessage = data.message;
+            } else {
+                errorMessage = "An unexpected error occurred.";
             }
-        });
 
-        let errorMessage = "";
+            Swal.fire({
+                title: "Update",
+                text: capitalizeEachWord(errorMessage),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
 
-        if (data.errors) {
-            // Handle ValidationException
-            errorMessage = Object.values(data.errors)
-                .flat() // flatten nested arrays if present
-                .join("\n");
-        } else if (data.message) {
-            // Handle general backend errors
-            errorMessage = data.message;
+            // Re-enable on validation error
+            editSaveBtn.disabled = false;
+            editSaveBtn.innerHTML = originalText;
         } else {
-            // Handle unexpected responses
-            errorMessage = "An unexpected error occurred.";
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Swal.fire({
+                title: "Update",
+                text: capitalizeEachWord(data.message),
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                editSaveBtn.disabled = false;
+                editSaveBtn.innerHTML = originalText;
+
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("edit_tb_dots_checkup_Modal"),
+                    );
+                    modal.hide();
+                }
+            });
         }
+    } catch (error) {
+        console.error("Error updating checkup:", error);
 
         Swal.fire({
-            title: "Update",
-            text: capitalizeEachWord(errorMessage),
+            title: "Error",
+            text: `Failed to update record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
         });
 
-        Swal.fire({
-            title: "Update",
-            text: capitalizeEachWord(data.message),
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("edit_tb_dots_checkup_Modal")
-                );
-                modal.hide();
-            }
-        });
+        editSaveBtn.disabled = false;
+        editSaveBtn.innerHTML = originalText;
     }
 });
 
@@ -321,14 +364,15 @@ function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-// delete a checkup record
+// ============================================================================
+// ARCHIVE CHECKUP — with button state management
+// ============================================================================
+
 document.addEventListener("click", async (e) => {
     const archiveBtn = e.target.closest(".tb-check-up-delete-btn");
     if (!archiveBtn) return;
     const id = archiveBtn.dataset.caseId;
-    // console.log("caseId", id);
 
-    // Validate case ID
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -336,7 +380,6 @@ document.addEventListener("click", async (e) => {
     }
 
     try {
-        // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "The Tb dots Check-up Record will be moved to archived status.",
@@ -348,10 +391,14 @@ document.addEventListener("click", async (e) => {
             cancelButtonText: "Cancel",
         });
 
-        // ✅ Exit if user cancelled
         if (!result.isConfirmed) return;
 
-        // ✅ Get CSRF token
+        // Disable after confirmation
+        const originalHTML = archiveBtn.innerHTML;
+        archiveBtn.disabled = true;
+        archiveBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {
             throw new Error("CSRF token not found. Please refresh the page.");
@@ -365,28 +412,25 @@ document.addEventListener("click", async (e) => {
                     "X-CSRF-TOKEN": csrfToken.content,
                     Accept: "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(
-                data.message || `HTTP error! status: ${response.status}`
+                data.message || `HTTP error! status: ${response.status}`,
             );
         }
 
-        // Success - refresh table
         if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("seniorCitizenRefreshTable"); // ✅ Update dispatch name if needed
+            Livewire.dispatch("seniorCitizenRefreshTable");
         }
 
-        // Remove the row from DOM
         const row = archiveBtn.closest("tr");
         if (row) {
             row.remove();
         }
 
-        // Show success message
         Swal.fire({
             title: "Archived!",
             text: "The Tb dots Check-up Record has been archived.",
@@ -395,6 +439,11 @@ document.addEventListener("click", async (e) => {
         });
     } catch (error) {
         console.error("Error archiving case:", error);
+
+        // Re-enable on error
+        archiveBtn.disabled = false;
+        archiveBtn.innerHTML = originalHTML;
+
         Swal.fire({
             title: "Error",
             text: `Failed to archive record: ${error.message}`,

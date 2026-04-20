@@ -2,14 +2,11 @@ import { error } from "jquery";
 
 const addTable = document.getElementById("add_tb_tbody");
 if (addTable) {
-    // remove maintenance
     addTable.addEventListener("click", (e) => {
-        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }
 
-        // output if the container is empty
         if (addTable.children.length === 0) {
             addTable.innerHTML += `<tr>
                     <td colspan="7" class="text-center text-muted py-4">
@@ -18,8 +15,6 @@ if (addTable) {
                 </tr>`;
         }
     });
-
-    
 }
 
 // add new item to the container
@@ -29,7 +24,7 @@ if (addBTN) {
     addBTN.addEventListener("click", (e) => {
         const medicine = document.getElementById("add_tb_medicine");
         const dosage_n_frequency = document.getElementById(
-            "add_tb_dosage_n_frequency"
+            "add_tb_dosage_n_frequency",
         );
         const quantity = document.getElementById("add_tb_quantity");
         const start_date = document.getElementById("add_tb_start_date");
@@ -44,7 +39,7 @@ if (addBTN) {
         ) {
             Swal.fire({
                 title: "Missing Information",
-                text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
+                text: "Information provided is incomplete or invalid.",
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -60,7 +55,7 @@ if (addBTN) {
             end_date.style.border =
                 end_date.value === "" ? "1px solid red" : "";
         } else {
-            addTable.innerHTML = '';
+            addTable.innerHTML = "";
             addTable.innerHTML += `
                 <tr class="senior-citizen-maintenance-record" >
                     <td>${medicine.value}</td>
@@ -79,7 +74,6 @@ if (addBTN) {
                 </tr>
             `;
 
-            // reset the borders
             medicine.style.border =
                 medicine.value === "" ? "1px solid red" : "";
             dosage_n_frequency.style.border =
@@ -90,7 +84,6 @@ if (addBTN) {
                 start_date.value === "" ? "1px solid red" : "";
             end_date.style.border =
                 end_date.value === "" ? "1px solid red" : "";
-            // reset the value
             medicine.value = "";
             dosage_n_frequency.value = "";
             quantity.value = "";
@@ -104,69 +97,70 @@ if (addBTN) {
 const addCaseBtn = document.getElementById("add-case-record-btn") ?? null;
 const addCaseSaveBtn = document.getElementById("add_case_save_btn");
 if (addCaseBtn) {
-    addCaseBtn.addEventListener('click', (e) => {
+    addCaseBtn.addEventListener("click", (e) => {
         const patientInfo = JSON.parse(addCaseBtn.dataset.patientInfo);
 
         const form = document.getElementById("add_tb_dots_case_record_form");
-        // reset the form
         form.reset();
 
         const errors = document.querySelectorAll(".error-text");
         if (errors) {
-            errors.forEach(error => error.innerHTML = '');
+            errors.forEach((error) => (error.innerHTML = ""));
         }
 
-        // console.log(patientInfo);
+        const patientNameElement =
+            document.getElementById("add_tb_case_patient_name") ?? null;
+        const healthWorkerIdElement =
+            document.getElementById("add_tb_health_worker_id") ?? null;
 
-        // get the id of important input fields
-        const patientNameElement = document.getElementById("add_tb_case_patient_name")??null;
-        const healthWorkerIdElement = document.getElementById("add_tb_health_worker_id") ?? null;
-        
-        // display name
-        const displayName = document.getElementById("display_add_tb_case_patient_name");
+        const displayName = document.getElementById(
+            "display_add_tb_case_patient_name",
+        );
         if (displayName) {
             displayName.value = patientInfo.patient.full_name;
         }
 
-        // give the value
         if (patientNameElement && healthWorkerIdElement) {
             patientNameElement.value = patientInfo.patient.full_name;
-            healthWorkerIdElement.value = patientInfo.tb_dots_medical_record.health_worker_id;
+            healthWorkerIdElement.value =
+                patientInfo.tb_dots_medical_record.health_worker_id;
         }
-        // give the medical id to the saveBtn
+
         if (addCaseSaveBtn) {
             addCaseSaveBtn.dataset.medicalRecordCaseId = patientInfo.id;
         }
-
     });
 }
 
-addCaseSaveBtn.addEventListener('click', async (e) => {
+addCaseSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const id = addCaseSaveBtn.dataset.medicalRecordCaseId;
+    const originalText = addCaseSaveBtn.innerHTML;
 
-    const form = document.getElementById("add_tb_dots_case_record_form");
-    const formData = new FormData(form);
+    addCaseSaveBtn.disabled = true;
+    addCaseSaveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
     try {
+        const form = document.getElementById("add_tb_dots_case_record_form");
+        const formData = new FormData(form);
+
         const response = await fetch(
             `/patient-record/tb-dots/add/case-record/${id}`,
             {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
+                        'meta[name="csrf-token"]',
                     ).content,
                     Accept: "application/json",
                 },
                 body: formData,
-            }
+            },
         );
 
         const data = await response.json();
-
-        // get all the error elements
         const errorElements = document.querySelectorAll(".error-text");
 
         if (response.ok) {
@@ -174,26 +168,27 @@ addCaseSaveBtn.addEventListener('click', async (e) => {
                 element.textContent = "";
             });
             if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("tbRefreshTable"); // ✅ Update dispatch name if needed
+                Livewire.dispatch("tbRefreshTable");
             }
             Swal.fire({
                 title: "Add Prenatal Case",
-                text: data.message, // this will make the text capitalize each word
+                text: data.message,
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             }).then((result) => {
+                addCaseSaveBtn.disabled = false;
+                addCaseSaveBtn.innerHTML = originalText;
+
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("tbDotsCaseRecordModal")
+                        document.getElementById("tbDotsCaseRecordModal"),
                     );
                     modal.hide();
                     form.reset();
                 }
             });
         } else {
-            // reset first
-
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
@@ -218,22 +213,31 @@ addCaseSaveBtn.addEventListener('click', async (e) => {
 
             Swal.fire({
                 title: "Add Tb Dots Case",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
+
+            // Re-enable on validation error
+            addCaseSaveBtn.disabled = false;
+            addCaseSaveBtn.innerHTML = originalText;
         }
     } catch (error) {
         console.error("Error adding case:", error);
+
         Swal.fire({
             title: "Error",
             text: `Failed to add record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
+
+        addCaseSaveBtn.disabled = false;
+        addCaseSaveBtn.innerHTML = originalText;
     }
 });
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

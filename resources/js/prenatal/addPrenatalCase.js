@@ -237,14 +237,19 @@ const addCaseSaveBtn = document.getElementById("add-case-record-save-btn");
 addCaseSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const form = document.getElementById("add-prenatal-case-record-form");
-    const formData = new FormData(form);
-
-    // for (const [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
+    const originalText = addCaseSaveBtn.innerHTML;
+    addCaseSaveBtn.disabled = true;
+    addCaseSaveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
     try {
+        const form = document.getElementById("add-prenatal-case-record-form");
+        const formData = new FormData(form);
+
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        // }
+
         const response = await fetch(`/prenatal/add-prenatal-case-record`, {
             method: "POST",
             headers: {
@@ -266,15 +271,18 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
                 element.textContent = "";
             });
             if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+                Livewire.dispatch("prenatalRefreshTable");
             }
             Swal.fire({
                 title: "Add Prenatal Case",
-                text: data.message, // this will make the text capitalize each word
+                text: data.message,
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             }).then((result) => {
+                addCaseSaveBtn.disabled = false;
+                addCaseSaveBtn.innerHTML = originalText;
+
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
                         document.getElementById("addPrenatalCaseRecordModal"),
@@ -287,7 +295,6 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
             });
         } else {
             // reset first
-
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
@@ -312,22 +319,32 @@ addCaseSaveBtn.addEventListener("click", async (e) => {
 
             Swal.fire({
                 title: "Add Prenatal Case",
-                html: capitalizeEachWord(message), // this will make the text capitalize each word
+                html: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
+
+            // Re-enable button on validation error
+            addCaseSaveBtn.disabled = false;
+            addCaseSaveBtn.innerHTML = originalText;
         }
     } catch (error) {
         console.error("Error adding case:", error);
+        
         Swal.fire({
             title: "Error",
             html: `Failed to add record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
+
+        // Re-enable button on network/JS error
+        addCaseSaveBtn.disabled = false;
+        addCaseSaveBtn.innerHTML = originalText;
     }
 });
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

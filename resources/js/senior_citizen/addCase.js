@@ -16,11 +16,11 @@ if (addBTN) {
     addBTN.addEventListener("click", (e) => {
         const medicine = document.getElementById("add_maintenance_medication");
         const dosage_n_frequency = document.getElementById(
-            "add_dosage_n_frequency"
+            "add_dosage_n_frequency",
         );
         const quantity = document.getElementById("add_maintenance_quantity");
         const start_date = document.getElementById(
-            "add_maintenance_start_date"
+            "add_maintenance_start_date",
         );
         const end_date = document.getElementById("add_maintenance_end_date");
 
@@ -33,7 +33,7 @@ if (addBTN) {
         ) {
             Swal.fire({
                 title: "Missing Information",
-                text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
+                text: "Information provided is incomplete or invalid.",
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -67,7 +67,6 @@ if (addBTN) {
                 </tr>
             `;
 
-            // reset the borders
             medicine.style.border =
                 medicine.value === "" ? "1px solid red" : "";
             dosage_n_frequency.style.border =
@@ -78,7 +77,6 @@ if (addBTN) {
                 start_date.value === "" ? "1px solid red" : "";
             end_date.style.border =
                 end_date.value === "" ? "1px solid red" : "";
-            // reset the value
             medicine.value = "";
             dosage_n_frequency.value = "";
             quantity.value = "";
@@ -88,19 +86,13 @@ if (addBTN) {
     });
 }
 
-// console.log(addTableBody);
-// remove element
 if (addTableBody) {
-    // remove maintenance
     addTableBody.addEventListener("click", (e) => {
-        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }
     });
 }
-
-// handle the request
 
 const saveBtn = document.getElementById("add-new-record-save-btn");
 
@@ -108,70 +100,90 @@ saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const id = saveBtn.dataset.bsMedicalId;
+    const originalText = saveBtn.innerHTML;
 
-    // form
-    const form = document.getElementById("add-new-record-form");
-    const formData = new FormData(form);
+    saveBtn.disabled = true;
+    saveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
-    const response = await fetch(
-        `/patient-case/senior-citizen/new-case/${id}`,
-        {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
+    try {
+        const form = document.getElementById("add-new-record-form");
+        const formData = new FormData(form);
+
+        const response = await fetch(
+            `/patient-case/senior-citizen/new-case/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
             },
-            body: formData,
+        );
+
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
+
+        if (!response.ok) {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+
+            Swal.fire({
+                title: "Add new Medicine Maintenance Record",
+                text: Object.values(data.errors)
+                    .map((err) => err)
+                    .join("\n"),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
+
+            // Re-enable on validation error
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        } else {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Livewire.dispatch("seniorCitizenRefreshTable");
+
+            Swal.fire({
+                title: "Add new Medicine Maintenance Record",
+                text: capitalizeEachWord(data.message),
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            });
         }
-    );
-
-    const data = await response.json();
-
-    const errorElements = document.querySelectorAll(".error-text");
-
-    if (!response.ok) {
-
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
-            }
-        });
+    } catch (error) {
+        console.error("Error saving record:", error);
 
         Swal.fire({
-            title: "Add new Medicine Maintenance Record",
-            text: Object.values(data.errors)
-                .map((err) => err) // convert array of errors to text
-                .join("\n"), // join with new lines
+            title: "Error",
+            text: `Failed to save record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
         });
 
-        Livewire.dispatch("seniorCitizenRefreshTable");
-
-        Swal.fire({
-            title: "Add new Medicine Maintenance Record",
-            text: capitalizeEachWord(data.message),
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
     }
 });
 
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
-

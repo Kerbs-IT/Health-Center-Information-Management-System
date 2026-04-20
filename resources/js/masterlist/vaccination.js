@@ -161,83 +161,109 @@ document.addEventListener("click", async (e) => {
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const form = document.getElementById("edit-vaccination-masterlist-form");
-    const formData = new FormData(form);
+    // Store original text and disable button
+    const originalText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
+    
+    try {
+        const form = document.getElementById(
+            "edit-vaccination-masterlist-form",
+        );
+        const formData = new FormData(form);
 
-    const id = e.target.dataset.medicalRecordCaseId;
-    // for (let [key, value] of formData.entries()) {
-    //     console.log(`${key}: ${value}`);
-    // }
+        const id = e.target.dataset.medicalRecordCaseId;
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
 
-    const response = await fetch(`/masterlist/update/vaccination/${id}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
-
-    const data = await response.json();
-    const errorElements = document.querySelectorAll(".error-text");
-
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
+        const response = await fetch(`/masterlist/update/vaccination/${id}`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
         });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
+
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
+
+        if (!response.ok) {
+            // reset the error element text first
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+            // if there's an validation error load the error text
+            Object.entries(data.errors).forEach(([key, value]) => {
+                if (document.getElementById(`${key}_error`)) {
+                    document.getElementById(`${key}_error`).textContent = value;
+                }
+            });
+            let errorMessage = "";
+
+            if (data.errors) {
+                // Handle ValidationException
+                errorMessage = Object.values(data.errors)
+                    .flat() // flatten nested arrays if present
+                    .join("\n");
+            } else if (data.message) {
+                // Handle general backend errors
+                errorMessage = data.message;
+            } else {
+                // Handle unexpected responses
+                errorMessage = "An unexpected error occurred.";
             }
-        });
-        let errorMessage = "";
 
-        if (data.errors) {
-            // Handle ValidationException
-            errorMessage = Object.values(data.errors)
-                .flat() // flatten nested arrays if present
-                .join("\n");
-        } else if (data.message) {
-            // Handle general backend errors
-            errorMessage = data.message;
+            Swal.fire({
+                title: "Error",
+                text: capitalizeEachWord(errorMessage),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            });
         } else {
-            // Handle unexpected responses
-            errorMessage = "An unexpected error occurred.";
-        }
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+            Swal.fire({
+                title: "Update",
+                text: capitalizeEachWord(data.message),
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById(
+                            "editvaccinationMasterListModal",
+                        ),
+                    );
+                    modal.hide();
+                }
+                 saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+                
+                if (typeof Livewire !== "undefined") {
+                    Livewire.dispatch("vaccinationMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+                }
+            });
 
-        Swal.fire({
-            title: "Error",
-            text: capitalizeEachWord(errorMessage),
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Swal.fire({
-            title: "Update",
-            text: capitalizeEachWord(data.message),
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("editvaccinationMasterListModal")
-                );
-                modal.hide();
-            }
-        });
-
-        if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("vaccinationMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+            
         }
+    } catch (error) {
+         console.log("Error:", error);
+         // Re-enable button on error
+         saveBtn.disabled = false;
+         saveBtn.innerHTML = originalText;
     }
+    
 });
 
 // handle the automation of age

@@ -551,71 +551,108 @@ const updateBTN = document.getElementById("edit-check-up-save-btn");
 updateBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const form = document.getElementById("edit-check-up-form");
-    const formData = new FormData(form);
+     const originalText = updateBTN.innerHTML;
+     updateBTN.disabled = true;
+     updateBTN.innerHTML =
+         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+    try {
 
-    // for (const [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
+         const form = document.getElementById("edit-check-up-form");
+         const formData = new FormData(form);
 
-    const response = await fetch(`/update/prenatal-check-up/${medicalId}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
+         // for (const [key, value] of formData.entries()) {
+         //     console.log(key, value);
+        // }
+        
 
-    const data = await response.json();
+       
 
-    const errorElements = document.querySelectorAll(".error-text");
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`) && value != null) {
-                document.getElementById(`${key}_error`).innerHTML = value;
-            }
-        });
+         const response = await fetch(
+             `/update/prenatal-check-up/${medicalId}`,
+             {
+                 method: "POST",
+                 headers: {
+                     "X-CSRF-TOKEN": document.querySelector(
+                         'meta[name="csrf-token"]',
+                     ).content,
+                     Accept: "application/json",
+                 },
+                 body: formData,
+             },
+         );
 
-        let message = "";
+         const data = await response.json();
 
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
-            } else {
-                message = data.errors;
-            }
-        } else {
-            message = "An unexpected error occurred.";
-        }
+         const errorElements = document.querySelectorAll(".error-text");
+         if (!response.ok) {
+             // reset the error element text first
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
+             // if there's an validation error load the error text
+             Object.entries(data.errors).forEach(([key, value]) => {
+                 if (document.getElementById(`${key}_error`) && value != null) {
+                     document.getElementById(`${key}_error`).innerHTML = value;
+                 }
+             });
 
-        Swal.fire({
-            title: "Prenatal Patient",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
-        Livewire.dispatch("prenatalRefreshTable");
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        Swal.fire({
-            title: "Prenatal check-Up Info",
-            text: data.message,
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
+             let message = "";
+
+             if (data.errors) {
+                 if (typeof data.errors == "object") {
+                     message = Object.values(data.errors).flat().join("\n");
+                 } else {
+                     message = data.errors;
+                 }
+             } else {
+                 message = "An unexpected error occurred.";
+             }
+
+             Swal.fire({
+                 title: "Prenatal Patient",
+                 text: capitalizeEachWord(message), // this will make the text capitalize each word
+                 icon: "error",
+                 confirmButtonColor: "#3085d6",
+                 confirmButtonText: "OK",
+             });
+         } else {
+             // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
+            
+             errorElements.forEach((element) => {
+                 element.textContent = "";
+             });
+             Swal.fire({
+                 title: "Prenatal check-Up Info",
+                 text: data.message,
+                 icon: "success",
+                 confirmButtonColor: "#3085d6",
+                 confirmButtonText: "OK",
+             }).then((result) => {
+                 updateBTN.disabled = false;
+                 updateBTN.innerHTML = originalText;
+
+                  if (result.isConfirmed) {
+                      const modal = bootstrap.Modal.getInstance(
+                          document.getElementById("checkUpModal"),
+                      );
+                      modal.hide();
+                  }
+
+                Livewire.dispatch("prenatalRefreshTable");
+                     
+             });
+         }
+
+
+        
+    } catch (error) {
+         console.error(error);
+         // Re-enable button on network/JS error
+         updateBTN.disabled = false;
+         updateBTN.innerHTML = originalText;
     }
+
+   
 });
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());

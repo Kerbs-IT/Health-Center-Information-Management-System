@@ -252,7 +252,10 @@
                             </div>
                             <!-- save btn -->
                             <div class="save-record align-self-end mt-5">
-                                <input type="submit" class="btn btn-success px-4 fs-5" value="Save Record" id="edit-save-btn" data-bs-medical-id="{{$tbDotsRecord-> id}}">
+                                <button type="button" id="edit-save-btn" class="btn btn-success px-4 fs-5" data-bs-medical-id="{{$tbDotsRecord-> id}}">
+                                    Update Record
+                                </button>
+                                
                             </div>
                     </div>
                     </form>
