@@ -13,7 +13,7 @@
     <div class="right-info d-flex align-items-center justify-content-center gap-3 z-1">
 
       <!-- UPDATED: Notification Bell with Dynamic Badge -->
-      <button type="button" class="btn position-relative p-0 border-0 bg-transparent" id="notificationBell" data-bs-toggle="modal" data-bs-target="#notificationModal">
+      <button type="button" class="btn position-relative p-0 border-0 bg-transparent" id="notificationBell" data-bs-toggle="modal" data-bs-target="#notificationModal" style="overflow: visible;">
         <!-- Bell SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
           class="bi bi-bell" viewBox="0 0 16 16">
@@ -21,15 +21,16 @@
           <path d="M8 1a4 4 0 0 0-4 4c0 1.098-.354 2.5-.975 3.5-.356.596-.525 1.057-.525 1.5h11c0-.443-.169-.904-.525-1.5C12.354 7.5 12 6.098 12 5a4 4 0 0 0-4-4z" />
         </svg>
 
-        <!-- Dynamic Badge - Hidden if no unread notifications -->
+        <!-- Dynamic Badge -->
         <span id="notificationBadge" style="
-          position: absolute;
-          top: -4px;
-          right: -8px;
-          color: red;
-          font-size: 11px;
-          font-weight: bold;
-          display: none;">
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      color: red;
+      font-size: 11px;
+      font-weight: bold;
+      display: none;
+      line-height: 1;">
         </span>
       </button>
 
