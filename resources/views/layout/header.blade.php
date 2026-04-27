@@ -23,22 +23,22 @@
 
         <!-- Dynamic Badge -->
         <span id="notificationBadge" style="
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  min-width: 18px;
-  height: 18px;
-  background-color: red;
-  border-radius: 50%;
-  border: 2px solid white;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  line-height: 1;">
+          position: absolute;
+          top: -6px;
+          right: -8px;
+          min-width: 18px;
+          height: 18px;
+          background-color: red;
+          border-radius: 50%;
+          border: 2px solid white;
+          color: white;
+          font-size: 10px;
+          font-weight: bold;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 0 4px;
+          line-height: 1;">
         </span>
       </button>
 
