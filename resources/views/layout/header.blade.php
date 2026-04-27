@@ -24,20 +24,12 @@
         <!-- Dynamic Badge - Hidden if no unread notifications -->
         <span id="notificationBadge" style="
           position: absolute;
-          top: 2px;
-          right: 2px;
-          min-width: 18px;
-          height: 18px;
-          background-color: red;
-          border-radius: 50%;
-          border: 2px solid white;
-          color: white;
-          font-size: 10px;
+          top: -4px;
+          right: -8px;
+          color: red;
+          font-size: 11px;
           font-weight: bold;
-          display: none;
-          align-items: center;
-          justify-content: center;
-          padding: 0 4px;">
+          display: none;">
         </span>
       </button>
 
