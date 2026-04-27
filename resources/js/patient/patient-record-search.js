@@ -65,37 +65,41 @@
     /**
      * Attach event listeners
      */
-    function attachEventListeners() {
-        // Search input
-        elements.searchInput.addEventListener("input", handleSearchInput);
+   function attachEventListeners() {
+       elements.searchInput.addEventListener("input", handleSearchInput);
 
-        // Click outside to close results
-        document.addEventListener("click", handleOutsideClick);
-    }
+       // Cancel search and hide spinner on blur
+       elements.searchInput.addEventListener("blur", function () {
+           clearTimeout(searchTimeout);
+           setTimeout(() => {
+               hideResults();
+               hideLoading();
+           }, 150);
+       });
 
-    /**
-     * Handle search input with debouncing
-     */
-    function handleSearchInput(e) {
-        const query = e.target.value.trim();
+       document.addEventListener("click", handleOutsideClick);
+   }
 
-        // Clear previous timeout
-        clearTimeout(searchTimeout);
+   function handleSearchInput(e) {
+       const query = e.target.value.trim();
 
-        // Hide results if query is too short
-        if (query.length < CONFIG.minSearchLength) {
-            hideResults();
-            return;
-        }
+       clearTimeout(searchTimeout);
 
-        // Show loading
-        showLoading();
+       // Always hide spinner + results on every keystroke first
+       hideLoading();
+       hideResults();
 
-        // Debounce search
-        searchTimeout = setTimeout(() => {
-            searchPatients(query);
-        }, CONFIG.debounceDelay);
-    }
+       if (query.length < CONFIG.minSearchLength) {
+           return;
+       }
+
+       // Show spinner immediately
+       showLoading();
+
+       searchTimeout = setTimeout(() => {
+           searchPatients(query);
+       }, CONFIG.debounceDelay);
+   }
 
     /**
      * Search for patients via API

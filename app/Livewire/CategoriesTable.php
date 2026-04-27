@@ -189,7 +189,9 @@ class CategoriesTable extends Component
         })->paginate($this->perPage);
 
         return view('livewire.category-section.category-table',[
-            'categories' => $categories
+            'categories' => $categories,
+            'page' => 'INVENTORY'
+            
         ])->layout('livewire.layouts.base');
     }
 }

@@ -188,12 +188,15 @@
             const query = this.value.trim();
 
             clearTimeout(guardianSearchTimeout);
-            hideGuardianResults();
 
+            // Always hide results and spinner on every keystroke
+            hideGuardianResults();
             if (guardianNoResults) guardianNoResults.style.display = "none";
+            if (guardianSpinner) guardianSpinner.style.display = "none";
 
             if (query.length < MIN_SEARCH_LENGTH) return;
 
+            // Show spinner immediately
             if (guardianSpinner) guardianSpinner.style.display = "block";
 
             guardianSearchTimeout = setTimeout(async () => {
@@ -208,9 +211,7 @@
                             },
                         },
                     );
-
                     if (!response.ok) throw new Error("Search failed");
-
                     const users = await response.json();
                     renderGuardianResults(users);
                 } catch (err) {
@@ -221,6 +222,16 @@
                     if (guardianSpinner) guardianSpinner.style.display = "none";
                 }
             }, DEBOUNCE_DELAY);
+        });
+
+        // Add blur handler for guardian input
+        guardianInput?.addEventListener("blur", function () {
+            clearTimeout(guardianSearchTimeout);
+            setTimeout(() => {
+                hideGuardianResults();
+                if (guardianSpinner) guardianSpinner.style.display = "none";
+                if (guardianNoResults) guardianNoResults.style.display = "none";
+            }, 150);
         });
 
         function renderGuardianResults(users) {

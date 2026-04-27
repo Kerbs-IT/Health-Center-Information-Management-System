@@ -240,7 +240,7 @@
       .then(data => {
         const badge = document.getElementById('notificationBadge');
         if (data.count > 0) {
-          badge.textContent = data.count > 99 ? '99+' : data.count;
+          badge.textContent = data.count > 10 ? '9+' : data.count;
           badge.style.display = 'flex';
         } else {
           badge.style.display = 'none';
