@@ -38,10 +38,14 @@
                         <!-- profile image section -->
                         <div class="profile-image p-3   mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
                             <img src="{{ optional(Auth::user()->nurses)->profile_image
-                        ? asset(optional(Auth::user()->nurses)->profile_image)
-                        : (optional(Auth::user()->staff)->profile_image
-                            ? asset(optional(Auth::user()->staff)->profile_image)
-                            : asset('images/default_profile.png')) }}" alt="profile picture" id="profile-img" class="profile-section-image">
+    ? asset(optional(Auth::user()->nurses)->profile_image)
+    : (optional(Auth::user()->staff)->profile_image
+        ? asset(optional(Auth::user()->staff)->profile_image)
+        : asset('images/default_profile.png')) }}"
+                                alt="profile picture"
+                                id="profile-img"
+                                class="profile-section-image"
+                                onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
                             <h3 class="text-black text-center">
                                 {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none')) }}
                             </h3>

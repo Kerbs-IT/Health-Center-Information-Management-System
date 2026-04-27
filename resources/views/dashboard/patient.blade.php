@@ -42,7 +42,7 @@
         ?? 'images/default_profile.png'
     )
 }}"
-                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
+                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
 
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
@@ -250,7 +250,7 @@
 
                             <!-- profile image section -->
                             <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center h-100" style="min-width:280px;">
-                                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
+                                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}" onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
                                 <h3 class=""></h3>
                                 <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
                                 <div class="upload-image d-flex flex-column">

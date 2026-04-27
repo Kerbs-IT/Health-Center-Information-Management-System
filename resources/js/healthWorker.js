@@ -150,9 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 loadAddress(province, city, brgy, region, region.value);
 
+                const profileImagePath = data.response.profile_image;
                 // input values
                 const baseUrl = profileImg.dataset.baseUrl;
-                profileImg.src = baseUrl + data.response.profile_image;
+                profileImg.onerror = function () {
+                    this.src = baseUrl + "images/default_profile.png";
+                    this.onerror = null;
+                };
+
+                profileImg.src = profileImagePath
+                    ? baseUrl + profileImagePath
+                    : baseUrl + "images/default_profile.png";
                 fullname.innerHTML = data.response.full_name;
                 fname.value = data.response.first_name;
                 lname.value = data.response.last_name;
@@ -174,6 +182,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    
 });
 
 if (submitBtn) {

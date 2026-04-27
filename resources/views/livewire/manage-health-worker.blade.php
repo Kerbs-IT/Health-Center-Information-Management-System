@@ -13,10 +13,15 @@
             <tr class="align-middle">
                 <td>{{$count}}</td>
                 <td>
-                    <?php $image = $worker->staff->profile_image; ?>
+                    <?php
+                    $image = $worker->staff->profile_image;
+                    $imagePath = $image && file_exists(public_path($image))
+                        ? asset($image)
+                        : asset('images/default_profile.png');
+                    ?>
                     <div class="d-flex gap-2 align-items-center">
-                        <img src="{{ asset($image)}}" alt="health worker img" class="health-worker-img object-cover object-center">
-                        <h5 class="text-nowrap mb-0">{{$worker -> staff -> full_name}}</h5>
+                        <img src="{{ $imagePath }}" alt="health worker img" class="health-worker-img object-cover object-center">
+                        <h5 class="text-nowrap mb-0">{{ $worker->staff->full_name }}</h5>
                     </div>
                 </td>
                 <td class="h-100">

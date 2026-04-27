@@ -261,8 +261,12 @@ document.addEventListener("click", async (e) => {
                     const img = document.getElementById("edit_profile_image");
                     const baseUrl = img.dataset.baseUrl;
 
-                    // Remove escaped slashes
                     const cleanPath = value ? value.replace(/\\/g, "") : "";
+
+                    img.onerror = function () {
+                        this.src = baseUrl + "images/default_profile.png";
+                        this.onerror = null;
+                    };
 
                     img.src = cleanPath
                         ? baseUrl + cleanPath

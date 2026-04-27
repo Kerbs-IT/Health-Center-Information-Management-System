@@ -44,22 +44,27 @@
 
       @php
       $profileImage = null;
+      $default = asset('images/profile_images/default_profile.png');
 
-      if (optional(Auth::user()->nurses)->profile_image) {
+      if (optional(Auth::user()->nurses)->profile_image && file_exists(public_path(Auth::user()->nurses->profile_image))) {
       $profileImage = asset(Auth::user()->nurses->profile_image);
-      } elseif (optional(Auth::user()->staff)->profile_image) {
+      } elseif (optional(Auth::user()->staff)->profile_image && file_exists(public_path(Auth::user()->staff->profile_image))) {
       $profileImage = asset(Auth::user()->staff->profile_image);
-      } elseif (optional(Auth::user())->profile_image) {
+      } elseif (optional(Auth::user())->profile_image && file_exists(public_path(Auth::user()->profile_image))) {
       $profileImage = asset(Auth::user()->profile_image);
-      } elseif (optional(Auth::user()->patient)->profile_image) {
+      } elseif (optional(Auth::user()->patient)->profile_image && file_exists(public_path(Auth::user()->patient->profile_image))) {
       $profileImage = asset(Auth::user()->patient->profile_image);
       } else {
-      $profileImage = asset('images/profile_images/default_profile.png');
+      $profileImage = $default;
       }
       @endphp
 
       <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-        <img src="{{ $profileImage }}" alt="profile picture" class="profile-img z-1" id="profile_img">
+        <img src="{{ $profileImage }}"
+          alt="profile picture"
+          class="profile-img z-1"
+          id="profile_img"
+          onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
         <div class="username-n-role">
           <h5 class="mb-0">
             {{
@@ -74,7 +79,7 @@
               ?? 'none'
             }}
           </h5>
-          <h6 class="mb-0 text-muted fw-light">{{Auth::user()->role ?? 'none'}}</h6>
+          <h6 class="mb-0 text-muted fw-light text-capitalize">{{Auth::user()->role ?? 'none'}}</h6>
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">
           @if(Auth::user()->role === 'patient')
