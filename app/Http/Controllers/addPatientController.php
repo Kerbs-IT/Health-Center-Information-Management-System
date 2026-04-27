@@ -100,7 +100,7 @@ class addPatientController extends Controller
                 'sex'                     => 'required|string',
                 'contact_number'          => 'required|digits_between:7,12',
                 'nationality'             => 'sometimes|nullable|string',
-                'date_of_registration'    => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today',
                 'handled_by'              => 'required|exists:users,id',
                 'mother_name'             => 'sometimes|nullable|string',
                 'father_name'             => 'sometimes|nullable|string',
@@ -109,7 +109,7 @@ class addPatientController extends Controller
                 'brgy'                    => 'required|string',
                 'vaccination_height'      => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
                 'vaccination_weight'      => ['required', 'numeric', 'min:1', 'max:250', 'regex:/^\d+(\.\d{1,2})?$/'],
-                'date_of_vaccination'     => 'required|date',
+                'date_of_vaccination' => 'required|date|before_or_equal:today',
                 'time_of_vaccination'     => 'sometimes|nullable|date_format:H:i',
                 'selected_vaccines'       => 'required|string',
                 'dose_number'             => 'required|numeric',
@@ -117,7 +117,7 @@ class addPatientController extends Controller
                 'current_height'          => ['nullable', 'numeric', 'between:1,250'],
                 'current_weight'          => ['nullable', 'numeric', 'between:1,300'],
                 'current_temperature'     => ['nullable', 'numeric', 'between:35,42'],
-                'date_of_comeback'        => 'required|date',
+                'date_of_comeback'    => 'required|date|after_or_equal:today',
                 'suffix'                  => 'sometimes|nullable|string',
 
                 // Guardian account — optional, only used when notification_mode = guardian
@@ -172,6 +172,9 @@ class addPatientController extends Controller
                 'current_weight.between'             => 'The current weight must be between :min and :max kg.',
                 'current_temperature.numeric'        => 'The current temperature must be a number.',
                 'current_temperature.between'        => 'The current temperature must be between :min and :max °C.',
+                'date_of_vaccination.before_or_equal' => 'The date of vaccination must not be a future date.',
+                'date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
+                'date_of_registration.before_or_equal' => 'The date of registration must not be a future date.',
             ]);
 
             // ============================================================================

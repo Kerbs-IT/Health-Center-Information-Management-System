@@ -57,7 +57,7 @@ class GeneralConsultation extends Controller
                 'sex'                  => 'required|string',
                 'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← updated
                 'handled_by'           => 'nullable|exists:users,id',
                 'handled_by_backup'    => 'nullable|exists:users,id',
                 'street'               => 'required',
@@ -76,24 +76,29 @@ class GeneralConsultation extends Controller
                 ]),
                 'user_account' => 'sometimes|nullable|numeric',
             ], [
-                'patient_id.exists'               => 'The selected patient record does not exist.',
-                'type_of_patient.required'        => 'The type of patient field is required.',
-                'first_name.required'             => 'The first name field is required.',
-                'first_name.string'               => 'The first name must be a string.',
-                'first_name.unique'               => 'This patient already exists.',
-                'last_name.required'              => 'The last name field is required.',
-                'last_name.string'                => 'The last name must be a string.',
-                'date_of_birth.required'          => 'The date of birth field is required.',
-                'date_of_birth.date'              => 'The date of birth must be a valid date.',
-                'age.numeric'                     => 'The age must be a number.',
-                'contact_number.required'         => 'The contact number field is required.',
-                'contact_number.digits_between'   => 'The contact number must be between :min and :max digits.',
-                'date_of_registration.required'   => 'The date of registration field is required.',
-                'date_of_registration.date'       => 'The date of registration must be a valid date.',
-                'handled_by.exists'               => 'The selected health worker does not exist.',
-                'handled_by_backup.exists'        => 'The selected health worker does not exist.',
-                'guardian_account_id.exists'      => 'The selected guardian account does not exist.',
-                'user_account.numeric'            => 'The user account must be a number.',
+                'patient_id.exists'                    => 'The selected patient record does not exist.',
+                'type_of_patient.required'             => 'The type of patient is required.',
+                'first_name.required'                  => 'The first name is required.',
+                'first_name.string'                    => 'The first name must be a valid text value.',
+                'first_name.unique'                    => 'This patient already exists.',
+                'last_name.required'                   => 'The last name is required.',
+                'last_name.string'                     => 'The last name must be a valid text value.',
+                'date_of_birth.required'               => 'The date of birth is required.',
+                'date_of_birth.date'                   => 'Please enter a valid date of birth.',
+                'date_of_birth.before_or_equal'        => 'The date of birth cannot be a future date.',
+                'age.numeric'                          => 'The age must be a number.',
+                'contact_number.required'              => 'The contact number is required.',
+                'contact_number.digits_between'        => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'        => 'The date of registration is required.',
+                'date_of_registration.date'            => 'Please enter a valid date of registration.',
+                'date_of_registration.before_or_equal' => 'The date of registration cannot be a future date.',
+                'handled_by.exists'                    => 'The selected health worker does not exist.',
+                'handled_by_backup.exists'             => 'The selected backup health worker does not exist.',
+                'guardian_account_id.exists'           => 'The selected guardian account does not exist.',
+                'user_account.numeric'                 => 'The user account must be a number.',
+                'email.required_without'               => 'The email is required when no guardian account is selected.',
+                'email.email'                          => 'Please enter a valid email address.',
+                'email.unique'                         => 'This email is already taken.',
             ]);
 
             // ============================================================================
@@ -517,7 +522,7 @@ class GeneralConsultation extends Controller
             ])->findOrFail($id);
 
             $patientData = $request->validate([
-                'first_name'           => [
+                'first_name' => [
                     'required',
                     'string',
                     Rule::unique('patients')->where(function ($query) use ($request) {
@@ -533,28 +538,32 @@ class GeneralConsultation extends Controller
                 'sex'                  => 'required|string',
                 'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← updated
                 'handled_by'           => 'required|exists:users,id',
                 'street'               => 'required',
                 'brgy'                 => 'required',
                 'civil_status'         => 'sometimes|nullable|string',
                 'suffix'               => 'sometimes|nullable|string',
             ], [
-                'first_name.required'           => 'The first name field is required.',
-                'first_name.unique'             => 'This patient already exists.',
-                'last_name.required'            => 'The last name field is required.',
-                'date_of_birth.required'        => 'The date of birth field is required.',
-                'date_of_birth.date'            => 'The date of birth must be a valid date.',
-                'contact_number.required'       => 'The contact number field is required.',
-                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
-                'date_of_registration.required' => 'The date of registration field is required.',
-                'date_of_registration.date'     => 'The date of registration must be a valid date.',
-                'handled_by.required'           => 'The health worker field is required.',
-                'handled_by.exists'             => 'The selected health worker does not exist.',
-                'street.required'               => 'The street field is required.',
-                'brgy.required'                 => 'The purok field is required.',
+                'first_name.required'                  => 'The first name is required.',
+                'first_name.string'                    => 'The first name must be a valid text value.',
+                'first_name.unique'                    => 'This patient already exists.',
+                'last_name.required'                   => 'The last name is required.',
+                'last_name.string'                     => 'The last name must be a valid text value.',
+                'date_of_birth.required'               => 'The date of birth is required.',
+                'date_of_birth.date'                   => 'Please enter a valid date of birth.',
+                'date_of_birth.before_or_equal'        => 'The date of birth cannot be a future date.',
+                'age.numeric'                          => 'The age must be a number.',
+                'contact_number.required'              => 'The contact number is required.',
+                'contact_number.digits_between'        => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'        => 'The date of registration is required.',
+                'date_of_registration.date'            => 'Please enter a valid date of registration.',
+                'date_of_registration.before_or_equal' => 'The date of registration cannot be a future date.',
+                'handled_by.required'                  => 'Please select the health worker who handled this record.',
+                'handled_by.exists'                    => 'The selected health worker does not exist.',
+                'street.required'                      => 'The street address is required.',
+                'brgy.required'                        => 'The purok is required.',
             ]);
-
             $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
             $middle     = $middle ? strtoupper($middle) . '.' : null;
             $middleName = $patientData['middle_initial'] ? ucwords(strtolower($patientData['middle_initial'])) : '';
@@ -623,7 +632,7 @@ class GeneralConsultation extends Controller
         try {
             $validated = $request->validate([
                 'update_handled_by'    => 'required|exists:users,id',
-                'date_of_consultation' => 'required|date',
+                'date_of_consultation' => 'required|date|before_or_equal:today', // ← updated
                 'symptoms'             => 'required|string',
                 'diagnosis'            => 'required|string',
                 'treatment_plan'       => 'required|string',
@@ -634,19 +643,25 @@ class GeneralConsultation extends Controller
                 'height'               => 'nullable|numeric|between:1,250',
                 'weight'               => 'nullable|numeric|between:1,250',
             ], [
-                'update_handled_by.required'    => 'The health worker field is required.',
-                'update_handled_by.exists'      => 'The selected health worker does not exist.',
-                'date_of_consultation.required' => 'The date of consultation is required.',
-                'date_of_consultation.date'     => 'The date of consultation must be a valid date.',
-                'symptoms.required'             => 'The symptoms / chief complaint field is required.',
-                'diagnosis.required'            => 'The diagnosis / assessment field is required.',
-                'treatment_plan.required'       => 'The treatment / plan field is required.',
-                'blood_pressure.regex'          => 'The blood pressure format is invalid.',
-                'pulse_rate.max'                => 'The pulse rate may not be greater than :max characters.',
-                'respiratory_rate.min'          => 'The respiratory rate must be at least :min.',
-                'respiratory_rate.max'          => 'The respiratory rate may not be greater than :max.',
+                'update_handled_by.required'         => 'Please select the health worker who handled this record.',
+                'update_handled_by.exists'           => 'The selected health worker does not exist.',
+                'date_of_consultation.required'      => 'The date of consultation is required.',
+                'date_of_consultation.date'          => 'Please enter a valid date of consultation.',
+                'date_of_consultation.before_or_equal' => 'The date of consultation cannot be a future date.',
+                'symptoms.required'                  => 'The symptoms / chief complaint field is required.',
+                'diagnosis.required'                 => 'The diagnosis / assessment field is required.',
+                'treatment_plan.required'            => 'The treatment / plan field is required.',
+                'blood_pressure.regex'               => 'Please enter a valid blood pressure format (e.g., 120/80).',
+                'temperature.numeric'                => 'The temperature must be a valid number.',
+                'temperature.between'                => 'The temperature must be between 30°C and 45°C.',
+                'pulse_rate.max'                     => 'The pulse rate may not exceed :max characters.',
+                'respiratory_rate.min'               => 'The respiratory rate must be at least :min breaths per minute.',
+                'respiratory_rate.max'               => 'The respiratory rate may not exceed :max breaths per minute.',
+                'height.numeric'                     => 'The height must be a valid number.',
+                'height.between'                     => 'The height must be between 1 and 250 cm.',
+                'weight.numeric'                     => 'The weight must be a valid number.',
+                'weight.between'                     => 'The weight must be between 1 and 250 kg.',
             ]);
-
             $record = gc_case_records::findOrFail($id);
 
             // Check for duplicates (excluding current record)
@@ -789,10 +804,9 @@ class GeneralConsultation extends Controller
     {
         try {
             $medicalCase = medical_record_cases::findOrFail($id);
-
             $data = $request->validate([
                 'add_handled_by'           => 'required|exists:users,id',
-                'add_date_of_consultation' => 'required|date',
+                'add_date_of_consultation' => 'required|date|before_or_equal:today', // ← updated
                 'add_symptoms'             => 'required|string',
                 'add_diagnosis'            => 'required|string',
                 'add_treatment_plan'       => 'required|string',
@@ -803,17 +817,24 @@ class GeneralConsultation extends Controller
                 'add_height'               => 'nullable|numeric|between:1,250',
                 'add_weight'               => 'nullable|numeric|between:1,250',
             ], [
-                'add_handled_by.required'           => 'The health worker field is required.',
-                'add_handled_by.exists'             => 'The selected health worker does not exist.',
-                'add_date_of_consultation.required' => 'The date of consultation is required.',
-                'add_date_of_consultation.date'     => 'The date of consultation must be a valid date.',
-                'add_symptoms.required'             => 'The symptoms / chief complaint field is required.',
-                'add_diagnosis.required'            => 'The diagnosis / assessment field is required.',
-                'add_treatment_plan.required'       => 'The treatment / plan field is required.',
-                'add_blood_pressure.regex'          => 'The blood pressure format is invalid.',
-                'add_pulse_rate.max'                => 'The pulse rate may not be greater than :max characters.',
-                'add_respiratory_rate.min'          => 'The respiratory rate must be at least :min.',
-                'add_respiratory_rate.max'          => 'The respiratory rate may not be greater than :max.',
+                'add_handled_by.required'                => 'Please select the health worker who handled this record.',
+                'add_handled_by.exists'                  => 'The selected health worker does not exist.',
+                'add_date_of_consultation.required'      => 'The date of consultation is required.',
+                'add_date_of_consultation.date'          => 'Please enter a valid date of consultation.',
+                'add_date_of_consultation.before_or_equal' => 'The date of consultation cannot be a future date.',
+                'add_symptoms.required'                  => 'The symptoms / chief complaint field is required.',
+                'add_diagnosis.required'                 => 'The diagnosis / assessment field is required.',
+                'add_treatment_plan.required'            => 'The treatment / plan field is required.',
+                'add_blood_pressure.regex'               => 'Please enter a valid blood pressure format (e.g., 120/80).',
+                'add_temperature.numeric'                => 'The temperature must be a valid number.',
+                'add_temperature.between'                => 'The temperature must be between 30°C and 45°C.',
+                'add_pulse_rate.max'                     => 'The pulse rate may not exceed :max characters.',
+                'add_respiratory_rate.min'               => 'The respiratory rate must be at least :min breaths per minute.',
+                'add_respiratory_rate.max'               => 'The respiratory rate may not exceed :max breaths per minute.',
+                'add_height.numeric'                     => 'The height must be a valid number.',
+                'add_height.between'                     => 'The height must be between 1 and 250 cm.',
+                'add_weight.numeric'                     => 'The weight must be a valid number.',
+                'add_weight.between'                     => 'The weight must be between 1 and 250 kg.',
             ]);
 
             // duplicate check
