@@ -554,12 +554,35 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
+            const subMenuElement = document.querySelectorAll(".sub-menu-bar-item");
+
+            subMenuElement.forEach(element => element.classList.remove('active'));
+
             const con = document.getElementById('patient_dashboard');
 
             if (con) {
                 con.classList.add('active');
             }
         })
+
+        function showFileName(input) {
+            const fileName = input.files.length ? input.files[0].name : "No file chosen";
+            document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profile-image").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
     @endif
 </body>

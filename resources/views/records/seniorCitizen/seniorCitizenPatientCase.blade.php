@@ -105,11 +105,11 @@
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" id="add_maintenance_quantity" placeholder="Enter the quantity">
+                                                                <input type="number" class="form-control" id="add_maintenance_quantity" min="0" oninput="this.value = Math.max(0, parseInt(this.value) || 0)" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="add_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
+                                                                <input type="date" class="form-control" id="add_maintenance_start_date" min="1950-01-01" oninput="syncAddEndDateMin(this.value)" max="{{date('Y-m-d')}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
@@ -134,27 +134,17 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="add-record-body">
-                                                                    <!-- <tr>
-                                                                    <td>Amlodipine 5mg</td>
-                                                                    <td>1x/day</td>
-                                                                    <td>90 days</td>
-                                                                    <td>2025-01-01</td>
-                                                                    <td>2025-02-01</td>
-                                                                    <td class=" align-middle text-center">
-                                                                        <div class="delete-icon d-flex align-items-center justify-self-center w-100 h-100">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" width="20" height="20" viewBox="0 0 448 512">
-                                                                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                                                                            </svg>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr> -->
+                                                                    <tr id="add-no-medication-row">
+                                                                        <td colspan="6" class="text-center text-muted py-3">No record added.</td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                         <!-- prescribing  -->
                                                         <div class="mb-md-3 mb-0">
                                                             <label for="">Prescribing Nurse<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" name="add_prescribe_by_nurse" id="add_prescribe_by_nurse" placeholder="Enter the name of the nurse">
+                                                            <input type="text" class="form-control" value="{{ $nurseFullName }}" disabled>
+                                                            <input type="hidden" name="add_prescribe_by_nurse" value="{{ $nurseFullName }}">
                                                             <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
@@ -228,11 +218,11 @@
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity" placeholder="Enter the quantity">
+                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity" min="0" oninput="this.value = Math.max(0, parseInt(this.value) || 0)" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="edit_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
+                                                                <input type="date" class="form-control" id="edit_maintenance_start_date" oninput="syncEditEndDateMin(this.value)" min="1950-01-01" ma="{{date('Y-m-d')}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
@@ -316,8 +306,8 @@
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
             const allRecordCon = document.getElementById('record_all_records');
-            
-            if(allRecordCon){
+
+            if (allRecordCon) {
                 allRecordCon.classList.remove('active');
             }
             const con = document.getElementById('record_senior_citizen');

@@ -41,7 +41,7 @@
                         ? asset(optional(Auth::user()->nurses)->profile_image)
                         : (optional(Auth::user()->staff)->profile_image
                             ? asset(optional(Auth::user()->staff)->profile_image)
-                            : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
+                            : asset('images/default_profile.png')) }}" alt="profile picture" id="profile-img" class="profile-section-image">
                             <h3 class="text-black text-center">
                                 {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none')) }}
                             </h3>
@@ -353,6 +353,14 @@
         function showFileName(input) {
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profile-img").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     </script>
 </body>

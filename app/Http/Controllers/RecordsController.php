@@ -955,6 +955,7 @@ class RecordsController extends Controller
     {
         $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id', $id)->where('status', '!=', 'Archived')->get();
         $patientRecord = medical_record_cases::with('patient', 'senior_citizen_medical_record')->findOrFail($id);
+        $nurseFullName = nurses::value('full_name') ?? 'N/A';
         return view(
             'records.seniorCitizen.seniorCitizenPatientCase',
             [
@@ -963,7 +964,8 @@ class RecordsController extends Controller
                 'seniorCaseRecords' =>  $seniorCaseRecords,
                 'patient_name' => $patientRecord->patient->full_name,
                 'healthWorkerId' => $patientRecord->senior_citizen_medical_record->health_worker_id,
-                'medicalRecordId' => $id
+                'medicalRecordId' => $id,
+                'nurseFullName' => $nurseFullName
             ]
         );
     }

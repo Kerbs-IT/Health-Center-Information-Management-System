@@ -1,24 +1,65 @@
 import Swal from "sweetalert2";
-const viewCaseBtn = document.querySelectorAll(".viewCaseBtn");
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function escapeHtml(text) {
+    if (text === null || text === undefined || text === "") return "";
+    const div = document.createElement("div");
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
+function escapeAttribute(text) {
+    if (text === null || text === undefined) return "";
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function syncEditNoRecordRow() {
+    const editTableBody = document.getElementById("edit-tbody");
+    const noRow = document.getElementById("edit-no-medication-row");
+    if (!editTableBody || !noRow) return;
+    const hasRows =
+        editTableBody.querySelectorAll(".senior-citizen-maintenance").length >
+        0;
+    noRow.style.display = hasRows ? "none" : "";
+}
+
+window.syncEditEndDateMin = function (dateVal) {
+    const endDate = document.getElementById("edit_maintenance_end_date");
+    if (!endDate) return;
+    endDate.min = dateVal;
+    if (endDate.value && endDate.value < dateVal) {
+        endDate.value = "";
+    }
+};
+
+// ---------------------------------------------------------------------------
+// VIEW case
+// ---------------------------------------------------------------------------
 
 document.addEventListener("click", async (e) => {
     const viewBtn = e.target.closest(".senior-citizen-view-icon");
-
     if (!viewBtn) return;
-    const id = viewBtn.dataset.bsCaseId;
 
-    if (!id || id === "undefined" || id === "null") {
+    const id = viewBtn.dataset.bsCaseId;
+    if (!id || id === "undefined" || id === "null" || isNaN(Number(id))) {
         console.error("Invalid case ID:", id);
-        alert("Unable to archive: Invalid ID");
+        alert("Unable to load case details: Invalid ID");
         return;
     }
-    try {
-        if (!id || isNaN(Number(id))) {
-            console.error("Invalid ID:", id);
-            alert("Unable to load case details: Invalid ID");
-            return;
-        }
 
+    try {
         const response = await fetch(
             `/senior-citizen/case-details/${Number(id)}`,
             {
@@ -30,15 +71,12 @@ document.addEventListener("click", async (e) => {
             },
         );
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const data = await response.json();
-
-        if (!data || typeof data !== "object") {
+        if (!data || typeof data !== "object")
             throw new Error("Invalid response data format");
-        }
 
         if (
             data.seniorCaseRecord &&
@@ -47,11 +85,12 @@ document.addEventListener("click", async (e) => {
             Object.entries(data.seniorCaseRecord).forEach(([key, value]) => {
                 try {
                     const element = document.getElementById(`view_${key}`);
-                    if (key == "date_of_comeback") {
-                        const date = new Date(value);
-                        const formatted = date.toISOString().split("T")[0];
-                        element.innerHTML = formatted;
-                    } else if (element) {
+                    if (!element) return;
+                    if (key === "date_of_comeback") {
+                        element.innerHTML = new Date(value)
+                            .toISOString()
+                            .split("T")[0];
+                    } else {
                         const safeValue =
                             value !== null && value !== undefined
                                 ? String(value)
@@ -67,66 +106,40 @@ document.addEventListener("click", async (e) => {
                     // silent
                 }
             });
-        } else {
-            console.warn("No seniorCaseRecord in response");
         }
 
         const tableBody = document.getElementById("viewCaseBody");
-
-        if (!tableBody) {
-            console.error("Table body element not found: viewCaseBody");
-            throw new Error("Table element not found");
-        }
+        if (!tableBody) throw new Error("Table element not found");
 
         tableBody.innerHTML = "";
 
-        if (
-            data.seniorCaseRecord?.senior_citizen_maintenance_med &&
-            Array.isArray(data.seniorCaseRecord.senior_citizen_maintenance_med)
-        ) {
-            const medications =
-                data.seniorCaseRecord.senior_citizen_maintenance_med;
-
-            if (medications.length === 0) {
-                tableBody.innerHTML = `
+        const medications =
+            data.seniorCaseRecord?.senior_citizen_maintenance_med;
+        if (Array.isArray(medications) && medications.length > 0) {
+            medications.forEach((record, index) => {
+                try {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${escapeHtml(record.maintenance_medication || "N/A")}</td>
+                        <td>${escapeHtml(record.dosage_n_frequency || "N/A")}</td>
+                        <td>${escapeHtml(record.quantity || "N/A")}</td>
+                        <td>${escapeHtml(record.start_date || "N/A")}</td>
+                        <td>${escapeHtml(record.end_date || "N/A")}</td>
+                    `;
+                    tableBody.appendChild(row);
+                } catch (rowError) {
+                    console.error(
+                        `Error adding medication row ${index}:`,
+                        rowError,
+                    );
+                }
+            });
+        } else {
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="5" class="text-center text-muted">No maintenance medications found</td>
                 </tr>
             `;
-            } else {
-                medications.forEach((record, index) => {
-                    try {
-                        const medication =
-                            record.maintenance_medication || "N/A";
-                        const dosage = record.dosage_n_frequency || "N/A";
-                        const quantity = record.quantity || "N/A";
-                        const startDate = record.start_date || "N/A";
-                        const endDate = record.end_date || "N/A";
-
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                        <td>${escapeHtml(medication)}</td>
-                        <td>${escapeHtml(dosage)}</td>
-                        <td>${escapeHtml(quantity)}</td>
-                        <td>${escapeHtml(startDate)}</td>
-                        <td>${escapeHtml(endDate)}</td>
-                    `;
-                        tableBody.appendChild(row);
-                    } catch (rowError) {
-                        console.error(
-                            `Error adding medication row ${index}:`,
-                            rowError,
-                        );
-                    }
-                });
-            }
-        } else {
-            console.warn("No maintenance medications in response");
-            tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center text-muted">No maintenance medications found</td>
-            </tr>
-        `;
         }
     } catch (error) {
         console.error("Error fetching senior case details:", error);
@@ -135,64 +148,43 @@ document.addEventListener("click", async (e) => {
         const tableBody = document.getElementById("viewCaseBody");
         if (tableBody) {
             tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center text-danger">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Failed to load data. Please try again.
-                </td>
-            </tr>
-        `;
+                <tr>
+                    <td colspan="5" class="text-center text-danger">
+                        Failed to load data. Please try again.
+                    </td>
+                </tr>
+            `;
         }
-    }
-
-    function escapeHtml(text) {
-        if (text === null || text === undefined) {
-            return "N/A";
-        }
-        const div = document.createElement("div");
-        div.textContent = String(text);
-        return div.innerHTML;
     }
 });
 
-const saveBtn = document.getElementById("edit-save-btn");
-const editBtn = document.querySelectorAll(".editCaseBtn");
-const editTableBody = document.getElementById("edit-tbody");
+// ---------------------------------------------------------------------------
+// EDIT case — load data
+// ---------------------------------------------------------------------------
 
 let currentEditCaseId = null;
 
 document.addEventListener("click", async function (e) {
     const editBtn = e.target.closest(".editCaseBtn");
-
     if (!editBtn) return;
 
     e.preventDefault();
     e.stopPropagation();
 
-    const errors = document.querySelectorAll(".error-text");
-    errors.forEach((error) => (error.innerHTML = ""));
+    document
+        .querySelectorAll(".error-text")
+        .forEach((el) => (el.innerHTML = ""));
 
     const id = editBtn.dataset.bsCaseId;
-
-    if (!id || id === "undefined" || id === "null") {
+    if (!id || id === "undefined" || id === "null" || isNaN(Number(id))) {
         console.error("Invalid case ID:", id);
         alert("Unable to load case details: Invalid ID");
         return;
     }
 
-    if (isNaN(Number(id))) {
-        console.error("Case ID must be a number:", id);
-        alert("Invalid case ID format");
-        return;
-    }
-
     currentEditCaseId = id;
     const saveBtn = document.getElementById("edit-save-btn");
-    if (saveBtn) {
-        saveBtn.dataset.medicalId = id;
-    } else {
-        console.warn("Save button not found: edit-save-btn");
-    }
+    if (saveBtn) saveBtn.dataset.medicalId = id;
 
     try {
         const response = await fetch(
@@ -206,15 +198,12 @@ document.addEventListener("click", async function (e) {
             },
         );
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const data = await response.json();
-
-        if (!data || typeof data !== "object") {
+        if (!data || typeof data !== "object")
             throw new Error("Invalid response data format");
-        }
 
         if (
             data.seniorCaseRecord &&
@@ -222,110 +211,77 @@ document.addEventListener("click", async function (e) {
         ) {
             Object.entries(data.seniorCaseRecord).forEach(([key, value]) => {
                 try {
-                    if (typeof value === "object" && value !== null) {
-                        return;
-                    }
-
+                    if (typeof value === "object" && value !== null) return;
                     const element = document.getElementById(`edit_${key}`);
-
-                    if (element) {
-                        if (
-                            element.tagName === "INPUT" ||
-                            element.tagName === "TEXTAREA" ||
-                            element.tagName === "SELECT"
-                        ) {
-                            element.value = value ?? "";
-                        } else {
-                            console.warn(
-                                `Element edit_${key} is not an input field`,
-                            );
-                        }
-                        if (key == "date_of_comeback" && value != null) {
-                            const date = new Date(value);
-                            document.getElementById(`edit_${key}`).value = date
-                                .toISOString()
-                                .split("T")[0];
-                        }
+                    if (!element) return;
+                    if (
+                        ["INPUT", "TEXTAREA", "SELECT"].includes(
+                            element.tagName,
+                        )
+                    ) {
+                        element.value = value ?? "";
+                    }
+                    if (key === "date_of_comeback" && value != null) {
+                        element.value = new Date(value)
+                            .toISOString()
+                            .split("T")[0];
                     }
                 } catch (fieldError) {
                     console.error(`Error setting field ${key}:`, fieldError);
                 }
             });
-        } else {
-            console.warn("No seniorCaseRecord in response");
         }
 
         const editTableBody = document.getElementById("edit-tbody");
-
-        if (!editTableBody) {
-            console.error("Table body element not found: edit-tbody");
-            throw new Error("Table element not found");
-        }
+        if (!editTableBody) throw new Error("Table element not found");
 
         editTableBody.innerHTML = "";
 
-        if (
-            data.seniorCaseRecord?.senior_citizen_maintenance_med &&
-            Array.isArray(data.seniorCaseRecord.senior_citizen_maintenance_med)
-        ) {
-            const medications =
-                data.seniorCaseRecord.senior_citizen_maintenance_med;
+        const medications =
+            data.seniorCaseRecord?.senior_citizen_maintenance_med;
+        if (Array.isArray(medications) && medications.length > 0) {
+            medications.forEach((record, index) => {
+                try {
+                    const medication = record.maintenance_medication || "";
+                    const dosage = record.dosage_n_frequency || "";
+                    const quantity = record.quantity || "";
+                    const startDate = record.start_date || "";
+                    const endDate = record.end_date || "";
 
-            if (medications.length === 0) {
-                editTableBody.innerHTML = `
-                    <tr class = "empty-medication">
-                        <td colspan="6" class="text-center text-muted py-3">
-                            <i class="fas fa-info-circle"></i>
-                            No maintenance medications. Click "Add Medicine" to add new records.
+                    const row = document.createElement("tr");
+                    row.className = "senior-citizen-maintenance";
+                    row.innerHTML = `
+                        <td>${escapeHtml(medication) || "N/A"}</td>
+                        <td>${escapeHtml(dosage) || "N/A"}</td>
+                        <td>${escapeHtml(quantity) || "N/A"}</td>
+                        <td>${escapeHtml(startDate) || "N/A"}</td>
+                        <td>${escapeHtml(endDate) || "N/A"}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm medicine-remove">Remove</button>
                         </td>
-                    </tr>
-                `;
-            } else {
-                medications.forEach((record, index) => {
-                    try {
-                        const medication = record.maintenance_medication || "";
-                        const dosage = record.dosage_n_frequency || "";
-                        const quantity = record.quantity || "";
-                        const startDate = record.start_date || "";
-                        const endDate = record.end_date || "";
-
-                        const row = document.createElement("tr");
-                        row.className = "senior-citizen-maintenance";
-                        row.innerHTML = `
-                            <td>${escapeHtml(medication) || "N/A"}</td>
-                            <td>${escapeHtml(dosage) || "N/A"}</td>
-                            <td>${escapeHtml(quantity) || "N/A"}</td>
-                            <td>${escapeHtml(startDate) || "N/A"}</td>
-                            <td>${escapeHtml(endDate) || "N/A"}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm medicine-remove">Remove</button>
-                            </td>
-                            <input type="hidden" name="medicines[]" value="${escapeAttribute(medication)}">
-                            <input type="hidden" name="dosage_n_frequencies[]" value="${escapeAttribute(dosage)}">
-                            <input type="hidden" name="maintenance_quantity[]" value="${escapeAttribute(quantity)}">
-                            <input type="hidden" name="start_date[]" value="${escapeAttribute(startDate)}">
-                            <input type="hidden" name="end_date[]" value="${escapeAttribute(endDate)}">
-                        `;
-                        editTableBody.appendChild(row);
-                    } catch (rowError) {
-                        console.error(
-                            `Error adding medication row ${index}:`,
-                            rowError,
-                        );
-                    }
-                });
-            }
+                        <input type="hidden" name="medicines[]"            value="${escapeAttribute(medication)}">
+                        <input type="hidden" name="dosage_n_frequencies[]" value="${escapeAttribute(dosage)}">
+                        <input type="hidden" name="maintenance_quantity[]" value="${escapeAttribute(quantity)}">
+                        <input type="hidden" name="start_date[]"           value="${escapeAttribute(startDate)}">
+                        <input type="hidden" name="end_date[]"             value="${escapeAttribute(endDate)}">
+                    `;
+                    editTableBody.appendChild(row);
+                } catch (rowError) {
+                    console.error(
+                        `Error adding medication row ${index}:`,
+                        rowError,
+                    );
+                }
+            });
         } else {
-            console.warn("No maintenance medications in response");
             editTableBody.innerHTML = `
-                <tr class='empty-medication'>
-                    <td colspan="6" class="text-center text-muted py-3">
-                        <i class="fas fa-info-circle"></i>
-                        No maintenance medications. Click "Add Medicine" to add new records.
-                    </td>
+                <tr id="edit-no-medication-row">
+                    <td colspan="6" class="text-center text-muted py-3">No maintenance medications found.</td>
                 </tr>
             `;
         }
+
+        syncEditNoRecordRow();
     } catch (error) {
         console.error("Error fetching case details for edit:", error);
         alert(`Failed to load case details: ${error.message}`);
@@ -335,7 +291,6 @@ document.addEventListener("click", async function (e) {
             editTableBody.innerHTML = `
                 <tr>
                     <td colspan="6" class="text-center text-danger py-3">
-                        <i class="fas fa-exclamation-triangle"></i>
                         Failed to load data. Please try again.
                     </td>
                 </tr>
@@ -344,52 +299,27 @@ document.addEventListener("click", async function (e) {
     }
 });
 
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
+// ---------------------------------------------------------------------------
+// EDIT — remove medicine row
+// ---------------------------------------------------------------------------
 
-function escapeHtml(text) {
-    if (text === null || text === undefined || text === "") {
-        return "";
-    }
-    const div = document.createElement("div");
-    div.textContent = String(text);
-    return div.innerHTML;
-}
-
-function escapeAttribute(text) {
-    if (text === null || text === undefined) {
-        return "";
-    }
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-}
-
+const editTableBody = document.getElementById("edit-tbody");
 if (editTableBody) {
     editTableBody.addEventListener("click", (e) => {
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
-            if (editTableBody.children.length === 0) {
-                editTableBody.innerHTML = `
-                        <tr class='empty-medication'>
-                            <td colspan="6" class="text-center text-muted py-3">
-                                <i class="fas fa-info-circle"></i>
-                                No maintenance medications. Click "Add Medicine" to add new records.
-                            </td>
-                        </tr>
-                    `;
-            }
+            syncEditNoRecordRow();
         }
     });
 }
 
+// ---------------------------------------------------------------------------
+// EDIT — add medicine row
+// ---------------------------------------------------------------------------
+
 const addBTN = document.getElementById("edit-add-btn");
 if (addBTN) {
-    addBTN.addEventListener("click", (e) => {
+    addBTN.addEventListener("click", () => {
         const medicine = document.getElementById("edit_maintenance_medication");
         const dosage_n_frequency = document.getElementById(
             "edit_dosage_n_frequency",
@@ -400,188 +330,186 @@ if (addBTN) {
         );
         const end_date = document.getElementById("edit_maintenance_end_date");
 
-        if (
-            medicine.value == "" &&
-            dosage_n_frequency.value == "" &&
-            quantity.value == "" &&
-            start_date.value == "" &&
-            end_date.value == ""
-        ) {
+        // Reset borders
+        [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
+            (f) => (f.style.border = ""),
+        );
+
+        const qtyVal = parseInt(quantity.value, 10);
+        const errors = [];
+
+        if (medicine.value.trim() === "") {
+            medicine.style.border = "1px solid red";
+            errors.push("Maintenance medication is required.");
+        }
+        if (dosage_n_frequency.value.trim() === "") {
+            dosage_n_frequency.style.border = "1px solid red";
+            errors.push("Dosage & frequency is required.");
+        }
+        if (quantity.value === "" || isNaN(qtyVal) || qtyVal < 0) {
+            quantity.style.border = "1px solid red";
+            errors.push("Quantity must be 0 or greater.");
+        }
+        if (start_date.value === "") {
+            start_date.style.border = "1px solid red";
+            errors.push("Start date is required.");
+        }
+        if (end_date.value === "" || end_date.value < start_date.value) {
+            end_date.style.border = "1px solid red";
+            errors.push(
+                "End date must be greater than or equal to start date.",
+            );
+        }
+
+        if (errors.length > 0) {
             Swal.fire({
                 title: "Missing Information",
-                text: "Information provided is incomplete or invalid.",
+                html: errors.map((e) => `<div>${e}</div>`).join(""),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-        } else {
-            const editTableBody = document.getElementById("edit-tbody");
+            return;
+        }
 
-            if (!editTableBody) {
-                console.error("Table body not found");
-                return;
+        const currentEditTableBody = document.getElementById("edit-tbody");
+        if (!currentEditTableBody) return;
+
+        const row = currentEditTableBody.insertRow(-1);
+        row.className = "senior-citizen-maintenance";
+        row.innerHTML = `
+            <td>${medicine.value}</td>
+            <td>${dosage_n_frequency.value}</td>
+            <td>${qtyVal}</td>
+            <td>${start_date.value}</td>
+            <td>${end_date.value}</td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm medicine-remove">Remove</button>
+            </td>
+            <input type="hidden" name="medicines[]"            value="${medicine.value}">
+            <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
+            <input type="hidden" name="maintenance_quantity[]" value="${qtyVal}">
+            <input type="hidden" name="start_date[]"           value="${start_date.value}">
+            <input type="hidden" name="end_date[]"             value="${end_date.value}">
+        `;
+
+        medicine.value = "";
+        dosage_n_frequency.value = "";
+        quantity.value = "";
+        start_date.value = "";
+        end_date.value = "";
+        end_date.min = "";
+
+        syncEditNoRecordRow();
+    });
+}
+
+// ---------------------------------------------------------------------------
+// EDIT — save record
+// ---------------------------------------------------------------------------
+
+const saveBtn = document.getElementById("edit-save-btn");
+
+if (saveBtn) {
+    saveBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const id = saveBtn.dataset.medicalId;
+        const originalText = saveBtn.innerHTML;
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+        try {
+            const form = document.getElementById("edit-senior-citizen-form");
+            const formData = new FormData(form);
+
+            const response = await fetch(`/patient-case/senior-citizen/${id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                    Accept: "application/json",
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            const errorElements = document.querySelectorAll(".error-text");
+
+            if (!response.ok) {
+                errorElements.forEach((el) => (el.textContent = ""));
+
+                if (data.errors) {
+                    Object.entries(data.errors).forEach(([key, value]) => {
+                        const el = document.getElementById(`${key}_error`);
+                        if (el)
+                            el.textContent = Array.isArray(value)
+                                ? value[0]
+                                : value;
+                    });
+
+                    await Swal.fire({
+                        title: "Update Senior Citizen Medicine Maintenance Record",
+                        html: Object.values(data.errors)
+                            .flat()
+                            .map((e) => `<div>${e}</div>`)
+                            .join(""),
+                        icon: "error",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "OK",
+                    });
+                }
+
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            } else {
+                errorElements.forEach((el) => (el.textContent = ""));
+
+                await Swal.fire({
+                    title: "Update Senior Citizen Medicine Maintenance Record",
+                    text: capitalizeEachWord(data.message),
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                    if (result.isConfirmed) {
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("editSeniorCitizenModal"),
+                        );
+                        if (modal) modal.hide();
+                    }
+                });
             }
+        } catch (error) {
+            console.error("Error updating record:", error);
 
-            const emptyRow = editTableBody.querySelector("tr.empty-medication");
-            if (emptyRow) {
-                emptyRow.remove();
-            }
-            editTableBody.innerHTML += `
-                <tr class="senior-citizen-maintenance-record" >
-                    <td>${medicine.value}</td>
-                    <td>${dosage_n_frequency.value}</td>
-                    <td>${quantity.value}</td>
-                    <td>${start_date.value}</td>
-                    <td>${end_date.value}</td>
-                    <td>
-                        <button type=button class="btn btn-danger btn-sm medicine-remove">Remove</button>
-                    </td>
-                    <input type="hidden" name="medicines[]" value="${medicine.value}">
-                    <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
-                    <input type="hidden" name="maintenance_quantity[]" value="${quantity.value}">
-                    <input type="hidden" name="start_date[]" value="${start_date.value}">
-                    <input type="hidden" name="end_date[]" value="${end_date.value}">
-                </tr>
-            `;
+            await Swal.fire({
+                title: "Error",
+                text: `Failed to update record: ${error.message}`,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+            });
 
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-
-            medicine.value = "";
-            dosage_n_frequency.value = "";
-            quantity.value = "";
-            start_date.value = "";
-            end_date.value = "";
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         }
     });
 }
 
-// ============================================================================
-// EDIT SAVE — with button state management
-// ============================================================================
-
-saveBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const id = saveBtn.dataset.medicalId;
-    const originalText = saveBtn.innerHTML;
-
-    saveBtn.disabled = true;
-    saveBtn.innerHTML =
-        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
-
-    try {
-        const form = document.getElementById("edit-senior-citizen-form");
-        const formData = new FormData(form);
-
-        const response = await fetch(`/patient-case/senior-citizen/${id}`, {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]',
-                ).content,
-                Accept: "application/json",
-            },
-            body: formData,
-        });
-
-        const data = await response.json();
-        const errorElements = document.querySelectorAll(".error-text");
-
-        if (!response.ok) {
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-
-            Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).textContent = value;
-                }
-            });
-
-            Swal.fire({
-                title: "Update Senior Citizen Medicine Maintenance Record",
-                text: Object.values(data.errors)
-                    .map((err) => err)
-                    .join("\n"),
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
-
-            // Re-enable on validation error
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = originalText;
-        } else {
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-
-            Swal.fire({
-                title: "Update Senior Citizen Medicine Maintenance Record",
-                text: capitalizeEachWord(data.message),
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then((result) => {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalText;
-
-                if (result.isConfirmed) {
-                    const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("editSeniorCitizenModal"),
-                    );
-                    modal.hide();
-                }
-            });
-        }
-    } catch (error) {
-        console.error("Error updating record:", error);
-
-        Swal.fire({
-            title: "Error",
-            text: `Failed to update record: ${error.message}`,
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-        });
-
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = originalText;
-    }
-});
-
-function capitalizeEachWord(str) {
-    return str.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-// ============================================================================
-// ARCHIVE — with button state management
-// ============================================================================
+// ---------------------------------------------------------------------------
+// ARCHIVE
+// ---------------------------------------------------------------------------
 
 document.addEventListener("click", async (e) => {
     const archiveBtn = e.target.closest(".senior-citizen-archive-icon");
     if (!archiveBtn) return;
 
     const id = archiveBtn.dataset.bsCaseId;
-
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -602,16 +530,14 @@ document.addEventListener("click", async (e) => {
 
         if (!result.isConfirmed) return;
 
-        // Disable the archive button after confirmation
         const originalHTML = archiveBtn.innerHTML;
         archiveBtn.disabled = true;
         archiveBtn.innerHTML =
             '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
+        if (!csrfToken)
             throw new Error("CSRF token not found. Please refresh the page.");
-        }
 
         const response = await fetch(
             `/patient-record/senior-citizen/case/delete/${id}`,
@@ -636,9 +562,7 @@ document.addEventListener("click", async (e) => {
         }
 
         const row = archiveBtn.closest("tr");
-        if (row) {
-            row.remove();
-        }
+        if (row) row.remove();
 
         Swal.fire({
             title: "Archived!",
@@ -649,7 +573,6 @@ document.addEventListener("click", async (e) => {
     } catch (error) {
         console.error("Error archiving case:", error);
 
-        // Re-enable on error
         archiveBtn.disabled = false;
         archiveBtn.innerHTML = originalHTML;
 

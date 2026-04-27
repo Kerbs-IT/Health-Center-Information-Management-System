@@ -232,173 +232,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     window.showAdditional = function () {
-        let dropdown = document.getElementById("type-of-patient");
-        let dropdownValue = dropdown.value;
-        if (dropdownValue == "vaccination") {
-            // hide the prenatal
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-none", "d-flex");
-            // hide family planning inputs
-            document
-                .querySelector(".family-planning-inputs")
-                .classList.replace("d-flex", "d-none");
-            
-             document
-                 .querySelector(".senior-citizen-inputs")
-                 .classList.replace("d-flex", "d-none");
-             document
-                 .querySelector(".tb-dots-inputs")
-                 .classList.replace("d-flex", "d-none");
-            // vital sign
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-none", "d-flex");
+        const dropdown = document.getElementById("type-of-patient");
+        const dropdownValue = dropdown.value;
+
+        // Helper to show/hide elements safely
+        const show = (selector) => {
+            document.querySelectorAll(selector).forEach((el) => {
+                el.classList.remove("d-none");
+                el.classList.add("d-flex");
+            });
+        };
+        const hide = (selector) => {
+            document.querySelectorAll(selector).forEach((el) => {
+                el.classList.remove("d-flex");
+                el.classList.add("d-none");
+            });
+        };
+
+        // Always hide all type-specific sections first
+        hide(".vaccination-inputs");
+        hide(".prenatal-inputs");
+        hide(".family-planning-inputs");
+        hide(".senior-citizen-inputs");
+        hide(".tb-dots-inputs");
+        hide(".third-row");
+
+        // Always show standard vitals by default
+        show(".first-row");
+        show(".second-row");
+
+        if (dropdownValue === "vaccination") {
+            show(".vaccination-inputs");
+            hide(".first-row");
+            hide(".second-row");
+            show(".third-row");
 
             setTimeout(function () {
                 initializeVaccinationMasks();
             }, 2000);
-        } else if (dropdownValue == "prenatal") {
-            // hide the vaccination
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-none", "d-flex");
-            // hide family planning
-            document
-                .querySelector(".family-planning-inputs")
-                .classList.replace("d-flex", "d-none");
-            //
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-flex", "d-none");
-        } else if (dropdownValue == "family-planning") {
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-flex", "d-none");
-            // vital
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-flex", "d-none");
-            // close otherrr input
-            document
-                .querySelector(".tb-dots-inputs")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".senior-citizen-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            // show the family planning
-            document
-                .querySelectorAll(".family-planning-inputs")
-                .forEach((element) => {
-                    element.classList.replace("d-none", "d-flex");
-                });
-        } else if (dropdownValue == "senior-citizen") {
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".family-planning-inputs")
-                .classList.replace("d-flex", "d-none");
-            // vital
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-flex", "d-none");
-            // close otherrr input
-            document
-                .querySelector(".tb-dots-inputs")
-                .classList.replace("d-flex", "d-none");
-            // show senior citizen
-            document
-                .querySelector(".senior-citizen-inputs")
-                .classList.replace("d-none", "d-flex");
-        } else if (dropdownValue == "tb-dots") {
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-flex", "d-none");
-            document
-                .querySelector(".family-planning-inputs")
-                .classList.replace("d-flex", "d-none");
-            // vital
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-flex", "d-none");
-
-            // close otherrr input
-            document
-                .querySelector(".senior-citizen-inputs")
-                .classList.replace("d-flex", "d-none");
-            // show senior citizen
-            document
-                .querySelector(".tb-dots-inputs")
-                .classList.replace("d-none", "d-flex");
-        } else {
-            document
-                .querySelector(".vaccination-inputs")
-                .classList.replace("d-flex", "d-none");
-
-            document
-                .querySelector(".prenatal-inputs")
-                .classList.replace("d-flex", "d-none");
-            // vital
-            document
-                .querySelector(".first-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".second-row")
-                .classList.replace("d-none", "d-flex");
-            document
-                .querySelector(".third-row")
-                .classList.replace("d-flex", "d-none");
+        } else if (dropdownValue === "prenatal") {
+            show(".prenatal-inputs");
+        } else if (dropdownValue === "family-planning") {
+            show(".family-planning-inputs");
+        } else if (dropdownValue === "senior-citizen") {
+            show(".senior-citizen-inputs");
+        } else if (dropdownValue === "tb-dots") {
+            show(".tb-dots-inputs");
         }
     };
 
@@ -548,6 +427,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                             window.clearGuardianSelection();
                         }
                         form.reset();
+
+                        // Clear vaccine container
+                        vaccinesContainer.innerHTML = "";
+                        selectedVaccines.length = 0;
+                        selectedVaccinesCon.value = "";
+                        updateDoseDropdown(selectedVaccines);
+
                         window.currentStep = 1;
                         window.showStep(window.currentStep);
                     }

@@ -37,6 +37,7 @@ class addPatientController extends Controller
         $healthworkers = User::where('role','staff')->orderBy('first_name', 'ASC')->where('status','active')->get();
         $vaccines = vaccines::get();
         $staffFullName = '';
+        $nurseFullName = nurses::value('full_name') ?? 'N/A';
         if (Auth::user()->role == 'staff') {
             $staff = staff::where("user_id", Auth::user()->id)->first();
             $staffFullName = $staff->full_name;
@@ -46,7 +47,8 @@ class addPatientController extends Controller
             'page' => 'ADD PATIENT',
             'healthworkers' => $healthworkers,
             'vaccines' => $vaccines,
-            'healthWorkerFullName' => $staffFullName
+            'healthWorkerFullName' => $staffFullName,
+            'nurseFullName' => $nurseFullName
         ]);
     }
 

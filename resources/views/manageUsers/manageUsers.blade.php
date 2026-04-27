@@ -432,6 +432,14 @@
         function showFileName(input) {
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("edit_profile_image").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     </script>
     @endif
