@@ -105,8 +105,8 @@
                                         <div class="mt-3">
                                             <label for="fileInput" class="btn btn-success w-100 mb-2">Update Profile</label>
                                             <input type="file" name="profile_image" class="d-none" id="fileInput" onchange="showFileName(this)">
-                                            <small class="text-muted d-block" id="fileName">No file chosen</small>
-                                            <small class="text-danger d-block error-element" id="image-error "></small>
+                                            <small class="text-muted d-block text-truncate w-100" id="fileName" >No file chosen</small>
+                                            <small class="text-danger d-block error-element" id="image-error"></small>
                                         </div>
                                         <div class="input-fieldxl:w-[50%] flex-fill">
 

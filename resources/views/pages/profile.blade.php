@@ -53,7 +53,7 @@
                             <div class="upload-image d-flex flex-column">
                                 <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
                                 <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
-                                <span id="fileName" class="text-center text-muted">No file choosen</span>
+                                <span id="fileName" class="text-center text-muted text-truncate" id="fileName" style="max-width: 200px;">No file choosen</span>
                                 @error('profile_image')
                                 <small class="text-danger">{{$message}}</small>
                                 @enderror

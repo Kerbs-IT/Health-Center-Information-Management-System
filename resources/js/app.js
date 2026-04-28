@@ -42,6 +42,8 @@ function logout(btn) {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
 
+            btn.blur(); // 👈 Add this line
+
             Swal.fire({
                 title: "Are you sure?",
                 text: "Your Session will be terminated.",

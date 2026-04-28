@@ -96,13 +96,13 @@
                         <div class="d-flex flex-column align-items-center border-end p-2 flex-fill">
                             <img src="" alt="profile picture" class="profile-section-image rounded-circle" id="profile-image" data-base-url="{{ asset('') }}">
 
-                           
+
                             <h3 class=""></h3>
                             <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
-                            <div class="upload-image d-flex flex-column">
-                                <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
+                            <div class="upload-image d-flex flex-column" style="max-width: 150px;">
+                                <label for="fileInput" class="btn mb-2 btn-success justify-self-center">Update Profile</label>
                                 <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
-                                <span id="fileName" class="text-center text-muted">No file choosen</span>
+                                <span id="fileName" class="text-center text-muted text-truncate">No file choosen</span>
                                 <small class="text-danger edit-healthworker-info" id="image-error"></small>
                             </div>
                         </div>
