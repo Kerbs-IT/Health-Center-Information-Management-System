@@ -3,69 +3,75 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 class MedicineRequest extends Model
 {
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'patients_id',      // Nullable - for patients with full records
-        'user_id',          // Nullable - for users without patient records
+        'patients_id',
+        'user_id',
         'medicine_id',
         'quantity_requested',
         'reason',
         'status',
         'approved_by_id',
         'approved_by_type',
-        'approved_at'
+        'approved_at',
+        'ready_at',
+        'dispensed_at',
+        'dispensed_by_id',
+        // ── Add these ──
+        'reserved_quantity',
+        'batches_snapshot',
+        'reserved_at',
+        'cancelled_at',
+        'cancellation_reason',
     ];
 
     protected $casts = [
-        'requested_at' => 'datetime',
-        'approved_at' => 'datetime',
+        'requested_at'    => 'datetime',
+        'approved_at'     => 'datetime',
+        'ready_at'        => 'datetime',
+        'dispensed_at'    => 'datetime',
+        // ── Add these ──
+        'reserved_at'     => 'datetime',
+        'cancelled_at'    => 'datetime',
+        'batches_snapshot'=> 'array',  // handles JSON encode/decode automatically
     ];
 
-    /**
-     * Get the patient associated with this request (if exists)
-     */
-    public function patients(){
+
+    // ─── Relationships ───────────────────────────────────────────
+
+    public function patients()
+    {
         return $this->belongsTo(patients::class, 'patients_id', 'id');
     }
 
-    /**
-     * Get the user associated with this request (if no patient record)
-     */
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Get the medicine for this request
-     */
-    public function medicine(){
-        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id')->withTrashed();
+    public function medicine()
+    {
+        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id')
+                    ->withTrashed();
     }
 
-    /**
-     * Get who approved this request
-     */
-    public function approver(){
+    public function approver()
+    {
         return $this->morphTo(__FUNCTION__, 'approved_by_type', 'approved_by_id');
     }
 
-    /**
-     * Get logs for this request
-     */
     public function logs()
     {
         return $this->hasMany(MedicineRequestLog::class, 'medicine_request_id');
     }
 
-    /**
-     * Get the requester name (from patient or user)
-     * This is a helper method to handle both cases
-     */
-    public function getRequesterNameAttribute()
+    // ─── Accessors ───────────────────────────────────────────────
+
+    public function getRequesterNameAttribute(): string
     {
         if ($this->patients) {
             return $this->patients->full_name;
@@ -78,32 +84,20 @@ class MedicineRequest extends Model
         return 'Unknown';
     }
 
-    /**
-     * Get the requester type
-     */
-    public function getRequesterTypeAttribute()
+    public function getRequesterTypeAttribute(): string
     {
-        if ($this->patients_id) {
-            return 'patient';
-        }
-
-        if ($this->user_id) {
-            return 'user';
-        }
-
+        if ($this->patients_id) return 'patient';
+        if ($this->user_id)     return 'user';
         return 'unknown';
     }
 
-    /**
-     * Scope to get requests by requester (patient or user)
-     */
+    // ─── Scopes ──────────────────────────────────────────────────
+
     public function scopeForRequester($query, $userId)
     {
-        return $query->where(function($q) use ($userId) {
-            $q->whereHas('patients', function($p) use ($userId) {
-                $p->where('user_id', $userId);
-            })
-            ->orWhere('user_id', $userId);
+        return $query->where(function ($q) use ($userId) {
+            $q->whereHas('patients', fn($p) => $p->where('user_id', $userId))
+              ->orWhere('user_id', $userId);
         });
     }
 }

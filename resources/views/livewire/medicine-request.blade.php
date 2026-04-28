@@ -1,16 +1,15 @@
 
-<div>
+<div class=>
+ <div>
     <main class="d-flex flex-column container-fluid bg-light">
         <h2 class="mb-2 fs-1 text-center">Request Medicine</h2>
 
-        {{-- Success/Error Messages --}}
         @if (session()->has('message'))
             <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
                 {{ session('message') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
         @if (session()->has('error'))
             <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
                 {{ session('error') }}
@@ -18,124 +17,209 @@
             </div>
         @endif
 
-        <div class="m-nd-3 m-1 p-lg-5 p-md-3 p-2 shadow min-h-[70vh]">
-            {{-- Filters and Actions --}}
-            <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
+        <div class="m-1 p-lg-5 p-md-3 p-2 shadow">
+
+            {{-- Top bar --}}
+            <div class="d-flex gap-3 align-items-end flex-wrap flex-column flex-sm-row mb-4">
                 <div class="flex-fill">
-                    <label for="" class="form-label">Show</label>
-                    <select wire:model.live="perPage" class="form-select w-50" name="show">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                        <option value="75">75</option>
-                        <option value="100">100</option>
-                    </select>
+                    <label class="form-label">Search medicine</label>
+                    <input wire:model.live.debounce.300ms="search" type="search"
+                           class="form-control" placeholder="Search by medicine name...">
                 </div>
-                <div class="flex-fill">
-                    <label for="search" class="form-label">Search</label>
-                    <input wire:model.live.debounce.300ms="search" type="search" class="form-control" placeholder="Search medicine...">
-                </div>
-                <div class="flex-fill">
-                    <label for="" class="form-label">Filter</label>
-                    <select wire:model.live="statusFilter" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#requestMedicineModal" wire:click="resetForm">
+                <button class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#requestMedicineModal" wire:click="resetForm">
                     <i class="fa-solid fa-plus pe-1"></i>Request Medicine
                 </button>
             </div>
 
-            {{-- Requests Table --}}
-            <div class="table-responsive mt-5">
-                <table class="table table-hover" id="medicineTable">
+            {{-- ── ACTIVE REQUESTS ── --}}
+            <h5 class="fw-bold mb-3">
+                <i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i>Active Requests
+                <span class="badge bg-warning text-dark ms-2">{{ $activeRequests->total() }}</span>
+            </h5>
+
+            @if($activeRequests->total() > 0)
+                <div class="table-responsive mb-2">
+                    <table class="table table-hover">
+                        <thead class="table-header">
+                            <tr class="text-nowrap">
+                                <th class="text-center">Requested For</th>
+                                <th class="text-center">Medicine Name</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Date Requested</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $user     = auth()->user();
+                                $childIds = \App\Models\patients::where('guardian_user_id', $user->id)
+                                    ->pluck('id')->toArray();
+                            @endphp
+                            @foreach ($activeRequests as $request)
+                                <tr>
+                                    <td class="text-center">
+                                        @if($request->patients_id && in_array($request->patients_id, $childIds))
+                                            <span class="badge bg-primary">
+                                                <i class="fa-solid fa-child me-1"></i>
+                                                {{ $request->patients->full_name ?? 'Child' }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-success">
+                                                <i class="fa-solid fa-user me-1"></i>Myself
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ $request->medicine->medicine_name ?? 'N/A' }}</td>
+                                    <td class="text-center">{{ $request->quantity_requested }}</td>
+                                    <td class="text-center">
+                                        @if($request->status === 'pending')
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fa-solid fa-hourglass-half me-1"></i>Pending
+                                            </span>
+                                            <br><small class="text-muted">Awaiting approval</small>
+                                        @elseif($request->status === 'ready_to_pickup')
+                                            <span class="badge bg-primary text-white">
+                                                <i class="fa-solid fa-bell me-1"></i>Ready to Pick Up
+                                            </span>
+                                            <br><small class="">
+                                                <i class="fa-solid fa-location-pin me-1"></i>Please visit the health center!
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td class="text-center text-nowrap">
+                                        {{ $request->created_at->format('M d, Y') }}<br>
+                                        <small class="text-muted">{{ $request->created_at->format('h:i A') }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            @if($request->status === 'pending')
+                                                <button wire:click="editRequest({{ $request->id }})"
+                                                        class="btn btn-sm btn-primary">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                <button wire:click="confirmRequestMedicineDelete({{ $request->id }})"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            @else
+                                                {{-- ready_to_pickup: view only --}}
+                                                <button wire:click="viewDetails({{ $request->id }})"
+                                                        class="btn btn-sm btn-outline-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#viewDetailsModal">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                {{ $activeRequests->links() }}
+            @else
+                <div class="text-center py-4 mb-3 bg-white rounded border">
+                    <i class="fa-solid fa-check-circle fs-2 text-success mb-2 d-block"></i>
+                    <p class="text-muted mb-0">No active requests — you're all caught up!</p>
+                </div>
+            @endif
+
+            <hr class="my-4">
+
+            {{-- ── HISTORY ── --}}
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fa-solid fa-rectangle-list me-2 text-secondary"></i>Request History
+                    <span class="badge bg-secondary ms-2">{{ $historyRequests->total() }}</span>
+                </h5>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <label class="form-label mb-0 text-muted small">Filter:</label>
+                    <select wire:model.live="statusFilter" class="form-select form-select-sm" style="width:auto">
+                        <option value="">All History</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <label class="form-label mb-0 text-muted small">Show:</label>
+                    <select wire:model.live="perPage" class="form-select form-select-sm" style="width:auto">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
                     <thead class="table-header">
                         <tr class="text-nowrap">
-                            <!-- <th class="text-center" scope="col"><button class="sort-btn">No.</button></th> -->
-                            <th class="text-center" scope="col">Requested For</th>
-                            <th class="text-center" scope="col"><button>Medicine Name</button></th>
-                            <th class="text-center" scope="col"><button>Quantity</button></th>
-                            <th class="text-center" scope="col"><button>Status</button></th>
-                            <th class="text-center" scope="col"><button>Date Requested</button></th>
-                            <th class="text-center" scope="col">Actions</th>
+                            <th class="text-center">Requested For</th>
+                            <th class="text-center">Medicine Name</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Date Requested</th>
+                            <th class="text-center">Details</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($myRequests as $index => $request)
+                        @forelse ($historyRequests as $request)
                             <tr>
-                            <!-- <td class="text-center">{{ $index + 1 }}</td> -->
-                            <td class="text-center">
-                                @php
-                                    $user    = auth()->user();
-                                    $childIds = \App\Models\patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
-                                @endphp
-                                @if($request->patients_id && in_array($request->patients_id, $childIds))
-                                    <span class="badge bg-primary">
-                                        <i class="fa-solid fa-child me-1"></i>{{ $request->patients->full_name ?? 'Child' }}
-                                    </span>
-                                @else
-                                    <span class="badge bg-success">
-                                        <i class="fa-solid fa-user me-1"></i>Myself
-                                    </span>
-                                @endif
-                            </td>
+                                <td class="text-center">
+                                    @if($request->patients_id && in_array($request->patients_id, $childIds))
+                                        <span class="badge bg-primary">
+                                            <i class="fa-solid fa-child me-1"></i>
+                                            {{ $request->patients->full_name ?? 'Child' }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-success">
+                                            <i class="fa-solid fa-user me-1"></i>Myself
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="text-center">{{ $request->medicine->medicine_name ?? 'N/A' }}</td>
                                 <td class="text-center">{{ $request->quantity_requested }}</td>
                                 <td class="text-center">
-                                    @if($request->status === 'pending')
-                                        <span class="badge bg-warning text-dark">Pending</span>
-                                    @elseif($request->status === 'approved')
-                                        <span class="badge bg-info">Approved</span>
-                                    @elseif($request->status === 'completed')
-                                        <span class="badge bg-success">Completed</span>
-                                    @elseif($request->status === 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
+                                    @if($request->status === 'completed')
+                                        <span class="badge bg-success">
+                                            <i class="fa-solid fa-check me-1"></i>Completed
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger">
+                                            <i class="fa-solid fa-times me-1"></i>Rejected
+                                        </span>
                                     @endif
                                 </td>
-                                <td class="text-center">{{ $request->requested_at->format('M d, Y h:i A') }}</td>
-                                <td>
-                                    <div class="d-flex gap-1 justify-content-center">
-                                        @if($request->status === 'pending')
-                                            <button   wire:click="editRequest({{ $request->id }})"
-                                                    class="btn bg-primary text-white">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </button>
-                                            <button wire:click="confirmRequestMedicineDelete({{ $request->id }})"
-                                                    class="btn p-0">
-                                                <i class="fa-solid fa-xmark text-danger fs-3"></i>
-                                            </button>
-                                        @else
-                                            <button wire:click="viewDetails({{ $request->id }})"
-                                                    class="btn btn-sm btn-success text-white text-nowrap"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#viewDetailsModal">
-                                                <i class="fa-solid fa-eye fs-5"></i>
-                                            </button>
-                                        @endif
-                                    </div>
+                                <td class="text-center text-nowrap">
+                                    {{ $request->created_at->format('M d, Y') }}<br>
+                                    <small class="text-muted">{{ $request->created_at->format('h:i A') }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <button wire:click="viewDetails({{ $request->id }})"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal" data-bs-target="#viewDetailsModal">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <i class="fa-solid fa-inbox fs-1 text-muted mb-3 d-block"></i>
-                                    <p class="text-muted">No medicine requests found</p>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="fa-solid fa-inbox fs-2 text-muted mb-2 d-block"></i>
+                                    <p class="text-muted mb-0">No history yet</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            {{ $myRequests->links() }}
+            {{ $historyRequests->links() }}
 
         </div>
     </main>
 
+    {{-- All your existing modals (requestMedicineModal, editMedicineModal, viewDetailsModal)
+         remain exactly the same — paste them here unchanged --}}
     {{-- Request Medicine Modal --}}
     <div class="modal fade" id="requestMedicineModal" tabindex="-1" aria-labelledby="requestMedicineLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -177,7 +261,7 @@
                         @if($requestFor === 'child')
                             <div class="mb-3 p-3 border rounded bg-light">
                                 <label class="form-label fw-semibold text-primary">
-                                    <i class="fa-solid fa-magnifying-glass me-1"></i>Search &amp; Select Child
+                                    <i class="fa-solid fa-magnifying-glass me-1"></i>Search &amp; Select Family Member
                                     <span class="text-danger">*</span>
                                 </label>
 
@@ -185,7 +269,7 @@
                                 <input wire:model.live.debounce.300ms="childSearch"
                                     type="search"
                                     class="form-control mb-2"
-                                    placeholder="Search child by name...">
+                                    placeholder="Search family member by name...">
 
                                 {{-- Child list --}}
                                 @if($children && count($children) > 0)
@@ -529,3 +613,4 @@
     @endpush
 
 </div>
+

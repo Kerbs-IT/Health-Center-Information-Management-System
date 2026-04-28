@@ -720,6 +720,6 @@ public function getTopMedicinesDateRangeData(){
             'dateRangeGivenData' => $this->getDateRangeGivenData(),
             'dateRangeRequestData' => $this->getDateRangeRequestData(),
             'topMedicinesData' => $this->getTopMedicinesDateRangeData(),
-        ])->layout('livewire.layouts.base');
+        ])->layout('livewire.layouts.base', ['page' => 'INVENTORY REPORT']);
     }
 }

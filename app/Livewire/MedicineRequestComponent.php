@@ -26,6 +26,10 @@ class MedicineRequestComponent extends Component
     // Properties for view details
     public $viewRequest;
 
+    public $search = '';
+    public $statusFilter = '';
+    public $perPage = 10;
+
     protected $rules = [
         'selectedMedicineId' => 'required|exists:medicines,medicine_id',
         'quantity'           => 'required|integer|min:1',
@@ -347,10 +351,8 @@ class MedicineRequestComponent extends Component
 
     public function render()
     {
-        $user    = auth()->user();
-        $patient = $user->patient;
-
-        // Get all patient IDs this user has access to (self + children)
+        $user     = auth()->user();
+        $patient  = $user->patient;
         $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
 
         $patientIds = $childIds;
@@ -358,17 +360,35 @@ class MedicineRequestComponent extends Component
             $patientIds[] = $patient->id;
         }
 
-        $myRequests = MedicineRequest::with(['medicine', 'patients', 'user'])
+        $baseQuery = MedicineRequest::with(['medicine', 'patients', 'user'])
             ->where(function ($query) use ($patientIds, $user) {
                 if (!empty($patientIds)) {
                     $query->whereIn('patients_id', $patientIds);
                 }
                 $query->orWhere('user_id', $user->id);
             })
-            ->latest()
-            ->paginate(10);
+            ->when($this->search, function ($q) {
+                $q->whereHas('medicine', fn($m) =>
+                    $m->where('medicine_name', 'like', "%{$this->search}%")
+                );
+            });
 
-        return view('livewire.medicine-request', compact('myRequests'))
-            ->layout('livewire.layouts.requestMedicineLayout');
-    }
+        // Active: pending and ready_to_pickup only
+        $activeRequests = (clone $baseQuery)
+            ->whereIn('status', ['pending', 'ready_to_pickup'])
+            ->latest()
+            ->paginate($this->perPage, ['*'], 'activePage');
+
+        // History: completed and rejected
+        $historyRequests = (clone $baseQuery)
+            ->whereIn('status', ['completed', 'rejected'])
+            ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
+            ->latest()
+            ->paginate($this->perPage, ['*'], 'historyPage');
+
+        return view('livewire.medicine-request', compact('activeRequests', 'historyRequests', 'childIds'))
+            ->layout('livewire.layouts.requestMedicineLayout', [
+                'page' => 'Medicine Request'
+            ]);
+        }
 }

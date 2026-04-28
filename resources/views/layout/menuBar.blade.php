@@ -255,7 +255,7 @@
         <div class="wrapper w-100 d-flex justify-content-center">
             <a href="{{ route('medicineRequest')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none w-100 px-3 py-2" id="patient_medicine_request">
                 <i class="fa-solid fa-pills"></i>
-                <h4 class="mb-0 fs-5">Request Medicine</h4>
+                <h4 class="mb-0 fs-5">Medication Requests</h4>
             </a>
         </div>
         @endif

@@ -59,6 +59,7 @@ use App\Livewire\MedicineRequestLogComponent;
 use Illuminate\Support\Facades\Artisan;
 use Knp\Snappy\Pdf;
 use Termwind\Components\Raw;
+use App\Livewire\MedicineBatches;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -490,6 +491,17 @@ Route::middleware(['role:nurse,staff'])->group(function () {
     // Route to logs
     Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
 
+    // Route to medicine csv
+    Route::get('/medicines/download-csv', [MedicinePdfController::class, 'downloadCsv'])
+    ->name('medicines.download-csv');
+
+    // Route to inventory report csv
+    Route::get('/reports/medicine-list/excel',    [InventoryController::class, 'downloadMedicineReportExcel'])->name('download.medicine.report.excel');
+    Route::get('/reports/requests/excel',         [InventoryController::class, 'downloadRequestReportExcel'])->name('download.request.report.excel');
+    Route::get('/reports/distributed/excel',      [InventoryController::class, 'downloadDistributedReportExcel'])->name('download.distributed.report.excel');
+    Route::get('/reports/low-stock/excel',        [InventoryController::class, 'downloadLowStockReportExcel'])->name('download.lowstock.report.excel');
+    Route::get('/reports/expiring-soon/excel',    [InventoryController::class, 'downloadExpiringSoonReportExcel'])->name('download.expSoon.report.excel');
+
     Route::get('/generate-report-pdf', [InventoryReportController::class, 'showReportView'])->name('inventory.report.pdf.view');
     Route::get('/reports/inventory/download', [InventoryReportController::class, 'downloadReport'])->name('download.inventory.report');
 
@@ -533,6 +545,9 @@ Route::middleware(['role:nurse,staff'])->group(function () {
 
     // inventory page
     Route::get('inventory/report', InventoryReport::class)->name('inventory-report');
+    // Route::get('/medicines', Medicines::class)->name('medicines.index');
+
+    Route::get('/medicines/{medicine}/batches', MedicineBatches::class)->name('medicines.batches');
 
 });
 // ---------------------------- home page

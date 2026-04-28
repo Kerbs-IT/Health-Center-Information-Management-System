@@ -1,6 +1,6 @@
 <div>
-    <main class="category d-flex flex-column container-fluid bg-light ">
-        <div class="m-md-3 m-1 p-3 shadow min-vh-100">
+    <main class="category d-flex flex-column container-fluid">
+        <div class="m-md-3 m-1 p-3 shadow min-vh-100 bg-light">
             <h2 class="mb-5 fs-1 text-center">Medicine Inventory</h2>
             <div class="medicine-inventory d-flex gap-3 align-items-none align-items-sm-end flex-wrap flex-column flex-sm-row">
                 <div class="flex-fill">
@@ -104,7 +104,7 @@
                             <label class="form-label">Category Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="category_name" wire:model.defer="category_name"     wire:focus="clearError('category_name')">
                             @error('category_name')
-                                <span class="text-danger" style="font-size: 11.5px">{{ $message }}</span>
+                                <span class="text-danger fs-5">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                             <label class="form-label">Category Name<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="category_name" wire:model.defer="category_name" wire:focus="clearError('category_name')">
                             @error('category_name')
-                                <span class="text-danger" style="font-size: 11.5px">{{ $message }}</span>
+                                <span class="text-danger fs-5">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>

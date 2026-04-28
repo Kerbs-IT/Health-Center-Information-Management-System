@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('patients', function (Blueprint $table) {
-            //
-            $table->unsignedBigInteger('guardian_user_id')->nullable();
-            $table->foreign('guardian_user_id')->references('id')->on('users')->onDelete('set null');
+        Schema::table('medicines', function (Blueprint $table) {
+               $table->decimal('price', 10, 2)->default(0)->after('stock');
         });
     }
 
@@ -23,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('patients', function (Blueprint $table) {
-            //
+        Schema::table('medicines', function (Blueprint $table) {
+            $table->dropColumn('price');
         });
     }
 };
