@@ -16,10 +16,12 @@ class senior_citizen_case_records extends Model
         'remarks',
         'type_of_record',
         'status',
-        'date_of_comeback'
+        'date_of_comeback',
+        'is_final'
     ];
     protected $casts = [
-        'date_of_comeback' => 'date'
+        'date_of_comeback' => 'date',
+        'is_final' => 'boolean',
     ];
     public function medical_record_case()
     {

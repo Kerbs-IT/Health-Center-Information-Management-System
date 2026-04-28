@@ -1997,6 +1997,19 @@ class PrenatalController extends Controller
     public function uploadPregnancyCheckup(Request $request, $id)
     {
         try {
+            $isFinal = $request->boolean('is_final', false);
+
+            // Block adding a new check-up if any record in this case is already marked final
+            $alreadyFinal = pregnancy_checkups::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => ['is_final' => ['This prenatal case is already closed. No new check-ups can be added.']]
+                ], 422);
+            }
+
             $request->validate(
                 [
                     // Required fields
@@ -2016,7 +2029,7 @@ class PrenatalController extends Controller
                     'check_up_height'          => 'nullable|numeric|between:1,250',
                     'check_up_weight'          => 'nullable|numeric|min:1|between:1,250',
 
-                    // Symptom questions (all optional but strings)
+                    // Symptom questions
                     'abdomen_question'                 => 'nullable|string|max:255',
                     'abdomen_question_remarks'         => 'nullable|string|max:500',
                     'vaginal_question'                 => 'nullable|string|max:255',
@@ -2036,16 +2049,23 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'overall_remarks'  => 'nullable|string|max:1000',
-                    'date_of_comeback' => 'required|date|after_or_equal:today', // ← fixed
+
+                    // is_final flag
+                    'is_final' => 'nullable|boolean',
+
+                    // date_of_comeback is only required when NOT marking as final
+                    'date_of_comeback' => [
+                        $isFinal ? 'nullable' : 'required',
+                        'date',
+                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    ],
                 ],
                 [
-                    // ← added custom message for date_of_comeback
-                    'date_of_comeback.required'          => 'The date of comeback field is required.',
-                    'date_of_comeback.date'              => 'The date of comeback must be a valid date.',
-                    'date_of_comeback.after_or_equal'    => 'The date of comeback must be today or a future date.',
+                    'date_of_comeback.required'       => 'The date of comeback field is required.',
+                    'date_of_comeback.date'           => 'The date of comeback must be a valid date.',
+                    'date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
                 ],
                 [
-                    // Replace attribute names for cleaner error messages
                     'check_up_time'             => 'Time',
                     'check_up_blood_pressure'   => 'Blood Pressure',
                     'check_up_temperature'      => 'Temperature',
@@ -2053,7 +2073,6 @@ class PrenatalController extends Controller
                     'check_up_respiratory_rate' => 'Respiratory Rate',
                     'check_up_height'           => 'Height',
                     'check_up_weight'           => 'Weight',
-
                     'abdomen_question'                 => 'Abdomen Question',
                     'abdomen_question_remarks'         => 'Abdomen Remarks',
                     'vaginal_question'                 => 'Vaginal Question',
@@ -2070,13 +2089,11 @@ class PrenatalController extends Controller
                     'decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
                     'other_symptoms_question'          => 'Other Symptoms Question',
                     'other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
-
-                    'overall_remarks'  => 'Overall Remarks',
-                    'date_of_comeback' => 'Date of Comeback', // ← added for cleaner error messages
+                    'overall_remarks'                  => 'Overall Remarks',
+                    'date_of_comeback'                 => 'Date of Comeback',
                 ]
             );
 
-            // data insertion
             $prenatalCheckup = pregnancy_checkups::create([
                 'medical_record_case_id'    => $id,
                 'patient_name'              => $request->check_up_full_name,
@@ -2106,16 +2123,18 @@ class PrenatalController extends Controller
                 'other_symptoms_question'          => $request->other_symptoms_question,
                 'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
 
-                'overall_remarks' => $request->overall_remarks,
-                'status' => 'Done',
-                'date_of_comeback' => $request->date_of_comeback
+                'overall_remarks'  => $request->overall_remarks,
+                'status'           => 'Done',
+                'is_final'         => $isFinal,
+                'date_of_comeback' => $request->date_of_comeback,
             ]);
+
             return response()->json(['message' => 'Prenatal Check-up info is added successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
-            ], 404);
-        };
+            ], 422);
+        }
     }
 
     public function viewCheckUpInfo($id)
@@ -2123,9 +2142,19 @@ class PrenatalController extends Controller
         try {
             $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
             $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
+
+            // Returns true if ANY checkup in the same prenatal case is marked final.
+            // When true, the JS will open ALL records in this case as read-only.
+            $case_is_final = pregnancy_checkups::where('medical_record_case_id', $pregnancy_checkup->medical_record_case_id)
+                ->where('is_final', true)->exists();
+
+
+
             return response()->json([
                 'pregnancy_checkup_info' => $pregnancy_checkup,
-                'healthWorker' => $healthWorker
+                'healthWorker'           => $healthWorker,
+                'case_is_final'          => $case_is_final,
+                'this_record_is_final'   => (bool) $pregnancy_checkup->is_final, // <-- add this
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -2137,6 +2166,23 @@ class PrenatalController extends Controller
     {
         try {
             $checkUp = pregnancy_checkups::findOrFail($id);
+            $isFinal = $request->boolean('is_final', false);
+
+            // Condition 1: Cannot mark is_final = true if this is NOT the latest record
+            if ($isFinal) {
+                $latestId = pregnancy_checkups::where('medical_record_case_id', $checkUp->medical_record_case_id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+
+                if ($latestId !== $checkUp->id) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent check-up record can be marked as the final check-up.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $request->validate(
                 [
                     // Required fields
@@ -2156,7 +2202,7 @@ class PrenatalController extends Controller
                     'edit_check_up_height'          => 'nullable|numeric|between:1,250',
                     'edit_check_up_weight'          => 'nullable|numeric|between:1,250',
 
-                    // Symptom questions (all optional but strings)
+                    // Symptom questions
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
                     'edit_abdomen_question_remarks'         => 'nullable|string|max:500',
                     'edit_vaginal_question'                 => 'nullable|string|max:255',
@@ -2177,17 +2223,23 @@ class PrenatalController extends Controller
                     'edit_other_symptoms_question_remarks'  => 'nullable|string|max:500',
 
                     // Final remarks
-                    'edit_overall_remarks'  => 'nullable|string|max:1000',
-                    'edit_date_of_comeback' => 'required|date|after_or_equal:today', // ← fixed
+                    'edit_overall_remarks' => 'nullable|string|max:1000',
+
+                    // is_final flag
+                    'is_final' => 'nullable|boolean',
+
+                    'edit_date_of_comeback' => [
+                        $isFinal ? 'nullable' : 'required',
+                        'date',
+                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    ],
                 ],
                 [
-                    // ← added custom messages for edit_date_of_comeback
                     'edit_date_of_comeback.required'       => 'The date of comeback field is required.',
                     'edit_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
                     'edit_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
                 ],
                 [
-                    // Replace attribute names for cleaner error messages
                     'edit_check_up_time'             => 'Time',
                     'edit_check_up_blood_pressure'   => 'Blood Pressure',
                     'edit_check_up_temperature'      => 'Temperature',
@@ -2195,7 +2247,6 @@ class PrenatalController extends Controller
                     'edit_check_up_respiratory_rate' => 'Respiratory Rate',
                     'edit_check_up_height'           => 'Height',
                     'edit_check_up_weight'           => 'Weight',
-
                     'edit_abdomen_question'                 => 'Abdomen Question',
                     'edit_abdomen_question_remarks'         => 'Abdomen Remarks',
                     'edit_vaginal_question'                 => 'Vaginal Question',
@@ -2212,15 +2263,11 @@ class PrenatalController extends Controller
                     'edit_decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
                     'edit_other_symptoms_question'          => 'Other Symptoms Question',
                     'edit_other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
-
-                    'edit_overall_remarks'  => 'Overall Remarks',
-                    'edit_date_of_comeback' => 'Date of Comeback',
+                    'edit_overall_remarks'                  => 'Overall Remarks',
+                    'edit_date_of_comeback'                 => 'Date of Comeback',
                 ]
             );
 
-            // dd($request->edit_check_up_pulse_rate);
-
-            // data insertion
             $checkUp->update([
                 'patient_name'              => $request->edit_check_up_full_name ?? $checkUp->patient_name,
                 'health_worker_id'          => $request->edit_health_worker_id ?? $checkUp->health_worker_id,
@@ -2230,45 +2277,39 @@ class PrenatalController extends Controller
                 'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? null,
                 'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate ?? null,
                 'check_up_height'           => $request->edit_check_up_height ?? null,
-                'check_up_weight'               => $request->edit_check_up_weight ?? null,
+                'check_up_weight'           => $request->edit_check_up_weight ?? null,
 
                 'abdomen_question'              => $request->edit_abdomen_question ?? null,
                 'abdomen_question_remarks'      => $request->edit_abdomen_question_remarks ?? null,
-
                 'vaginal_question'              => $request->edit_vaginal_question ?? null,
                 'vaginal_question_remarks'      => $request->edit_vaginal_question_remarks ?? null,
-
                 'headache_question'             => $request->edit_headache_question ?? null,
                 'headache_question_remarks'     => $request->edit_headache_question_remarks ?? null,
-
                 'swelling_question'             => $request->edit_swelling_question ?? null,
                 'swelling_question_remarks'     => $request->edit_swelling_question_remarks ?? null,
-
                 'blurry_vission_question'       => $request->edit_blurry_vission_question ?? null,
                 'blurry_vission_question_remarks' => $request->edit_blurry_vission_question_remarks ?? null,
-
                 'urination_question'            => $request->edit_urination_question ?? null,
                 'urination_question_remarks'    => $request->edit_urination_question_remarks ?? null,
-
                 'baby_move_question'            => $request->edit_baby_move_question ?? null,
                 'baby_move_question_remarks'    => $request->edit_baby_move_question_remarks ?? null,
-
                 'decreased_baby_movement'       => $request->edit_decreased_baby_movement ?? null,
                 'decreased_baby_movement_remarks' => $request->edit_decreased_baby_movement_remarks ?? null,
-
                 'other_symptoms_question'       => $request->edit_other_symptoms_question ?? null,
                 'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? null,
 
-                'overall_remarks'               => $request->edit_overall_remarks ?? null,
-                'status' => 'Done',
-                'date_of_comeback' => $request->edit_date_of_comeback
+                'overall_remarks'  => $request->edit_overall_remarks ?? null,
+                'status'           => 'Done',
+                'is_final'         => $isFinal,
+                'date_of_comeback' => $isFinal ? $checkUp->date_of_comeback : $request->edit_date_of_comeback,
             ]);
+
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
-            ], 404);
-        };
+            ], 422);
+        }
     }
 
     public function archive($id)

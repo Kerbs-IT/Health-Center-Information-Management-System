@@ -149,14 +149,18 @@ class SeniorCitizenController extends Controller
                 'alergies'                        => 'sometimes|nullable|string',
                 'prescribe_by_nurse'              => 'sometimes|nullable|string',
                 'medication_maintenance_remarks'  => 'sometimes|nullable|string',
-                'senior_citizen_date_of_comeback' => 'required|date|after_or_equal:today', // ← fixed
+                'senior_citizen_date_of_comeback' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], // ← fixed
             ], [
                 'existing_medical_condition.string'        => 'The existing medical condition must be a string.',
                 'prescribe_by_nurse.string'                => 'The prescribe by nurse field must be a string.',
                 'medication_maintenance_remarks.string'    => 'The medication maintenance remarks must be a string.',
                 'senior_citizen_date_of_comeback.required' => 'The date of comeback field is required.',
                 'senior_citizen_date_of_comeback.date'     => 'The date of comeback must be a valid date.',
-                'senior_citizen_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.', // ← added
+                'senior_citizen_date_of_comeback.before_or_equal' => 'The date of comeback must be today or a future date.', // ← added
             ]);
 
             $maintenanceMedicationData = $request->validate([
@@ -640,11 +644,18 @@ class SeniorCitizenController extends Controller
     public function viewCaseDetails($id)
     {
         try {
-            $caseRecord   = senior_citizen_case_records::with('senior_citizen_maintenance_med')->findOrFail($id);
-            $patient_name = $caseRecord->patient_name;
+            $caseRecord = senior_citizen_case_records::with('senior_citizen_maintenance_med')->findOrFail($id);
+
+            // True if ANY record in this case is marked final
+            $case_is_final = senior_citizen_case_records::where('medical_record_case_id', $caseRecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->exists();
+
             return response()->json([
-                'seniorCaseRecord' => $caseRecord,
-                'patient_name'     => $patient_name,
+                'seniorCaseRecord'     => $caseRecord,
+                'patient_name'         => $caseRecord->patient_name,
+                'case_is_final'        => $case_is_final,
+                'this_record_is_final' => (bool) $caseRecord->is_final,
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Record not found'], 404);
@@ -658,20 +669,39 @@ class SeniorCitizenController extends Controller
         try {
             $seniorCitizenCase = senior_citizen_case_records::findOrFail($id);
 
+            // --- FINAL TOGGLE GUARD ---
+            // If is_final is being turned on, this record MUST be the last one.
+            $isFinal = $request->input('is_final', 0);
+
+            if ($isFinal) {
+                $isLastRecord = !senior_citizen_case_records::where('medical_record_case_id', $seniorCitizenCase->medical_record_case_id)
+                    ->where('id', '>', $id)
+                    ->exists();
+
+                if (!$isLastRecord) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as the final record.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $data = $request->validate([
                 'edit_existing_medical_condition'     => 'sometimes|nullable|string',
                 'edit_alergies'                       => 'sometimes|nullable|string',
                 'edit_prescribe_by_nurse'             => 'required|string',
                 'edit_medication_maintenance_remarks' => 'sometimes|nullable|string',
-                'edit_date_of_comeback'               => 'required|date|after_or_equal:today', // ← fixed
+                'edit_date_of_comeback'               =>  [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
-                'edit_existing_medical_condition.string'     => 'The existing medical condition field must be a string.',
-                'edit_alergies.string'                       => 'The alergies field must be a string.',
-                'edit_prescribe_by_nurse.string'             => 'The prescribe by nurse field is required.',
-                'edit_medication_maintenance_remarks.string' => 'The medication maintenance remarks field must be a string.',
-                'edit_date_of_comeback.required'             => 'The date of comeback field is required.',
-                'edit_date_of_comeback.date'                 => 'The date of comeback field must be a valid date.',
-                'edit_date_of_comeback.after_or_equal'       => 'The date of comeback must be today or a future date.', // ← added
+                'edit_prescribe_by_nurse.string'    => 'The prescribe by nurse field is required.',
+                'edit_date_of_comeback.required'    => 'The date of comeback field is required.',
+                'edit_date_of_comeback.date'        => 'The date of comeback field must be a valid date.',
+                'edit_date_of_comeback.before_or_equal' => 'The date of comeback must be past or only 5 years future date.',
             ]);
 
             $seniorCitizenCase->update([
@@ -680,9 +710,11 @@ class SeniorCitizenController extends Controller
                 'prescribe_by_nurse'         => $data['edit_prescribe_by_nurse'] ? ucwords($data['edit_prescribe_by_nurse']) : '',
                 'remarks'                    => $data['edit_medication_maintenance_remarks'] ?? '',
                 'date_of_comeback'           => $data['edit_date_of_comeback'],
+                'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
-            $maintenanceMedicine = senior_citizen_maintenance_meds::where('senior_citizen_case_id', $id)->delete();
+            // Re-create maintenance meds
+            senior_citizen_maintenance_meds::where('senior_citizen_case_id', $id)->delete();
 
             $maintenanceMedicationData = $request->validate([
                 'medicines'            => 'sometimes|nullable|array',
@@ -710,29 +742,46 @@ class SeniorCitizenController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         }
     }
-
     public function addCase(Request $request, $id)
     {
         try {
+            // --- BLOCK IF CASE IS ALREADY CLOSED ---
+            $alreadyFinal = senior_citizen_case_records::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case is already closed. No new records can be added.']
+                    ]
+                ], 422);
+            }
+
             $data = $request->validate([
-                'new_patient_name'                  => 'required',
-                'add_health_worker_id'              => 'required',
-                'add_existing_medical_condition'    => 'sometimes|nullable|string',
-                'add_alergies'                      => 'sometimes|nullable|string',
-                'add_prescribe_by_nurse'            => 'required|string',
+                'new_patient_name'                   => 'required',
+                'add_health_worker_id'               => 'required',
+                'add_existing_medical_condition'     => 'sometimes|nullable|string',
+                'add_alergies'                       => 'sometimes|nullable|string',
+                'add_prescribe_by_nurse'             => 'required|string',
                 'add_medication_maintenance_remarks' => 'sometimes|nullable|string',
-                'add_date_of_comeback'              => 'required|date|after_or_equal:today', // ← fixed
+                'add_date_of_comeback'               => 
+                [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
-                'new_patient_name.required'                  => 'The patient name field is required.',
-                'add_health_worker_id.required'              => 'The health worker id field is required.',
-                'add_existing_medical_condition.string'      => 'The existing medical condition field must be a string.',
-                'add_alergies.string'                        => 'The alergies field must be a string.',
-                'add_prescribe_by_nurse.string'              => 'The prescribe by nurse field is required.',
-                'add_medication_maintenance_remarks.string'  => 'The medication maintenance remarks field must be a string.',
-                'add_date_of_comeback.required'              => 'The date of comeback field is required.',
-                'add_date_of_comeback.date'                  => 'The date of comeback field must be a valid date.',
-                'add_date_of_comeback.after_or_equal'        => 'The date of comeback must be today or a future date.', // ← added
+                'new_patient_name.required'          => 'The patient name field is required.',
+                'add_health_worker_id.required'      => 'The health worker id field is required.',
+                'add_prescribe_by_nurse.string'      => 'The prescribe by nurse field is required.',
+                'add_date_of_comeback.required'      => 'The date of comeback field is required.',
+                'add_date_of_comeback.date'          => 'The date of comeback field must be a valid date.',
+                'add_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                
             ]);
+
+            $isFinal = $request->input('is_final', 0);
 
             $newCaseRecord = senior_citizen_case_records::create([
                 'patient_name'               => $data['new_patient_name'],
@@ -744,6 +793,7 @@ class SeniorCitizenController extends Controller
                 'remarks'                    => $data['add_medication_maintenance_remarks'] ?? '',
                 'type_of_record'             => 'Case Record',
                 'date_of_comeback'           => $data['add_date_of_comeback'],
+                'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
             $maintenanceMedicationData = $request->validate([

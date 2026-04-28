@@ -1,28 +1,25 @@
 import Swal from "sweetalert2";
 import { vitalSignInputMask } from "../vitalSign";
 
-// View Pregnancy Checkup Handler
+// ============================================================================
+// VIEW PREGNANCY CHECKUP HANDLER
+// ============================================================================
+
 document.addEventListener("click", async function (e) {
     const viewBtn = e.target.closest(".viewPregnancyCheckupBtn");
+    if (!viewBtn) return;
 
-    if (!viewBtn) return; // Not our button, ignore
-
-    // Prevent default Bootstrap modal behavior temporarily
     e.preventDefault();
     e.stopPropagation();
 
     const checkupId = viewBtn.dataset.checkupId;
 
-    // Validate checkup ID exists
     if (!checkupId || checkupId === "undefined" || checkupId === "null") {
         console.error("Invalid checkup ID:", checkupId);
         showErrorNotification("Unable to load checkup: Invalid ID");
         return;
     }
 
-    // console.log('Loading checkup ID:', checkupId);
-
-    // Show loading state
     showLoadingModal();
 
     try {
@@ -37,38 +34,26 @@ document.addEventListener("click", async function (e) {
             },
         );
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const data = await response.json();
-
-        // Validate response data
-        if (!data || typeof data !== "object") {
+        if (!data || typeof data !== "object")
             throw new Error("Invalid response data format");
-        }
 
-        // Clear all modal fields first
         clearCheckupModalData();
 
-        // Populate pregnancy checkup info
         if (
             data.pregnancy_checkup_info &&
             typeof data.pregnancy_checkup_info === "object"
         ) {
             populateCheckupInfo(data.pregnancy_checkup_info);
-        } else {
-            // console.warn('No pregnancy_checkup_info in response');
         }
 
-        // Populate health worker info
         if (data.healthWorker && typeof data.healthWorker === "object") {
             populateHealthWorkerInfo(data.healthWorker);
-        } else {
-            // console.warn("No healthWorker info in response");
         }
 
-        // Hide loading and show modal
         hideLoadingModal();
         openCheckupModal();
     } catch (error) {
@@ -78,26 +63,19 @@ document.addEventListener("click", async function (e) {
     }
 });
 
-/**
- * Safely set element content
- */
+// ============================================================================
+// VIEW MODAL HELPERS
+// ============================================================================
+
 function safeSetContent(elementId, value, defaultValue = "N/A") {
     const element = document.getElementById(elementId);
+    if (!element) return false;
 
-    if (!element) {
-        // console.warn(`Element not found: ${elementId}`);
-        return false;
-    }
-
-   
-
-    // Handle null/undefined values
     if (value === null || value === undefined || value === "") {
         element.innerHTML = defaultValue;
         return true;
     }
 
-    // Escape HTML to prevent XSS
     const safeValue = String(value)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -109,27 +87,18 @@ function safeSetContent(elementId, value, defaultValue = "N/A") {
     return true;
 }
 
-/**
- * Format time from 24hr to 12hr format
- */
 function formatTime(timeString) {
-    if (!timeString || typeof timeString !== "string") {
-        return "N/A";
-    }
+    if (!timeString || typeof timeString !== "string") return "N/A";
 
     try {
         const parts = timeString.split(":");
-        if (parts.length < 2) {
-            return "N/A";
-        }
+        if (parts.length < 2) return "N/A";
 
         let [hours, minutes] = parts;
         hours = parseInt(hours, 10);
         minutes = parseInt(minutes, 10);
 
-        if (isNaN(hours) || isNaN(minutes)) {
-            return "N/A";
-        }
+        if (isNaN(hours) || isNaN(minutes)) return "N/A";
 
         const ampm = hours >= 12 ? "PM" : "AM";
         hours = hours % 12 || 12;
@@ -142,63 +111,48 @@ function formatTime(timeString) {
     }
 }
 
-/**
- * Populate checkup information
- */
 function populateCheckupInfo(checkupInfo) {
-    if (!checkupInfo || typeof checkupInfo !== "object") {
-        return;
-    }
-    console.log("Populating with data:", checkupInfo); // ← ADD THIS DEBUG
+    if (!checkupInfo || typeof checkupInfo !== "object") return;
 
     Object.entries(checkupInfo).forEach(([key, value]) => {
         try {
-            // Special handling for time fields
             if (key === "check_up_time") {
-                const formattedTime = formatTime(value);
-                safeSetContent(key, formattedTime);
+                safeSetContent(key, formatTime(value));
                 return;
             }
-
-            // Special handling for patient name
             if (key === "patient_name") {
                 safeSetContent("patient_name", value);
                 safeSetContent("checkup_patient_name", value);
                 return;
             }
-
-            // Special handling for SPECIFIC date field (not all date fields!)
             if (key === "date_of_comeback" && value) {
-                // ← Changed from key.includes("date")
                 try {
-                    const date = new Date(value);
-                    const formatted = date.toISOString().split("T")[0];
-                    document.getElementById("view_date_of_comeback").innerHTML =
-                        formatted;
-                    return;
-                } catch (dateError) {
-                    // console.warn(
-                    //     `Error formatting date for ${key}:`,
-                    //     dateError,
-                    // );
-                }
+                    const raw = String(value);
+                    const dateStr =
+                        raw.includes("T") || raw.includes(" ")
+                            ? new Date(
+                                  new Date(raw).getTime() + 8 * 60 * 60 * 1000,
+                              )
+                                  .toISOString()
+                                  .split("T")[0]
+                            : raw.split("T")[0];
+                    const el = document.getElementById("view_date_of_comeback");
+                    if (el) el.innerHTML = dateStr;
+                } catch (_) {}
+                return;
             }
-            // Special handling for vital signs with units
             if (key === "check_up_blood_pressure") {
                 safeSetContent(`view_${key}`, value ? `${value}` : null);
                 return;
             }
-
             if (key === "check_up_temperature") {
                 safeSetContent(`view_${key}`, value ? `${value}°C` : null);
                 return;
             }
-
             if (key === "check_up_pulse_rate") {
                 safeSetContent(`view_${key}`, value ? `${value} bpm` : null);
                 return;
             }
-
             if (key === "check_up_respiratory_rate") {
                 safeSetContent(
                     `view_${key}`,
@@ -206,18 +160,14 @@ function populateCheckupInfo(checkupInfo) {
                 );
                 return;
             }
-
             if (key === "check_up_height") {
                 safeSetContent(`view_${key}`, value ? `${value} cm` : null);
                 return;
             }
-
             if (key === "check_up_weight") {
                 safeSetContent(`view_${key}`, value ? `${value} kg` : null);
                 return;
             }
-
-            // Default: set content as-is
             safeSetContent(key, value);
         } catch (error) {
             console.error(`Error setting field ${key}:`, error);
@@ -225,31 +175,19 @@ function populateCheckupInfo(checkupInfo) {
     });
 }
 
-/**
- * Populate health worker information
- */
 function populateHealthWorkerInfo(healthWorker) {
     if (!healthWorker || typeof healthWorker !== "object") {
-        // console.warn("Invalid health worker info provided");
         safeSetContent("health_worker_name", null);
         return;
     }
-
     const fullName =
         healthWorker.full_name ||
-        `${healthWorker.first_name || ""} ${
-            healthWorker.last_name || ""
-        }`.trim() ||
+        `${healthWorker.first_name || ""} ${healthWorker.last_name || ""}`.trim() ||
         "N/A";
-
     safeSetContent("health_worker_name", fullName);
 }
 
-/**
- * Clear all modal data
- */
 function clearCheckupModalData() {
-    // List of all field IDs in your modal
     const fieldIds = [
         "check_up_time",
         "patient_name",
@@ -275,89 +213,214 @@ function clearCheckupModalData() {
         "blood_pressure_diastolic",
         "remarks",
         "next_visit_date",
-        // Add any other field IDs your modal uses
     ];
-
     fieldIds.forEach((id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
-                element.value = "";
-            } else {
-                element.innerHTML = "";
-            }
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+            el.value = "";
+        } else {
+            el.innerHTML = "";
         }
     });
 }
 
-/**
- * Open the checkup modal
- */
 function openCheckupModal() {
     const modalElement = document.getElementById("pregnancyCheckUpModal");
-
     if (!modalElement) {
-        console.error("Modal element not found: pregnancyCheckUpModal");
         showErrorNotification("Unable to open modal");
         return;
     }
-
     try {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        modal.show();
+        bootstrap.Modal.getOrCreateInstance(modalElement).show();
     } catch (error) {
-        console.error("Error opening modal:", error);
         showErrorNotification("Error opening modal");
     }
 }
 
-/**
- * Show loading state (optional)
- */
 function showLoadingModal() {
-    const modalElement = document.getElementById("pregnancyCheckUpModal");
-    if (modalElement) {
-        const modalBody = modalElement.querySelector(".modal-body");
-        if (modalBody) {
-            modalBody.style.opacity = "0.5";
-            modalBody.style.pointerEvents = "none";
-        }
+    const modalBody = document
+        .getElementById("pregnancyCheckUpModal")
+        ?.querySelector(".modal-body");
+    if (modalBody) {
+        modalBody.style.opacity = "0.5";
+        modalBody.style.pointerEvents = "none";
     }
-    // Or show a spinner overlay
 }
 
-/**
- * Hide loading state
- */
 function hideLoadingModal() {
-    const modalElement = document.getElementById("pregnancyCheckUpModal");
-    if (modalElement) {
-        const modalBody = modalElement.querySelector(".modal-body");
-        if (modalBody) {
-            modalBody.style.opacity = "1";
-            modalBody.style.pointerEvents = "auto";
-        }
+    const modalBody = document
+        .getElementById("pregnancyCheckUpModal")
+        ?.querySelector(".modal-body");
+    if (modalBody) {
+        modalBody.style.opacity = "1";
+        modalBody.style.pointerEvents = "auto";
     }
 }
 
-/**
- * Show error notification (customize based on your notification system)
- */
 function showErrorNotification(message) {
-    // Option 1: Simple alert
     alert(message);
 }
 
-// Clean up modal when closed
+// Clear view modal on close
 document
     .getElementById("pregnancyCheckUpModal")
     ?.addEventListener("hidden.bs.modal", function () {
         clearCheckupModalData();
     });
 
-// edit btn
 // ============================================================================
-// EDIT BUTTON - Event Delegation (Works with Livewire)
+// IS_FINAL TOGGLE — EDIT MODAL
+// ============================================================================
+
+/**
+ * @param {boolean} isFinal
+ * @param {boolean} lockToggle — pass true when the record is already saved
+ *                               as final (disables all fields, can't undo)
+ */
+function applyFinalToggleState(isFinal, lockToggle = false) {
+    const toggle = document.getElementById("edit_is_final_toggle");
+    const hiddenInput = document.getElementById("edit_is_final_hidden");
+    const warning = document.getElementById("edit_is_final_warning");
+    const dateWrapper = document.getElementById("edit_comeback_wrapper");
+    const dateInput = document.getElementById("edit_date_of_comeback");
+
+    if (!toggle || !hiddenInput) return;
+
+    toggle.checked = isFinal;
+    hiddenInput.value = isFinal ? "1" : "0";
+
+    if (warning) warning.classList.toggle("d-none", !isFinal);
+
+    // Dim wrapper so date looks read-only visually
+    if (dateWrapper) {
+        dateWrapper.style.opacity = isFinal ? "0.45" : "1";
+        dateWrapper.style.pointerEvents = isFinal ? "none" : "auto";
+    }
+
+    // readonly keeps the value visible; disabled would wipe it from display
+    if (dateInput) {
+        if (isFinal) {
+            dateInput.setAttribute("readonly", "readonly");
+        } else {
+            dateInput.removeAttribute("readonly");
+        }
+    }
+
+    if (lockToggle) {
+        toggle.disabled = true;
+
+        const form = document.getElementById("edit-check-up-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                if (el.id === "edit_date_of_comeback") {
+                    el.setAttribute("readonly", "readonly");
+                    return;
+                }
+                el.disabled = true;
+            });
+        }
+
+        const saveBtn = document.getElementById("edit-check-up-save-btn");
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Record Locked
+            `;
+        }
+    } else {
+        toggle.disabled = false;
+    }
+}
+
+// ============================================================================
+// IS_FINAL TOGGLE — ADD MODAL
+// ============================================================================
+
+function applyAddFinalToggleState(isFinal) {
+    const hiddenInput = document.getElementById("add_is_final_hidden");
+    const warning = document.getElementById("add_is_final_warning");
+    const dateWrapper = document.getElementById("add_comeback_wrapper");
+    const dateInput = document.getElementById("date_of_comeback");
+    const requiredStar = document.getElementById("add_comeback_required_star");
+
+    if (!hiddenInput) return;
+
+    hiddenInput.value = isFinal ? "1" : "0";
+
+    if (warning) warning.classList.toggle("d-none", !isFinal);
+
+    if (dateWrapper) {
+        dateWrapper.style.opacity = isFinal ? "0.45" : "1";
+        dateWrapper.style.pointerEvents = isFinal ? "none" : "auto";
+    }
+
+    if (dateInput) {
+        dateInput.disabled = isFinal;
+    }
+
+    if (requiredStar) {
+        requiredStar.style.display = isFinal ? "none" : "inline";
+    }
+}
+
+// Wire up both toggles after DOM is ready
+document.addEventListener("DOMContentLoaded", function () {
+    const addToggle = document.getElementById("add_is_final_toggle");
+    if (addToggle) {
+        addToggle.addEventListener("change", function () {
+            applyAddFinalToggleState(this.checked);
+        });
+    }
+
+    const editToggle = document.getElementById("edit_is_final_toggle");
+    if (editToggle) {
+        editToggle.addEventListener("change", function () {
+            applyFinalToggleState(this.checked, false);
+        });
+    }
+});
+
+// Reset ADD modal when it closes
+document
+    .getElementById("prenatalCheckupModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const addToggle = document.getElementById("add_is_final_toggle");
+        if (addToggle) addToggle.checked = false;
+        applyAddFinalToggleState(false);
+        const addError = document.getElementById("add_is_final_error");
+        if (addError) addError.textContent = "";
+    });
+
+// Reset EDIT modal when it closes
+document
+    .getElementById("checkUpModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const form = document.getElementById("edit-check-up-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                el.disabled = false;
+                el.removeAttribute("readonly");
+            });
+        }
+
+        const saveBtn = document.getElementById("edit-check-up-save-btn");
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = "Save Record";
+        }
+
+        applyFinalToggleState(false, false);
+
+        const isFinalError = document.getElementById("is_final_error");
+        if (isFinalError) isFinalError.textContent = "";
+    });
+
+// ============================================================================
+// EDIT BUTTON - Event Delegation
 // ============================================================================
 
 let medicalId = 0;
@@ -368,14 +431,11 @@ document.addEventListener("click", async function (e) {
 
     const checkupId = editBtn.dataset.checkupId;
 
-    // Validate checkup ID
     if (!checkupId || checkupId === "undefined" || checkupId === "null") {
         console.error("Invalid checkup ID:", checkupId);
         alert("Unable to load checkup: Invalid ID");
         return;
     }
-
-    // console.log('Loading checkup ID for edit:', checkupId);
 
     try {
         const response = await fetch(
@@ -389,18 +449,13 @@ document.addEventListener("click", async function (e) {
             },
         );
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const data = await response.json();
-
-        // Validate response data
-        if (!data || typeof data !== "object") {
+        if (!data || typeof data !== "object")
             throw new Error("Invalid response data");
-        }
 
-        // Check if pregnancy_checkup_info exists
         if (
             data.pregnancy_checkup_info &&
             typeof data.pregnancy_checkup_info === "object"
@@ -408,68 +463,54 @@ document.addEventListener("click", async function (e) {
             Object.entries(data.pregnancy_checkup_info).forEach(
                 ([key, value]) => {
                     try {
+                        if (key === "is_final") return; // handled after loop
+
                         if (key === "check_up_time") {
-                            const element = document.getElementById(
-                                `edit_${key}`,
-                            );
-                            if (element) {
-                                element.value = value || "";
-                            } else {
-                                // console.warn(`Element not found: edit_${key}`);
-                            }
-                        } else if (key === "patient_name") {
-                            const nameElement =
+                            const el = document.getElementById(`edit_${key}`);
+                            if (el) el.value = value || "";
+                            return;
+                        }
+
+                        if (key === "patient_name") {
+                            const nameEl =
                                 document.getElementById("edit_patient_name");
-                            const hiddenElement = document.getElementById(
+                            const hiddenEl = document.getElementById(
                                 "edit_check_up_full_name",
                             );
+                            if (nameEl) nameEl.value = value || "";
+                            if (hiddenEl) hiddenEl.value = value || "";
+                            return;
+                        }
 
-                            if (nameElement) {
-                                nameElement.value = value || "";
-                            } else {
-                                // console.warn(
-                                //     "Element not found: edit_patient_name"
-                                // );
-                            }
-
-                            if (hiddenElement) {
-                                hiddenElement.value = value || "";
-                                // console.log("name", value);
-                                // console.log("hidden value:", hiddenElement.value);
-                            } else {
-                                // console.warn(
-                                //     "Element not found: edit_check_up_full_name"
-                                // );
-                            }
-                        } else if (value === "Yes" || value === "No") {
-                            const element = document.getElementById(
+                        if (value === "Yes" || value === "No") {
+                            const el = document.getElementById(
                                 `edit_${key}_${value}`,
                             );
-                            if (element) {
-                                element.checked = true;
-                            } else {
-                                // console.warn(
-                                //     `Element not found: edit_${key}_${value}`
-                                // );
-                            }
-                        } else if (key == "date_of_comeback") {
-                            const element = document.getElementById(
-                                `edit_${key}`,
-                            );
-                            if (element && value) {
-                                const date = value.split("T")[0]; // Gets "2025-12-24"
-                                element.value = date;
-                            }
-                        } else {
-                            const element = document.getElementById(
-                                `edit_${key}`,
-                            );
-                            if (element) {
-                                element.value = value ?? "";
-                            } else {
-                                // console.warn(`Element not found: edit_${key}`);
-                            }
+                            if (el) el.checked = true;
+                            return;
                         }
+
+                        if (key === "date_of_comeback") {
+                            const el = document.getElementById(
+                                "edit_date_of_comeback",
+                            );
+                            if (el && value) {
+                                const raw = String(value);
+                                el.value =
+                                    raw.includes("T") || raw.includes(" ")
+                                        ? new Date(
+                                              new Date(raw).getTime() +
+                                                  8 * 60 * 60 * 1000,
+                                          )
+                                              .toISOString()
+                                              .split("T")[0]
+                                        : raw.split("T")[0];
+                            }
+                            return;
+                        }
+
+                        const el = document.getElementById(`edit_${key}`);
+                        if (el) el.value = value ?? "";
                     } catch (fieldError) {
                         console.error(
                             `Error setting field ${key}:`,
@@ -478,31 +519,27 @@ document.addEventListener("click", async function (e) {
                     }
                 },
             );
-        } else {
-            // console.warn("No pregnancy_checkup_info in response");
+
+            // case_is_final is returned by the backend — true when ANY record
+            // in this prenatal case has is_final = true, locking all records.
+            const caseIsFinal = !!data.case_is_final;
+            const thisRecordIsFinal = !!data.this_record_is_final;
+
+            // Toggle ON only if THIS record is the final one
+            // Lock applies if ANY record in the case is final
+            applyFinalToggleState(thisRecordIsFinal, caseIsFinal);
+            
         }
 
-        // Safely set health worker data
         if (data.healthWorker && typeof data.healthWorker === "object") {
-            const handledByElement = document.getElementById(
+            const handledByEl = document.getElementById(
                 "edit_check_up_handled_by",
             );
-            if (handledByElement) {
-                handledByElement.value = data.healthWorker.full_name ?? "";
-            } else {
-                // console.warn("Element not found: edit_check_up_handled_by");
-            }
+            if (handledByEl)
+                handledByEl.value = data.healthWorker.full_name ?? "";
 
-            const workerIdElement = document.getElementById(
-                "edit_health_worker_id",
-            );
-            if (workerIdElement) {
-                workerIdElement.value = data.healthWorker.user_id || "";
-            } else {
-                // console.warn('Element not found: edit_health_worker_id');
-            }
-        } else {
-            // console.warn("No healthWorker info in response");
+            const workerIdEl = document.getElementById("edit_health_worker_id");
+            if (workerIdEl) workerIdEl.value = data.healthWorker.user_id || "";
         }
 
         const checkup_blood_pressure = document.getElementById(
@@ -538,130 +575,114 @@ document.addEventListener("click", async function (e) {
             );
         }
 
-        // Store the ID for update
         medicalId = checkupId;
+
+        const editModal = document.getElementById("checkUpModal");
+        if (editModal) {
+            bootstrap.Modal.getOrCreateInstance(editModal).show();
+        }
     } catch (error) {
         console.error("Error fetching checkup data:", error);
         alert(`Failed to load checkup data: ${error.message}`);
     }
 });
 
+// ============================================================================
+// SAVE (UPDATE) BUTTON
+// ============================================================================
+
 const updateBTN = document.getElementById("edit-check-up-save-btn");
 
 updateBTN.addEventListener("click", async (e) => {
     e.preventDefault();
 
-     const originalText = updateBTN.innerHTML;
-     updateBTN.disabled = true;
-     updateBTN.innerHTML =
-         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+    const originalText = updateBTN.innerHTML;
+    updateBTN.disabled = true;
+    updateBTN.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
     try {
+        const form = document.getElementById("edit-check-up-form");
+        const formData = new FormData(form);
 
-         const form = document.getElementById("edit-check-up-form");
-         const formData = new FormData(form);
+        const response = await fetch(`/update/prenatal-check-up/${medicalId}`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
 
-         // for (const [key, value] of formData.entries()) {
-         //     console.log(key, value);
-        // }
-        
+        const data = await response.json();
+        const errorElements = document.querySelectorAll(".error-text");
 
-       
+        if (!response.ok) {
+            errorElements.forEach((el) => (el.textContent = ""));
 
-         const response = await fetch(
-             `/update/prenatal-check-up/${medicalId}`,
-             {
-                 method: "POST",
-                 headers: {
-                     "X-CSRF-TOKEN": document.querySelector(
-                         'meta[name="csrf-token"]',
-                     ).content,
-                     Accept: "application/json",
-                 },
-                 body: formData,
-             },
-         );
+            Object.entries(data.errors).forEach(([key, value]) => {
+                const errorEl = document.getElementById(`${key}_error`);
+                if (errorEl && value != null) errorEl.innerHTML = value;
+            });
 
-         const data = await response.json();
+            if (data.errors?.is_final) {
+                const isFinalError = document.getElementById("is_final_error");
+                if (isFinalError) {
+                    isFinalError.textContent = Array.isArray(
+                        data.errors.is_final,
+                    )
+                        ? data.errors.is_final[0]
+                        : data.errors.is_final;
+                }
+            }
 
-         const errorElements = document.querySelectorAll(".error-text");
-         if (!response.ok) {
-             // reset the error element text first
-             errorElements.forEach((element) => {
-                 element.textContent = "";
-             });
-             // if there's an validation error load the error text
-             Object.entries(data.errors).forEach(([key, value]) => {
-                 if (document.getElementById(`${key}_error`) && value != null) {
-                     document.getElementById(`${key}_error`).innerHTML = value;
-                 }
-             });
+            const message = data.errors
+                ? Object.values(data.errors).flat().join("\n")
+                : "An unexpected error occurred.";
 
-             let message = "";
+            Swal.fire({
+                title: "Prenatal Patient",
+                text: capitalizeEachWord(message),
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            });
 
-             if (data.errors) {
-                 if (typeof data.errors == "object") {
-                     message = Object.values(data.errors).flat().join("\n");
-                 } else {
-                     message = data.errors;
-                 }
-             } else {
-                 message = "An unexpected error occurred.";
-             }
+            updateBTN.disabled = false;
+            updateBTN.innerHTML = originalText;
+        } else {
+            errorElements.forEach((el) => (el.textContent = ""));
 
-             Swal.fire({
-                 title: "Prenatal Patient",
-                 text: capitalizeEachWord(message), // this will make the text capitalize each word
-                 icon: "error",
-                 confirmButtonColor: "#3085d6",
-                 confirmButtonText: "OK",
-             });
-         } else {
-             // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
-            
-             errorElements.forEach((element) => {
-                 element.textContent = "";
-             });
-             Swal.fire({
-                 title: "Prenatal check-Up Info",
-                 text: data.message,
-                 icon: "success",
-                 confirmButtonColor: "#3085d6",
-                 confirmButtonText: "OK",
-             }).then((result) => {
-                 updateBTN.disabled = false;
-                 updateBTN.innerHTML = originalText;
+            Swal.fire({
+                title: "Prenatal Check-Up Info",
+                text: data.message,
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                updateBTN.disabled = false;
+                updateBTN.innerHTML = originalText;
 
-                  if (result.isConfirmed) {
-                      const modal = bootstrap.Modal.getInstance(
-                          document.getElementById("checkUpModal"),
-                      );
-                      modal.hide();
-                  }
+                if (result.isConfirmed) {
+                    bootstrap.Modal.getInstance(
+                        document.getElementById("checkUpModal"),
+                    )?.hide();
+                }
 
                 Livewire.dispatch("prenatalRefreshTable");
-                     
-             });
-         }
-
-
-        
+            });
+        }
     } catch (error) {
-         console.error(error);
-         // Re-enable button on network/JS error
-         updateBTN.disabled = false;
-         updateBTN.innerHTML = originalText;
+        console.error(error);
+        updateBTN.disabled = false;
+        updateBTN.innerHTML = originalText;
     }
-
-   
 });
-function capitalizeEachWord(str) {
-    return str.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-// remove icon
 
 // ============================================================================
-// ARCHIVE BUTTON - Event Delegation (Works with Livewire)
+// ARCHIVE BUTTON - Event Delegation
 // ============================================================================
 
 document.addEventListener("click", async function (e) {
@@ -670,7 +691,6 @@ document.addEventListener("click", async function (e) {
 
     const caseId = archiveBtn.dataset.caseId;
 
-    // Validate case ID
     if (!caseId || caseId === "undefined" || caseId === "null") {
         console.error("Invalid case ID:", caseId);
         alert("Unable to archive: Invalid ID");
@@ -690,12 +710,9 @@ document.addEventListener("click", async function (e) {
 
         if (!result.isConfirmed) return;
 
-        // console.log('Archiving case ID:', caseId);
-
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
+        if (!csrfToken)
             throw new Error("CSRF token not found. Please refresh the page.");
-        }
 
         const response = await fetch(`/prenatal/check-up/delete/${caseId}`, {
             method: "POST",
@@ -712,18 +729,12 @@ document.addEventListener("click", async function (e) {
             );
         }
 
-        // Success - refresh table
         if (typeof Livewire !== "undefined") {
             Livewire.dispatch("prenatalRefreshTable");
         }
 
-        // Remove the row from DOM
-        const row = archiveBtn.closest("tr");
-        if (row) {
-            row.remove();
-        }
+        archiveBtn.closest("tr")?.remove();
 
-        // Show success message
         Swal.fire({
             title: "Archived!",
             text: "The prenatal check-up record has been archived.",
@@ -740,3 +751,11 @@ document.addEventListener("click", async function (e) {
         });
     }
 });
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
+function capitalizeEachWord(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

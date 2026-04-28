@@ -832,57 +832,66 @@ if (updateBTN) {
 const prentalCheckUpBTN = document.getElementById("prenatal_check_up_add_btn");
 const uploadBTN = document.getElementById("check-up-save-btn");
 
-prentalCheckUpBTN.addEventListener("click", async (e) => {
-    const medicalId = e.target.dataset.bsMedicalRecordId;
-    uploadBTN.dataset.bsMedicalRecordId = medicalId;
+if (prentalCheckUpBTN) {
+    prentalCheckUpBTN.addEventListener("click", async (e) => {
+        const medicalId = e.target.dataset.bsMedicalRecordId;
+        uploadBTN.dataset.bsMedicalRecordId = medicalId;
 
-    const errors = document.querySelectorAll(".error-text");
-    errors.forEach((error) => (error.innerHTML = ""));
+        const errors = document.querySelectorAll(".error-text");
+        errors.forEach((error) => (error.innerHTML = ""));
 
-    const response = await fetch(`/patient-record/view-details/${medicalId}`);
-    const data = await response.json();
-
-    const patient_name = document.getElementById("check_up_patient_name");
-    const handled_by = document.getElementById("check_up_handled_by");
-    const healthworkerId = document.getElementById("health_worker_id");
-    const hiddenPatientName = document.getElementById(
-        "hidden_check_up_patient_name",
-    );
-
-    patient_name.value = data.prenatalRecord.patient.full_name ?? "";
-    handled_by.value = data.healthWorker.full_name ?? "";
-    healthworkerId.value = data.healthWorker.user_id;
-    hiddenPatientName.value = data.prenatalRecord.patient.full_name;
-
-    const checkup_blood_pressure = document.getElementById(
-        "check_up_blood_pressure",
-    );
-    const checkup_temperature = document.getElementById("check_up_temperature");
-    const checkup_respiratory_rate = document.getElementById(
-        "check_up_respiratory_rate",
-    );
-    const checkup_pulse_rate = document.getElementById("check_up_pulse_rate");
-    const checkup_height = document.getElementById("check_up_height");
-    const checkup_weight = document.getElementById("check_up_weight");
-
-    if (
-        checkup_blood_pressure &&
-        checkup_temperature &&
-        checkup_height &&
-        checkup_weight &&
-        checkup_respiratory_rate &&
-        checkup_pulse_rate
-    ) {
-        vitalSignInputMask(
-            checkup_blood_pressure,
-            checkup_temperature,
-            checkup_pulse_rate,
-            checkup_respiratory_rate,
-            checkup_height,
-            checkup_weight,
+        const response = await fetch(
+            `/patient-record/view-details/${medicalId}`,
         );
-    }
-});
+        const data = await response.json();
+
+        const patient_name = document.getElementById("check_up_patient_name");
+        const handled_by = document.getElementById("check_up_handled_by");
+        const healthworkerId = document.getElementById("health_worker_id");
+        const hiddenPatientName = document.getElementById(
+            "hidden_check_up_patient_name",
+        );
+
+        patient_name.value = data.prenatalRecord.patient.full_name ?? "";
+        handled_by.value = data.healthWorker.full_name ?? "";
+        healthworkerId.value = data.healthWorker.user_id;
+        hiddenPatientName.value = data.prenatalRecord.patient.full_name;
+
+        const checkup_blood_pressure = document.getElementById(
+            "check_up_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "check_up_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "check_up_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "check_up_pulse_rate",
+        );
+        const checkup_height = document.getElementById("check_up_height");
+        const checkup_weight = document.getElementById("check_up_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
+        }
+    });
+}
+
 
 // upload the information to the database
 uploadBTN.addEventListener("click", async (e) => {

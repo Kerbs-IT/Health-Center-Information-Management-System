@@ -2246,79 +2246,99 @@ class FamilyPlanningController extends Controller
                 'side_b_method_accepted'                                 => 'required|string',
                 'add_side_b_signature_image'                             => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_signature_data'                              => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit'                         => 'required|date|after_or_equal:today',
+                'side_b_date_of_follow_up_visit'                         => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
                 'baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question'                             => 'sometimes|nullable|string',
                 'menstrual_period_in_seven_days_question'                => 'sometimes|nullable|string',
                 'miscarriage_or_abortion_question'                       => 'sometimes|nullable|string',
                 'contraceptive_question'                                 => 'sometimes|nullable|string',
+                'is_final'                                               => 'required|in:0,1',
             ], [
-                'side_b_medical_record_case_id.required'                          => 'The medical record case is required.',
-                'side_b_health_worker_id.required'                                => 'Please select the health worker assigned to this record.',
-                'side_b_date_of_visit.required'                                   => 'The date of visit is required.',
-                'side_b_date_of_visit.date'                                       => 'Please enter a valid date of visit.',
-                'side_b_date_of_visit.before_or_equal'                            => 'The date of visit cannot be a future date.',
-                'side_b_method_accepted.required'                                 => 'Please specify the method accepted.',
-                'side_b_method_accepted.string'                                   => 'The method accepted must be a valid text value.',
-                'add_side_b_signature_image.image'                                => 'The signature must be an image file.',
-                'add_side_b_signature_image.mimes'                                => 'The signature must be a jpg, jpeg, or png file.',
-                'add_side_b_signature_image.max'                                  => 'The signature may not exceed :max kilobytes.',
-                'side_b_date_of_follow_up_visit.required'                         => 'The follow up visit date is required.',
-                'side_b_date_of_follow_up_visit.date'                             => 'Please enter a valid follow up visit date.',
-                'side_b_date_of_follow_up_visit.after_or_equal'                   => 'The follow up visit date must be today or a future date.',
-                'baby_Less_than_six_months_question.string'                       => 'The baby less than six months field must be a valid text value.',
-                'sexual_intercouse_or_mesntrual_period_question.string'           => 'The sexual intercourse or menstrual period field must be a valid text value.',
-                'baby_last_4_weeks_question.string'                               => 'The baby last 4 weeks field must be a valid text value.',
-                'menstrual_period_in_seven_days_question.string'                  => 'The menstrual period in seven days field must be a valid text value.',
-                'miscarriage_or_abortion_question.string'                         => 'The miscarriage or abortion field must be a valid text value.',
+                'side_b_medical_record_case_id.required'                 => 'The medical record case is required.',
+                'side_b_health_worker_id.required'                       => 'Please select the health worker assigned to this record.',
+                'side_b_date_of_visit.required'                          => 'The date of visit is required.',
+                'side_b_date_of_visit.date'                              => 'Please enter a valid date of visit.',
+                'side_b_date_of_visit.before_or_equal'                   => 'The date of visit cannot be a future date.',
+                'side_b_method_accepted.required'                        => 'Please specify the method accepted.',
+                'side_b_method_accepted.string'                          => 'The method accepted must be a valid text value.',
+                'add_side_b_signature_image.image'                       => 'The signature must be an image file.',
+                'add_side_b_signature_image.mimes'                       => 'The signature must be a jpg, jpeg, or png file.',
+                'add_side_b_signature_image.max'                         => 'The signature may not exceed :max kilobytes.',
+                'side_b_date_of_follow_up_visit.required'                => 'The follow up visit date is required.',
+                'side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
+                'side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'is_final.required'                                      => 'The final record field is required.',
+                'is_final.in'                                            => 'The final record field must be 0 or 1.',
             ]);
+
+            // Guard: block add if any record in this case is already marked final
+            $caseId = $data['side_b_medical_record_case_id'];
+            $alreadyFinal = family_planning_side_b_records::where('medical_record_case_id', $caseId)
+                ->where('is_final', true)
+                ->where('status', 'Active')
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case has already been closed. No new records can be added.'],
+                    ],
+                ], 422);
+            }
+
             $sideBsignaturePath = null;
 
-            // If user uploaded an image file
             if ($request->hasFile('add_side_b_signature_image')) {
                 $sideBsignaturePath = $this->compressAndSaveSignature($request->file('add_side_b_signature_image'));
-            }
-            // If user drew a signature
-            else if ($request->filled('add_side_b_signature_data')) {
+            } elseif ($request->filled('add_side_b_signature_data')) {
                 $sideBsignaturePath = $this->saveCanvasSignature($request->add_side_b_signature_data);
             }
 
-            // add the data
             family_planning_side_b_records::create([
-                'medical_record_case_id' => $data['side_b_medical_record_case_id'],
-                'health_worker_id' => $data['side_b_health_worker_id'],
-                'date_of_visit' => $data['side_b_date_of_visit'] ?? null,
-                'medical_findings' => $data['side_b_medical_findings'] ?? null,
-                'method_accepted' => $data['side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $sideBsignaturePath ?? null,
-                'date_of_follow_up_visit' => $data['side_b_date_of_follow_up_visit'] ?? null,
-                'baby_Less_than_six_months_question' => $data['baby_Less_than_six_months_question'] ?? null,
-                'sexual_intercouse_or_mesntrual_period_question' => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
-                'baby_last_4_weeks_question' => $data['baby_last_4_weeks_question'] ?? null,
-                'menstrual_period_in_seven_days_question' => $data['menstrual_period_in_seven_days_question'] ?? null,
-                'miscarriage_or_abortion_question' => $data['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['contraceptive_question'] ?? null,
-                'status' => 'Active'
-
+                'medical_record_case_id'                            => $data['side_b_medical_record_case_id'],
+                'health_worker_id'                                  => $data['side_b_health_worker_id'],
+                'date_of_visit'                                     => $data['side_b_date_of_visit'] ?? null,
+                'medical_findings'                                  => $data['side_b_medical_findings'] ?? null,
+                'method_accepted'                                   => $data['side_b_method_accepted'] ?? null,
+                'signature_of_the_provider'                         => $sideBsignaturePath ?? null,
+                'date_of_follow_up_visit'                           => $data['side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question'                => $data['baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question'    => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question'                        => $data['baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question'           => $data['menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question'                  => $data['miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question'                            => $data['contraceptive_question'] ?? null,
+                'is_final'                                          => (bool) $data['is_final'],
+                'status'                                            => 'Active',
             ]);
+
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Added'], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
     public function sideBrecords($id)
     {
         try {
             $sideBrecord = family_planning_side_b_records::findorFail($id);
+            // case_is_final: true if ANY active record in this case has is_final = true
+            $caseIsFinal = family_planning_side_b_records::where('medical_record_case_id', $sideBrecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->where('status', 'Active')
+                ->exists();
 
-            return response()->json(['sideBrecord' => $sideBrecord], 200);
+            return response()->json([
+                'sideBrecord'          => $sideBrecord,
+                'case_is_final'        => $caseIsFinal,
+                'this_record_is_final' => (bool) $sideBrecord->is_final,
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -2330,6 +2350,7 @@ class FamilyPlanningController extends Controller
     {
         try {
             $sideBrecord = family_planning_side_b_records::findOrFail($id);
+
             $data = $request->validate([
                 'edit_side_b_medical_record_case_id'                          => 'required',
                 'edit_side_b_health_worker_id'                                => 'required',
@@ -2338,46 +2359,59 @@ class FamilyPlanningController extends Controller
                 'edit_side_b_method_accepted'                                 => 'required|string',
                 'edit_side_b_signature_image'                                 => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'edit_side_b_signature_data'                                  => 'sometimes|nullable|string',
-                'edit_side_b_date_of_follow_up_visit'                         => 'sometimes|nullable|date|after_or_equal:today',
+                'edit_side_b_date_of_follow_up_visit'                         => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
                 'edit_baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
                 'edit_sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
                 'edit_baby_last_4_weeks_question'                             => 'sometimes|nullable|string',
                 'edit_menstrual_period_in_seven_days_question'                => 'sometimes|nullable|string',
                 'edit_miscarriage_or_abortion_question'                       => 'sometimes|nullable|string',
                 'edit_contraceptive_question'                                 => 'sometimes|nullable|string',
+                'is_final'                                                    => 'required|in:0,1',
             ], [
-                'edit_side_b_medical_record_case_id.required'                          => 'The medical record case is required.',
-                'edit_side_b_health_worker_id.required'                                => 'Please select the health worker assigned to this record.',
-                'edit_side_b_date_of_visit.required'                                   => 'The date of visit is required.',
-                'edit_side_b_date_of_visit.date'                                       => 'Please enter a valid date of visit.',
-                'edit_side_b_date_of_visit.before_or_equal'                            => 'The date of visit cannot be a future date.',
-                'edit_side_b_method_accepted.required'                                 => 'Please specify the method accepted.',
-                'edit_side_b_method_accepted.string'                                   => 'The method accepted must be a valid text value.',
-                'edit_side_b_signature_image.image'                                    => 'The signature must be an image file.',
-                'edit_side_b_signature_image.mimes'                                    => 'The signature must be a jpg, jpeg, or png file.',
-                'edit_side_b_signature_image.max'                                      => 'The signature may not exceed :max kilobytes.',
-                'edit_side_b_date_of_follow_up_visit.date'                             => 'Please enter a valid follow up visit date.',
-                'edit_side_b_date_of_follow_up_visit.after_or_equal'                   => 'The follow up visit date must be today or a future date.',
-                'edit_baby_Less_than_six_months_question.string'                       => 'The baby less than six months field must be a valid text value.',
-                'edit_sexual_intercouse_or_mesntrual_period_question.string'           => 'The sexual intercourse or menstrual period field must be a valid text value.',
-                'edit_baby_last_4_weeks_question.string'                               => 'The baby last 4 weeks field must be a valid text value.',
-                'edit_menstrual_period_in_seven_days_question.string'                  => 'The menstrual period in seven days field must be a valid text value.',
-                'edit_miscarriage_or_abortion_question.string'                         => 'The miscarriage or abortion field must be a valid text value.',
+                'edit_side_b_medical_record_case_id.required'                 => 'The medical record case is required.',
+                'edit_side_b_health_worker_id.required'                       => 'Please select the health worker assigned to this record.',
+                'edit_side_b_date_of_visit.required'                          => 'The date of visit is required.',
+                'edit_side_b_date_of_visit.date'                              => 'Please enter a valid date of visit.',
+                'edit_side_b_date_of_visit.before_or_equal'                   => 'The date of visit cannot be a future date.',
+                'edit_side_b_method_accepted.required'                        => 'Please specify the method accepted.',
+                'edit_side_b_method_accepted.string'                          => 'The method accepted must be a valid text value.',
+                'edit_side_b_signature_image.image'                           => 'The signature must be an image file.',
+                'edit_side_b_signature_image.mimes'                           => 'The signature must be a jpg, jpeg, or png file.',
+                'edit_side_b_signature_image.max'                             => 'The signature may not exceed :max kilobytes.',
+                'edit_side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
+                'edit_side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'is_final.required'                                           => 'The final record field is required.',
+                'is_final.in'                                                 => 'The final record field must be 0 or 1.',
             ]);
+
+            // Guard: only the latest active record may be marked as final
+            if ((bool) $data['is_final']) {
+                $latestRecord = family_planning_side_b_records::where('medical_record_case_id', $sideBrecord->medical_record_case_id)
+                    ->where('status', 'Active')
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                if ($latestRecord && $latestRecord->id !== $sideBrecord->id) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as final.'],
+                        ],
+                    ], 422);
+                }
+            }
 
             $signaturePath = $sideBrecord->signature_of_the_provider;
 
-            // Check if new signature provided (drawn)
             if ($request->filled('edit_side_b_signature_data')) {
-                // Delete old file if exists
                 if ($sideBrecord->signature_of_the_provider) {
                     Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
                 }
                 $signaturePath = $this->saveCanvasSignature($request->edit_side_b_signature_data);
-            }
-            // Check if new signature provided (uploaded)
-            else if ($request->hasFile('edit_side_b_signature_image')) {
-                // Delete old file if exists
+            } elseif ($request->hasFile('edit_side_b_signature_image')) {
                 if ($sideBrecord->signature_of_the_provider) {
                     Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
                 }
@@ -2385,31 +2419,28 @@ class FamilyPlanningController extends Controller
             }
 
             $sideBrecord->update([
-                'medical_record_case_id' => $data['edit_side_b_medical_record_case_id'],
-                'health_worker_id' => $data['edit_side_b_health_worker_id'],
-                'date_of_visit' => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
-                'medical_findings' => $data['edit_side_b_medical_findings'] ?? null,
-                'method_accepted' => $data['edit_side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $signaturePath ?? $sideBrecord->signature_of_the_provider,
-                'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? null,
-                'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? null,
-                'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? null,
-                'baby_last_4_weeks_question' => $data['edit_baby_last_4_weeks_question'] ?? null,
-                'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? null,
-                'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['edit_contraceptive_question'] ?? null,
-                'status' => 'Active'
+                'medical_record_case_id'                            => $data['edit_side_b_medical_record_case_id'],
+                'health_worker_id'                                  => $data['edit_side_b_health_worker_id'],
+                'date_of_visit'                                     => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
+                'medical_findings'                                  => $data['edit_side_b_medical_findings'] ?? null,
+                'method_accepted'                                   => $data['edit_side_b_method_accepted'] ?? null,
+                'signature_of_the_provider'                         => $signaturePath,
+                'date_of_follow_up_visit'                           => $data['edit_side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question'                => $data['edit_baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question'    => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question'                        => $data['edit_baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question'           => $data['edit_menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question'                  => $data['edit_miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question'                            => $data['edit_contraceptive_question'] ?? null,
+                'is_final'                                          => (bool) $data['is_final'],
+                'status'                                            => 'Active',
             ]);
 
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Updated'], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
     public function removeRecord($type_of_record, $id)

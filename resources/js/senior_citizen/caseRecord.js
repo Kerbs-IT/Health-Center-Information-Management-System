@@ -45,6 +45,99 @@ window.syncEditEndDateMin = function (dateVal) {
 };
 
 // ---------------------------------------------------------------------------
+// IS_FINAL TOGGLE — EDIT MODAL
+// ---------------------------------------------------------------------------
+
+function applyEditFinalToggleState(isFinal, lockToggle = false) {
+    const toggle = document.getElementById("edit_is_final_toggle");
+    const hiddenInput = document.getElementById("edit_is_final_hidden");
+    const warning = document.getElementById("edit_is_final_warning");
+    const dateWrapper = document.getElementById("edit_comeback_wrapper");
+    const dateInput = document.getElementById("edit_date_of_comeback");
+
+    if (!toggle || !hiddenInput) return;
+
+    toggle.checked = isFinal;
+    hiddenInput.value = isFinal ? "1" : "0";
+
+    if (warning) warning.classList.toggle("d-none", !isFinal);
+
+    if (dateWrapper) {
+        dateWrapper.style.opacity = isFinal ? "0.45" : "1";
+        dateWrapper.style.pointerEvents = isFinal ? "none" : "auto";
+    }
+
+    if (dateInput) {
+        if (isFinal) {
+            dateInput.setAttribute("readonly", "readonly");
+        } else {
+            dateInput.removeAttribute("readonly");
+        }
+    }
+
+    if (lockToggle) {
+        toggle.disabled = true;
+
+        const form = document.getElementById("edit-senior-citizen-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                if (el.id === "edit_date_of_comeback") {
+                    el.setAttribute("readonly", "readonly");
+                    return;
+                }
+                el.disabled = true;
+            });
+        }
+
+        const saveBtn = document.getElementById("edit-save-btn");
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Record Locked
+            `;
+        }
+    } else {
+        toggle.disabled = false;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const editToggle = document.getElementById("edit_is_final_toggle");
+    if (editToggle) {
+        editToggle.addEventListener("change", function () {
+            applyEditFinalToggleState(this.checked, false);
+        });
+    }
+});
+
+// Reset EDIT modal when it closes
+document
+    .getElementById("editSeniorCitizenModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const form = document.getElementById("edit-senior-citizen-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                el.disabled = false;
+                el.removeAttribute("readonly");
+            });
+        }
+
+        const saveBtn = document.getElementById("edit-save-btn");
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = "Save Record";
+        }
+
+        applyEditFinalToggleState(false, false);
+
+        const isFinalError = document.getElementById("edit_is_final_error");
+        if (isFinalError) isFinalError.textContent = "";
+    });
+
+// ---------------------------------------------------------------------------
 // VIEW case
 // ---------------------------------------------------------------------------
 
@@ -231,6 +324,11 @@ document.addEventListener("click", async function (e) {
                 }
             });
         }
+
+        // Apply is_final toggle state
+        const caseIsFinal = !!data.case_is_final;
+        const thisRecordIsFinal = !!data.this_record_is_final;
+        applyEditFinalToggleState(thisRecordIsFinal, caseIsFinal);
 
         const editTableBody = document.getElementById("edit-tbody");
         if (!editTableBody) throw new Error("Table element not found");
@@ -451,6 +549,19 @@ if (saveBtn) {
                                 : value;
                     });
 
+                    if (data.errors?.is_final) {
+                        const isFinalError = document.getElementById(
+                            "edit_is_final_error",
+                        );
+                        if (isFinalError) {
+                            isFinalError.textContent = Array.isArray(
+                                data.errors.is_final,
+                            )
+                                ? data.errors.is_final[0]
+                                : data.errors.is_final;
+                        }
+                    }
+
                     await Swal.fire({
                         title: "Update Senior Citizen Medicine Maintenance Record",
                         html: Object.values(data.errors)
@@ -484,6 +595,10 @@ if (saveBtn) {
                         if (modal) modal.hide();
                     }
                 });
+
+                if (typeof Livewire !== "undefined") {
+                    Livewire.dispatch("seniorCitizenRefreshTable");
+                }
             }
         } catch (error) {
             console.error("Error updating record:", error);

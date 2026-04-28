@@ -189,6 +189,7 @@ class RecordsTable extends Component
             'tb-dots' => 'Tb dots',
             'prenatal' => 'Prenatal',
             'senior-citizen' => 'Senior Citizen',
+            'general-consultation' => 'General Consultation'
             
         ];
 

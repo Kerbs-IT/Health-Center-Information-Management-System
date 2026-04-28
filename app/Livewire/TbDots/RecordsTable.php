@@ -135,7 +135,6 @@ class RecordsTable extends Component
     private function calculateCheckupStatus($medicalRecordCase)
     {
         try {
-            // Get the most recent active checkup with comeback date
             $lastCheckup = DB::table('tb_dots_check_ups')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -143,19 +142,16 @@ class RecordsTable extends Component
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            // No checkup history = no status
             if (!$lastCheckup) {
                 return null;
             }
 
             $comebackDate = Carbon::parse($lastCheckup->date_of_comeback);
 
-            // Only process if comeback date is today or past
             if ($comebackDate->isFuture()) {
                 return null;
             }
 
-            // Check if checkup already done for this comeback date
             $checkupExists = DB::table('tb_dots_check_ups')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -167,7 +163,8 @@ class RecordsTable extends Component
                 return null;
             }
 
-            // Determine status
+            $isFinal = (bool) $lastCheckup->is_final;
+
             if ($comebackDate->isToday()) {
                 return [
                     'status'        => 'due_today',
@@ -178,6 +175,10 @@ class RecordsTable extends Component
                     'sort_priority' => 2,
                 ];
             } else {
+                if ($isFinal) {
+                    return null;
+                }
+
                 $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
 
                 return [

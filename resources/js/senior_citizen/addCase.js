@@ -143,6 +143,53 @@ if (addTableBody) {
 syncNoRecordRow(addTableBody, "add-no-medication-row");
 
 // ---------------------------------------------------------------------------
+// IS_FINAL TOGGLE — ADD MODAL
+// ---------------------------------------------------------------------------
+
+function applyAddFinalToggleState(isFinal) {
+    const hiddenInput = document.getElementById("add_is_final_hidden");
+    const warning = document.getElementById("add_is_final_warning");
+    const dateWrapper = document.getElementById("add_comeback_wrapper");
+    const dateInput = document.getElementById("add_date_of_comeback");
+    const requiredStar = document.getElementById("add_comeback_required_star");
+
+    if (!hiddenInput) return;
+
+    hiddenInput.value = isFinal ? "1" : "0";
+
+    if (warning) warning.classList.toggle("d-none", !isFinal);
+
+    if (dateWrapper) {
+        dateWrapper.style.opacity = isFinal ? "0.45" : "1";
+        dateWrapper.style.pointerEvents = isFinal ? "none" : "auto";
+    }
+
+    if (dateInput) dateInput.disabled = isFinal;
+
+    if (requiredStar) requiredStar.style.display = isFinal ? "none" : "inline";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const addToggle = document.getElementById("add_is_final_toggle");
+    if (addToggle) {
+        addToggle.addEventListener("change", function () {
+            applyAddFinalToggleState(this.checked);
+        });
+    }
+});
+
+// Reset ADD modal when it closes
+document
+    .getElementById("vaccinationModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const addToggle = document.getElementById("add_is_final_toggle");
+        if (addToggle) addToggle.checked = false;
+        applyAddFinalToggleState(false);
+        const addError = document.getElementById("add_is_final_error");
+        if (addError) addError.textContent = "";
+    });
+
+// ---------------------------------------------------------------------------
 // Save new case record
 // ---------------------------------------------------------------------------
 
@@ -191,6 +238,18 @@ if (saveBtn) {
                                 ? value[0]
                                 : value;
                     });
+
+                    if (data.errors?.is_final) {
+                        const isFinalError =
+                            document.getElementById("add_is_final_error");
+                        if (isFinalError) {
+                            isFinalError.textContent = Array.isArray(
+                                data.errors.is_final,
+                            )
+                                ? data.errors.is_final[0]
+                                : data.errors.is_final;
+                        }
+                    }
 
                     await Swal.fire({
                         title: "Add new Medicine Maintenance Record",

@@ -12,18 +12,39 @@ use Livewire\WithPagination;
 class PatientCaseTable extends Component
 {
     use WithPagination;
+
     public $medicalRecordCaseId;
+
     // for sorting
     public $sortField = 'created_at';
     public $sortDirection = 'asc';
 
-    // Optional: listen to events for add/edit/archive
-    protected $listeners = ['familyPlanningRefreshTable' => '$refresh'];
+    // Listen for refresh event
+    protected $listeners = ['familyPlanningRefreshTable' => 'refreshTable'];
     protected $paginationTheme = 'bootstrap';
+
+    public bool $hasFinalRecord = false;
+
     public function mount($medicalRecordCaseId)
     {
-        $this->$medicalRecordCaseId = $medicalRecordCaseId; // THIS catches the ID from URL
+        $this->medicalRecordCaseId = $medicalRecordCaseId; // fixed: was $this->$medicalRecordCaseId
+        $this->checkFinalRecord();
     }
+
+    private function checkFinalRecord(): void
+    {
+        $this->hasFinalRecord = family_planning_side_b_records::where('medical_record_case_id', $this->medicalRecordCaseId)
+            ->where('is_final', true)
+            ->where('status', '!=', 'Archived')
+            ->exists();
+    }
+
+    public function refreshTable(): void
+    {
+        $this->checkFinalRecord();
+        // Livewire re-renders automatically after this
+    }
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -33,41 +54,44 @@ class PatientCaseTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+
     public function render()
     {
         $familyPlanningCases = family_planning_case_records::where('medical_record_case_id', $this->medicalRecordCaseId)
             ->where('status', '!=', 'Archived')
             ->latest()
             ->get();
+
         $familyPlanningSideB = family_planning_side_b_records::where('medical_record_case_id', $this->medicalRecordCaseId)
             ->where('status', '!=', 'Archived')
             ->latest()
             ->get();
-        
-        $patientInfo = medical_record_cases::with(['family_planning_medical_record', 'patient'])->findOrFail($this->medicalRecordCaseId);
 
-        // combine them all record
+        $patientInfo = medical_record_cases::with(['family_planning_medical_record', 'patient'])
+            ->findOrFail($this->medicalRecordCaseId);
+
+        // Combine all records
         $allRecords = collect();
-        // push the familyplanningside a
-        foreach($familyPlanningCases as $record){
+
+        foreach ($familyPlanningCases as $record) {
             $allRecords->push([
-                'id' => $record->id,
+                'id'             => $record->id,
                 'type_of_record' => $record->type_of_record,
-                'created_at' => $record->created_at,
-                'status' => $record->status,
-                'record_type' => 'family_planning_side_a',
-                'data' => $record
+                'created_at'     => $record->created_at,
+                'status'         => $record->status,
+                'record_type'    => 'family_planning_side_a',
+                'data'           => $record,
             ]);
         }
-        // side b
-        foreach($familyPlanningSideB as $record){
+
+        foreach ($familyPlanningSideB as $record) {
             $allRecords->push([
-                'id' => $record->id,
+                'id'             => $record->id,
                 'type_of_record' => $record->type_of_record,
-                'created_at' => $record->created_at,
-                'status' => $record->status,
-                'record_type' => 'family_planning_side_b',
-                'data' => $record
+                'created_at'     => $record->created_at,
+                'status'         => $record->status,
+                'record_type'    => 'family_planning_side_b',
+                'data'           => $record,
             ]);
         }
 
@@ -76,7 +100,6 @@ class PatientCaseTable extends Component
         } else {
             $allRecords = $allRecords->sortByDesc('created_at');
         }
-
 
         // Manual pagination
         $perPage = 15;
@@ -89,22 +112,23 @@ class PatientCaseTable extends Component
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
+        $address = patient_addresses::where('patient_id', $patientInfo->patient->id)->first() ?? null;
 
-        $address = patient_addresses::where("patient_id", $patientInfo->patient->id)->first() ?? null;
-        return view('livewire.family-planning.patient-case-table', 
-        ['isActive' => true, 'page' => 'RECORD', 
-        'patientInfo' => $patientInfo, 
-        'medicalRecordCaseId'=> $this-> medicalRecordCaseId,
-        'address'=> $address,
-        'allRecords' => $paginatedRecords]);
-
-    }
-
-    public function exportPdf($caseId,$type)
-    {
-        return redirect()->route("family-planning-side-$type.pdf", [
-            'caseId' => $caseId, // Sends "desc"
+        return view('livewire.family-planning.patient-case-table', [
+            'isActive'            => true,
+            'page'                => 'RECORD',
+            'patientInfo'         => $patientInfo,
+            'medicalRecordCaseId' => $this->medicalRecordCaseId,
+            'address'             => $address,
+            'allRecords'          => $paginatedRecords,
+            'hasFinalRecord'      => $this->hasFinalRecord,
         ]);
     }
 
+    public function exportPdf($caseId, $type)
+    {
+        return redirect()->route("family-planning-side-$type.pdf", [
+            'caseId' => $caseId,
+        ]);
+    }
 }

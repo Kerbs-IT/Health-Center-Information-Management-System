@@ -37,12 +37,15 @@ class pregnancy_checkups extends Model
         "other_symptoms_question_remarks",
         "overall_remarks",
         'status',
-        'date_of_comeback'
+        'date_of_comeback',
+        'is_final'
     ];
 
     protected $casts = [
-        'date_of_comeback' => 'date'
+        'date_of_comeback' => 'date',
+        'is_final' => 'boolean',
     ];
+    
     public function medical_record_case()
     {
         return $this->belongsTo(medical_record_cases::class, 'medical_record_case_id', 'id');

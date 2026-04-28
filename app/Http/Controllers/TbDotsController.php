@@ -745,6 +745,18 @@ class TbDotsController extends Controller
     public function addPatientCheckUp(Request $request, $id)
     {
         try {
+            // --- BLOCK IF CASE IS ALREADY CLOSED ---
+            $alreadyFinal = tb_dots_check_ups::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case is already closed. No new records can be added.']
+                    ]
+                ], 422);
+            }
             $data = $request->validate([
                 'patient_name' => 'required|string',
                 'date_of_visit' => 'required|date|before_or_equal:today', // ← fixed
@@ -765,7 +777,11 @@ class TbDotsController extends Controller
                 'treatment_phase'        => 'sometimes|nullable|string',
                 'outcome'                => 'sometimes|nullable|string',
                 'handled_by'             => 'required',
-                'add_date_of_comeback'   => 'required|date|after_or_equal:today', // ← fixed
+                'add_date_of_comeback'   => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], // ← fixed
             ], [
                 'patient_name.required' => 'The patient name field is required.',
                 'patient_name.string'   => 'The patient name must be a string.',
@@ -790,8 +806,10 @@ class TbDotsController extends Controller
 
                 'add_date_of_comeback.required'       => 'The date of comeback field is required.',
                 'add_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
-                'add_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.', // ← added
+                'add_date_of_comeback.before_or_equal' => 'The date of comeback must be past or a 5 years from now future date.', // ← added
             ]);
+
+            $isFinal = $request->input('is_final', 0);
 
             // create the record
             $tbDotsCheckUpRecord = tb_dots_check_ups::create([
@@ -812,7 +830,8 @@ class TbDotsController extends Controller
                 'treatment_phase' => $data['treatment_phase'] ?? null,
                 'outcome' => $data['outcome'] ?? null,
                 'status' => 'Done',
-                'date_of_comeback' => $data['add_date_of_comeback']
+                'date_of_comeback' => $data['add_date_of_comeback'],
+                'is_final'=> (bool) $isFinal,
             ]);
 
             return response()->json(['message' => 'Tb Dots Patient information is added Successfully'], 200);
@@ -831,8 +850,13 @@ class TbDotsController extends Controller
     {
         try {
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
+            $case_is_final = tb_dots_check_ups::where('medical_record_case_id', $checkUpRecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->exists();
 
-            return response()->json(['checkUpInfo' => $checkUpRecord], 200);
+            return response()->json(['checkUpInfo' => $checkUpRecord,
+                'case_is_final'        => $case_is_final,
+                'this_record_is_final' => (bool) $checkUpRecord->is_final,], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -843,6 +867,23 @@ class TbDotsController extends Controller
     {
         try {
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
+            // --- FINAL TOGGLE GUARD ---
+            // If is_final is being turned on, this record MUST be the last one.
+            $isFinal = $request->input('is_final', 0);
+            if ($isFinal) {
+                $isLastRecord = !tb_dots_check_ups::where('medical_record_case_id', $checkUpRecord->medical_record_case_id)
+                    ->where('id', '>', $id)
+                    ->exists();
+
+                if (!$isLastRecord) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as the final record.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $data = $request->validate([
                 'edit_checkup_date_of_visit'          => 'required|date|before_or_equal:today', // ← fixed
                 'edit_checkup_blood_pressure' => [
@@ -861,7 +902,11 @@ class TbDotsController extends Controller
                 'edit_checkup_sputum_test_result'     => 'sometimes|nullable|string',
                 'edit_checkup_treatment_phase'        => 'sometimes|nullable|string',
                 'edit_checkup_outcome'                => 'sometimes|nullable|string',
-                'edit_date_of_comeback'               => 'required|date|after_or_equal:today', // ← fixed
+                'edit_date_of_comeback'               => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], 
             ], [
                 'edit_checkup_date_of_visit.required'       => 'The date of visit field is required.',
                 'edit_checkup_date_of_visit.date'           => 'The date of visit must be a valid date.',
@@ -892,7 +937,7 @@ class TbDotsController extends Controller
 
                 'edit_date_of_comeback.required'       => 'The date of comeback field is required.',
                 'edit_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
-                'edit_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.', // ← added
+                'edit_date_of_comeback.before_or_equal' => 'The date of comeback must be today,past or a 5 years future date.', // ← added
             ]);
 
             $checkUpRecord->update([
@@ -910,7 +955,8 @@ class TbDotsController extends Controller
                 'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? null,
                 'outcome' => $data['edit_checkup_outcome'] ?? null,
                 'status' => 'Active',
-                'date_of_comeback' => $data['edit_date_of_comeback']
+                'date_of_comeback' => $data['edit_date_of_comeback'],
+                'is_final' => (bool) $isFinal,
             ]);
             return response()->json(['message' => 'Tb Dots Patient Check-up information is updated Successfully'], 200);
         } catch (ValidationException $e) {
