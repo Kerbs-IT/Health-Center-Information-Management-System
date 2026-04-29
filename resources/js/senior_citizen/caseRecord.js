@@ -180,9 +180,9 @@ document.addEventListener("click", async (e) => {
                     const element = document.getElementById(`view_${key}`);
                     if (!element) return;
                     if (key === "date_of_comeback") {
-                        element.innerHTML = new Date(value)
-                            .toISOString()
-                            .split("T")[0];
+                        element.innerHTML = value
+                            ? String(value).slice(0, 10)
+                            : "N/A";
                     } else {
                         const safeValue =
                             value !== null && value !== undefined
@@ -314,10 +314,10 @@ document.addEventListener("click", async function (e) {
                     ) {
                         element.value = value ?? "";
                     }
-                    if (key === "date_of_comeback" && value != null) {
-                        element.value = new Date(value)
-                            .toISOString()
-                            .split("T")[0];
+                    if (key === "date_of_comeback") {
+                        element.innerHTML = value
+                            ? String(value).slice(0, 10)
+                            : "N/A";
                     }
                 } catch (fieldError) {
                     console.error(`Error setting field ${key}:`, fieldError);
