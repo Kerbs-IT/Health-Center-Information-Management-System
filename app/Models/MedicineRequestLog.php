@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class MedicineRequestLog extends Model
 {
@@ -13,14 +12,16 @@ class MedicineRequestLog extends Model
         'medicine_name',
         'dosage',
         'quantity',
+        'batches_used',
+        'action',
         'performed_by_id',
         'performed_by_name',
         'performed_at',
-        'action'
     ];
 
     protected $casts = [
         'performed_at' => 'datetime',
+        'batches_used' => 'array',
     ];
 
     public function request()

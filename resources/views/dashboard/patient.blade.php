@@ -32,7 +32,7 @@
             <div class="flex-grow-1 ">
                 @include('layout.header')
                 <main class=" mt-md-4 mt-2 d-flex align-items-center flex-column justify-content-center flex-grow-1 py-2 px-lg-5 px-md-3 px-2 overflow-x-auto">
-                    <div class="top-content d-flex w-100  shadow mb-5 rounded b patient-profile flex-lg-row flex-column">
+                    <div class="top-content d-flex w-100  shadow mb-5 rounded b patient-profile flex-lg-row flex-column bg-light">
                         <!-- Left panel -->
                         <div class="edit-profile p-3 d-flex w-[100%] lg:w-[25%] flex-column align-items-center border-lg-end border-bottom">
                             <img src="{{

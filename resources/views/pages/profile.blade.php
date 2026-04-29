@@ -32,8 +32,7 @@
                     <div class="change-pass-button w-100 d-flex justify-content-end px-4">
                         <a href="{{ route('change-pass') }}" class="btn btn-success">Change Password</a>
                     </div>
-
-                    <form action="{{ route('user.update-profile') }}" method="post" class="p-4 gap-3 w-100 flex-column flex-md-row" enctype="multipart/form-data">
+                    <form action="{{ route('user.update-profile') }}" method="post" class="p-4 gap-3 w-100 flex-column flex-md-row " enctype="multipart/form-data">
                         @csrf
                         <!-- profile image section -->
                         <div class="profile-image p-3   mb-3 d-flex flex-column align-items-center" style="min-width:280px;">

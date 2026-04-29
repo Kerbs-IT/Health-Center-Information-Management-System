@@ -1,6 +1,6 @@
 
 <div class="min-vh-100 p-lg-5 p-md-3 p-2">
-    <div class="shadow p-2">
+    <div class="shadow p-2 bg-light">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-xl-5 gap-lg-3 gap-md-2 gap-1 mb-8 mx-2 mt-2 p-1">
             <!-- Total Medicines Card -->
             <button data-bs-toggle="modal" data-bs-target="#medicineModal">
@@ -179,9 +179,14 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <a href="{{ route('download.medicine.report') }}" class="btn btn-success btn-sm me-2 ms-5" >
-                        <i class="bi bi-download"></i> Download PDF
-                    </a>
+                    <div>
+                        <a href="{{ route('download.medicine.report') }}" class="btn btn-success btn-sm me-2 ms-5" >
+                            <i class="bi bi-download"></i> Download PDF
+                        </a>
+                        <a href="{{ route('download.medicine.report.excel') }}" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </a>
+                    </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -234,9 +239,14 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <a href="{{ route('download.request.report') }}" class="btn btn-success btn-sm me-2 ms-5">
-                        <i class="bi bi-download"></i> Download PDF
-                    </a>
+                    <div>
+                        <a href="{{ route('download.request.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                            <i class="bi bi-download"></i> Download PDF
+                        </a>
+                        <a href="{{ route('download.request.report.excel') }}" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </a>
+                    </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -281,9 +291,14 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <a href="{{ route('download.distributed.report') }}" class="btn btn-success btn-sm me-2 ms-5">
-                        <i class="bi bi-download"></i> Download PDF
-                    </a>
+                    <div>
+                        <a href="{{ route('download.distributed.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                            <i class="bi bi-download"></i> Download PDF
+                        </a>
+                        <a href="{{ route('download.distributed.report.excel') }}" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </a>
+                    </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -338,9 +353,14 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <a href="{{ route('download.lowstock.report') }}" class="btn btn-success btn-sm me-2 ms-5">
-                        <i class="bi bi-download"></i> Download PDF
-                    </a>
+                    <div>
+                        <a href="{{ route('download.lowstock.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                            <i class="bi bi-download"></i> Download PDF
+                        </a>
+                        <a href="{{ route('download.lowstock.report.excel') }}" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </a>
+                    </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -395,9 +415,14 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <a href="{{ route('download.expSoon.report') }}" class="btn btn-success btn-sm me-2 ms-5">
-                        <i class="bi bi-download"></i> Download PDF
-                    </a>
+                    <div>
+                        <a href="{{ route('download.expSoon.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                            <i class="bi bi-download"></i> Download PDF
+                        </a>
+                        <a href="{{ route('download.expSoon.report.excel') }}" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                        </a>
+                    </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>

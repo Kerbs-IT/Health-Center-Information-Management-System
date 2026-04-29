@@ -97,33 +97,8 @@
             @include('layout.menuBar')
         </aside>
         <div class="flex-grow-1 overflow-x-auto">
-            <header class="d-flex align-items-center pe-3">
-                <button class="btn d-lg-block fs-6 mx-1" id="toggleSidebar" style="z-index: 100;">
-                    <i class="fa-solid fa-bars fs-2"></i>
-                </button>
-                <nav class="d-flex justify-content-between align-items-center w-100">
-                    <h1 class="mb-0">Request</h1>
-                    <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-                        <img src="{{ optional(Auth::user()->nurses)->profile_image
-                            ? asset(optional(Auth::user()->nurses)->profile_image)
-                            : (optional(Auth::user()->staff)->profile_image
-                                ? asset(optional(Auth::user()->staff)->profile_image)
-                                : asset('images/default_profile.png')) }}"
-                            alt="profile picture" class="profile-img" id="profile_img">
-                        <div class="username-n-role">
-                            <h5 class="mb-0">{{ optional(Auth::user()->nurses)->full_name
-                                ?? optional(Auth::user()->staff)->full_name
-                                ?? 'none' }}</h5>
-                            <h6 class="mb-0 text-muted fw-light">{{ Auth::user()->role ?? 'none' }}</h6>
-                        </div>
-                        <div class="links position-absolute flex-column top-20 w-100 bg-white" id="links">
-                            <a href="{{ route('page.profile') }}" class="text-decoration-none text-black">view profile</a>
-                            <a href="{{ route('logout') }}" class="text-decoration-none text-black">Logout</a>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-            {{ $slot }}
+              @include('layout.header')
+                {{ $slot }}
         </div>
     </div>
 
