@@ -180,7 +180,7 @@ document.addEventListener("click", async (e) => {
                     const element = document.getElementById(`view_${key}`);
                     if (!element) return;
                     if (key === "date_of_comeback") {
-                        element.innerHTML = value
+                        element.value = value
                             ? String(value).slice(0, 10)
                             : "N/A";
                     } else {
@@ -315,7 +315,7 @@ document.addEventListener("click", async function (e) {
                         element.value = value ?? "";
                     }
                     if (key === "date_of_comeback") {
-                        element.innerHTML = value
+                        element.value = value
                             ? String(value).slice(0, 10)
                             : "N/A";
                     }
