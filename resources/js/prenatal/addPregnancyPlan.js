@@ -1,6 +1,6 @@
 import initSignatureCapture from "../signature/signature";
 const addPregnancyPlanBtn = document.getElementById(
-    "add_pregnancy_plan_add_btn"
+    "add_pregnancy_plan_add_btn",
 );
 const pregnacyPlanSaveBtn = document.getElementById("add_pregnancy_plan_btn");
 document.addEventListener("DOMContentLoaded", function () {
@@ -12,9 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (addPregnancyPlanBtn) {
         addPregnancyPlanBtn.addEventListener("click", function (e) {
             const errors = document.querySelectorAll(".error-text");
-            errors.forEach(error => error.innerHTML = '');
+            errors.forEach((error) => (error.innerHTML = ""));
             const patientInfo = JSON.parse(
-                addPregnancyPlanBtn.dataset.patientInfo
+                addPregnancyPlanBtn.dataset.patientInfo,
             );
 
             const patientNameElement =
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const hiddenPatientName = document.getElementById(
-                "add_pregnancy_plan_patient_name"
+                "add_pregnancy_plan_patient_name",
             );
             if (hiddenPatientName) {
                 hiddenPatientName.value = patientInfo.patient.full_name;
@@ -88,7 +88,7 @@ addBtn.addEventListener("click", (e) => {
     } else {
         Swal.fire({
             title: "Adding Blood Donor Name",
-            text: "Please provide valid name.", // this will make the text capitalize each word
+            text: "Please provide valid name.",
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
@@ -117,9 +117,14 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
     // Validate case ID
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
-        alert("Unable to archive: Invalid ID");
+        alert("Unable to save: Invalid ID");
         return;
     }
+
+    const originalText = pregnacyPlanSaveBtn.innerHTML;
+    pregnacyPlanSaveBtn.disabled = true;
+    pregnacyPlanSaveBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
     try {
         const form = document.getElementById("add_pregnancy_plan_form");
@@ -139,7 +144,7 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
+                    'meta[name="csrf-token"]',
                 ).content,
                 Accept: "application/json",
             },
@@ -156,18 +161,21 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
                 element.textContent = "";
             });
             if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+                Livewire.dispatch("prenatalRefreshTable");
             }
             Swal.fire({
                 title: "Add Pregnancy Plan",
-                text: data.message, // this will make the text capitalize each word
+                text: data.message,
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             }).then((result) => {
+                pregnacyPlanSaveBtn.disabled = false;
+                pregnacyPlanSaveBtn.innerHTML = originalText;
+
                 if (result.isConfirmed) {
                     const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("addPregnancyPlanModal")
+                        document.getElementById("addPregnancyPlanModal"),
                     );
                     if (modal) {
                         modal.hide();
@@ -177,7 +185,6 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
             });
         } else {
             // reset first
-
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
@@ -203,22 +210,32 @@ pregnacyPlanSaveBtn.addEventListener("click", async (e) => {
 
             Swal.fire({
                 title: "Add Pregnancy Plan",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
+
+            // Re-enable button on validation error
+            pregnacyPlanSaveBtn.disabled = false;
+            pregnacyPlanSaveBtn.innerHTML = originalText;
         }
     } catch (error) {
         console.error("Error adding case:", error);
+
         Swal.fire({
             title: "Error",
             text: `Failed to add record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
+
+        // Re-enable button on network/JS error
+        pregnacyPlanSaveBtn.disabled = false;
+        pregnacyPlanSaveBtn.innerHTML = originalText;
     }
 });
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

@@ -33,28 +33,33 @@ const selected = dropdown.dataset.bsPurok;
 // console.log(selected);
 const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
 if (healthWorkerAssignedArea) {
-    puroks(dropdown,selected, "staff", healthWorkerAssignedArea);
+    puroks(dropdown, selected, "staff", healthWorkerAssignedArea);
 } else {
-    puroks(dropdown,selected);
+    puroks(dropdown, selected);
 }
+
 // update the record
 const updateBtn = document.getElementById("update-record-btn");
 updateBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+
+    // Store original text and disable button
+    const originalText = updateBtn.innerHTML;
+    updateBtn.disabled = true;
+    updateBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
 
     try {
         const form = document.getElementById("update-form");
         const formData = new FormData(form);
 
         const patientId = updateBtn.dataset.bsPatientId;
-        // console.log("Patient id: ", patientId);
 
-        formData.append("_method", "PUT"); // to simulate PUT if your route uses Route::put()
+        formData.append("_method", "PUT");
         const response = await fetch(`/patient-record/update/${patientId}`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
-                // Don't set Content-Type for FormData - let browser set it
                 "X-CSRF-TOKEN": document
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content"),
@@ -65,6 +70,7 @@ updateBtn.addEventListener("click", async (e) => {
         const data = await response.json();
 
         const errorElements = document.querySelectorAll(".error-text");
+
         if (response.ok) {
             errorElements.forEach((element) => {
                 element.textContent = "";
@@ -76,9 +82,13 @@ updateBtn.addEventListener("click", async (e) => {
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = originalText;
             });
         } else {
-            // reset first
+            // reset errors first
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
@@ -103,14 +113,21 @@ updateBtn.addEventListener("click", async (e) => {
 
             Swal.fire({
                 title: "Update Details",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
+                text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = originalText;
             });
         }
     } catch (error) {
         console.log("Error:", error);
+        // Re-enable button on error
+        updateBtn.disabled = false;
+        updateBtn.innerHTML = originalText;
     }
 });
 

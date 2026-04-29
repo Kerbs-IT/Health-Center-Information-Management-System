@@ -9,10 +9,8 @@ fetch("/showBrgyUnit")
     .then((data) => {
         let dropdown = document.getElementById("edit_patient_purok_dropdown");
         const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
-        // console.log(data);
         data.forEach((item) => {
             if (healthWorkerId) {
-                // this is for the health worker account to enable other option
                 if (item.id == healthWorkerId) {
                     let option = document.createElement("option");
                     option.value = item.brgy_unit;
@@ -33,10 +31,8 @@ fetch("/showBrgyUnit")
     .then((data) => {
         let dropdown = document.getElementById("patient_purok_dropdown");
         const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
-        // console.log(data);
         data.forEach((item) => {
             if (healthWorkerId) {
-                // this is for the health worker account to enable other option
                 if (item.id == healthWorkerId) {
                     let option = document.createElement("option");
                     option.value = item.brgy_unit;
@@ -51,9 +47,6 @@ fetch("/showBrgyUnit")
             }
         });
     });
-
-// add the patient account
-const addPatientSubmitBtn = document.getElementById("add-patient-submit-btn");
 
 // add new account btn
 const addModalBtn = document.getElementById("add-patient-account-modal-btn");
@@ -74,14 +67,26 @@ if (addModalBtn) {
     });
 }
 
-addPatientSubmitBtn.addEventListener("click", async (e) => {
+// ============================================ ADD PATIENT BUTTON ============================================
+// Using event delegation so we always work with the live DOM node,
+// preventing stale references caused by Livewire re-renders.
+document.addEventListener("click", async (e) => {
+    const addPatientSubmitBtn = e.target.closest("#add-patient-submit-btn");
+    if (!addPatientSubmitBtn) return;
+
     e.preventDefault();
+
+    // Store original button text and disable button
+    const originalText = addPatientSubmitBtn.innerHTML;
+    addPatientSubmitBtn.disabled = true;
+    addPatientSubmitBtn.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
     const formDataElement = document.getElementById("add-patient-form");
     const formData = new FormData(formDataElement);
 
     try {
         // errors container
-
         const fname_error = document.querySelector(".fname-error");
         const middle_initial_error = document.querySelector(
             ".middle-initial-error",
@@ -106,7 +111,7 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
         );
 
         const response = await fetch("/add-patient-account", {
-            method: "POST", // Yes, use POST
+            method: "POST",
             headers: {
                 "X-CSRF-TOKEN": document.querySelector(
                     'meta[name="csrf-token"]',
@@ -117,16 +122,15 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
         });
 
         const result = await response.json();
+
         if (!response.ok) {
             // set the errors
-
             fname_error.innerHTML = result.errors?.first_name?.[0] ?? "";
             middle_initial_error.innerHTML =
                 result.errors?.middle_initial?.[0] ?? "";
             lname_error.innerHTML = result.errors?.last_name?.[0] ?? "";
             email_error.innerHTML = result.errors?.email?.[0] ?? "";
             password_error.innerHTML = result.errors?.password?.[0] ?? "";
-
             blk_n_street_error.innerHTML =
                 result.errors?.blk_n_street?.[0] ?? "";
             purok_dropdown_error.innerHTML =
@@ -144,6 +148,10 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                addPatientSubmitBtn.disabled = false;
+                addPatientSubmitBtn.innerHTML = originalText;
             });
         } else {
             formDataElement.reset();
@@ -153,42 +161,47 @@ addPatientSubmitBtn.addEventListener("click", async (e) => {
             lname_error.innerHTML = "";
             email_error.innerHTML = "";
             password_error.innerHTML = "";
-
             blk_n_street_error.innerHTML = "";
             purok_dropdown_error.innerHTML = "";
+
             Swal.fire({
                 title: "Creation",
                 text: "Patient Account is successfully created",
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                addPatientSubmitBtn.disabled = false;
+                addPatientSubmitBtn.innerHTML = originalText;
+
+                // Dispatch Livewire AFTER SweetAlert so it doesn't
+                // re-render and replace the button mid-flight
+                if (typeof Livewire !== "undefined") {
+                    Livewire.dispatch("manageUserRefreshTable");
+                }
             });
-            // dispatch the livewire
-            if (typeof Livewire !== "undefined") {
-                Livewire.dispatch("manageUserRefreshTable");
-            } else {
-                // console.warn("Livewire is not available");
-            }
         }
     } catch (error) {
         console.log(error);
+        // Re-enable button on error
+        addPatientSubmitBtn.disabled = false;
+        addPatientSubmitBtn.innerHTML = originalText;
     }
 });
 
 // remove errors after click
-
 document.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-user-profile");
 
     if (!editBtn) return;
 
-     const errorsMessages = document.querySelectorAll(".error-element");
+    const errorsMessages = document.querySelectorAll(".error-element");
 
-     if (errorsMessages) {
-         errorsMessages.forEach((element) => (element.innerHTML = ""));
-     }
-})
-// import the address function
+    if (errorsMessages) {
+        errorsMessages.forEach((element) => (element.innerHTML = ""));
+    }
+});
 
 const submitBtn = document.getElementById("edit-user-submit-btn") ?? null;
 
@@ -206,7 +219,9 @@ document.addEventListener("click", async (e) => {
     }
 
     // set the id of the submit btn
-    submitBtn.dataset.user = id;
+    if (submitBtn) {
+        submitBtn.dataset.user = id;
+    }
     if (!id) {
         console.error("id is not provided");
         return;
@@ -224,8 +239,6 @@ document.addEventListener("click", async (e) => {
 
     // if there are no errors
     const data = await response.json();
-
-    
 
     if (data) {
         const brgy = document.getElementById("edit_patient_purok_dropdown");
@@ -248,8 +261,12 @@ document.addEventListener("click", async (e) => {
                     const img = document.getElementById("edit_profile_image");
                     const baseUrl = img.dataset.baseUrl;
 
-                    // Remove escaped slashes
                     const cleanPath = value ? value.replace(/\\/g, "") : "";
+
+                    img.onerror = function () {
+                        this.src = baseUrl + "images/default_profile.png";
+                        this.onerror = null;
+                    };
 
                     img.src = cleanPath
                         ? baseUrl + cleanPath
@@ -270,6 +287,7 @@ document.addEventListener("click", async (e) => {
 
         // provide the full name
         fullName.innerHTML = name;
+
         // populate the brgy
         const blk_n_street = [data.address?.house_number, data.address?.street]
             .filter(Boolean)
@@ -284,7 +302,6 @@ document.addEventListener("click", async (e) => {
     // Populate guardian/family members table
     populateGuardianPatients(data.guardian_patients);
 });
-
 
 //============================================== FOR GUARDIAN APPROACH ===============================================================
 function populateGuardianPatients(patients) {
@@ -305,7 +322,7 @@ function populateGuardianPatients(patients) {
             const typeOfCase =
                 patient.medical_record_case &&
                 patient.medical_record_case.length > 0
-                    ? patient.medical_record_case[0].type_of_case // Show first case
+                    ? patient.medical_record_case[0].type_of_case
                     : "N/A";
 
             return `
@@ -320,11 +337,17 @@ function populateGuardianPatients(patients) {
         .join("");
 }
 
-
-// ====================================== SHOWING THE GUARDIAN RELATIONSHIP ========================================================
+// ============================================ EDIT PATIENT BUTTON ============================================
 if (submitBtn) {
     submitBtn.addEventListener("click", async (e) => {
         e.preventDefault();
+
+        // Store original button text and disable button
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
+
         const userId = submitBtn.dataset.user;
 
         const form = document.getElementById("profile-form");
@@ -355,6 +378,10 @@ if (submitBtn) {
                     confirmButtonColor: "#3085d6",
                     confirmButtonText: "OK",
                 }).then((response) => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+
                     if (response.isConfirmed) {
                         // dismiss the modal
                         const modal =
@@ -369,8 +396,6 @@ if (submitBtn) {
                 // dispatch the livewire
                 if (typeof Livewire !== "undefined") {
                     Livewire.dispatch("manageUserRefreshTable");
-                } else {
-                    // console.warn("Livewire is not available");
                 }
             } else {
                 // handle laravel validation errors
@@ -384,6 +409,10 @@ if (submitBtn) {
                         icon: "error",
                         confirmButtonColor: "#3085d6",
                         confirmButtonText: "OK",
+                    }).then(() => {
+                        // Re-enable button AFTER SweetAlert is dismissed
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
                     });
                 }
 
@@ -395,14 +424,22 @@ if (submitBtn) {
                         icon: "error",
                         confirmButtonColor: "#d33",
                         confirmButtonText: "OK",
+                    }).then(() => {
+                        // Re-enable button AFTER SweetAlert is dismissed
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
                     });
                 }
 
                 // Clear file input
                 const imageFile = document.getElementById("fileInput");
-                imageFile.value = "";
-                document.getElementById("fileName").innerHTML =
-                    "No chosen File";
+                if (imageFile) {
+                    imageFile.value = "";
+                    const fileNameElement = document.getElementById("fileName");
+                    if (fileNameElement) {
+                        fileNameElement.innerHTML = "No chosen File";
+                    }
+                }
             }
         } catch (err) {
             Swal.fire({
@@ -411,6 +448,10 @@ if (submitBtn) {
                 icon: "error",
                 confirmButtonColor: "#d33",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             });
             console.error("Fetch error:", err);
         }
@@ -423,7 +464,6 @@ document.addEventListener("click", async (e) => {
     if (!deleteBtn) return;
     const id = deleteBtn.dataset.id;
 
-    // set the id of the submit btn
     if (!id) {
         console.error("id is not provided");
         return;
@@ -456,7 +496,6 @@ document.addEventListener("click", async (e) => {
                     if (typeof Livewire !== "undefined") {
                         Livewire.dispatch("manageUserRefreshTable");
                     }
-                    // deleteBtn.closest("tr").remove(); // remove row from table
                 } else {
                     Swal.fire("Error", "Failed to delete user.", "error");
                 }
@@ -489,7 +528,7 @@ const errorFieldMap = {
 if (resetPasswordElement) {
     resetPasswordElement.addEventListener("click", (e) => {
         const id = e.target.dataset.id;
-        const userEmail = e.target.dataset.email; // Add email to dataset
+        const userEmail = e.target.dataset.email;
 
         const profileModalEl = document.getElementById("edit-user-profile");
         const profileModal =
@@ -526,6 +565,7 @@ if (resetPasswordElement) {
         }
     });
 }
+
 function displayErrors(errors) {
     if (!errors) return;
 

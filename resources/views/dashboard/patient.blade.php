@@ -42,7 +42,7 @@
         ?? 'images/default_profile.png'
     )
 }}"
-                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;">
+                                alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
 
                             <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
@@ -249,14 +249,14 @@
                             <input type="hidden" name="typeOfPatient" value="{{$typeOfPatient??null}}">
 
                             <!-- profile image section -->
-                            <div class="profile-image p-1  mb-3 d-flex flex-column align-items-center h-100" style="min-width:280px;">
-                                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}">
+                            <div class="profile-image p-1 mb-3 d-flex flex-column align-items-center h-100" style="min-width:280px;">
+                                <img src="" alt="profile picture" class="profile-section-image" id="profile-image" data-base-url="{{ asset('') }}" onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
                                 <h3 class=""></h3>
                                 <h5 class="mb-3 text-muted text-capitalize fw-normal" id="full_name"></h5>
-                                <div class="upload-image d-flex flex-column">
-                                    <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
+                                <div class="upload-image d-flex flex-column align-items-center" style="max-width: 200px;">
+                                    <label for="fileInput" class="btn mb-2 btn-success w-100">Update Profile</label>
                                     <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
-                                    <span id="fileName" class="text-center text-muted">No file choosen</span>
+                                    <span id="fileName" class="text-center text-muted d-block text-truncate" style="max-width: 200px;">No file choosen</span>
                                     <small class="text-danger" id="image-error"></small>
                                 </div>
                             </div>
@@ -554,12 +554,35 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
+            const subMenuElement = document.querySelectorAll(".sub-menu-bar-item");
+
+            subMenuElement.forEach(element => element.classList.remove('active'));
+
             const con = document.getElementById('patient_dashboard');
 
             if (con) {
                 con.classList.add('active');
             }
         })
+
+        function showFileName(input) {
+            const fileName = input.files.length ? input.files[0].name : "No file chosen";
+            document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profile-image").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
     @endif
 </body>

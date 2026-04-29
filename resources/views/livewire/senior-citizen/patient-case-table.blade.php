@@ -10,10 +10,37 @@
                 Back
             </a>
             <div class="end-btn d-flex gap-1">
-                <button type="button" class="btn btn-success px-3 py-1" data-bs-toggle="modal" data-bs-target="#vaccinationModal" id="add_record_btn">Add Record</button>
-                <a href="{{ route('senior.citizen.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}" class="btn btn-danger d-flex align-items-center gap-1">
+
+                @if($hasFinalRecord)
+                {{-- Disabled: case is closed --}}
+                <button
+                    type="button"
+                    class="btn btn-success px-3 py-1"
+                    disabled
+                    style="opacity: 0.65; cursor: not-allowed;"
+                    title="This senior citizen case is closed. The final record has already been recorded.">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                    </svg>
+                    Add Record
+                </button>
+                @else
+                {{-- Active: can still add --}}
+                <button
+                    type="button"
+                    class="btn btn-success px-3 py-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#vaccinationModal"
+                    id="add_record_btn">
+                    Add Record
+                </button>
+                @endif
+
+                <a href="{{ route('senior.citizen.case.record.archive') }}?medical_record_id={{ $medicalRecordId }}"
+                    class="btn btn-danger d-flex align-items-center gap-1">
                     <i class="fa-solid fa-box-archive"></i> Archive
                 </a>
+
             </div>
 
         </div>

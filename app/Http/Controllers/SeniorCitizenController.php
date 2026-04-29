@@ -30,24 +30,19 @@ class SeniorCitizenController extends Controller
         $numbers = '0123456789';
         $symbols = '!@#$%^&*';
 
-        // Ensure at least one character from each set
         $password = '';
         $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
         $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
         $password .= $numbers[random_int(0, strlen($numbers) - 1)];
         $password .= $symbols[random_int(0, strlen($symbols) - 1)];
 
-        // Fill the rest randomly
         $allChars = $uppercase . $lowercase . $numbers . $symbols;
         for ($i = 4; $i < $length; $i++) {
             $password .= $allChars[random_int(0, strlen($allChars) - 1)];
         }
 
-        // Shuffle the password to randomize character positions
         return str_shuffle($password);
     }
-
-
 
     public function addPatient(Request $request)
     {
@@ -76,18 +71,14 @@ class SeniorCitizenController extends Controller
                 'sex'                  => 'required|string',
                 'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← fixed
                 'handled_by'           => 'nullable|exists:users,id',
                 'handled_by_backup'    => 'nullable|exists:users,id',
                 'street'               => 'required',
                 'brgy'                 => 'required',
                 'civil_status'         => 'sometimes|nullable|string',
                 'suffix'               => 'sometimes|nullable|string',
-
-                // Guardian account — optional, only used when notification_mode = guardian
                 'guardian_account_id'  => 'nullable|exists:users,id',
-
-                // Email: not required when guardian is linked or existing patient
                 'email' => array_filter([
                     !$request->filled('guardian_account_id') && !$request->filled('patient_id')
                         ? 'required_without:patient_id'
@@ -97,7 +88,6 @@ class SeniorCitizenController extends Controller
                         ? Rule::unique('users', 'email')
                         : null,
                 ]),
-
                 'user_account'         => 'sometimes|nullable|numeric',
             ], [
                 'patient_id.exists'                     => 'The selected patient record does not exist.',
@@ -116,15 +106,13 @@ class SeniorCitizenController extends Controller
                 'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
                 'date_of_registration.required_without' => 'The date of registration field is required.',
                 'date_of_registration.date'             => 'The date of registration must be a valid date.',
+                'date_of_registration.before_or_equal'  => 'The date of registration must be today or earlier.', // ← added
                 'handled_by.exists'                     => 'The selected health worker does not exist.',
                 'handled_by_backup.exists'              => 'The selected health worker does not exist.',
                 'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
                 'user_account.numeric'                  => 'The user account must be a number.',
             ]);
 
-            // ============================================================================
-            // DETERMINE handled_by
-            // ============================================================================
             $handledBy = $patientData['handled_by'] ?? $patientData['handled_by_backup'] ?? null;
 
             if (!$handledBy) {
@@ -134,9 +122,6 @@ class SeniorCitizenController extends Controller
                 ], 422);
             }
 
-            // ============================================================================
-            // DETERMINE notification mode
-            // ============================================================================
             $guardianAccountId = $patientData['guardian_account_id'] ?? null;
             $isGuardianMode    = !empty($guardianAccountId);
 
@@ -164,13 +149,18 @@ class SeniorCitizenController extends Controller
                 'alergies'                        => 'sometimes|nullable|string',
                 'prescribe_by_nurse'              => 'sometimes|nullable|string',
                 'medication_maintenance_remarks'  => 'sometimes|nullable|string',
-                'senior_citizen_date_of_comeback' => 'required|date',
+                'senior_citizen_date_of_comeback' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], // ← fixed
             ], [
                 'existing_medical_condition.string'        => 'The existing medical condition must be a string.',
                 'prescribe_by_nurse.string'                => 'The prescribe by nurse field must be a string.',
                 'medication_maintenance_remarks.string'    => 'The medication maintenance remarks must be a string.',
                 'senior_citizen_date_of_comeback.required' => 'The date of comeback field is required.',
                 'senior_citizen_date_of_comeback.date'     => 'The date of comeback must be a valid date.',
+                'senior_citizen_date_of_comeback.before_or_equal' => 'The date of comeback must be today or a future date.', // ← added
             ]);
 
             $maintenanceMedicationData = $request->validate([
@@ -181,9 +171,6 @@ class SeniorCitizenController extends Controller
                 'end_date'             => 'sometimes|nullable|array',
             ]);
 
-            // ============================================================================
-            // HANDLE EXISTING PATIENT RECORD
-            // ============================================================================
             if ($request->filled('patient_id')) {
 
                 $seniorCitizenPatient = patients::with('address')->findOrFail($patientData['patient_id']);
@@ -240,10 +227,6 @@ class SeniorCitizenController extends Controller
                 $seniorCitizenPatientId = $seniorCitizenPatient->id;
                 $message = 'Senior Citizen case added to existing patient successfully.';
             } else {
-                // ============================================================================
-                // CREATE NEW PATIENT RECORD
-                // ============================================================================
-
                 $middle     = substr($patientData['middle_initial'] ?? '', 0, 1);
                 $middle     = $middle ? strtoupper($middle) . '.' : null;
                 $middleName = $patientData['middle_initial'] ? ucwords($patientData['middle_initial']) : '';
@@ -256,7 +239,6 @@ class SeniorCitizenController extends Controller
                 $blk_n_street = explode(',', $patientData['street']);
                 $fullName     = ucwords(trim(implode(' ', array_filter($parts))));
 
-                // Validate user account matching (only if patient account linked, not guardian mode)
                 if ($patientData['user_account'] && !$isGuardianMode) {
                     $errors = [];
 
@@ -298,10 +280,9 @@ class SeniorCitizenController extends Controller
 
                 $sex = isset($patientData['sex']) ? ucfirst(strtolower($patientData['sex'])) : null;
 
-                // Create patient record
                 $seniorCitizenPatient = patients::create([
                     'user_id'              => null,
-                    'guardian_user_id'     => $isGuardianMode ? $guardianAccountId : null, // NEW
+                    'guardian_user_id'     => $isGuardianMode ? $guardianAccountId : null,
                     'first_name'           => ucwords(strtolower($patientData['first_name'])),
                     'middle_initial'       => $middleName,
                     'last_name'            => ucwords(strtolower($patientData['last_name'])),
@@ -319,16 +300,9 @@ class SeniorCitizenController extends Controller
                     'status'               => 'Active',
                 ]);
 
-                // ----------------------------------------------------------------
-                // ACCOUNT HANDLING: Guardian mode vs Patient account vs New account
-                // ----------------------------------------------------------------
                 if ($isGuardianMode) {
-                    // GUARDIAN MODE: no user account created for the patient
-                    // guardian_user_id already set above on the patient record
-                    // Notifications will go to the guardian's account
-
+                    // guardian_user_id already set above
                 } elseif ($patientData['user_account']) {
-                    // EXISTING USER ACCOUNT: link and update
                     try {
                         $user = User::with('user_address')->findOrFail((int)$patientData['user_account']);
 
@@ -376,7 +350,6 @@ class SeniorCitizenController extends Controller
                         ], 500);
                     }
                 } else {
-                    // NEW ACCOUNT: create fresh user account and send credentials
                     $temporaryPassword = $this->generateSecurePassword(8);
                     try {
                         $user = User::create([
@@ -428,14 +401,10 @@ class SeniorCitizenController extends Controller
                 $message = 'Senior Citizen patient information added successfully.';
             }
 
-            // ============================================================================
-            // CREATE MEDICAL CASE RECORD (Common for both new and existing patients)
-            // ============================================================================
-
             $medicalCase = medical_record_cases::create([
-                'patient_id'   => $seniorCitizenPatientId,
-                'type_of_case' => $patientData['type_of_patient'],
-                'status'       => 'Active',
+                'patient_id'           => $seniorCitizenPatientId,
+                'type_of_case'         => $patientData['type_of_patient'],
+                'status'               => 'Active',
                 'date_of_registration' => $patientData['date_of_registration'],
             ]);
 
@@ -523,11 +492,10 @@ class SeniorCitizenController extends Controller
     {
         try {
             $seniorCitizenRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record', 'senior_citizen_case_record'])
-            ->where('type_of_case','senior-citizen')
-            ->where('status', 'Active')
-            ->findOrFail($id);
+                ->where('type_of_case', 'senior-citizen')
+                ->where('status', 'Active')
+                ->findOrFail($id);
             $seniorCitizenCase = senior_citizen_case_records::where('medical_record_case_id', $id)->get();
-            // address
             $address = patient_addresses::where('patient_id', $seniorCitizenRecord->patient->id)->firstorFail();
 
             $data = $request->validate([
@@ -535,104 +503,96 @@ class SeniorCitizenController extends Controller
                     'required',
                     'string',
                     Rule::unique('patients')
-                        ->ignore($seniorCitizenRecord->patient->id) // <-- IMPORTANT
+                        ->ignore($seniorCitizenRecord->patient->id)
                         ->where(function ($query) use ($request) {
                             return $query->where('first_name', $request->first_name)
                                 ->where('last_name', $request->last_name);
                         }),
                 ],
-                'last_name' => 'required|nullable|string',
-                'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => [
+                'last_name'            => 'required|nullable|string',
+                'middle_initial'       => 'sometimes|nullable|string',
+                'date_of_birth'        => [
                     'required',
                     'date',
                     'before_or_equal:' . now()->subYears(60)->format('Y-m-d'),
                     'before_or_equal:today',
                 ],
-                'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'required|numeric',
-                'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'required|digits_between:7,12',
-                'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
-                'handled_by' => 'required',
-                'civil_status' => 'sometimes|nullable|string',
-                'occupation' => 'sometimes|nullable|string',
-                'SSS' => 'sometimes|nullable|string',
-                'religion' => 'sometimes|nullable|string',
-                'street' => 'required',
-                'brgy' => 'required',
-                'blood_pressure' => [
+                'place_of_birth'       => 'sometimes|nullable|string',
+                'age'                  => 'required|numeric',
+                'sex'                  => 'sometimes|nullable|string',
+                'contact_number'       => 'required|digits_between:7,12',
+                'nationality'          => 'sometimes|nullable|string',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← fixed
+                'handled_by'           => 'required',
+                'civil_status'         => 'sometimes|nullable|string',
+                'occupation'           => 'sometimes|nullable|string',
+                'SSS'                  => 'sometimes|nullable|string',
+                'religion'             => 'sometimes|nullable|string',
+                'street'               => 'required',
+                'brgy'                 => 'required',
+                'blood_pressure'       => [
                     'sometimes',
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45',
-                'pulse_rate'        => 'nullable|string|max:20',
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:1,250',
-                'weight'            => 'nullable|numeric|between:1,250',
-                'suffix' => 'nullable|sometimes|string'
+                'temperature'          => 'nullable|numeric|between:30,45',
+                'pulse_rate'           => 'nullable|string|max:20',
+                'respiratory_rate'     => 'nullable|integer|min:5|max:60',
+                'height'               => 'nullable|numeric|between:1,250',
+                'weight'               => 'nullable|numeric|between:1,250',
+                'suffix'               => 'nullable|sometimes|string',
             ], [
-                // Custom messages with friendly attribute names
-                'first_name.required' => 'The first name field is required.',
-                'first_name.string' => 'The first name must be a string.',
-                'first_name.unique' => 'This patient already exists.',
-
-                'last_name.required' => 'The last name field is required.',
-                'last_name.string' => 'The last name must be a string.',
-
-                'date_of_birth.required' => 'The date of birth field is required.',
-                'date_of_birth.date' => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal' => 'You must be at least 60 years old.',
-
-                'age.required' => 'The age field is required.',
-                'age.numeric' => 'The age must be a number.',
-
-                'contact_number.required' => 'The contact number field is required.',
-                'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',
-
-                'date_of_registration.required' => 'The date of registration field is required.',
-                'date_of_registration.date' => 'The date of registration must be a valid date.',
-
-                'handled_by.required' => 'The handled by field is required.',
-
-                'blood_pressure.regex' => 'The blood pressure format is invalid.',
-
-                'pulse_rate.string' => 'The pulse rate must be a string.',
-                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
-
-                'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
-                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
-                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+                'first_name.required'                   => 'The first name field is required.',
+                'first_name.string'                     => 'The first name must be a string.',
+                'first_name.unique'                     => 'This patient already exists.',
+                'last_name.required'                    => 'The last name field is required.',
+                'last_name.string'                      => 'The last name must be a string.',
+                'date_of_birth.required'                => 'The date of birth field is required.',
+                'date_of_birth.date'                    => 'The date of birth must be a valid date.',
+                'date_of_birth.before_or_equal'         => 'You must be at least 60 years old.',
+                'age.required'                          => 'The age field is required.',
+                'age.numeric'                           => 'The age must be a number.',
+                'contact_number.required'               => 'The contact number field is required.',
+                'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'         => 'The date of registration field is required.',
+                'date_of_registration.date'             => 'The date of registration must be a valid date.',
+                'date_of_registration.before_or_equal'  => 'The date of registration must be today or earlier.', // ← added
+                'handled_by.required'                   => 'The handled by field is required.',
+                'blood_pressure.regex'                  => 'The blood pressure format is invalid.',
+                'pulse_rate.string'                     => 'The pulse rate must be a string.',
+                'pulse_rate.max'                        => 'The pulse rate may not be greater than :max characters.',
+                'respiratory_rate.integer'              => 'The respiratory rate must be an integer.',
+                'respiratory_rate.min'                  => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max'                  => 'The respiratory rate may not be greater than :max.',
             ]);
-            $middle = substr($data['middle_initial'] ?? '', 0, 1);
-            $middle = $middle ? strtoupper($middle) . '.' : null;
+
+            $middle     = substr($data['middle_initial'] ?? '', 0, 1);
+            $middle     = $middle ? strtoupper($middle) . '.' : null;
             $middleName = $data['middle_initial'] ? ucwords(strtolower($data['middle_initial'])) : '';
-            $parts = [
+            $parts      = [
                 strtolower($data['first_name']),
                 $middle,
                 strtolower($data['last_name']),
-                $data['suffix'] ?? null
+                $data['suffix'] ?? null,
             ];
 
             $fullName = ucwords(trim(implode(' ', array_filter($parts))));
-            $sex = $data['sex'] ?? '';
-            // update the patient data first
+            $sex      = $data['sex'] ?? '';
+
             $seniorCitizenRecord->patient->update([
-                'first_name' => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
-                'middle_initial' => $middleName,
-                'last_name' => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
-                'full_name' => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
-                'age' => $data['age'] ?? $seniorCitizenRecord->patient->age,
-                'sex' => $sex ? ucfirst(strtolower($sex)) : null,
-                'civil_status' => $data['civil_status'] ?? '',
-                'contact_number' => $data['contact_number'] ?? '',
-                'date_of_birth' => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,
-                'nationality' => $data['nationality'] ?? '',
+                'first_name'           => ucwords(strtolower($data['first_name'])) ?? ucwords($seniorCitizenRecord->patient->first_name),
+                'middle_initial'       => $middleName,
+                'last_name'            => ucwords(strtolower($data['last_name'])) ?? ucwords($seniorCitizenRecord->patient->last_name),
+                'full_name'            => $fullName ?? ucwords($seniorCitizenRecord->patient->full_name),
+                'age'                  => $data['age'] ?? $seniorCitizenRecord->patient->age,
+                'sex'                  => $sex ? ucfirst(strtolower($sex)) : null,
+                'civil_status'         => $data['civil_status'] ?? '',
+                'contact_number'       => $data['contact_number'] ?? '',
+                'date_of_birth'        => $data['date_of_birth'] ?? $seniorCitizenRecord->patient->date_of_birth,
+                'nationality'          => $data['nationality'] ?? '',
                 'date_of_registration' => $data['date_of_registration'] ?? $seniorCitizenRecord->patient->date_of_registration,
-                'place_of_birth' => $data['place_of_birth'] ?? '',
-                'suffix' => $data['suffix'] ?? '',
+                'place_of_birth'       => $data['place_of_birth'] ?? '',
+                'suffix'               => $data['suffix'] ?? '',
             ]);
 
             $seniorCitizenRecord->update([
@@ -643,66 +603,64 @@ class SeniorCitizenController extends Controller
             if ($seniorCitizenRecord->patient) {
                 $patientUpdateService->updatePatientDetails($data, $seniorCitizenRecord->patient->id);
             }
-            // update the address
+
             $blk_n_street = explode(',', $data['street']);
             $address->update([
                 'house_number' => $blk_n_street[0] ?? $address->house_number,
-                'street' => $blk_n_street[1] ?? $address->street,
-                'purok' => $data['brgy'] ?? $address->purok
+                'street'       => $blk_n_street[1] ?? $address->street,
+                'purok'        => $data['brgy'] ?? $address->purok,
             ]);
 
             $seniorCitizenRecord->patient->refresh();
 
-            // update medical record
             $seniorCitizenRecord->senior_citizen_medical_record->update([
                 'health_worker_id' => $data['handled_by'] ?? $seniorCitizenRecord->senior_citizen_medical_record->health_worker_id,
-                'patient_name' => $seniorCitizenRecord->patient->full_name,
-                'occupation' => $data['occupation'] ?? null,
-                'religion' => $data['religion'] ?? null,
-                'SSS' => $data['SSS'] ?? null,
-                'blood_pressure' => $data['blood_pressure'] ?? null,
-                'temperature' => $data['temperature'] ?? null,
-                'pulse_rate' => $data['pulse_rate'] ?? null,
+                'patient_name'     => $seniorCitizenRecord->patient->full_name,
+                'occupation'       => $data['occupation'] ?? null,
+                'religion'         => $data['religion'] ?? null,
+                'SSS'              => $data['SSS'] ?? null,
+                'blood_pressure'   => $data['blood_pressure'] ?? null,
+                'temperature'      => $data['temperature'] ?? null,
+                'pulse_rate'       => $data['pulse_rate'] ?? null,
                 'respiratory_rate' => $data['respiratory_rate'] ?? null,
-                'height' => $data['height'] ?? null,
-                'weight' => $data['weight'] ?? null
+                'height'           => $data['height'] ?? null,
+                'weight'           => $data['weight'] ?? null,
             ]);
 
             foreach ($seniorCitizenCase as $record) {
                 $record->update([
-                    'patient_name' => $seniorCitizenRecord->patient->full_name ?? $record->patient_name
+                    'patient_name' => $seniorCitizenRecord->patient->full_name ?? $record->patient_name,
                 ]);
-            };
+            }
 
             return response()->json(['message' => 'Updating Patient information Successfully'], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // catch other runtime errors (like null property, query failure, etc.)
-            return response()->json([
-                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
-            ], 500);
-        };
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
+
     public function viewCaseDetails($id)
     {
         try {
             $caseRecord = senior_citizen_case_records::with('senior_citizen_maintenance_med')->findOrFail($id);
-            $patient_name = $caseRecord->patient_name;
+
+            // True if ANY record in this case is marked final
+            $case_is_final = senior_citizen_case_records::where('medical_record_case_id', $caseRecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->exists();
+
             return response()->json([
-                'seniorCaseRecord' => $caseRecord,
-                'patient_name' => $patient_name
+                'seniorCaseRecord'     => $caseRecord,
+                'patient_name'         => $caseRecord->patient_name,
+                'case_is_final'        => $case_is_final,
+                'this_record_is_final' => (bool) $caseRecord->is_final,
             ], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'Record not found'
-            ], 404);
+            return response()->json(['error' => 'Record not found'], 404);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -711,128 +669,157 @@ class SeniorCitizenController extends Controller
         try {
             $seniorCitizenCase = senior_citizen_case_records::findOrFail($id);
 
+            // --- FINAL TOGGLE GUARD ---
+            // If is_final is being turned on, this record MUST be the last one.
+            $isFinal = $request->input('is_final', 0);
+
+            if ($isFinal) {
+                $isLastRecord = !senior_citizen_case_records::where('medical_record_case_id', $seniorCitizenCase->medical_record_case_id)
+                    ->where('id', '>', $id)
+                    ->exists();
+
+                if (!$isLastRecord) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as the final record.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $data = $request->validate([
-                'edit_existing_medical_condition' => 'sometimes|nullable|string',
-                'edit_alergies' => 'sometimes|nullable|string',
-                'edit_prescribe_by_nurse' => 'required|string',
+                'edit_existing_medical_condition'     => 'sometimes|nullable|string',
+                'edit_alergies'                       => 'sometimes|nullable|string',
+                'edit_prescribe_by_nurse'             => 'required|string',
                 'edit_medication_maintenance_remarks' => 'sometimes|nullable|string',
-                'edit_date_of_comeback' => 'required|date'
+                'edit_date_of_comeback'               =>  [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
-                'edit_existing_medical_condition.string' => 'The existing medical condition field must be a string.',
-                'edit_alergies.string' => 'The alergies field must be a string.',
-                'edit_prescribe_by_nurse.string' => 'The prescribe by nurse field is required.',
-                'edit_medication_maintenance_remarks.string' => 'The medication maintenance remarks field must be a string.',
-                'edit_date_of_comeback.required' => 'The date of comeback field is required.',
-                'edit_date_of_comeback.date' => 'The date of comeback field must be a valid date.',
+                'edit_prescribe_by_nurse.string'    => 'The prescribe by nurse field is required.',
+                'edit_date_of_comeback.required'    => 'The date of comeback field is required.',
+                'edit_date_of_comeback.date'        => 'The date of comeback field must be a valid date.',
+                'edit_date_of_comeback.before_or_equal' => 'The date of comeback must be past or only 5 years future date.',
             ]);
 
             $seniorCitizenCase->update([
                 'existing_medical_condition' => $data['edit_existing_medical_condition'] ?? '',
-                'alergies' => $data['edit_alergies'] ?? '',
-                'prescribe_by_nurse' => $data['edit_prescribe_by_nurse'] ? ucwords($data['edit_prescribe_by_nurse']) : '',
-                'remarks' => $data['edit_medication_maintenance_remarks'] ?? '',
-                'date_of_comeback' => $data['edit_date_of_comeback']
+                'alergies'                   => $data['edit_alergies'] ?? '',
+                'prescribe_by_nurse'         => $data['edit_prescribe_by_nurse'] ? ucwords($data['edit_prescribe_by_nurse']) : '',
+                'remarks'                    => $data['edit_medication_maintenance_remarks'] ?? '',
+                'date_of_comeback'           => $data['edit_date_of_comeback'],
+                'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
-            // maintenance medicine
-            $maintenanceMedicine = senior_citizen_maintenance_meds::where('senior_citizen_case_id', $id)->delete();
+            // Re-create maintenance meds
+            senior_citizen_maintenance_meds::where('senior_citizen_case_id', $id)->delete();
 
             $maintenanceMedicationData = $request->validate([
-                'medicines' => 'sometimes|nullable|array',
+                'medicines'            => 'sometimes|nullable|array',
                 'dosage_n_frequencies' => 'sometimes|nullable|array',
                 'maintenance_quantity' => 'sometimes|nullable|array',
-                'start_date' => 'sometimes|nullable|array',
-                'end_date' => 'sometimes|nullable|array'
+                'start_date'           => 'sometimes|nullable|array',
+                'end_date'             => 'sometimes|nullable|array',
             ]);
 
             if (!empty($maintenanceMedicationData['medicines'])) {
-                // insert each record
                 foreach ($maintenanceMedicationData['medicines'] as $index => $value) {
                     senior_citizen_maintenance_meds::create([
                         'senior_citizen_case_id' => $id,
                         'maintenance_medication' => $value,
-                        'dosage_n_frequency' => $maintenanceMedicationData['dosage_n_frequencies'][$index],
-                        'quantity' => $maintenanceMedicationData['maintenance_quantity'][$index],
-                        'start_date' => $maintenanceMedicationData['start_date'][$index],
-                        'end_date' => $maintenanceMedicationData['end_date'][$index],
+                        'dosage_n_frequency'     => $maintenanceMedicationData['dosage_n_frequencies'][$index],
+                        'quantity'               => $maintenanceMedicationData['maintenance_quantity'][$index],
+                        'start_date'             => $maintenanceMedicationData['start_date'][$index],
+                        'end_date'               => $maintenanceMedicationData['end_date'][$index],
                     ]);
-                };
+                }
             }
 
-
-            return response()->json([
-                'message' => 'Patient Case Record is successfully updated'
-            ]);
+            return response()->json(['message' => 'Patient Case Record is successfully updated']);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         }
     }
     public function addCase(Request $request, $id)
     {
         try {
+            // --- BLOCK IF CASE IS ALREADY CLOSED ---
+            $alreadyFinal = senior_citizen_case_records::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case is already closed. No new records can be added.']
+                    ]
+                ], 422);
+            }
+
             $data = $request->validate([
-                'new_patient_name' => 'required',
-                'add_health_worker_id' => 'required',
-                'add_existing_medical_condition' => 'sometimes|nullable|string',
-                'add_alergies' => 'sometimes|nullable|string',
-                'add_prescribe_by_nurse' => 'required|string',
+                'new_patient_name'                   => 'required',
+                'add_health_worker_id'               => 'required',
+                'add_existing_medical_condition'     => 'sometimes|nullable|string',
+                'add_alergies'                       => 'sometimes|nullable|string',
+                'add_prescribe_by_nurse'             => 'required|string',
                 'add_medication_maintenance_remarks' => 'sometimes|nullable|string',
-                'add_date_of_comeback' => 'required|date'
+                'add_date_of_comeback'               => 
+                [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
-                'new_patient_name.required' => 'The patient name field is required.',
-                'add_health_worker_id.required' => 'The health worker id field is required.',
-                'add_existing_medical_condition.string' => 'The existing medical condition field must be a string.',
-                'add_alergies.string' => 'The alergies field must be a string.',
-                'add_prescribe_by_nurse.string' => 'The prescribe by nurse field is required.',
-                'add_medication_maintenance_remarks.string' => 'The medication maintenance remarks field must be a string.',
-                'add_date_of_comeback.required' => 'The date of comeback field is required.',
-                'add_date_of_comeback.date' => 'The date of comeback field must be a valid date.',
+                'new_patient_name.required'          => 'The patient name field is required.',
+                'add_health_worker_id.required'      => 'The health worker id field is required.',
+                'add_prescribe_by_nurse.string'      => 'The prescribe by nurse field is required.',
+                'add_date_of_comeback.required'      => 'The date of comeback field is required.',
+                'add_date_of_comeback.date'          => 'The date of comeback field must be a valid date.',
+                'add_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                
             ]);
 
-            // create the record
+            $isFinal = $request->input('is_final', 0);
+
             $newCaseRecord = senior_citizen_case_records::create([
-                'patient_name' => $data['new_patient_name'],
-                'medical_record_case_id' => $id,
-                'health_worker_id' => $data['add_health_worker_id'],
+                'patient_name'               => $data['new_patient_name'],
+                'medical_record_case_id'     => $id,
+                'health_worker_id'           => $data['add_health_worker_id'],
                 'existing_medical_condition' => $data['add_existing_medical_condition'] ?? '',
-                'alergies' => $data['add_alergies'] ?? '',
-                'prescribe_by_nurse' => $data['add_prescribe_by_nurse'] ? ucwords($data['add_prescribe_by_nurse']) : '',
-                'remarks' => $data['add_medication_maintenance_remarks'] ?? '',
-                'type_of_record' => 'Case Record',
-                'date_of_comeback' => $data['add_date_of_comeback']
+                'alergies'                   => $data['add_alergies'] ?? '',
+                'prescribe_by_nurse'         => $data['add_prescribe_by_nurse'] ? ucwords($data['add_prescribe_by_nurse']) : '',
+                'remarks'                    => $data['add_medication_maintenance_remarks'] ?? '',
+                'type_of_record'             => 'Case Record',
+                'date_of_comeback'           => $data['add_date_of_comeback'],
+                'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
             $maintenanceMedicationData = $request->validate([
-                'medicines' => 'sometimes|nullable|array',
+                'medicines'            => 'sometimes|nullable|array',
                 'dosage_n_frequencies' => 'sometimes|nullable|array',
                 'maintenance_quantity' => 'sometimes|nullable|array',
-                'start_date' => 'sometimes|nullable|array',
-                'end_date' => 'sometimes|nullable|array'
+                'start_date'           => 'sometimes|nullable|array',
+                'end_date'             => 'sometimes|nullable|array',
             ]);
 
             if (!empty($maintenanceMedicationData['medicines'])) {
-                // insert each record
                 foreach ($maintenanceMedicationData['medicines'] as $index => $value) {
                     senior_citizen_maintenance_meds::create([
                         'senior_citizen_case_id' => $newCaseRecord->id,
                         'maintenance_medication' => $value,
-                        'dosage_n_frequency' => $maintenanceMedicationData['dosage_n_frequencies'][$index],
-                        'quantity' => $maintenanceMedicationData['maintenance_quantity'][$index],
-                        'start_date' => $maintenanceMedicationData['start_date'][$index],
-                        'end_date' => $maintenanceMedicationData['end_date'][$index],
+                        'dosage_n_frequency'     => $maintenanceMedicationData['dosage_n_frequencies'][$index],
+                        'quantity'               => $maintenanceMedicationData['maintenance_quantity'][$index],
+                        'start_date'             => $maintenanceMedicationData['start_date'][$index],
+                        'end_date'               => $maintenanceMedicationData['end_date'][$index],
                     ]);
-                };
+                }
             }
 
-            return response()->json([
-                'message' => 'Patient Case Record is successfully Added'
-            ]);
+            return response()->json(['message' => 'Patient Case Record is successfully Added']);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         }
     }
 
@@ -841,17 +828,11 @@ class SeniorCitizenController extends Controller
         try {
             $seniorCitizenCase = senior_citizen_case_records::findOrFail($id);
             if ($seniorCitizenCase) {
-                $seniorCitizenCase->update([
-                    'status' => 'Archived'
-                ]);
+                $seniorCitizenCase->update(['status' => 'Archived']);
             }
-            return response()->json([
-                'mesage' => 'Senior Citizen Case is successfully deleted'
-            ], 200);
+            return response()->json(['mesage' => 'Senior Citizen Case is successfully deleted'], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ], 422);
+            return response()->json(['errors' => $e->getMessage()], 422);
         }
     }
 }

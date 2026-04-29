@@ -17,7 +17,8 @@
     'resources/css/profile.css',
     'resources/css/patient/record.css',
     'resources/js/senior_citizen/caseRecord.js',
-    'resources/js/senior_citizen/addCase.js'])
+    'resources/js/senior_citizen/addCase.js',
+    'resources/css/final-record-toggle.css'])
     <div class="patient-details min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
@@ -105,11 +106,11 @@
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" id="add_maintenance_quantity" placeholder="Enter the quantity">
+                                                                <input type="number" class="form-control" id="add_maintenance_quantity" min="0" oninput="this.value = Math.max(0, parseInt(this.value) || 0)" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="add_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
+                                                                <input type="date" class="form-control" id="add_maintenance_start_date" min="1950-01-01" oninput="syncAddEndDateMin(this.value)" max="{{date('Y-m-d')}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
@@ -134,27 +135,17 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="add-record-body">
-                                                                    <!-- <tr>
-                                                                    <td>Amlodipine 5mg</td>
-                                                                    <td>1x/day</td>
-                                                                    <td>90 days</td>
-                                                                    <td>2025-01-01</td>
-                                                                    <td>2025-02-01</td>
-                                                                    <td class=" align-middle text-center">
-                                                                        <div class="delete-icon d-flex align-items-center justify-self-center w-100 h-100">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" width="20" height="20" viewBox="0 0 448 512">
-                                                                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                                                                            </svg>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr> -->
+                                                                    <tr id="add-no-medication-row">
+                                                                        <td colspan="6" class="text-center text-muted py-3">No record added.</td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                         <!-- prescribing  -->
                                                         <div class="mb-md-3 mb-0">
                                                             <label for="">Prescribing Nurse<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" name="add_prescribe_by_nurse" id="add_prescribe_by_nurse" placeholder="Enter the name of the nurse">
+                                                            <input type="text" class="form-control" value="{{ $nurseFullName }}" disabled>
+                                                            <input type="hidden" name="add_prescribe_by_nurse" value="{{ $nurseFullName }}">
                                                             <small class="text-danger error-text" id="add_prescribe_by_nurse_error"></small>
                                                         </div>
                                                         <div class="mb-md-3 mb-0 ">
@@ -162,9 +153,40 @@
                                                             <input type="text" class="form-control p-2 border" name="add_medication_maintenance_remarks" placeholder="Enter your remarks">
                                                             <small class="text-danger error-text" id="add_medication_maintenance_remarks_error"></small>
                                                         </div>
-                                                        <div class="mb-md-3 mb-0 ">
-                                                            <label for="add_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
-                                                            <input type="date" class="form-control border" name="add_date_of_comeback" id="add_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
+                                                        <!-- ============================================================ -->
+                                                        <!-- FINAL TOGGLE (ADD MODAL) -->
+                                                        <!-- ============================================================ -->
+                                                        <div class="final-switch-wrap mb-3" id="add_final_toggle_section">
+                                                            <div class="switch-info">
+                                                                <p>Mark as final record</p>
+                                                                <small>Marks this as the patient's last senior citizen record. No further records can be added after saving.</small>
+                                                            </div>
+                                                            <label class="final-toggle ms-3">
+                                                                <input type="checkbox" id="add_is_final_toggle">
+                                                                <span class="track"></span>
+                                                                <span class="thumb"></span>
+                                                            </label>
+                                                            <input type="hidden" name="is_final" id="add_is_final_hidden" value="0">
+                                                        </div>
+                                                        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3 d-none" id="add_is_final_warning">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0;">
+                                                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                                            </svg>
+                                                            <small><strong>Warning:</strong> Once saved, this senior citizen case will be <strong>closed</strong>. No new records can be added.</small>
+                                                        </div>
+                                                        <small class="text-danger error-text d-block mb-3" id="add_is_final_error"></small>
+                                                        <!-- ============================================================ -->
+                                                        <!-- END FINAL TOGGLE (ADD MODAL) -->
+                                                        <!-- ============================================================ -->
+                                                        <!-- REPLACE the existing date_of_comeback field in add modal with: -->
+                                                        <div class="mb-md-3 mb-0" id="add_comeback_wrapper">
+                                                            <label for="add_date_of_comeback">
+                                                                Date of Comeback
+                                                                <span class="text-danger" id="add_comeback_required_star">*</span>
+                                                            </label>
+                                                            <input type="date" class="form-control border" name="add_date_of_comeback"
+                                                                id="add_date_of_comeback" min="1950-01-01"
+                                                                max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="add_date_of_comeback_error"></small>
                                                         </div>
                                                     </div>
@@ -202,6 +224,31 @@
                                                                 <span class="fw-light"> indicates a required field.</span>
                                                             </span>
                                                         </div>
+                                                        <!-- ============================================================ -->
+                                                        <!-- FINAL TOGGLE (EDIT MODAL) -->
+                                                        <!-- ============================================================ -->
+                                                        <div class="final-switch-wrap mb-3" id="edit_final_toggle_section">
+                                                            <div class="switch-info">
+                                                                <p>Mark as final record</p>
+                                                                <small>Marks this as the patient's last senior citizen record. No further records can be added after saving.</small>
+                                                            </div>
+                                                            <label class="final-toggle ms-3">
+                                                                <input type="checkbox" id="edit_is_final_toggle">
+                                                                <span class="track"></span>
+                                                                <span class="thumb"></span>
+                                                            </label>
+                                                            <input type="hidden" name="is_final" id="edit_is_final_hidden" value="0">
+                                                        </div>
+                                                        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3 d-none" id="edit_is_final_warning">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0;">
+                                                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                                            </svg>
+                                                            <small><strong>Warning:</strong> Once saved, this senior citizen case will be <strong>closed</strong>. No new records can be added.</small>
+                                                        </div>
+                                                        <small class="text-danger error-text d-block mb-3" id="edit_is_final_error"></small>
+                                                        <!-- ============================================================ -->
+                                                        <!-- END FINAL TOGGLE (EDIT MODAL) -->
+                                                        <!-- ============================================================ -->
                                                         <div class="mb-3">
                                                             <label for="">Patient Name <span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control" disabled id="edit_patient_name">
@@ -228,11 +275,11 @@
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Quantity</label>
-                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity" placeholder="Enter the quantity">
+                                                                <input type="number" class="form-control" value="90 days" id="edit_maintenance_quantity" min="0" oninput="this.value = Math.max(0, parseInt(this.value) || 0)" placeholder="Enter the quantity">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">Start Date</label>
-                                                                <input type="date" class="form-control" id="edit_maintenance_start_date" min="1950-01-01" max="{{date('Y-m-d',strtotime('+1 years'))}}">
+                                                                <input type="date" class="form-control" id="edit_maintenance_start_date" oninput="syncEditEndDateMin(this.value)" min="1950-01-01" ma="{{date('Y-m-d')}}">
                                                             </div>
                                                             <div class="mb-3 flex-fill">
                                                                 <label for="">End Date</label>
@@ -287,9 +334,14 @@
                                                         </div>
 
                                                         <!-- date of comeback -->
-                                                        <div class="mb-3 ">
-                                                            <label for="edit_date_of_comeback">Date of Comeback <span class="text-danger">*</span></label>
-                                                            <input type="date" class="form-control bg-light border" name="edit_date_of_comeback" id="edit_date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
+                                                        <!-- REPLACE the existing edit_date_of_comeback field with: -->
+                                                        <div class="mb-3" id="edit_comeback_wrapper">
+                                                            <label for="edit_date_of_comeback">
+                                                                Date of Comeback <span class="text-danger">*</span>
+                                                            </label>
+                                                            <input type="date" class="form-control bg-light border" name="edit_date_of_comeback"
+                                                                id="edit_date_of_comeback" min="1950-01-01"
+                                                                max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="edit_date_of_comeback_error"></small>
                                                         </div>
                                                     </div>
@@ -316,8 +368,8 @@
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
             const allRecordCon = document.getElementById('record_all_records');
-            
-            if(allRecordCon){
+
+            if (allRecordCon) {
                 allRecordCon.classList.remove('active');
             }
             const con = document.getElementById('record_senior_citizen');

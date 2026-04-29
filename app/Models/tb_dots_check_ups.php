@@ -26,10 +26,12 @@ class tb_dots_check_ups extends Model
         'outcome',
         'type_of_record',
         'status',
-        'date_of_comeback'
+        'date_of_comeback',
+        'is_final'
     ];
     protected $casts = [
-        'date_of_comeback' => 'date'
+        'date_of_comeback' => 'date',
+        'is_final' => 'boolean'
     ];
 
     public function medical_record_case()

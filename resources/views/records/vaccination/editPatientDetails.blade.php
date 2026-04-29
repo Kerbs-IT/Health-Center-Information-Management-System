@@ -158,7 +158,7 @@
                                         <!-- administered by -->
                                         <div class="mb-2 w-[100%] md:w-[50%] ">
                                             <label for="healthWorkersDropDown">Handled by<span class="text-danger">*</span></label>
-                                            
+
                                             <select name="handled_by" id="handled_by" class="form-select" data-bs-selected-Health-Worker="{{ $healthWorkerId ?? 'N/A' }}" data-staff-id="{{Auth::user()->role == 'staff'?Auth::user()->id:null}}">
                                                 <option value="" selected disabled>Select a person</option>
                                             </select>
@@ -226,8 +226,11 @@
                                 </div>
                                 <!-- save btn -->
                                 <div class="save-record align-self-end mt-5">
-                                    <input type="submit" class="btn btn-success px-4 fs-5" value="Save Record" id="update-record-btn" data-bs-patient-id="{{$info->id}}">
+                                    <button type="button" id="update-record-btn" class="btn btn-success px-4 fs-5" data-bs-patient-id="{{$info->id}}">
+                                        Update Record
+                                    </button>
                                 </div>
+
                             </div>
                         </form>
                     </div>

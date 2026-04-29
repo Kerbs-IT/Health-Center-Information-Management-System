@@ -22,7 +22,8 @@
     'resources/js/family_planning/sideB.js',
     'resources/js/family_planning/editPatientCase.js',
     'resources/js/family_planning/familyPlanningRadioToggle.js',
-    'resources/js/family_planning/editFamilyPlanningRadioToggle.js'])
+    'resources/js/family_planning/editFamilyPlanningRadioToggle.js',
+    'resources/css/final-record-toggle.css'])
     <div class="patient-case vh-100 d-flex">
         <aside>
             @include('layout.menuBar')

@@ -20,7 +20,8 @@
     'resources/js/record/record.js',
     'resources/js/tb_dots/caseRecord.js',
     'resources/js/tb_dots/checkup.js',
-    'resources/js/tb_dots/addCaseRecord.js'])
+    'resources/js/tb_dots/addCaseRecord.js',
+    'resources/css/final-record-toggle.css'])
     <div class="patient-details min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')

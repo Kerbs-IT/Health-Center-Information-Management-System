@@ -105,7 +105,7 @@ Route::post('/create', [authController::class, 'store'])->name('user.store');
 
 //login
 // =============== Nurse only routes
-Route::middleware(['role:nurse'])->group(function () {
+Route::middleware(['auth', 'role:nurse'])->group(function () {
     Route::get('/dashboard/nurse', [nurseDashboardController::class, 'dashboard'])->name('dashboard.nurse');
 
 
@@ -186,7 +186,7 @@ Route::middleware(['role:nurse'])->group(function () {
 
 Route::get('/dashboard/staff', function () {
     return view('dashboard.staff', ['isActive' => true, 'page' => 'DASHBOARD']);
-})->name('dashboard.staff')->middleware(['role:staff']);
+})->name('dashboard.staff')->middleware(['auth','role:staff']);
 
 // =============== patients
 
@@ -213,7 +213,7 @@ Route::get('/forgot-pass', function () {
     return view('auth.forgot-password');
 })->name('forgot.pass');
 
-Route::middleware(['role:nurse,staff,patient'])->group(function () {
+Route::middleware(['auth', 'role:nurse,staff,patient'])->group(function () {
     // get user info
     Route::get('/user/profile/{id}', [authController::class, 'info']);
     // edit patient profile
@@ -261,7 +261,7 @@ Route::middleware(['role:nurse,staff,patient'])->group(function () {
 
 
 // ================ Nurse and health worker
-Route::middleware(['role:nurse,staff'])->group(function () {
+Route::middleware(['auth', 'role:nurse,staff'])->group(function () {
 
     // dashboard route
     Route::get('/dashboard/admin', function () {

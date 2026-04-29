@@ -37,10 +37,14 @@
                         <!-- profile image section -->
                         <div class="profile-image p-3   mb-3 d-flex flex-column align-items-center" style="min-width:280px;">
                             <img src="{{ optional(Auth::user()->nurses)->profile_image
-                        ? asset(optional(Auth::user()->nurses)->profile_image)
-                        : (optional(Auth::user()->staff)->profile_image
-                            ? asset(optional(Auth::user()->staff)->profile_image)
-                            : asset('images/default_profile.png')) }}" alt="profile picture" class="profile-section-image">
+    ? asset(optional(Auth::user()->nurses)->profile_image)
+    : (optional(Auth::user()->staff)->profile_image
+        ? asset(optional(Auth::user()->staff)->profile_image)
+        : asset('images/default_profile.png')) }}"
+                                alt="profile picture"
+                                id="profile-img"
+                                class="profile-section-image"
+                                onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
                             <h3 class="text-black text-center">
                                 {{ trim((optional(Auth::user()->staff)->full_name ?? optional(Auth::user()->nurses)->full_name ?? 'none')) }}
                             </h3>
@@ -48,7 +52,7 @@
                             <div class="upload-image d-flex flex-column">
                                 <label for="fileInput" class="btn mb-2 btn-success justify-self-center ">Update Profile</label>
                                 <input type="file" name="profile_image" class="d-none w-100" id="fileInput" onchange="showFileName(this)">
-                                <span id="fileName" class="text-center text-muted">No file choosen</span>
+                                <span id="fileName" class="text-center text-muted text-truncate" id="fileName" style="max-width: 200px;">No file choosen</span>
                                 @error('profile_image')
                                 <small class="text-danger">{{$message}}</small>
                                 @enderror
@@ -352,6 +356,14 @@
         function showFileName(input) {
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profile-img").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     </script>
 </body>

@@ -30,11 +30,11 @@
             </div>
             <div class="mb-md-3 mb-0 flex-fill xl:w-[20%]">
                 <label class="text-nowrap" for="">Quantity</label>
-                <input type="Number" class="form-control" id="maintenance_quantity">
+                <input type="number" class="form-control" id="maintenance_quantity" min="0" oninput="this.value = Math.max(0, parseInt(this.value) || 0)">
             </div>
             <div class="mb-md-3 mb-0 flex-fill xl:w-[20%]">
                 <label class="text-nowrap" for="">Start Date</label>
-                <input type="date" class="form-control" id="maintenance_start_date">
+                <input type="date" class="form-control" id="maintenance_start_date" max="{{date('Y-m-d')}}" oninput="syncEndDateMin(this.value)">
             </div>
             <div class="mb-md-3 mb-0 flex-fill xl:w-[20%]">
                 <label class="text-nowrap" for="">End Date</label>
@@ -59,28 +59,22 @@
                     </tr>
                 </thead>
                 <tbody id="medication_table_body">
-                    <!-- <tr>
-                        <td>Amlodipine 5mg</td>
-                        <td>1x/day</td>
-                        <td>90 days</td>
-                        <td>2025-01-01</td>
-                        <td>2025-02-01</td>
-                        <td class=" align-middle text-center">
-                            <div class="delete-icon d-flex align-items-center justify-self-center w-100 h-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" width="20" height="20" viewBox="0 0 448 512">
-                                    <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                                </svg>
-                            </div>
-                        </td>
-                        <input type="hidden" name="medicines[]" value="">
-                    </tr> -->
+                    <tr id="no-medication-row">
+                        <td colspan="6" class="text-center text-muted py-3">No record added.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
         <!-- prescribing  -->
         <div class="mb-3">
             <label for="">Prescribe by Nurse</label>
-            <input type="text" class="form-control" name="prescribe_by_nurse" id="prescribe_by_nurse">
+            <input type="text"
+                class="form-control"
+                value="{{ $nurseFullName }}"
+                disabled>
+            <input type="hidden"
+                name="prescribe_by_nurse"
+                value="{{ $nurseFullName }}">
             <small class="text-danger error-text" id="prescribe_by_nurse_error"></small>
         </div>
         <div class="mb-3 border-bottom">

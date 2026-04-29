@@ -75,6 +75,7 @@
                                     <div id="section-new-patient">
 
                                         {{-- Patient Account Search (existing user account) --}}
+                                        {{-- Patient Account Search (existing user account) --}}
                                         <div class="mb-3 position-relative">
                                             <label for="searchInput" class="form-label">
                                                 Patient Account:
@@ -83,25 +84,30 @@
                                             <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">
                                                 Link an existing user account if the patient already has one.
                                             </small>
-                                            <input
-                                                type="text"
-                                                id="searchInput"
-                                                class="form-control"
-                                                placeholder="Search by full name..."
-                                                autocomplete="off">
+
+                                            {{-- Input wrapper for inline spinner --}}
+                                            <div class="position-relative">
+                                                <input
+                                                    type="text"
+                                                    id="searchInput"
+                                                    class="form-control pe-4"
+                                                    placeholder="Search by full name..."
+                                                    autocomplete="off">
+
+                                                {{-- Spinner inside input, right side --}}
+                                                <div id="loadingSpinner"
+                                                    class="position-absolute end-0 top-50 translate-middle-y me-3"
+                                                    style="display: none;">
+                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             <div id="resultsContainer"
                                                 class="position-absolute w-100 shadow-lg"
                                                 style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
-                                                <div class="list-group list-group-flush" id="searchResults">
-                                                    <!-- Results will be populated here -->
-                                                </div>
-                                            </div>
-
-                                            <div id="loadingSpinner" class="mt-2 align-items-center justify-content-center" style="display: none;">
-                                                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
+                                                <div class="list-group list-group-flush" id="searchResults"></div>
                                             </div>
 
                                             <div id="noResults" class="mt-2" style="display: none;">
@@ -138,29 +144,29 @@
                                                     <input
                                                         type="text"
                                                         id="guardianSearchInput"
-                                                        class="form-control"
+                                                        class="form-control pe-4"
                                                         placeholder="Search guardian by name or email..."
                                                         autocomplete="off">
+
+                                                    {{-- Spinner inside input, right side --}}
+                                                    <div id="guardianLoadingSpinner"
+                                                        class="position-absolute end-0 top-50 translate-middle-y me-3"
+                                                        style="display: none;">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
 
                                                     <div id="guardianResultsContainer"
                                                         class="position-absolute w-100 shadow-lg"
                                                         style="max-height: 300px; overflow-y: auto; display: none; z-index: 1050; top: 100%; background: white; border: 1px solid #ddd; border-radius: 0.25rem;">
-                                                        <div class="list-group list-group-flush" id="guardianSearchResults">
-                                                            <!-- Results populated by guardianSearch.js -->
-                                                        </div>
-                                                    </div>
-
-                                                    <div id="guardianLoadingSpinner" class="mt-2" style="display: none;">
-                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                            <span class="visually-hidden">Loading...</span>
-                                                        </div>
+                                                        <div class="list-group list-group-flush" id="guardianSearchResults"></div>
                                                     </div>
 
                                                     <div id="guardianNoResults" class="mt-2" style="display: none;">
                                                         <small class="text-muted">No accounts found</small>
                                                     </div>
                                                 </div>
-
                                                 {{-- Selected Guardian Indicator --}}
                                                 <div id="selectedGuardianIndicator" class="alert alert-info border-start border-info border-4 mt-2 mb-0" style="display: none;">
                                                     <div class="d-flex align-items-center justify-content-between">

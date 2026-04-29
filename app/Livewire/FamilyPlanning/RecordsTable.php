@@ -138,7 +138,6 @@ class RecordsTable extends Component
     private function calculateFollowUpStatus($medicalRecordCase)
     {
         try {
-            // Get the most recent active record with follow-up visit date
             $lastRecord = DB::table('family_planning_side_b_records')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -146,19 +145,16 @@ class RecordsTable extends Component
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            // No record history = no status
             if (!$lastRecord) {
                 return null;
             }
 
             $followUpDate = Carbon::parse($lastRecord->date_of_follow_up_visit);
 
-            // Only process if follow-up date is today or past
             if ($followUpDate->isFuture()) {
                 return null;
             }
 
-            // Check if follow-up visit already done for this date
             $visitExists = DB::table('family_planning_side_b_records')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -170,7 +166,8 @@ class RecordsTable extends Component
                 return null;
             }
 
-            // Determine status
+            $isFinal = (bool) $lastRecord->is_final;
+
             if ($followUpDate->isToday()) {
                 return [
                     'status'        => 'due_today',
@@ -181,6 +178,10 @@ class RecordsTable extends Component
                     'sort_priority' => 2,
                 ];
             } else {
+                if ($isFinal) {
+                    return null;
+                }
+
                 $daysOverdue = (int) $followUpDate->diffInDays(now(), false);
 
                 return [

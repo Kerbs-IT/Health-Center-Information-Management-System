@@ -7,7 +7,6 @@ const submitBtn = document.getElementById("submit-btn");
 editIcon.addEventListener("click", (e) => {
     e.preventDefault();
     const id = editIcon.dataset.id;
-    // console.log(id);
 
     fetch(`/patient-profile-edit/${id}`, {
         method: "POST",
@@ -23,8 +22,6 @@ editIcon.addEventListener("click", (e) => {
             }
         })
         .then((data) => {
-            // console.log(data);
-
             // reset first
             submitBtn.dataset.user = data.response.user_id;
             const profileImg = document.getElementById("profile-image") ?? null;
@@ -83,7 +80,6 @@ editIcon.addEventListener("click", (e) => {
             if (patient?.full_name) {
                 fullname.innerHTML = patient.full_name;
             } else {
-                // Fallback to user data, handling null/undefined values
                 const firstName = user?.first_name || "";
                 const middleInitial = user?.middle_initial || "";
                 const lastName = user?.last_name || "";
@@ -92,13 +88,24 @@ editIcon.addEventListener("click", (e) => {
                     `${firstName} ${middleInitial} ${lastName} ${suffix}`.trim();
             }
 
-            // input values
-            const baseUrl = profileImg.dataset.baseUrl; // gets data-base-url
-            profileImg.src =
-                baseUrl + data.response.user.profile_image ??
-                baseUrl + data.response.patient.profile_image;
-            // profileImg.src = `{{ asset('${data.response.profile_image}') }}`;
-            // console.log(profileImg);
+            // ✅ FIXED: profile image with safe fallback
+            if (profileImg) {
+                const baseUrl = profileImg.dataset.baseUrl;
+                const imagePath =
+                    data.response.user?.profile_image ||
+                    data.response.patient?.profile_image ||
+                    null;
+
+                profileImg.onerror = function () {
+                    this.src =
+                        baseUrl + "images/default_profile.png";
+                    this.onerror = null;
+                };
+
+                profileImg.src = imagePath
+                    ? baseUrl + imagePath
+                    : baseUrl + "images/default_profile.png";
+            }
 
             fname.value = patient?.first_name || user?.first_name || "";
             lname.value = patient?.last_name || user?.last_name || "";
@@ -119,7 +126,6 @@ editIcon.addEventListener("click", (e) => {
             function dateFormat(date) {
                 if (!date) return "";
                 const newDate = new Date(date);
-                // Check if date is valid
                 if (isNaN(newDate.getTime())) return "";
                 return newDate.toISOString().split("T")[0];
             }
@@ -140,7 +146,6 @@ editIcon.addEventListener("click", (e) => {
 
             email.value = data.response.user.email;
 
-            // console.log(username.value);
             blkNstreet.value =
                 data.response.patient_address.house_number +
                 (data.response.patient_address.street
@@ -194,10 +199,6 @@ editIcon.addEventListener("click", (e) => {
 
             // select purok
             const puroks = async function () {
-                // const dropdown = document.getElementById('update_assigned_area');
-
-                // const occupiedAreas = JSON.parse(dropdown.dataset.occupiedAreas);
-
                 try {
                     const response = await fetch("/showBrgyUnit");
                     const brgyData = await response.json();
@@ -211,7 +212,6 @@ editIcon.addEventListener("click", (e) => {
                             data.response.patient_address.purok
                                 ? "selected"
                                 : "";
-                        // add other option
                         const currentlyUse =
                             element.id == data.response.assigned_area_id
                                 ? "(currently)"
@@ -263,7 +263,6 @@ submitBtn.addEventListener("click", async (e) => {
                 confirmButtonText: "OK",
             }).then((response) => {
                 if (response.isConfirmed) {
-                    // dismiss the modal
                     const modal = document.getElementById("profile_modal");
 
                     if (modal) {
@@ -273,7 +272,6 @@ submitBtn.addEventListener("click", async (e) => {
                 }
             });
         } else {
-            // handle laravel validation errors
             if (data.errors) {
                 displayErrors(data.errors);
                 const errorMessages = formatErrorMessages(data.errors);
@@ -287,7 +285,6 @@ submitBtn.addEventListener("click", async (e) => {
                 });
             }
 
-            // handle custom single error (e.g. patient type conflict)
             if (data.error) {
                 Swal.fire({
                     title: "Error",
@@ -298,7 +295,6 @@ submitBtn.addEventListener("click", async (e) => {
                 });
             }
 
-            // Clear file input
             const imageFile = document.getElementById("fileInput");
             imageFile.value = "";
             document.getElementById("fileName").innerHTML = "No chosen File";

@@ -24,7 +24,8 @@
     'resources/js/prenatal/familyPlansideA.js',
     'resources/js/prenatal/addPrenatalCase.js',
     'resources/js/prenatal/addPregnancyPlan.js',
-    'resources/js/family_planning/sideB.js'
+    'resources/js/family_planning/sideB.js',
+    'resources/css/final-record-toggle.css'
     ])
     <div class="patient-case min-vh-100 d-flex">
         <aside>
@@ -105,7 +106,7 @@
 
                                             <div class="modal-body">
                                                 <div class="inner w-100 rounded">
-                                                    <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                    <div class="bg-light border-start border-primary px-3 py-2 mb-4 rounded w-100">
                                                         <span class="fs-6">
                                                             <strong>Note:</strong>
                                                             <span class="text-danger">*</span>
@@ -147,9 +148,7 @@
                                                                 <input type="text" class="form-control w-100" placeholder="Enter the pulse rate" id="check_up_pulse_rate" name="check_up_pulse_rate">
                                                                 <small class="text-danger error-text" id="check_up_pulse_rate_error"></small>
                                                             </div>
-
                                                         </div>
-                                                        <!-- 2nd row -->
                                                         <div class="mb-md-2 mb-1 input-field d-flex gap-md-3 gap-1 w-100 second-row flex-lg-nowrap flex-wrap">
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP" class="text-nowrap">Respiratory Rate (breaths/min):</label>
@@ -163,16 +162,15 @@
                                                             </div>
                                                             <div class="mb-md-2 mb-1 flex-fill lg:w-[50%]">
                                                                 <label for="BP">Weight(kg):</label>
-                                                                <input type="text" class="form-control w-100" placeholder="Enter the  weight" id="check_up_weight" name="check_up_weight">
+                                                                <input type="text" class="form-control w-100" placeholder="Enter the weight" id="check_up_weight" name="check_up_weight">
                                                                 <small class="text-danger error-text" id="check_up_weight_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- 3rd row -->
                                                     </div>
+
                                                     <!-- QUESTIONS -->
                                                     <div class="my-4">
                                                         <h5 class="mb-4">Prenatal Symptoms and Concerns</h5>
-                                                        <!-- Question 1 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">1. Do you have any pain in your lower abdomen or back?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -189,8 +187,6 @@
                                                                 <small class="text-danger error-text" id="abdomen_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Question 2 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">2. Have you experienced any vaginal bleeding or spotting?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -207,8 +203,6 @@
                                                                 <small class="text-danger error-text" id="vaginal_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Question 3 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">3. Do you have swelling in your hands, feet, or face?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -225,8 +219,6 @@
                                                                 <small class="text-danger error-text" id="swelling_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Question 4 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">4. Do you have persistent headache?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -243,9 +235,8 @@
                                                                 <small class="text-danger error-text" id="headache_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- Question 5 -->
                                                         <div class="mb-3">
-                                                            <label class="form-label">5. Do you have Blurry vision or flashing lights??</label>
+                                                            <label class="form-label">5. Do you have Blurry vision or flashing lights?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
                                                                 <div class="form-check">
                                                                     <input class="" type="radio" name="blurry_vission_question" value="Yes" id="q5-yes">
@@ -260,7 +251,6 @@
                                                                 <small class="text-danger error-text" id="blurry_vission_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- Question 6 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">6. Do you have painful or frequent urination?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -277,9 +267,8 @@
                                                                 <small class="text-danger error-text" id="urination_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- Question 7 -->
                                                         <div class="mb-3">
-                                                            <label class="form-label">7. Do you have Felt baby move? (if after 20 weeks)?</label>
+                                                            <label class="form-label">7. Have you felt baby move? (if after 20 weeks)?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
                                                                 <div class="form-check">
                                                                     <input class="" type="radio" name="baby_move_question" value="Yes" id="q7-yes">
@@ -294,8 +283,6 @@
                                                                 <small class="text-danger error-text" id="baby_move_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Question 9 -->
                                                         <div class="mb-3">
                                                             <label class="form-label">8. Do you feel decreased baby movement?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
@@ -312,9 +299,8 @@
                                                                 <small class="text-danger error-text" id="decreased_baby_movement_remarks_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- Question 10 -->
                                                         <div class="mb-3">
-                                                            <label class="form-label">9. Do you have feel Other concerns or symptoms?</label>
+                                                            <label class="form-label">9. Do you have any other concerns or symptoms?</label>
                                                             <div class="d-flex gap-md-3 gap-1 flex-wrap">
                                                                 <div class="form-check">
                                                                     <input class="" type="radio" name="other_symptoms_question" value="Yes" id="q10-yes">
@@ -329,14 +315,43 @@
                                                                 <small class="text-danger error-text" id="other_symptoms_question_remarks_error"></small>
                                                             </div>
                                                         </div>
-                                                        <!-- overall remarks -->
+
+                                                        <!-- Overall remarks -->
                                                         <div class="mb-2 w-100">
                                                             <label for="remarks">Remarks</label>
                                                             <input type="text" class="form-control" name="overall_remarks">
                                                             <small class="text-danger error-text" id="overall_remarks_error"></small>
                                                         </div>
-                                                        <div class="mb-2">
-                                                            <label for="date_of_comeback">Date of comeback<span class="text-danger">*</span></label>
+
+                                                        <!-- ============================================================ -->
+                                                        <!-- FINAL CHECK-UP TOGGLE (ADD MODAL) -->
+                                                        <!-- ============================================================ -->
+                                                        <div class="final-switch-wrap mb-3" id="add_final_toggle_section">
+                                                            <div class="switch-info">
+                                                                <p>Mark as final check-up</p>
+                                                                <small>Marks this as the patient's last prenatal visit. No further check-ups can be added after saving.</small>
+                                                            </div>
+                                                            <label class="final-toggle ms-3">
+                                                                <input type="checkbox" id="add_is_final_toggle">
+                                                                <span class="track"></span>
+                                                                <span class="thumb"></span>
+                                                            </label>
+                                                            <input type="hidden" name="is_final" id="add_is_final_hidden" value="0">
+                                                        </div>
+                                                        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3 d-none" id="add_is_final_warning">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0;">
+                                                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                                            </svg>
+                                                            <small><strong>Warning:</strong> Once saved, this prenatal case will be <strong>closed</strong>. No new check-up records can be added.</small>
+                                                        </div>
+                                                        <small class="text-danger error-text d-block mb-2" id="add_is_final_error"></small>
+                                                        <!-- ============================================================ -->
+                                                        <!-- END FINAL CHECK-UP TOGGLE -->
+                                                        <!-- ============================================================ -->
+
+                                                        <!-- Date of comeback — hidden/disabled when is_final is on -->
+                                                        <div class="mb-2" id="add_comeback_wrapper">
+                                                            <label for="date_of_comeback">Date of comeback<span class="text-danger" id="add_comeback_required_star">*</span></label>
                                                             <input type="date" class="form-control" name="date_of_comeback" id="date_of_comeback" min="1950-01-01" max="{{date('Y-m-d',strtotime('+5 years'))}}">
                                                             <small class="text-danger error-text" id="date_of_comeback_error"></small>
                                                         </div>
@@ -882,6 +897,7 @@
                                 </div>
                             </div>
                             <!-- EDIT CHECK UP modal -->
+                            <!-- EDIT CHECK UP modal -->
                             <div class="modal fade" id="checkUpModal" tabindex="-1" aria-labelledby="checkUpModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                     <div class="modal-content">
@@ -889,18 +905,45 @@
                                             @method('PUT')
                                             @csrf
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="vaccinationModalLabel">Prenatal Check-Up Details</h5>
+                                                <h5 class="modal-title" id="vaccinationModalLabel">Edit Prenatal Check-Up Details</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
 
                                             <div class="modal-body">
-                                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded w-100">
+                                                <div class="bg-light border-start border-primary px-3 py-2 mb-4 rounded w-100">
                                                     <span class="fs-6">
                                                         <strong>Note:</strong>
                                                         <span class="text-danger">*</span>
                                                         <span class="fw-light"> indicates a required field.</span>
                                                     </span>
                                                 </div>
+
+                                                <!-- ============================================================ -->
+                                                <!-- FINAL CHECK-UP TOGGLE (EDIT MODAL) -->
+                                                <!-- ============================================================ -->
+                                                <div class="final-switch-wrap mb-3" id="edit_final_toggle_section">
+                                                    <div class="switch-info">
+                                                        <p>Mark as final check-up</p>
+                                                        <small>Marks this as the patient's last prenatal visit. No further check-ups can be added after saving.</small>
+                                                    </div>
+                                                    <label class="final-toggle ms-3">
+                                                        <input type="checkbox" id="edit_is_final_toggle">
+                                                        <span class="track"></span>
+                                                        <span class="thumb"></span>
+                                                    </label>
+                                                    <input type="hidden" name="is_final" id="edit_is_final_hidden" value="0">
+                                                </div>
+                                                <div class="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3 d-none" id="edit_is_final_warning">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0;">
+                                                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                                    </svg>
+                                                    <small><strong>Warning:</strong> Once saved, this prenatal case will be <strong>closed</strong>. No new check-up records can be added.</small>
+                                                </div>
+                                                <small class="text-danger error-text d-block mb-3" id="is_final_error"></small>
+                                                <!-- ============================================================ -->
+                                                <!-- END FINAL CHECK-UP TOGGLE -->
+                                                <!-- ============================================================ -->
+
                                                 @include('records.prenatal.editComponent.editPregnancyCheckup')
                                             </div>
 

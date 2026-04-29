@@ -2036,11 +2036,12 @@ class PdfController extends Controller
 
         // Initialize result structure
         $sexDistribution = [
-            'vaccination' => ['Male' => 0, 'Female' => 0],
-            'prenatal' => ['Male' => 0, 'Female' => 0],
-            'seniorCitizen' => ['Male' => 0, 'Female' => 0],
-            'tbDots' => ['Male' => 0, 'Female' => 0],
-            'familyPlanning' => ['Male' => 0, 'Female' => 0],
+            'vaccination'         => ['Male' => 0, 'Female' => 0],
+            'prenatal'            => ['Male' => 0, 'Female' => 0],
+            'seniorCitizen'       => ['Male' => 0, 'Female' => 0],
+            'tbDots'              => ['Male' => 0, 'Female' => 0],
+            'familyPlanning'      => ['Male' => 0, 'Female' => 0],
+            'generalConsultation' => ['Male' => 0, 'Female' => 0], // add this
         ];
 
         $totals = [
@@ -2087,11 +2088,12 @@ class PdfController extends Controller
     private function mapCaseType($typeOfCase)
     {
         $mapping = [
-            'vaccination' => 'vaccination',
-            'prenatal' => 'prenatal',
-            'senior-citizen' => 'seniorCitizen',
-            'tb-dots' => 'tbDots',
-            'family-planning' => 'familyPlanning',
+            'vaccination'          => 'vaccination',
+            'prenatal'             => 'prenatal',
+            'senior-citizen'       => 'seniorCitizen',
+            'tb-dots'              => 'tbDots',
+            'family-planning'      => 'familyPlanning',
+            'general-consultation' => 'generalConsultation', // add this
         ];
 
         return $mapping[$typeOfCase] ?? null;

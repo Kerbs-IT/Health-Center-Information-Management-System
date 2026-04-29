@@ -16,7 +16,33 @@
                 <div class="add-buttons d-flex justify-content-end gap-1 flex-wrap">
                     <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPrenatalCaseRecordModal" data-patient-info='@json($patientInfo)' id="add_case_record_add_btn">Add Case Record</button>
                     <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addPregnancyPlanModal" data-patient-info='@json($patientInfo)' id="add_pregnancy_plan_add_btn">Add Pregnancy Plan Record</button>
-                    <button type="button" class="btn btn-success px-3 py-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#prenatalCheckupModal" data-bs-medical-record-id="{{$prenatalCaseRecords->id}}" id="prenatal_check_up_add_btn">Add Check-up Record</button>
+                    
+                    @if($hasFinalCheckup)
+                    {{-- Disabled state: case is closed --}}
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        disabled
+                        style="opacity: 0.65; cursor: not-allowed;"
+                        title="This prenatal case is closed. The final check-up has already been recorded.">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                        </svg>
+                        Add Check-up Record
+                    </button>
+                    @else
+                    {{-- Active state: can still add --}}
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#prenatalCheckupModal"
+                        data-bs-medical-record-id="{{$prenatalCaseRecords->id}}"
+                        id="prenatal_check_up_add_btn">
+
+                        Add Check-up Record
+                    </button>
+                    @endif
                     <a href="{{route('prenatal.case.record.archive')}}?medical_record_id={{$this->medicalRecordCase->id}}" class="btn btn-danger">
                         <i class="fa-solid fa-box-archive"></i> Archive
                     </a>

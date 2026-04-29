@@ -27,7 +27,6 @@ class SendOverdueNotifications extends Command
         $this->info('Current time: ' . now()->format('Y-m-d H:i:s'));
         $this->info('===========================================');
 
-        // Get all nurses and staff (health workers)
         $staffMembers = User::whereIn('role', ['nurse', 'staff'])
             ->where('status', 'active')
             ->whereNotNull('email')
@@ -49,15 +48,10 @@ class SendOverdueNotifications extends Command
         return 0;
     }
 
-    /**
-     * Process overdue notification for a single staff member
-     */
     private function processOverdueNotification($staff, $today)
     {
-        // Get overdue appointments for this staff member
         $overdueData = $this->getOverdueAppointments($staff, $today);
 
-        // Calculate total overdue appointments
         $totalOverdue = array_sum(array_column($overdueData, 'count'));
 
         if ($totalOverdue === 0) {
@@ -66,19 +60,13 @@ class SendOverdueNotifications extends Command
         }
 
         if (NotificationSchedule::shouldRun('overdue-notifications')) {
-            // 1. Send consolidated email with all overdue appointment types
             $this->sendOverdueEmail($staff, $overdueData, $totalOverdue);
-
-            // 2. Create individual in-app notifications for each overdue type
             $this->createOverdueInAppNotifications($staff, $overdueData);
         }
 
         $this->info("✓ {$staff->username} - {$totalOverdue} overdue appointments");
     }
 
-    /**
-     * Get overdue appointments for a specific staff member
-     */
     private function getOverdueAppointments($staff, $today)
     {
         $overdueData = [];
@@ -88,8 +76,6 @@ class SendOverdueNotifications extends Command
         // 1. VACCINATION OVERDUE
         // =========================================================
 
-        // DYNAMIC: Load vaccine config from DB instead of hardcoded array
-        // Keys are vaccine_acronym (e.g. 'BCG', 'PENTA'), values are max_doses
         $vaccineDoseConfig = DB::table('vaccines')
             ->where('status', 'Active')
             ->pluck('max_doses', 'vaccine_acronym')
@@ -141,14 +127,11 @@ class SendOverdueNotifications extends Command
                     continue;
                 }
 
-                // DYNAMIC: Look up max doses from DB result; skip if vaccine not found
-                // Uses case-insensitive match to handle acronym casing differences
                 $matchedKey = collect($vaccineDoseConfig)->keys()->first(
                     fn($key) => strtoupper($key) === strtoupper($vaccineAcronym)
                 );
 
                 if ($matchedKey === null) {
-                    // Vaccine not in DB (e.g. archived or unknown) — skip it
                     continue;
                 }
 
@@ -178,7 +161,6 @@ class SendOverdueNotifications extends Command
 
         $vaccinationCount = count($countedPatients);
 
-        // DEBUG block (remove after verifying)
         $this->info("=== VACCINATION DEBUG ===");
         $this->info("Vaccine config loaded from DB: " . count($vaccineDoseConfig) . " active vaccines");
         $this->info("Total cases found: " . $vaccinationCases->count());
@@ -195,10 +177,13 @@ class SendOverdueNotifications extends Command
             'count' => $vaccinationCount,
             'icon'  => '💉',
             'route' => '/patient-record/vaccination',
-            'color' => '#F44336'
+            'color' => '#F44336',
         ];
 
-        // 2. PRENATAL OVERDUE - Check only the last record for each patient
+        // =========================================================
+        // 2. PRENATAL OVERDUE
+        // =========================================================
+
         $lastPrenatalSubquery = DB::table('pregnancy_checkups as pc')
             ->select(
                 'pc.medical_record_case_id',
@@ -214,7 +199,7 @@ class SendOverdueNotifications extends Command
             })
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'pc.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-            ->whereDate('pc.date_of_comeback', '<', $today) // Only past dates (OVERDUE, not today)
+            ->whereDate('pc.date_of_comeback', '<', $today)
             ->where('p.status', '!=', 'Archived');
 
         if ($isStaff) {
@@ -222,14 +207,17 @@ class SendOverdueNotifications extends Command
                 ->where('pmr.health_worker_id', $staff->id);
         }
 
-        // Get all potential overdue cases
         $prenatalCases = $prenatalBaseQuery
             ->select('pc.*', 'mrc.id as medical_record_case_id')
             ->get();
 
-        // Filter cases that don't have a checkup after comeback date
         $prenatalCount = 0;
         foreach ($prenatalCases as $case) {
+            // Skip if this record is marked as final
+            if ($case->is_final) {
+                continue;
+            }
+
             $checkupExists = DB::table('pregnancy_checkups')
                 ->where('medical_record_case_id', $case->medical_record_case_id)
                 ->where('status', '!=', 'Archived')
@@ -243,15 +231,18 @@ class SendOverdueNotifications extends Command
         }
 
         $overdueData[] = [
-            'type' => 'prenatal',
+            'type'  => 'prenatal',
             'label' => 'Prenatal Checkup',
             'count' => $prenatalCount,
-            'icon' => '🤰',
+            'icon'  => '🤰',
             'route' => '/patient-record/prenatal/view-records',
-            'color' => '#F44336'
+            'color' => '#F44336',
         ];
 
-        // 3. SENIOR CITIZEN OVERDUE - Check only the last record for each patient
+        // =========================================================
+        // 3. SENIOR CITIZEN OVERDUE
+        // =========================================================
+
         $seniorCitizenSubquery = DB::table('senior_citizen_case_records as sccr')
             ->select('sccr.medical_record_case_id', DB::raw('MAX(sccr.id) as last_record_id'))
             ->where('sccr.status', '!=', 'Archived')
@@ -264,8 +255,9 @@ class SendOverdueNotifications extends Command
             })
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'sccr.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-            ->whereDate('sccr.date_of_comeback', '<', $today) // Only past dates (OVERDUE, not today)
-            ->where('p.status', '!=', 'Archived');
+            ->whereDate('sccr.date_of_comeback', '<', $today)
+            ->where('p.status', '!=', 'Archived')
+            ->where('sccr.is_final', false); // exclude final records
 
         if ($isStaff) {
             $seniorCitizenQuery->join('senior_citizen_medical_records as scmr', 'scmr.medical_record_case_id', '=', 'mrc.id')
@@ -275,15 +267,18 @@ class SendOverdueNotifications extends Command
         $seniorCitizenCount = $seniorCitizenQuery->distinct()->count('p.id');
 
         $overdueData[] = [
-            'type' => 'senior_citizen',
+            'type'  => 'senior_citizen',
             'label' => 'Senior Citizen Checkup',
             'count' => $seniorCitizenCount,
-            'icon' => '👴',
+            'icon'  => '👴',
             'route' => '/patient-record/senior-citizen/view-records',
-            'color' => '#F44336'
+            'color' => '#F44336',
         ];
 
-        // 4. TB DOTS OVERDUE - Check only the last record for each patient
+        // =========================================================
+        // 4. TB DOTS OVERDUE
+        // =========================================================
+
         $tbDotsSubquery = DB::table('tb_dots_check_ups as tdcu')
             ->select('tdcu.medical_record_case_id', DB::raw('MAX(tdcu.id) as last_record_id'))
             ->where('tdcu.status', '!=', 'Archived')
@@ -296,8 +291,9 @@ class SendOverdueNotifications extends Command
             })
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'tdcu.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-            ->whereDate('tdcu.date_of_comeback', '<', $today) // Only past dates (OVERDUE, not today)
-            ->where('p.status', '!=', 'Archived');
+            ->whereDate('tdcu.date_of_comeback', '<', $today)
+            ->where('p.status', '!=', 'Archived')
+            ->where('tdcu.is_final', false); // exclude final records
 
         if ($isStaff) {
             $tbDotsQuery->join('tb_dots_medical_records as tdmr', 'tdmr.medical_record_case_id', '=', 'mrc.id')
@@ -307,15 +303,18 @@ class SendOverdueNotifications extends Command
         $tbDotsCount = $tbDotsQuery->distinct()->count('p.id');
 
         $overdueData[] = [
-            'type' => 'tb_dots',
+            'type'  => 'tb_dots',
             'label' => 'TB DOTS Checkup',
             'count' => $tbDotsCount,
-            'icon' => '🏥',
+            'icon'  => '🏥',
             'route' => '/patient-record/tb-dots/view-records',
-            'color' => '#F44336'
+            'color' => '#F44336',
         ];
 
-        // 5. FAMILY PLANNING OVERDUE - Check only the last record for each patient
+        // =========================================================
+        // 5. FAMILY PLANNING OVERDUE
+        // =========================================================
+
         $familyPlanningSubquery = DB::table('family_planning_side_b_records as fpsbr')
             ->select('fpsbr.medical_record_case_id', DB::raw('MAX(fpsbr.id) as last_record_id'))
             ->where('fpsbr.status', '!=', 'Archived')
@@ -328,8 +327,9 @@ class SendOverdueNotifications extends Command
             })
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'fpsbr.medical_record_case_id')
             ->join('patients as p', 'p.id', '=', 'mrc.patient_id')
-            ->whereDate('fpsbr.date_of_follow_up_visit', '<=', $today) // Not in the future
-            ->where('p.status', '!=', 'Archived');
+            ->whereDate('fpsbr.date_of_follow_up_visit', '<', $today) // < not <= (overdue only, not today)
+            ->where('p.status', '!=', 'Archived')
+            ->where('fpsbr.is_final', false); // exclude final records
 
         if ($isStaff) {
             $familyPlanningQuery->join('family_planning_medical_records as fpmr', 'fpmr.medical_record_case_id', '=', 'mrc.id')
@@ -339,26 +339,23 @@ class SendOverdueNotifications extends Command
         $familyPlanningCount = $familyPlanningQuery->distinct()->count('p.id');
 
         $overdueData[] = [
-            'type' => 'family_planning',
+            'type'  => 'family_planning',
             'label' => 'Family Planning Follow-up',
             'count' => $familyPlanningCount,
-            'icon' => '👨‍👩‍👧‍👦',
+            'icon'  => '👨‍👩‍👧‍👦',
             'route' => '/patient-record/family-planning/view-records',
-            'color' => '#F44336'
+            'color' => '#F44336',
         ];
 
         return $overdueData;
     }
 
-    /**
-     * Send consolidated overdue email
-     */
     private function sendOverdueEmail($staff, $overdueData, $totalOverdue)
     {
         try {
             $emailData = [
-                'staff_name' => $this->getStaffName($staff),
-                'overdue_data' => $overdueData,
+                'staff_name'    => $this->getStaffName($staff),
+                'overdue_data'  => $overdueData,
                 'total_overdue' => $totalOverdue,
             ];
 
@@ -370,9 +367,6 @@ class SendOverdueNotifications extends Command
         }
     }
 
-    /**
-     * Create individual in-app notifications for each overdue type
-     */
     private function createOverdueInAppNotifications($staff, $overdueData)
     {
         foreach ($overdueData as $overdue) {
@@ -383,17 +377,17 @@ class SendOverdueNotifications extends Command
                         " overdue appointments that need attention.";
 
                     notifications::create([
-                        'user_id' => $staff->id,
-                        'patient_id' => null,
-                        'type' => 'overdue_alert',
-                        'title' => "⚠️ Overdue - {$overdue['label']}",
-                        'message' => $message,
-                        'appointment_type' => $overdue['type'],
-                        'appointment_date' => null,
+                        'user_id'                => $staff->id,
+                        'patient_id'             => null,
+                        'type'                   => 'overdue_alert',
+                        'title'                  => "⚠️ Overdue - {$overdue['label']}",
+                        'message'                => $message,
+                        'appointment_type'       => $overdue['type'],
+                        'appointment_date'       => null,
                         'medical_record_case_id' => null,
-                        'link_url' => $overdue['route'],
-                        'is_read' => false,
-                        'created_at' => now(),
+                        'link_url'               => $overdue['route'],
+                        'is_read'                => false,
+                        'created_at'             => now(),
                     ]);
 
                     $this->info("  ✓ Overdue notification created: {$overdue['label']} ({$overdue['count']})");
@@ -404,9 +398,6 @@ class SendOverdueNotifications extends Command
         }
     }
 
-    /**
-     * Get staff member's full name
-     */
     private function getStaffName($staff)
     {
         if ($staff->nurses) {

@@ -60,32 +60,46 @@ class RecordsController extends Controller
         try {
 
             $data = $request->validate([
-                'update_handled_by' => 'required',
-                'date_of_vaccination' => 'required',
+                'update_handled_by'  => 'required',
+                'date_of_vaccination' => 'required|date|before_or_equal:today',
                 'time_of_vaccination' => 'sometimes',
-                'selected_vaccine' => 'required',
-                'case_record_id' => 'required',
-                'dose' => 'required',
-                'remarks' => 'sometimes',
+                'selected_vaccine'   => 'required',
+                'case_record_id'     => 'required',
+                'dose'               => 'required',
+                'remarks'            => 'sometimes',
                 'height' => [
                     'nullable',
                     'numeric',
-                    'between:1,250'      // cm
+                    'between:1,250'
                 ],
-
                 'weight' => [
                     'nullable',
                     'numeric',
-                    'between:1,250'       // kg
+                    'between:1,250'
                 ],
-
                 'temperature' => [
                     'nullable',
                     'numeric',
-                    'between:35,42'       // °C
+                    'between:35,42'
                 ],
-
-                'date_of_comeback' => 'required|date'
+                'date_of_comeback' => 'required|date|after_or_equal:today',
+            ], [
+                'update_handled_by.required'        => 'Please select the health worker who handled this record.',
+                'date_of_vaccination.required'      => 'The date of vaccination is required.',
+                'date_of_vaccination.date'          => 'Please enter a valid vaccination date.',
+                'date_of_vaccination.before_or_equal' => 'The vaccination date cannot be a future date.',
+                'selected_vaccine.required'         => 'Please select at least one vaccine.',
+                'case_record_id.required'           => 'The case record is missing. Please try again.',
+                'dose.required'                     => 'Please specify the dose number.',
+                'height.numeric'                    => 'Height must be a valid number.',
+                'height.between'                    => 'Height must be between 1 and 250 cm.',
+                'weight.numeric'                    => 'Weight must be a valid number.',
+                'weight.between'                    => 'Weight must be between 1 and 250 kg.',
+                'temperature.numeric'               => 'Temperature must be a valid number.',
+                'temperature.between'               => 'Temperature must be between 35°C and 42°C.',
+                'date_of_comeback.required'         => 'The comeback date is required.',
+                'date_of_comeback.date'             => 'Please enter a valid comeback date.',
+                'date_of_comeback.after_or_equal'   => 'The comeback date must be today or a future date.',
             ]);
 
             // get the vaccine types
@@ -314,7 +328,7 @@ class RecordsController extends Controller
                 'sex' => 'required|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today',
                 'handled_by' => 'required',
                 'mother_name' => 'sometimes|nullable|string',
                 'father_name' => 'sometimes|nullable|string',
@@ -353,6 +367,8 @@ class RecordsController extends Controller
 
                 'vaccination_weight.required' => 'The weight field is required.',
                 'vaccination_weight.regex' => 'The weight format is invalid.',
+
+                'date_of_registration.before_or_equal' => 'The date of registration must not be a future date.',
             ]);
 
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
@@ -621,7 +637,7 @@ class RecordsController extends Controller
             $data = $request->validate([
                 'add_patient_full_name' => 'required',
                 'add_handled_by' => 'required',
-                'add_date_of_vaccination' => 'required',
+                'add_date_of_vaccination' => 'required|date|before_or_equal:today',
                 'add_time_of_vaccination' => 'sometimes|nullable|string',
                 'selected_vaccine_type' => 'required',
                 'add_record_dose' => 'required',
@@ -641,8 +657,10 @@ class RecordsController extends Controller
                     'numeric',
                     'between:35,42'
                 ],
-                'add_date_of_comeback' => 'required|date'
+                'add_date_of_comeback' => 'required|date|after_of_equal:today'
             ], [
+                'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must not be a future date.',
+                'add_date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
                 // Custom messages with friendly attribute names
                 'add_patient_full_name.required' => 'The patient full name field is required.',
 
@@ -955,6 +973,7 @@ class RecordsController extends Controller
     {
         $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id', $id)->where('status', '!=', 'Archived')->get();
         $patientRecord = medical_record_cases::with('patient', 'senior_citizen_medical_record')->findOrFail($id);
+        $nurseFullName = nurses::value('full_name') ?? 'N/A';
         return view(
             'records.seniorCitizen.seniorCitizenPatientCase',
             [
@@ -963,7 +982,8 @@ class RecordsController extends Controller
                 'seniorCaseRecords' =>  $seniorCaseRecords,
                 'patient_name' => $patientRecord->patient->full_name,
                 'healthWorkerId' => $patientRecord->senior_citizen_medical_record->health_worker_id,
-                'medicalRecordId' => $id
+                'medicalRecordId' => $id,
+                'nurseFullName' => $nurseFullName
             ]
         );
     }

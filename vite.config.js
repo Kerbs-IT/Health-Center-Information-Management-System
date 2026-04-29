@@ -34,6 +34,7 @@ export default defineConfig({
                 "resources/css/patient/add-patient-prenatal.css",
                 "resources/css/patient/patient-dashboard.css",
                 "resources/css/patient/record.css",
+                'resources/css/final-record-toggle.css',
 
                 // JS Files
                 "resources/js/app.js",

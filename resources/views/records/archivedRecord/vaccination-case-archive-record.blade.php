@@ -33,7 +33,7 @@
     'vaccination' => 'record_vaccination'
     ];
 
-    $elementId = $elementIdMap[$typeOfCase] ?? '';
+    $elementId = $elementIdMap[$typeOfCase] ?? 'record_vaccination';
     @endphp
     <div class="vaccination min-vh-100 d-flex">
         <aside>

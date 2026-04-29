@@ -2,8 +2,8 @@ import Swal from "sweetalert2";
 import changeLmp from "../LMP/lmp";
 import initSignatureCapture from "../signature/signature";
 import { vitalSignInputMask } from "../vitalSign";
-// load the existing info
 
+// load the existing info
 document.addEventListener("click", async (e) => {
     const viewBtn = e.target.closest(".viewCaseBtn");
     if (!viewBtn) return;
@@ -14,68 +14,55 @@ document.addEventListener("click", async (e) => {
 
     const data = await response.json();
 
-    // load the value to the modal
-    // OB HISTORY
     const gravida = document.getElementById("gravida_value");
     const para = document.getElementById("para_value");
     const term = document.getElementById("term_value");
     const premature = document.getElementById("premature_value");
     const abortion = document.getElementById("abortion_value");
     const livingChildren = document.getElementById("livingChildren_value");
-     const blood_pressure = document.getElementById("blood_pressure_value");
-     const weight = document.getElementById("weight_value");
-     const height = document.getElementById("height_value");
-     const temperature = document.getElementById("temperature_value");
-     const respiratory_rate = document.getElementById("respiratory_rate_value");
-     const pulse_rate = document.getElementById("pulse_rate_value");
-     const planning = document.getElementById("planning_value");
+    const blood_pressure = document.getElementById("blood_pressure_value");
+    const weight = document.getElementById("weight_value");
+    const height = document.getElementById("height_value");
+    const temperature = document.getElementById("temperature_value");
+    const respiratory_rate = document.getElementById("respiratory_rate_value");
+    const pulse_rate = document.getElementById("pulse_rate_value");
+    const planning = document.getElementById("planning_value");
 
-    // load the value
     gravida.innerHTML = data.caseInfo.G ?? "0";
     para.innerHTML = data.caseInfo.P ?? "0";
     term.innerHTML = data.caseInfo.T ?? "0";
     premature.innerHTML = data.caseInfo.premature ?? "0";
     abortion.innerHTML = data.caseInfo.abortion ?? "0";
     livingChildren.innerHTML = data.caseInfo.living_children ?? "0";
-    // load the vital
-    if (blood_pressure) {
+
+    if (blood_pressure)
         blood_pressure.innerHTML = data.caseInfo.blood_pressure ?? 0;
-    }
-    if (height) {
-      height.innerHTML = data.caseInfo.height ? `${data.caseInfo.height} cm` : '0 cm';  
-    }
-    if (weight) {
+    if (height)
+        height.innerHTML = data.caseInfo.height
+            ? `${data.caseInfo.height} cm`
+            : "0 cm";
+    if (weight)
         weight.innerHTML = data.caseInfo.weight
             ? `${data.caseInfo.weight} cm`
             : "0 cm";
-    }
-    
-    if (temperature) {
+    if (temperature)
         temperature.innerHTML = data.caseInfo.temperature
             ? `${data.caseInfo.temperature} °C`
             : "0 °C";
-    }
-    
-    if (respiratory_rate) {
+    if (respiratory_rate)
         respiratory_rate.innerHTML = data.caseInfo.respiratory_rate
-        ? `${data.caseInfo.respiratory_rate}`
-        : "0";
-    }
-    
-    if (pulse_rate) {
+            ? `${data.caseInfo.respiratory_rate}`
+            : "0";
+    if (pulse_rate)
         pulse_rate.innerHTML = data.caseInfo.pulse_rate
             ? `${data.caseInfo.pulse_rate}`
             : "0";
-    }
-    
-    if (planning) planning.innerHTML = data.caseInfo.planning ?? 'N/A';
+    if (planning) planning.innerHTML = data.caseInfo.planning ?? "N/A";
 
-    // load the pregnancy timeline
     const tableBody = document.getElementById("pregnancy_history_body");
-    // reset the table first
     tableBody.innerHTML = "";
     data.caseInfo.pregnancy_timeline_records.forEach((record) => {
-        tableBody.innerHTML += ` 
+        tableBody.innerHTML += `
             <tr class="text-center">
                 <td>${record.year}</td>
                 <td>${record.type_of_delivery}</td>
@@ -86,13 +73,12 @@ document.addEventListener("click", async (e) => {
             </tr>`;
     });
     if (tableBody.children.length == 0) {
-        tableBody.innerHTML += ` 
+        tableBody.innerHTML += `
             <tr class="text-center">
                <td colspan='12'>No available records</td>
             </tr>`;
     }
 
-    // subjective info
     const lmp = document.getElementById("lmp_value");
     const expected_delivery = document.getElementById(
         "expected_delivery_value",
@@ -104,7 +90,6 @@ document.addEventListener("click", async (e) => {
     const tt4 = document.getElementById("tt4_value");
     const tt5 = document.getElementById("tt5_value");
 
-    // load the value
     lmp.innerHTML = data.caseInfo.LMP ?? "N/A";
     expected_delivery.innerHTML = data.caseInfo.expected_delivery ?? "N/A";
     menarche.innerHTML = data.caseInfo.menarche ?? "N/A";
@@ -114,7 +99,6 @@ document.addEventListener("click", async (e) => {
     tt4.innerHTML = data.caseInfo.tetanus_toxoid_4 ?? "N/A";
     tt5.innerHTML = data.caseInfo.tetanus_toxoid_5 ?? "N/A";
 
-    // prenatal physical assessment
     const spotting = document.getElementById("spotting_value");
     const edema = document.getElementById("edema_value");
     const severe_headache = document.getElementById("severe_headache_value");
@@ -127,9 +111,7 @@ document.addEventListener("click", async (e) => {
     const alcohol_drinker = document.getElementById("alcohol_drinker_value");
     const drug_intake = document.getElementById("drug_intake_value");
 
-    // load the value
-    spotting.innerHTML =
-        data.caseInfo.prenatal_assessment.spotting ?? "no";
+    spotting.innerHTML = data.caseInfo.prenatal_assessment.spotting ?? "no";
     edema.innerHTML = data.caseInfo.prenatal_assessment.edema ?? "no";
     severe_headache.innerHTML =
         data.caseInfo.prenatal_assessment.severe_headache ?? "no";
@@ -144,37 +126,19 @@ document.addEventListener("click", async (e) => {
         data.caseInfo.prenatal_assessment.alchohol_drinker ?? "no";
     drug_intake.innerHTML =
         data.caseInfo.prenatal_assessment.drug_intake ?? "no";
-
-    // decision
-    // const decision = document.getElementById("decision_value");
-
-    // const caseDecision = (decision.innerHTML = data.caseInfo.decision);
-
-    // console.log("datas:", data);
-
-    // signature path
 });
 
 // pregnancy plan view
-
 document.addEventListener("click", async (e) => {
     const pregnancyPlanviewBtn = e.target.closest(".pregnancy-plan-view-btn");
-
     if (!pregnancyPlanviewBtn) return;
 
     const pregnancyPlanId = pregnancyPlanviewBtn.dataset.bsId;
-
-    // fetch the pregnancy plan information from the database
     const response = await fetch(
         `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`,
     );
-
-    // get the response data
     const data = await response.json();
 
-    // console.log(data);
-
-    // get the id of response container
     const midwifeName = document.getElementById("midwife_name_value");
     const placeOfPregnancy = document.getElementById(
         "place_of_pregnancy_value",
@@ -208,11 +172,6 @@ document.addEventListener("click", async (e) => {
     const signatureImg = document.getElementById("signature_value");
     const noSignatureText = document.getElementById("no_signature");
 
-   
-   
-
-    // load the value
-
     midwifeName.innerHTML = data.pregnancyPlan.midwife_name ?? "N/A";
     placeOfPregnancy.innerHTML = data.pregnancyPlan.place_of_pregnancy ?? "N/A";
     authorizedByPH.innerHTML =
@@ -236,9 +195,6 @@ document.addEventListener("click", async (e) => {
         data.pregnancyPlan.emergency_person_contact_number ?? "N/A";
     patientName.innerHTML = data.pregnancyPlan.patient_name ?? "N/A";
 
-    // load the vital sign
-    
-
     const signaturePath = data.pregnancyPlan.signature
         ? `/storage/${data.pregnancyPlan.signature}`
         : null;
@@ -248,14 +204,11 @@ document.addEventListener("click", async (e) => {
         noSignatureText.style.display = "none";
     }
 });
-// add event listener and load the data to the modal
 
 const saveRecordBtn = document.getElementById("update-save-btn") ?? null;
 
-// Helper function to get element safely
 const getElement = (id) => document.getElementById(id) ?? null;
 
-// Helper function to create timeline row HTML
 const createTimelineRow = (timeline) => `
     <tr class="text-center prenatal-record">
         <td>${timeline.year}</td>
@@ -276,7 +229,6 @@ const createTimelineRow = (timeline) => `
     </tr>
 `;
 
-// Validation function for pregnancy timeline inputs
 const validateTimelineInputs = (
     year,
     typeOfDelivery,
@@ -304,7 +256,6 @@ const validateTimelineInputs = (
     return errors;
 };
 
-// Display validation errors
 const displayErrors = (errors, errorElements) => {
     errorElements.year.innerHTML = errors.year || "";
     errorElements.typeOfDelivery.innerHTML = errors.typeOfDelivery || "";
@@ -325,7 +276,6 @@ const displayErrors = (errors, errorElements) => {
     return false;
 };
 
-// Reset timeline input fields
 const resetTimelineInputs = (inputs) => {
     inputs.year.value = "";
     inputs.typeOfDelivery.value = "";
@@ -335,7 +285,6 @@ const resetTimelineInputs = (inputs) => {
     inputs.outcome.value = "";
 };
 
-// Main event handler for case editing
 document.addEventListener("click", async (e) => {
     const caseEditBtn = e.target.closest(".case-edit-icon");
     if (!caseEditBtn) return;
@@ -343,7 +292,6 @@ document.addEventListener("click", async (e) => {
     const medicalId = caseEditBtn.dataset.bsMedicalId;
     saveRecordBtn.dataset.medicalId = medicalId ?? null;
 
-    // Fetch case data
     const response = await fetch(
         `/view-case/case-record/prenatal/${medicalId}`,
         {
@@ -354,7 +302,6 @@ document.addEventListener("click", async (e) => {
 
     const data = await response.json();
 
-    // Load basic case information
     const basicFields = {
         grada: getElement("grada_input"),
         para: getElement("para_input"),
@@ -364,10 +311,8 @@ document.addEventListener("click", async (e) => {
         livingChildren: getElement("living_children_input"),
     };
 
-    // Validate all basic fields exist
     if (Object.values(basicFields).some((field) => field === null)) return;
 
-    // Load basic field values
     basicFields.grada.value = data.caseInfo.G ?? 0;
     basicFields.para.value = data.caseInfo.P ?? 0;
     basicFields.term.value = data.caseInfo.T ?? 0;
@@ -375,7 +320,6 @@ document.addEventListener("click", async (e) => {
     basicFields.abortion.value = data.caseInfo.abortion ?? 0;
     basicFields.livingChildren.value = data.caseInfo.living_children ?? 0;
 
-    // Pregnancy timeline elements
     const timelineInputs = {
         year: getElement("pregnancy_year"),
         typeOfDelivery: getElement("type_of_delivery"),
@@ -396,24 +340,19 @@ document.addEventListener("click", async (e) => {
     const addBtn = getElement("add-pregnancy-history-btn");
     const tableBody = getElement("edit-previous-records-body");
 
-    // Load existing pregnancy timeline
     const pregnancyTimeline = data.caseInfo.pregnancy_timeline_records.sort(
         (a, b) => a.year - b.year,
     );
     tableBody.innerHTML = pregnancyTimeline.map(createTimelineRow).join("");
 
-    // Remove old event listeners by cloning the button
     if (addBtn) {
         const newAddBtn = addBtn.cloneNode(true);
         addBtn.parentNode.replaceChild(newAddBtn, addBtn);
 
-        // Add new event listener to the cloned button
         newAddBtn.addEventListener("click", () => {
-            // Validate all inputs exist
             if (Object.values(timelineInputs).some((input) => input === null))
                 return;
 
-            // Validate inputs
             const errors = validateTimelineInputs(
                 timelineInputs.year,
                 timelineInputs.typeOfDelivery,
@@ -422,10 +361,8 @@ document.addEventListener("click", async (e) => {
                 timelineInputs.outcome,
             );
 
-            // Display errors if any
             if (displayErrors(errors, errorElements)) return;
 
-            // Add new timeline record
             const newTimeline = {
                 year: timelineInputs.year.value,
                 type_of_delivery: timelineInputs.typeOfDelivery.value,
@@ -436,13 +373,10 @@ document.addEventListener("click", async (e) => {
             };
 
             tableBody.innerHTML += createTimelineRow(newTimeline);
-
-            // Reset inputs
             resetTimelineInputs(timelineInputs);
         });
     }
 
-    // Handle timeline row removal
     tableBody.addEventListener("click", (e) => {
         const removeBtn = e.target.closest(".timeline-remove");
         if (removeBtn) {
@@ -450,7 +384,6 @@ document.addEventListener("click", async (e) => {
         }
     });
 
-    // Load subjective section data
     const subjectiveFields = {
         lmp: getElement("LMP_input"),
         expected_delivery: getElement("expected_delivery_input"),
@@ -507,24 +440,21 @@ document.addEventListener("click", async (e) => {
         );
     }
 
-    if (vitalSign.blood_pressure) vitalSign.blood_pressure.value = data.caseInfo.blood_pressure ?? null;
+    if (vitalSign.blood_pressure)
+        vitalSign.blood_pressure.value = data.caseInfo.blood_pressure ?? null;
     if (vitalSign.height) vitalSign.height.value = data.caseInfo.height ?? null;
-    if (vitalSign.weight)
-        vitalSign.weight.value = data.caseInfo.weight ?? null;
+    if (vitalSign.weight) vitalSign.weight.value = data.caseInfo.weight ?? null;
     if (vitalSign.temperature)
         vitalSign.temperature.value = data.caseInfo.temperature ?? null;
     if (vitalSign.respiratory_rate)
-        vitalSign.respiratory_rate.value = data.caseInfo.respiratory_rate ?? null;
+        vitalSign.respiratory_rate.value =
+            data.caseInfo.respiratory_rate ?? null;
     if (vitalSign.pulse_rate)
         vitalSign.pulse_rate.value = data.caseInfo.pulse_rate ?? null;
 
     const planning = document.getElementById("edit_case_planning");
-    if(planning){
-        planning.value = data.caseInfo.planning ?? '';
-    }
+    if (planning) planning.value = data.caseInfo.planning ?? "";
 
-
-    // Load assessment data
     const assessmentFields = {
         spotting: getElement("spotting_input"),
         edema: getElement("edema_input"),
@@ -562,163 +492,141 @@ document.addEventListener("click", async (e) => {
     if (assessmentFields.drug_intake)
         assessmentFields.drug_intake.checked = assessment.drug_intake === "yes";
 });
+
 // add a expected delivery change in the LMP
 const LMP = document.getElementById("LMP_input") ?? null;
-
 if (LMP) {
     const expectedDelivery = document.getElementById("expected_delivery_input");
-
     LMP.addEventListener("change", () => {
         changeLmp(LMP, expectedDelivery);
     });
 }
 
 // update the case
-
 if (saveRecordBtn) {
     saveRecordBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const form = document.getElementById(
-            "update-prenatal-case-record-form",
-        );
-        const formData = new FormData(form);
+        // Store original text and disable button
+        const originalText = saveRecordBtn.innerHTML;
+        saveRecordBtn.disabled = true;
+        saveRecordBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
 
-        // for (const [key, value] of formData.entries()) {
-        //     console.log(key, value);
-        // }
+        try {
+            const form = document.getElementById(
+                "update-prenatal-case-record-form",
+            );
+            const formData = new FormData(form);
+            const medicalId = e.target.dataset.medicalId;
 
-        const medicalId = e.target.dataset.medicalId;
-        const response = await fetch(
-            `/patient-record/update/prenatal-case/${medicalId}`,
-            {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]',
-                    ).content,
-                    Accept: "application/json",
+            const response = await fetch(
+                `/patient-record/update/prenatal-case/${medicalId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]',
+                        ).content,
+                        Accept: "application/json",
+                    },
+                    body: formData,
                 },
-                body: formData,
-            },
-        );
+            );
 
-        const data = await response.json();
+            const data = await response.json();
+            const errorElements = document.querySelectorAll(".error-text");
 
-        // get all the error elements
-        const errorElements = document.querySelectorAll(".error-text");
+            if (response.ok) {
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
 
-        if (response.ok) {
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-            Swal.fire({
-                title: "Prenatal case Update",
-                text: data.message, // this will make the text capitalize each word
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("editPrenatalCaseModal"),
-                    );
-                    modal.hide();
-                    form.reset();
-                }
-            });
-        } else {
-            // reset first
+                Swal.fire({
+                    title: "Prenatal case Update",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    saveRecordBtn.disabled = false;
+                    saveRecordBtn.innerHTML = originalText;
 
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-
-            Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).textContent = value;
-                }
-            });
-
-            let message = "";
-
-            if (data.errors) {
-                if (typeof data.errors == "object") {
-                    message = Object.values(data.errors).flat().join("\n");
-                } else {
-                    message = data.errors;
-                }
+                    if (result.isConfirmed) {
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("editPrenatalCaseModal"),
+                        );
+                        modal.hide();
+                        form.reset();
+                    }
+                });
             } else {
-                message = "An unexpected error occurred.";
-            }
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
 
-            Swal.fire({
-                title: "Prenatal case Update",
-                text: capitalizeEachWord(message), // this will make the text capitalize each word
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            });
+                Object.entries(data.errors).forEach(([key, value]) => {
+                    if (document.getElementById(`${key}_error`)) {
+                        document.getElementById(`${key}_error`).textContent =
+                            value;
+                    }
+                });
+
+                let message = "";
+                if (data.errors) {
+                    if (typeof data.errors == "object") {
+                        message = Object.values(data.errors).flat().join("\n");
+                    } else {
+                        message = data.errors;
+                    }
+                } else {
+                    message = "An unexpected error occurred.";
+                }
+
+                Swal.fire({
+                    title: "Prenatal case Update",
+                    text: capitalizeEachWord(message),
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    saveRecordBtn.disabled = false;
+                    saveRecordBtn.innerHTML = originalText;
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            // Re-enable button on network/JS error
+            saveRecordBtn.disabled = false;
+            saveRecordBtn.innerHTML = originalText;
         }
     });
 }
-// edit section of pregnancy plan -- viewing pregnancy plan value
 
-// this is the btn in modal to save the new information
+// edit section of pregnancy plan
 const updateBTN = document.getElementById("pregnancy_plan_update_btn");
 
 document.addEventListener("click", async (e) => {
     const pregnancyPlanEditBTN = e.target.closest(".pregnancy_plan_edit_btn");
     if (!pregnancyPlanEditBTN) return;
     const pregnancyPlanId = pregnancyPlanEditBTN.dataset.bsId;
-    // let set the custom variable for the save btn since i place it outside this event listener to avoid redundancy and overlapping
     updateBTN.dataset.pregnancyPlanId = pregnancyPlanId;
 
-    // reset the errors
     const errors = document.querySelectorAll(".error-text");
     errors.forEach((error) => (error.innerHTML = ""));
-    // fetch the pregnancy plan information from the database
+
     const response = await fetch(
         `/view-prenatal/pregnancy-plan/${pregnancyPlanId}`,
     );
     const data = await response.json();
-    // console.log(data);
-    // get the inputs container
-    const midwife_name = document.getElementById("midwife_name");
-    const place_of_birth = document.getElementById("place_of_birth");
-    const authorized_by_philhealth_yes = document.getElementById(
-        "authorized_by_philhealth_yes",
-    );
-    const authorized_by_philhealth_no = document.getElementById(
-        "authorized_by_philhealth_no",
-    );
-    const cost_of_pregnancy = document.getElementById("cost_of_pregnancy");
-    const payment_method = document.getElementById("payment_method");
-    const transportation_mode = document.getElementById("transportation_mode");
-    const accompany_person_to_hospital = document.getElementById(
-        "accompany_person_to_hospital",
-    );
-    const accompany_through_pregnancy = document.getElementById(
-        "accompany_through_pregnancy",
-    );
-    const care_person = document.getElementById("care_person");
-    const emergency_person_name = document.getElementById(
-        "emergency_person_name",
-    );
-    const emergency_person_residency = document.getElementById(
-        "emergency_person_residency",
-    );
-    const emergency_person_contact_number = document.getElementById(
-        "emergency_person_contact_number",
-    );
-    const patient_name = document.getElementById("patient_name");
-    // lets reset the container of donor names so it only show the data from the database removing the redundancy
+
     donor_names_con.innerHTML = "";
 
     Object.entries(data.pregnancyPlan).forEach(([key, value]) => {
         if (key == "authorized_by_philhealth") {
             if (value == "yes") {
-                // console.log("yes");
                 document.getElementById(
                     "authorized_by_philhealth_yes",
                 ).checked = true;
@@ -730,44 +638,36 @@ document.addEventListener("click", async (e) => {
         if (document.getElementById(`${key}`)) {
             document.getElementById(`${key}`).value = value;
         }
-        // loop through the donor names
         if (key == "donor_name") {
             data.pregnancyPlan.donor_name.forEach((name) => {
                 donor_names_con.innerHTML += `
                  <div class="box vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
-                                                                <h5 class="mb-0">${name.donor_name}</h5>
-                                                                <div class="delete-icon d-flex align-items-center justify-content-center">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
-                                                                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                                                                    </svg>
-                                                                </div>
-                                                                <input type="hidden" name="donor_names[]" value="${name.donor_name}" class="donor_name_input">
-                                                            </div>`;
+                    <h5 class="mb-0">${name.donor_name}</h5>
+                    <div class="delete-icon d-flex align-items-center justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
+                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                        </svg>
+                    </div>
+                    <input type="hidden" name="donor_names[]" value="${name.donor_name}" class="donor_name_input">
+                </div>`;
             });
         }
     });
 
-    // handle the remove of the selected donor
     donor_names_con.addEventListener("click", (e) => {
-        let donors = document.querySelectorAll('input[name="donor_names[]"]');
         if (e.target.closest(".box")) {
             if (e.target.closest(".delete-icon-svg")) {
                 e.target.closest(".box").remove();
             }
         }
-        // console.log("donor deleted");
     });
-
-    // signature part
 });
 
-// WAIT FOR MODAL TO FULLY OPEN - THIS RUNS **AFTER** MODAL IS VISIBLE
+// WAIT FOR MODAL TO FULLY OPEN
 const editPregnancyModal = document.getElementById("case2PrenatalModal");
 let editPatientSignature = null;
 if (editPregnancyModal) {
     editPregnancyModal.addEventListener("shown.bs.modal", function () {
-        // console.log("Modal is NOW visible!");
-
         if (!editPatientSignature) {
             editPatientSignature = initSignatureCapture({
                 drawBtnId: "edit_drawSignatureBtn",
@@ -785,7 +685,6 @@ if (editPregnancyModal) {
                 hiddenInputId: "edit_signature_data",
                 maxFileSizeMB: 2,
             });
-            // console.log("✅ SIGNATURE INITIALIZED!");
         } else {
             editPatientSignature.clear();
         }
@@ -794,9 +693,8 @@ if (editPregnancyModal) {
 
 const donor_names_con = document.getElementById("donor_names_con");
 const donor_name_input = document.getElementById("name_of_donor");
-// add btn
 const addBtn = document.getElementById("donor_name_add_btn");
-// event listener for adding the name
+
 addBtn.addEventListener("click", (e) => {
     if (donor_name_input.value !== "") {
         donor_names_con.innerHTML += `
@@ -810,12 +708,11 @@ addBtn.addEventListener("click", (e) => {
                 <input type="hidden" name="donor_names[]" value="${donor_name_input.value}" class="donor_name_input">
             </div>
             `;
-        // reset the input field
         donor_name_input.value = "";
     } else {
         Swal.fire({
             title: "Adding Blood Donor Name",
-            text: "Please provide valid name.", // this will make the text capitalize each word
+            text: "Please provide valid name.",
             icon: "error",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
@@ -823,30 +720,196 @@ addBtn.addEventListener("click", (e) => {
     }
 });
 
-// -------------- update the pregnancy plan record only trigger when the save button is click
-// there add a condition identify if the btn is present
-
+// update the pregnancy plan record
 if (updateBTN) {
     updateBTN.addEventListener("click", async (e) => {
         e.preventDefault();
-        const pregnancyPlanId = updateBTN.dataset.pregnancyPlanId;
-        // console.log(pregnancyPlanId);
-        const form = document.getElementById("pregnancy_plan_update_form");
-        const formData = new FormData(form);
 
-        // Manually add the hidden signature data
-        const hiddenSignature = document.getElementById("edit_signature_data");
-        if (hiddenSignature && hiddenSignature.value) {
-            formData.set("edit_signature_data", hiddenSignature.value);
-            // console.log("✅ Manually added signature data");
+        // Store original text and disable button
+        const originalText = updateBTN.innerHTML;
+        updateBTN.disabled = true;
+        updateBTN.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
+
+        try {
+            const pregnancyPlanId = updateBTN.dataset.pregnancyPlanId;
+            const form = document.getElementById("pregnancy_plan_update_form");
+            const formData = new FormData(form);
+
+            const hiddenSignature = document.getElementById(
+                "edit_signature_data",
+            );
+            if (hiddenSignature && hiddenSignature.value) {
+                formData.set("edit_signature_data", hiddenSignature.value);
+            }
+
+            const response = await fetch(
+                `/update/pregnancy-plan-record/${pregnancyPlanId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]',
+                        ).content,
+                        Accept: "application/json",
+                    },
+                    body: formData,
+                },
+            );
+
+            const data = await response.json();
+            const errorElements = document.querySelectorAll(".error-text");
+
+            if (response.ok) {
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
+
+                Swal.fire({
+                    title: "Prenatal Patient",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    updateBTN.disabled = false;
+                    updateBTN.innerHTML = originalText;
+
+                    if (result.isConfirmed) {
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("case2PrenatalModal"),
+                        );
+                        modal.hide();
+                        form.reset();
+                    }
+                });
+            } else {
+                errorElements.forEach((element) => {
+                    element.textContent = "";
+                });
+
+                Object.entries(data.errors).forEach(([key, value]) => {
+                    if (document.getElementById(`${key}_error`)) {
+                        document.getElementById(`${key}_error`).textContent =
+                            value;
+                    }
+                });
+
+                let message = "";
+                if (data.errors) {
+                    if (typeof data.errors == "object") {
+                        message = Object.values(data.errors).flat().join("\n");
+                    } else {
+                        message = data.errors;
+                    }
+                } else {
+                    message = "An unexpected error occurred.";
+                }
+
+                Swal.fire({
+                    title: "Prenatal Patient",
+                    text: capitalizeEachWord(message),
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Re-enable button AFTER SweetAlert is dismissed
+                    updateBTN.disabled = false;
+                    updateBTN.innerHTML = originalText;
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            // Re-enable button on network/JS error
+            updateBTN.disabled = false;
+            updateBTN.innerHTML = originalText;
         }
+    });
+}
 
-        // for (const [key, value] of formData.entries()) {
-        //     console.log(key, value);
-        // }
+// add prenatal checkup record
+const prentalCheckUpBTN = document.getElementById("prenatal_check_up_add_btn");
+const uploadBTN = document.getElementById("check-up-save-btn");
+
+if (prentalCheckUpBTN) {
+    prentalCheckUpBTN.addEventListener("click", async (e) => {
+        const medicalId = e.target.dataset.bsMedicalRecordId;
+        uploadBTN.dataset.bsMedicalRecordId = medicalId;
+
+        const errors = document.querySelectorAll(".error-text");
+        errors.forEach((error) => (error.innerHTML = ""));
 
         const response = await fetch(
-            `/update/pregnancy-plan-record/${pregnancyPlanId}`,
+            `/patient-record/view-details/${medicalId}`,
+        );
+        const data = await response.json();
+
+        const patient_name = document.getElementById("check_up_patient_name");
+        const handled_by = document.getElementById("check_up_handled_by");
+        const healthworkerId = document.getElementById("health_worker_id");
+        const hiddenPatientName = document.getElementById(
+            "hidden_check_up_patient_name",
+        );
+
+        patient_name.value = data.prenatalRecord.patient.full_name ?? "";
+        handled_by.value = data.healthWorker.full_name ?? "";
+        healthworkerId.value = data.healthWorker.user_id;
+        hiddenPatientName.value = data.prenatalRecord.patient.full_name;
+
+        const checkup_blood_pressure = document.getElementById(
+            "check_up_blood_pressure",
+        );
+        const checkup_temperature = document.getElementById(
+            "check_up_temperature",
+        );
+        const checkup_respiratory_rate = document.getElementById(
+            "check_up_respiratory_rate",
+        );
+        const checkup_pulse_rate = document.getElementById(
+            "check_up_pulse_rate",
+        );
+        const checkup_height = document.getElementById("check_up_height");
+        const checkup_weight = document.getElementById("check_up_weight");
+
+        if (
+            checkup_blood_pressure &&
+            checkup_temperature &&
+            checkup_height &&
+            checkup_weight &&
+            checkup_respiratory_rate &&
+            checkup_pulse_rate
+        ) {
+            vitalSignInputMask(
+                checkup_blood_pressure,
+                checkup_temperature,
+                checkup_pulse_rate,
+                checkup_respiratory_rate,
+                checkup_height,
+                checkup_weight,
+            );
+        }
+    });
+}
+
+
+// upload the information to the database
+uploadBTN.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    // Store original text and disable button
+    const originalText = uploadBTN.innerHTML;
+    uploadBTN.disabled = true;
+    uploadBTN.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+    try {
+        const form = document.getElementById("check-up-form");
+        const formData = new FormData(form);
+        const medicalId = e.target.dataset.bsMedicalRecordId;
+
+        const response = await fetch(
+            `/prenatal/add-check-up-record/${medicalId}`,
             {
                 method: "POST",
                 headers: {
@@ -860,33 +923,13 @@ if (updateBTN) {
         );
 
         const data = await response.json();
-
         const errorElements = document.querySelectorAll(".error-text");
-        if (response.ok) {
+
+        if (!response.ok) {
             errorElements.forEach((element) => {
                 element.textContent = "";
             });
-            Swal.fire({
-                title: "Prenatal Patient",
-                text: data.message, // this will make the text capitalize each word
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const modal = bootstrap.Modal.getInstance(
-                        document.getElementById("case2PrenatalModal"),
-                    );
-                    modal.hide();
-                    form.reset();
-                }
-            });
-        } else {
-            // reset the error element text first
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-            // if there's an validation error load the error text
+
             Object.entries(data.errors).forEach(([key, value]) => {
                 if (document.getElementById(`${key}_error`)) {
                     document.getElementById(`${key}_error`).textContent = value;
@@ -894,7 +937,6 @@ if (updateBTN) {
             });
 
             let message = "";
-
             if (data.errors) {
                 if (typeof data.errors == "object") {
                     message = Object.values(data.errors).flat().join("\n");
@@ -904,152 +946,54 @@ if (updateBTN) {
             } else {
                 message = "An unexpected error occurred.";
             }
+
             Swal.fire({
                 title: "Prenatal Patient",
                 text: capitalizeEachWord(message),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
+            }).then(() => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                uploadBTN.disabled = false;
+                uploadBTN.innerHTML = originalText;
+            });
+        } else {
+            errorElements.forEach((element) => {
+                element.textContent = "";
+            });
+
+            Swal.fire({
+                title: "Prenatal check-Up Info",
+                text: data.message,
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then((result) => {
+                // Re-enable button AFTER SweetAlert is dismissed
+                uploadBTN.disabled = false;
+                uploadBTN.innerHTML = originalText;
+
+                // Dispatch Livewire AFTER SweetAlert to avoid mid-flight re-render
+                Livewire.dispatch("prenatalRefreshTable");
+
+                if (result.isConfirmed) {
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById("prenatalCheckupModal"),
+                    );
+                    modal.hide();
+                    form.reset();
+                }
             });
         }
-    });
-}
-
-// add prenatal checkup record
-const prentalCheckUpBTN = document.getElementById("prenatal_check_up_add_btn");
-const uploadBTN = document.getElementById("check-up-save-btn");
-
-prentalCheckUpBTN.addEventListener("click", async (e) => {
-    const medicalId = e.target.dataset.bsMedicalRecordId;
-    uploadBTN.dataset.bsMedicalRecordId = medicalId;
-
-    // reset the error
-    const errors = document.querySelectorAll(".error-text");
-    errors.forEach((error) => (error.innerHTML = ""));
-    // console.log("medical id: ", medicalId);
-    const response = await fetch(`/patient-record/view-details/${medicalId}`);
-    // get the data
-    const data = await response.json();
-
-    // fields
-    const patient_name = document.getElementById("check_up_patient_name");
-    const handled_by = document.getElementById("check_up_handled_by");
-    const healthworkerId = document.getElementById("health_worker_id");
-    const hiddenPatientName = document.getElementById(
-        "hidden_check_up_patient_name",
-    );
-
-    // provide the info
-    patient_name.value = data.prenatalRecord.patient.full_name ?? "";
-    handled_by.value = data.healthWorker.full_name ?? "";
-    healthworkerId.value = data.healthWorker.user_id;
-    hiddenPatientName.value = data.prenatalRecord.patient.full_name;
-
-    // vital sign
-    const checkup_blood_pressure = document.getElementById("check_up_blood_pressure");
-    const checkup_temperature = document.getElementById("check_up_temperature");
-    const checkup_respiratory_rate = document.getElementById("check_up_respiratory_rate");
-    const checkup_pulse_rate = document.getElementById("check_up_pulse_rate");
-    const checkup_height = document.getElementById("check_up_height");
-    const checkup_weight = document.getElementById("check_up_weight");
-
-    if (
-        checkup_blood_pressure &&
-        checkup_temperature &&
-        checkup_height &&
-        checkup_weight &&
-        checkup_respiratory_rate &&
-        checkup_pulse_rate
-    ) {
-        vitalSignInputMask(
-            checkup_blood_pressure,
-            checkup_temperature,
-            checkup_pulse_rate,
-            checkup_respiratory_rate,
-            checkup_height,
-            checkup_weight,
-        );
+    } catch (error) {
+        console.error(error);
+        // Re-enable button on network/JS error
+        uploadBTN.disabled = false;
+        uploadBTN.innerHTML = originalText;
     }
 });
 
-// upload the information to the database
-// check save btn
-
-uploadBTN.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const form = document.getElementById("check-up-form");
-    const formData = new FormData(form);
-    const medicalId = e.target.dataset.bsMedicalRecordId;
-    const response = await fetch(`/prenatal/add-check-up-record/${medicalId}`, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                .content,
-            Accept: "application/json",
-        },
-        body: formData,
-    });
-
-    const data = await response.json();
-
-    const errorElements = document.querySelectorAll(".error-text");
-    if (!response.ok) {
-        // reset the error element text first
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // if there's an validation error load the error text
-        Object.entries(data.errors).forEach(([key, value]) => {
-            if (document.getElementById(`${key}_error`)) {
-                document.getElementById(`${key}_error`).textContent = value;
-            }
-        });
-
-        let message = "";
-
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
-            } else {
-                message = data.errors;
-            }
-        } else {
-            message = "An unexpected error occurred.";
-        }
-
-        Swal.fire({
-            title: "Prenatal Patient",
-            text: capitalizeEachWord(message),
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    } else {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-
-        // THIS IS THE BEST SOLUTION FOR UPDATING THE RECORD
-        Livewire.dispatch("prenatalRefreshTable");
-
-        Swal.fire({
-            title: "Prenatal check-Up Info",
-            text: data.message,
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("prenatalCheckupModal"),
-                );
-                modal.hide();
-                form.reset();
-            }
-        });
-    }
-});
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -1057,11 +1001,9 @@ function capitalizeEachWord(str) {
 // ===== DELETE PATIENT CASE RECORD
 document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".case-archive-record-icon");
-
     if (!deleteBtn) return;
     const id = deleteBtn.dataset.caseId;
 
-    // Validate case ID
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -1069,7 +1011,6 @@ document.addEventListener("click", async (e) => {
     }
 
     try {
-        // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "Prenatal Case Record will be moved to archived status.",
@@ -1081,14 +1022,11 @@ document.addEventListener("click", async (e) => {
             cancelButtonText: "Cancel",
         });
 
-        // ✅ Exit if user cancelled
         if (!result.isConfirmed) return;
 
-        // ✅ Get CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
+        if (!csrfToken)
             throw new Error("CSRF token not found. Please refresh the page.");
-        }
 
         const response = await fetch(
             `/patient-record/prenatal/case-record/${id}`,
@@ -1108,18 +1046,13 @@ document.addEventListener("click", async (e) => {
             );
         }
 
-        // Success - refresh table
         if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+            Livewire.dispatch("prenatalRefreshTable");
         }
 
-        // Remove the row from DOM
         const row = deleteBtn.closest("tr");
-        if (row) {
-            row.remove();
-        }
+        if (row) row.remove();
 
-        // Show success message
         Swal.fire({
             title: "Archived!",
             text: "Prenatal Case Record has been archived.",
@@ -1139,11 +1072,9 @@ document.addEventListener("click", async (e) => {
 
 document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".pregnancy-plan-archive-record-icon");
-
     if (!deleteBtn) return;
     const id = deleteBtn.dataset.caseId;
 
-    // Validate case ID
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -1151,7 +1082,6 @@ document.addEventListener("click", async (e) => {
     }
 
     try {
-        // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "Pregnancy Plan Record will be moved to archived status.",
@@ -1163,14 +1093,11 @@ document.addEventListener("click", async (e) => {
             cancelButtonText: "Cancel",
         });
 
-        // ✅ Exit if user cancelled
         if (!result.isConfirmed) return;
 
-        // ✅ Get CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
+        if (!csrfToken)
             throw new Error("CSRF token not found. Please refresh the page.");
-        }
 
         const response = await fetch(
             `/patient-record/prenatal/pregnancy-plan/${id}`,
@@ -1190,18 +1117,13 @@ document.addEventListener("click", async (e) => {
             );
         }
 
-        // Success - refresh table
         if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("prenatalRefreshTable"); // ✅ Update dispatch name if needed
+            Livewire.dispatch("prenatalRefreshTable");
         }
 
-        // Remove the row from DOM
         const row = deleteBtn.closest("tr");
-        if (row) {
-            row.remove();
-        }
+        if (row) row.remove();
 
-        // Show success message
         Swal.fire({
             title: "Archived!",
             text: "Pregnancy Plan Record has been archived.",
@@ -1218,5 +1140,3 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
-
-// event delegation for

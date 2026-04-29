@@ -1,7 +1,110 @@
 import Swal from "sweetalert2";
 import initSignatureCapture from "../signature/signature";
 
-// EVENT DELEGATION IN SIDE B VIEW
+// ============================================================================
+// IS_FINAL TOGGLE — ADD MODAL
+// ============================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+    const addToggle = document.getElementById("add_is_final_toggle");
+    if (addToggle) {
+        addToggle.addEventListener("change", function () {
+            const warning = document.getElementById("add_is_final_warning");
+            const hiddenInput = document.getElementById("add_is_final_hidden");
+            if (warning) warning.classList.toggle("d-none", !this.checked);
+            if (hiddenInput) hiddenInput.value = this.checked ? "1" : "0";
+        });
+    }
+
+    const editToggle = document.getElementById("edit_is_final_toggle");
+    if (editToggle) {
+        editToggle.addEventListener("change", function () {
+            applyEditFinalToggleState(this.checked, false);
+        });
+    }
+});
+
+// ============================================================================
+// IS_FINAL TOGGLE — EDIT MODAL HELPER
+// ============================================================================
+
+function applyEditFinalToggleState(isFinal, lockToggle = false) {
+    const toggle = document.getElementById("edit_is_final_toggle");
+    const hiddenInput = document.getElementById("edit_is_final_hidden");
+    const warning = document.getElementById("edit_is_final_warning");
+
+    if (!toggle || !hiddenInput) return;
+
+    toggle.checked = isFinal;
+    hiddenInput.value = isFinal ? "1" : "0";
+
+    if (warning) warning.classList.toggle("d-none", !isFinal);
+
+    if (lockToggle) {
+        toggle.disabled = true;
+
+        const form = document.getElementById("edit-side-b-family-plan-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                el.disabled = true;
+            });
+        }
+
+        if (sideBupdateBTN) {
+            sideBupdateBTN.disabled = true;
+            sideBupdateBTN.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Record Locked
+            `;
+        }
+    } else {
+        toggle.disabled = false;
+    }
+}
+
+// Reset EDIT modal when it closes
+document
+    .getElementById("editSideBcaseModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const form = document.getElementById("edit-side-b-family-plan-form");
+        if (form) {
+            form.querySelectorAll("input, select, textarea").forEach((el) => {
+                el.disabled = false;
+                el.removeAttribute("readonly");
+            });
+        }
+
+        if (sideBupdateBTN) {
+            sideBupdateBTN.disabled = false;
+            sideBupdateBTN.innerHTML = "Save Changes";
+        }
+
+        applyEditFinalToggleState(false, false);
+
+        const isFinalError = document.getElementById("edit_is_final_error");
+        if (isFinalError) isFinalError.textContent = "";
+    });
+
+// Reset ADD modal when it closes
+document
+    .getElementById("addSideBcaseModal")
+    ?.addEventListener("hidden.bs.modal", function () {
+        const addToggle = document.getElementById("add_is_final_toggle");
+        const addHidden = document.getElementById("add_is_final_hidden");
+        const addWarning = document.getElementById("add_is_final_warning");
+        const addError = document.getElementById("add_is_final_error");
+
+        if (addToggle) addToggle.checked = false;
+        if (addHidden) addHidden.value = "0";
+        if (addWarning) addWarning.classList.add("d-none");
+        if (addError) addError.textContent = "";
+    });
+
+// ============================================================================
+// EVENT DELEGATION — VIEW SIDE B
+// ============================================================================
 
 document.addEventListener("click", async (e) => {
     const side_b_view_btn = e.target.closest(".view-side-b-record");
@@ -11,47 +114,32 @@ document.addEventListener("click", async (e) => {
     try {
         const response = await fetch(
             `/patient-record/family-planning/view/side-b-record/${id}`,
-            {
-                headers: {
-                    Accept: "application/json",
-                },
-            }
+            { headers: { Accept: "application/json" } },
         );
 
         if (response.ok) {
             const data = await response.json();
 
-            // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (key == "signature_of_the_provider") {
-                    const signatureElement = document.getElementById(
-                        "view_signature_of_the_provider"
+                    const signaturePath = data.sideBrecord
+                        .signature_of_the_provider
+                        ? `/storage/${data.sideBrecord.signature_of_the_provider}`
+                        : null;
+                    const signatureImg = document.getElementById(
+                        "view_signature_of_the_provider",
                     );
-
-                    if (signatureElement) {
-                        const signaturePath = data.sideBrecord
-                            .signature_of_the_provider
-                            ? `/storage/${data.sideBrecord.signature_of_the_provider}`
-                            : null;
-                        const signatureImg = document.getElementById(
-                            "view_signature_of_the_provider"
-                        );
-                        const noSignatureText = document.getElementById(
-                            "view_signature_of_the_provide_no"
-                        );
-                        if (signaturePath) {
-                            signatureImg.src = signaturePath;
-                            signatureImg.style.display = "block";
+                    const noSignatureText = document.getElementById(
+                        "view_signature_of_the_provide_no",
+                    );
+                    if (signatureImg && signaturePath) {
+                        signatureImg.src = signaturePath;
+                        signatureImg.style.display = "block";
+                        if (noSignatureText)
                             noSignatureText.style.display = "none";
-                        }
                     }
                 }
                 if (document.getElementById(`view_${key}`)) {
-                    const element = document.getElementById(`view_${key}`);
-
-                    if (key == "medical_findings") {
-                        // console.log(value);
-                    }
                     document.getElementById(`view_${key}`).innerHTML = value;
                 }
             });
@@ -61,212 +149,245 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// side b update
-const side_b_edit_btn = document.getElementById("edit-side-b-record");
+// ============================================================================
+// SIDE B SIGNATURE — EDIT MODAL
+// ============================================================================
+
 const sideBupdateBTN = document.getElementById(
-    "edit-side-b-family-planning-assessment-btn"
+    "edit-side-b-family-planning-assessment-btn",
 );
 
-// SIDE B SIGNATURE APPROACH
-// signature
-        const editModal = document.getElementById("editSideBcaseModal");
-        let editSideBsignature = null;
-        if (editModal) {
-            editModal.addEventListener("shown.bs.modal", function () {
-                // console.log("Modal is NOW visible!");
+const editModal = document.getElementById("editSideBcaseModal");
+let editSideBsignature = null;
 
-                if (!editSideBsignature) {
-                    editSideBsignature = initSignatureCapture({
-                        drawBtnId: "edit_side_b_drawSignatureBtn",
-                        uploadBtnId: "edit_side_b_uploadSignatureBtn",
-                        canvasId: "edit_side_b_signaturePad",
-                        canvasSectionId: "edit_side_b_signatureCanvas",
-                        uploadSectionId: "edit_side_b_signatureUpload",
-                        previewSectionId: "edit_side_b_signaturePreview",
-                        fileInputId: "edit_side_b_signature_image",
-                        previewImageId: "edit_side_b_previewImage",
-                        errorElementId: "edit_side_b_signature_error",
-                        clearBtnId: "edit_side_b_clearSignature",
-                        saveBtnId: "edit_side_b_saveSignature",
-                        removeBtnId: "edit_side_b_removeSignature",
-                        hiddenInputId: "edit_side_b_signature_data",
-                        maxFileSizeMB: 2,
-                    });
-
-                    // console.log("✅ SIGNATURE INITIALIZED!");
-                } else {
-                    editSideBsignature.clear();
-                }
+if (editModal) {
+    editModal.addEventListener("shown.bs.modal", function () {
+        if (!editSideBsignature) {
+            editSideBsignature = initSignatureCapture({
+                drawBtnId: "edit_side_b_drawSignatureBtn",
+                uploadBtnId: "edit_side_b_uploadSignatureBtn",
+                canvasId: "edit_side_b_signaturePad",
+                canvasSectionId: "edit_side_b_signatureCanvas",
+                uploadSectionId: "edit_side_b_signatureUpload",
+                previewSectionId: "edit_side_b_signaturePreview",
+                fileInputId: "edit_side_b_signature_image",
+                previewImageId: "edit_side_b_previewImage",
+                errorElementId: "edit_side_b_signature_error",
+                clearBtnId: "edit_side_b_clearSignature",
+                saveBtnId: "edit_side_b_saveSignature",
+                removeBtnId: "edit_side_b_removeSignature",
+                hiddenInputId: "edit_side_b_signature_data",
+                maxFileSizeMB: 2,
             });
+        } else {
+            editSideBsignature.clear();
         }
+    });
+}
 
-// SIDE B EDIT BTN EVENT DELEGATION
+// ============================================================================
+// EVENT DELEGATION — EDIT SIDE B (load data)
+// ============================================================================
+
 document.addEventListener("click", async (e) => {
     const side_b_edit_btn = e.target.closest(".edit-side-b-record");
     if (!side_b_edit_btn) return;
 
     const id = side_b_edit_btn.dataset.caseId;
-    sideBupdateBTN.dataset.caseId = id;
+    if (sideBupdateBTN) sideBupdateBTN.dataset.caseId = id;
 
-    if (id == "") {
-        return;
-    }
+    if (!id) return;
 
-     const errors = document.querySelectorAll(".error-text");
-     if (errors) {
-         errors.forEach((error) => (error.innerHTML = ""));
-     }
+    document
+        .querySelectorAll(".error-text")
+        .forEach((el) => (el.innerHTML = ""));
+
     try {
         const response = await fetch(
             `/patient-record/family-planning/view/side-b-record/${id}`,
-            {
-                headers: {
-                    Accept: "application/json",
-                },
-            }
+            { headers: { Accept: "application/json" } },
         );
 
         if (response.ok) {
             const data = await response.json();
 
-            //  dispath the livewire
-
-            // console.log(data);
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (key == "medical_record_case_id") {
                     document.getElementById(`edit_side_b_${key}`).value = value;
-                } else if (key == "health_worker_id") {
-                    document.getElementById(`edit_side_b_${key}`).value = value;
-                } else {
-                    const radioGroups = document.querySelectorAll(
-                        `input[type="radio"][name='edit_${key}']`
-                    );
-
-                    if (radioGroups.length > 0) {
-                        // loop through
-                        radioGroups.forEach((element) => {
-                            element.checked = element.value == value;
-                        });
-                        return;
-                    }
-                    if (document.getElementById(`edit_${key}`)) {
-                        document.getElementById(`edit_${key}`).value = value;
-                    }
+                    return;
                 }
+                if (key == "health_worker_id") {
+                    document.getElementById(`edit_side_b_${key}`).value = value;
+                    return;
+                }
+
+                // Radio buttons
+                const radioGroups = document.querySelectorAll(
+                    `input[type="radio"][name='edit_${key}']`,
+                );
+                if (radioGroups.length > 0) {
+                    radioGroups.forEach((el) => {
+                        el.checked = el.value == value;
+                    });
+                    return;
+                }
+
+                const el = document.getElementById(`edit_${key}`);
+                if (el) el.value = value ?? "";
             });
+
+            // Apply final toggle state
+            const caseIsFinal = !!data.case_is_final;
+            const thisRecordIsFinal = !!data.this_record_is_final;
+            applyEditFinalToggleState(thisRecordIsFinal, caseIsFinal);
         }
-        
     } catch (error) {
         console.log("Error:", error);
     }
 });
 
-// update the record with the new data
+// ============================================================================
+// SIDE B UPDATE SAVE
+// ============================================================================
 
-sideBupdateBTN.addEventListener("click", async (e) => {
-    e.preventDefault();
-    const id = sideBupdateBTN.dataset.caseId;
-    // form
-    const form = document.getElementById("edit-side-b-family-plan-form");
-    const formData = new FormData(form);
+if (sideBupdateBTN) {
+    sideBupdateBTN.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-    // hidden signature data
-    const hiddenSignature = document.getElementById(
-        "edit_side_b_signature_data"
-    );
-    if (hiddenSignature && hiddenSignature.value) {
-        formData.set("edit_side_b_signature_data", hiddenSignature.value);
-        // console.log("✅ Manually added signature data");
-    }
+        const id = sideBupdateBTN.dataset.caseId;
+        const originalText = sideBupdateBTN.innerHTML;
 
-    const response = await fetch(
-        `/patient-record/family-planning/update/side-b-record/${id}`,
-        {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
-                Accept: "application/json",
-            },
-            body: formData,
-        }
-    );
+        sideBupdateBTN.disabled = true;
+        sideBupdateBTN.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
-    const data = await response.json();
-    const errorElements = document.querySelectorAll(".error-text");
-    if (response.ok) {
-        errorElements.forEach((element) => {
-            element.textContent = "";
-        });
-        // ✅ Safe Livewire dispatch
-        if (typeof Livewire !== "undefined") {
-            try {
-                Livewire.dispatch("familyPlanningRefreshTable");
-            } catch (error) {
-                console.error("Error dispatching Livewire event:", error);
-            }
-        } else {
-            console.warn("Livewire is not available");
-        }
+        try {
+            const form = document.getElementById(
+                "edit-side-b-family-plan-form",
+            );
+            const formData = new FormData(form);
 
-        Swal.fire({
-            title: "Family Planning Assessment Record",
-            text: data.message, // this will make the text capitalize each word
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("editSideBcaseModal")
+            const hiddenSignature = document.getElementById(
+                "edit_side_b_signature_data",
+            );
+            if (hiddenSignature && hiddenSignature.value) {
+                formData.set(
+                    "edit_side_b_signature_data",
+                    hiddenSignature.value,
                 );
-                if (modal) {
-                    modal.hide();
+            }
+
+            const response = await fetch(
+                `/patient-record/family-planning/update/side-b-record/${id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]',
+                        ).content,
+                        Accept: "application/json",
+                    },
+                    body: formData,
+                },
+            );
+
+            const data = await response.json();
+            const errorElements = document.querySelectorAll(".error-text");
+
+            if (response.ok) {
+                errorElements.forEach((el) => (el.textContent = ""));
+
+                if (typeof Livewire !== "undefined") {
+                    try {
+                        Livewire.dispatch("familyPlanningRefreshTable");
+                    } catch (err) {
+                        console.error("Error dispatching Livewire event:", err);
+                    }
                 }
-            }
-        });
-    } else {
-         errorElements.forEach((element) => {
-             element.textContent = "";
-         });
-         // handles the validation error
-         Object.entries(data.errors).forEach(([key, value]) => {
-             if (document.getElementById(`${key}_error`)) {
-                 document.getElementById(`${key}_error`).textContent = value;
-             }
-         });
-        let message = "";
 
-        if (data.errors) {
-            if (typeof data.errors == "object") {
-                message = Object.values(data.errors).flat().join("\n");
+                Swal.fire({
+                    title: "Family Planning Assessment Record",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    sideBupdateBTN.disabled = false;
+                    sideBupdateBTN.innerHTML = originalText;
+
+                    if (result.isConfirmed) {
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("editSideBcaseModal"),
+                        );
+                        if (modal) modal.hide();
+                    }
+                });
             } else {
-                message = data.errors;
+                errorElements.forEach((el) => (el.textContent = ""));
+
+                if (data.errors) {
+                    Object.entries(data.errors).forEach(([key, value]) => {
+                        const el = document.getElementById(`${key}_error`);
+                        if (el)
+                            el.textContent = Array.isArray(value)
+                                ? value[0]
+                                : value;
+                    });
+
+                    // is_final specific error
+                    if (data.errors?.is_final) {
+                        const isFinalError = document.getElementById(
+                            "edit_is_final_error",
+                        );
+                        if (isFinalError) {
+                            isFinalError.textContent = Array.isArray(
+                                data.errors.is_final,
+                            )
+                                ? data.errors.is_final[0]
+                                : data.errors.is_final;
+                        }
+                    }
+                }
+
+                Swal.fire({
+                    title: "Family Planning Assessment Record",
+                    html: Object.values(data.errors ?? {})
+                        .flat()
+                        .map((e) => `<div>${e}</div>`)
+                        .join(""),
+                    icon: "error",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+
+                sideBupdateBTN.disabled = false;
+                sideBupdateBTN.innerHTML = originalText;
             }
-        } else {
-            message = "An unexpected error occurred.";
+        } catch (error) {
+            console.error("Error updating side B record:", error);
+
+            Swal.fire({
+                title: "Error",
+                text: `Failed to update record: ${error.message}`,
+                icon: "error",
+                confirmButtonColor: "#3085d6",
+            });
+
+            sideBupdateBTN.disabled = false;
+            sideBupdateBTN.innerHTML = originalText;
         }
+    });
+}
 
-        Swal.fire({
-            title: "Family Planning Assessment Record",
-            text: capitalizeEachWord(message), // this will make the text capitalize each word
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-        });
-    }
-});
-
-// delete side b record
+// ============================================================================
+// ARCHIVE SIDE B
+// ============================================================================
 
 document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".delete-side-b-record");
-
     if (!deleteBtn) return;
     const id = deleteBtn.dataset.caseId;
 
-    // Validate case ID
     if (!id || id === "undefined" || id === "null") {
         console.error("Invalid case ID:", id);
         alert("Unable to archive: Invalid ID");
@@ -274,7 +395,6 @@ document.addEventListener("click", async (e) => {
     }
 
     try {
-        // ✅ Show confirmation dialog FIRST
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "The Family Planning Client Assessment Record - Side B will be moved to archived status.",
@@ -286,14 +406,16 @@ document.addEventListener("click", async (e) => {
             cancelButtonText: "Cancel",
         });
 
-        // ✅ Exit if user cancelled
         if (!result.isConfirmed) return;
 
-        // ✅ Get CSRF token
+        const originalHTML = deleteBtn.innerHTML;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfToken) {
+        if (!csrfToken)
             throw new Error("CSRF token not found. Please refresh the page.");
-        }
 
         const response = await fetch(
             `/patient-record/family-planning/case-record/delete/side-B/${id}`,
@@ -303,36 +425,35 @@ document.addEventListener("click", async (e) => {
                     "X-CSRF-TOKEN": csrfToken.content,
                     Accept: "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(
-                data.message || `HTTP error! status: ${response.status}`
+                data.message || `HTTP error! status: ${response.status}`,
             );
         }
 
-        // Success - refresh table
         if (typeof Livewire !== "undefined") {
-            Livewire.dispatch("seniorCitizenRefreshTable"); // ✅ Update dispatch name if needed
+            Livewire.dispatch("familyPlanningRefreshTable");
         }
 
-        // Remove the row from DOM
         const row = deleteBtn.closest("tr");
-        if (row) {
-            row.remove();
-        }
+        if (row) row.remove();
 
-        // Show success message
         Swal.fire({
             title: "Archived!",
-            text: "The Family planning side B Record has been archived.",
+            text: "The Family Planning Side B Record has been archived.",
             icon: "success",
             confirmButtonColor: "#3085d6",
         });
     } catch (error) {
         console.error("Error archiving case:", error);
+
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalHTML;
+
         Swal.fire({
             title: "Error",
             text: `Failed to archive record: ${error.message}`,
@@ -341,6 +462,11 @@ document.addEventListener("click", async (e) => {
         });
     }
 });
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

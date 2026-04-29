@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ColorPallete;
+use App\Http\Middleware\PreventBackHistory;
 use App\Http\Middleware\RedirectIfLoggedIn;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
@@ -16,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
 
         $middleware->web(append: [
-            ColorPallete::class
+            ColorPallete::class,
+            PreventBackHistory::class
         ]);
 
 
@@ -24,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'redirect.loggedin' => \App\Http\Middleware\RedirectIfLoggedIn::class,
             'role' => RoleMiddleware::class
         ]);
+
+       
 
 
      

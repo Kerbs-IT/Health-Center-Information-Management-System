@@ -83,7 +83,7 @@ class FamilyPlanningController extends Controller
                 'sex'                  => 'sometimes|nullable|string',
                 'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today',
                 'handled_by'           => 'required|exists:users,id',
                 'street'               => 'required|string',
                 'brgy'                 => 'required|string',
@@ -129,6 +129,7 @@ class FamilyPlanningController extends Controller
                 'handled_by_backup.exists'              => 'The selected health worker does not exist.',
                 'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
                 'user_account.numeric'                  => 'The user account must be a number.',
+                'date_of_registration.before_or_equal' => 'The date of registration must not be a future date.',
             ]);
 
             // ============================================================================
@@ -192,10 +193,10 @@ class FamilyPlanningController extends Controller
                 'choosen_method'                                   => 'sometimes|nullable|string',
                 'add_family_planning_signature_image'              => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_family_planning_signature_data'               => 'sometimes|nullable|string',
-                'family_planning_date_of_acknowledgement'          => 'sometimes|nullable|date',
+                'family_planning_date_of_acknowledgement'          => 'sometimes|nullable|date|before_or_equal:today',
                 'add_family_planning_consent_signature_image'      => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_family_planning_consent_signature_data'       => 'sometimes|nullable|string',
-                'family_planning_date_of_acknowledgement_consent'  => 'sometimes|nullable|date',
+                'family_planning_date_of_acknowledgement_consent'  => 'sometimes|nullable|date|before_or_equal:today',
                 'current_user_type'                                => 'sometimes|nullable|string',
             ], [
                 'client_id.string'                                     => 'The client ID must be a string.',
@@ -222,6 +223,8 @@ class FamilyPlanningController extends Controller
                 'add_family_planning_consent_signature_image.mimes'     => 'The consent signature must be a file of type: jpg, jpeg, png.',
                 'add_family_planning_consent_signature_image.max'       => 'The consent signature may not be greater than :max kilobytes.',
                 'family_planning_date_of_acknowledgement_consent.date'  => 'The date of acknowledgement consent must be a valid date.',
+                'family_planning_date_of_acknowledgement.before_or_equal' => 'The date of acknowledgement must not be a future date.',
+                'family_planning_date_of_acknowledgement_consent.before_or_equal' => 'The date of acknowledgement consent must not be a future date.',
             ]);
 
             $medicalHistoryData = $request->validate([
@@ -258,31 +261,34 @@ class FamilyPlanningController extends Controller
                 'family_planning_abortion'                                   => 'sometimes|nullable|numeric|max:20',
                 'family_planning_premature'                                  => 'sometimes|nullable|numeric|max:20',
                 'family_planning_living_children'                            => 'sometimes|nullable|numeric|max:20',
-                'family_planning_date_of_last_delivery'                      => 'sometimes|nullable|date',
+                'family_planning_date_of_last_delivery'                      => 'sometimes|nullable|date|before_or_equal:today',
                 'family_planning_type_of_last_delivery'                      => 'sometimes|nullable|string',
-                'family_planning_date_of_last_delivery_menstrual_period'     => 'sometimes|nullable|date',
-                'family_planning_date_of_previous_delivery_menstrual_period' => 'sometimes|nullable|date',
+                'family_planning_date_of_last_delivery_menstrual_period'     => 'sometimes|nullable|date|before_or_equal:today',
+                'family_planning_date_of_previous_delivery_menstrual_period' => 'sometimes|nullable|date|before_or_equal:today',
                 'family_planning_type_of_menstrual'                          => 'sometimes|nullable|string',
                 'family_planning_Dysmenorrhea'                               => 'sometimes|nullable|string',
                 'family_planning_hydatidiform_mole'                          => 'sometimes|nullable|string',
                 'family_planning_ectopic_pregnancy'                          => 'sometimes|nullable|string',
             ], [
-                'family_planning_G.numeric'                                       => 'The G (gravida) must be a number.',
-                'family_planning_G.max'                                           => 'The G (gravida) may not be greater than :max.',
-                'family_planning_P.numeric'                                       => 'The P (para) must be a number.',
-                'family_planning_P.max'                                           => 'The P (para) may not be greater than :max.',
-                'family_planning_full_term.numeric'                               => 'The full term must be a number.',
-                'family_planning_full_term.max'                                   => 'The full term may not be greater than :max.',
-                'family_planning_abortion.numeric'                                => 'The abortion must be a number.',
-                'family_planning_abortion.max'                                    => 'The abortion may not be greater than :max.',
-                'family_planning_premature.numeric'                               => 'The premature must be a number.',
-                'family_planning_premature.max'                                   => 'The premature may not be greater than :max.',
-                'family_planning_living_children.numeric'                         => 'The living children must be a number.',
-                'family_planning_living_children.max'                             => 'The living children may not be greater than :max.',
-                'family_planning_date_of_last_delivery.date'                      => 'The date of last delivery must be a valid date.',
-                'family_planning_date_of_last_delivery_menstrual_period.date'     => 'The date of last delivery menstrual period must be a valid date.',
-                'family_planning_date_of_previous_delivery_menstrual_period.date' => 'The date of previous delivery menstrual period must be a valid date.',
-                'family_planning_type_of_menstrual.string'                        => 'The type of menstrual must be a string.',
+                'family_planning_G.numeric'                                             => 'The G (gravida) must be a number.',
+                'family_planning_G.max'                                                 => 'The G (gravida) may not be greater than :max.',
+                'family_planning_P.numeric'                                             => 'The P (para) must be a number.',
+                'family_planning_P.max'                                                 => 'The P (para) may not be greater than :max.',
+                'family_planning_full_term.numeric'                                     => 'The full term must be a number.',
+                'family_planning_full_term.max'                                         => 'The full term may not be greater than :max.',
+                'family_planning_abortion.numeric'                                      => 'The abortion count must be a number.',
+                'family_planning_abortion.max'                                          => 'The abortion count may not be greater than :max.',
+                'family_planning_premature.numeric'                                     => 'The premature count must be a number.',
+                'family_planning_premature.max'                                         => 'The premature count may not be greater than :max.',
+                'family_planning_living_children.numeric'                               => 'The living children count must be a number.',
+                'family_planning_living_children.max'                                   => 'The living children count may not be greater than :max.',
+                'family_planning_date_of_last_delivery.date'                            => 'Please enter a valid date of last delivery.',
+                'family_planning_date_of_last_delivery.before_or_equal'                 => 'The date of last delivery cannot be a future date.',
+                'family_planning_date_of_last_delivery_menstrual_period.date'           => 'Please enter a valid last menstrual period date.',
+                'family_planning_date_of_last_delivery_menstrual_period.before_or_equal' => 'The last menstrual period date cannot be a future date.',
+                'family_planning_date_of_previous_delivery_menstrual_period.date'           => 'Please enter a valid previous menstrual period date.',
+                'family_planning_date_of_previous_delivery_menstrual_period.before_or_equal' => 'The previous menstrual period date cannot be a future date.',
+                'family_planning_type_of_menstrual.string'                              => 'The type of menstrual must be a valid text value.',
             ]);
 
             $riskData = $request->validate([
@@ -337,12 +343,12 @@ class FamilyPlanningController extends Controller
             ]);
 
             $sideBdata = $request->validate([
-                'side_b_date_of_visit'                           => 'required|date',
+                'side_b_date_of_visit'                           => 'required|date|before_or_equal:today',
                 'side_b_medical_findings'                        => 'sometimes|nullable|string',
                 'side_b_method_accepted'                         => 'sometimes|nullable|string',
                 'add_side_b_name_n_signature_image'              => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_name_n_signature_data'               => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit'                 => 'required|date',
+                'side_b_date_of_follow_up_visit'                 => 'required|date|after_or_equal:today',
                 'baby_Less_than_six_months_question'             => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question'                     => 'sometimes|nullable|string',
@@ -350,20 +356,22 @@ class FamilyPlanningController extends Controller
                 'miscarriage_or_abortion_question'               => 'sometimes|nullable|string',
                 'contraceptive_question'                         => 'sometimes|nullable|string',
             ], [
-                'side_b_date_of_visit.required'                          => 'The date of visit field is required.',
-                'side_b_date_of_visit.date'                              => 'The date of visit must be a valid date.',
-                'side_b_medical_findings.string'                         => 'The medical findings field must be a string.',
-                'side_b_method_accepted.string'                          => 'The method accepted field must be a string.',
-                'add_side_b_name_n_signature_image.image'                => 'The signature must be an image.',
-                'add_side_b_name_n_signature_image.mimes'                => 'The signature must be a file of type: jpg, jpeg, png.',
-                'add_side_b_name_n_signature_image.max'                  => 'The signature may not be greater than :max kilobytes.',
-                'side_b_date_of_follow_up_visit.required'                => 'The date of follow up visit field is required.',
-                'side_b_date_of_follow_up_visit.date'                    => 'The date of follow up visit must be a valid date.',
-                'baby_Less_than_six_months_question.string'              => 'The baby less than six months question field must be a string.',
-                'sexual_intercouse_or_mesntrual_period_question.string'  => 'The sexual intercourse or menstrual period question field must be a string.',
-                'baby_last_4_weeks_question.string'                      => 'The baby last 4 weeks question field must be a string.',
-                'menstrual_period_in_seven_days_question.string'         => 'The menstrual period in seven days question field must be a string.',
-                'miscarriage_or_abortion_question.string'                => 'The miscarriage or abortion question field must be a string.',
+                'side_b_date_of_visit.required'                         => 'The date of visit is required.',
+                'side_b_date_of_visit.date'                             => 'Please enter a valid date of visit.',
+                'side_b_date_of_visit.before_or_equal'                  => 'The date of visit cannot be a future date.',
+                'side_b_medical_findings.string'                        => 'The medical findings must be a valid text value.',
+                'side_b_method_accepted.string'                         => 'The method accepted must be a valid text value.',
+                'add_side_b_name_n_signature_image.image'               => 'The signature must be an image file.',
+                'add_side_b_name_n_signature_image.mimes'               => 'The signature must be a jpg, jpeg, or png file.',
+                'add_side_b_name_n_signature_image.max'                 => 'The signature image may not exceed :max kilobytes.',
+                'side_b_date_of_follow_up_visit.required'               => 'The date of follow up visit is required.',
+                'side_b_date_of_follow_up_visit.date'                   => 'Please enter a valid follow up visit date.',
+                'side_b_date_of_follow_up_visit.after_or_equal'         => 'The follow up visit date must be today or a future date.',
+                'baby_Less_than_six_months_question.string'             => 'The baby less than six months field must be a valid text value.',
+                'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period field must be a valid text value.',
+                'baby_last_4_weeks_question.string'                     => 'The baby last 4 weeks field must be a valid text value.',
+                'menstrual_period_in_seven_days_question.string'        => 'The menstrual period in seven days field must be a valid text value.',
+                'miscarriage_or_abortion_question.string'               => 'The miscarriage or abortion field must be a valid text value.',
             ]);
 
             // ============================================================================
@@ -930,46 +938,76 @@ class FamilyPlanningController extends Controller
                     'required',
                     'string',
                     Rule::unique('patients')
-                        ->ignore($familyPlanningRecord->patient->id) // <-- IMPORTANT
+                        ->ignore($familyPlanningRecord->patient->id)
                         ->where(function ($query) use ($request) {
                             return $query->where('first_name', $request->first_name)
                                 ->where('last_name', $request->last_name);
                         }),
                 ],
-                'last_name' => 'required|string',
-                'middle_initial' => 'sometimes|nullable|string',
-                'date_of_birth' => 'required|date|before_or_equal:today',
-                'place_of_birth' => 'sometimes|nullable|string',
-                'age' => 'sometimes|nullable|numeric|max:100',
-                'sex' => 'sometimes|nullable|string',
-                'contact_number' => 'required|digits_between:7,12',
-                'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
-                'handled_by' => 'required',
-                'civil_status' => 'sometimes|nullable|string',
-                'occupation' => 'sometimes|nullable|string',
-                'religion' => 'sometimes|nullable|string',
-                'street' => 'required',
-                'brgy' => 'required',
+                'last_name'            => 'required|string',
+                'middle_initial'       => 'sometimes|nullable|string',
+                'date_of_birth'        => 'required|date|before_or_equal:today',
+                'place_of_birth'       => 'sometimes|nullable|string',
+                'age'                  => 'sometimes|nullable|numeric|max:100',
+                'sex'                  => 'sometimes|nullable|string',
+                'contact_number'       => 'required|digits_between:7,12',
+                'nationality'          => 'sometimes|nullable|string',
+                'date_of_registration' => 'required|date|before_or_equal:today',
+                'handled_by'           => 'required',
+                'civil_status'         => 'sometimes|nullable|string',
+                'occupation'           => 'sometimes|nullable|string',
+                'religion'             => 'sometimes|nullable|string',
+                'street'               => 'required',
+                'brgy'                 => 'required',
                 'blood_pressure' => [
                     'sometimes',
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45', // typical human body range
-                'pulse_rate'        => 'nullable|string|max:20',         // stored as string, e.g., "60-100"
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',  // breaths/min
-                'height'            => 'nullable|numeric|between:1,250', // cm range
-                'weight'            => 'nullable|numeric|between:1,250',  // kg range
-                'client_id' =>  'sometimes|nullable|numeric',
+                'temperature'      => 'nullable|numeric|between:30,45',
+                'pulse_rate'       => 'nullable|string|max:20',
+                'respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'height'           => 'nullable|numeric|between:1,250',
+                'weight'           => 'nullable|numeric|between:1,250',
+                'client_id'        => 'sometimes|nullable|numeric',
                 'philhealth_no' => [
                     'sometimes',
                     'nullable',
                     'regex:/^\d{2}-\d{9}-\d{1}$/'
                 ],
-                'NHTS' => 'sometimes|nullable|string',
-                'suffix' => 'sometimes|nullable|string'
-
+                'NHTS'   => 'sometimes|nullable|string',
+                'suffix' => 'sometimes|nullable|string',
+            ], [
+                'first_name.required'                => 'The first name is required.',
+                'first_name.string'                  => 'The first name must be a valid text value.',
+                'first_name.unique'                  => 'This patient already exists.',
+                'last_name.required'                 => 'The last name is required.',
+                'last_name.string'                   => 'The last name must be a valid text value.',
+                'date_of_birth.required'             => 'The date of birth is required.',
+                'date_of_birth.date'                 => 'Please enter a valid date of birth.',
+                'date_of_birth.before_or_equal'      => 'The date of birth cannot be a future date.',
+                'contact_number.required'            => 'The contact number is required.',
+                'contact_number.digits_between'      => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'      => 'The date of registration is required.',
+                'date_of_registration.date'          => 'Please enter a valid date of registration.',
+                'date_of_registration.before_or_equal' => 'The date of registration cannot be a future date.',
+                'handled_by.required'                => 'Please select the health worker who handled this record.',
+                'street.required'                    => 'The street address is required.',
+                'brgy.required'                      => 'The barangay is required.',
+                'blood_pressure.regex'               => 'Please enter a valid blood pressure format (e.g., 120/80).',
+                'temperature.numeric'                => 'The temperature must be a valid number.',
+                'temperature.between'                => 'The temperature must be between 30°C and 45°C.',
+                'pulse_rate.string'                  => 'The pulse rate must be a valid text value.',
+                'pulse_rate.max'                     => 'The pulse rate may not exceed :max characters.',
+                'respiratory_rate.integer'           => 'The respiratory rate must be a whole number.',
+                'respiratory_rate.min'               => 'The respiratory rate must be at least :min breaths per minute.',
+                'respiratory_rate.max'               => 'The respiratory rate may not exceed :max breaths per minute.',
+                'height.numeric'                     => 'The height must be a valid number.',
+                'height.between'                     => 'The height must be between 1 and 250 cm.',
+                'weight.numeric'                     => 'The weight must be a valid number.',
+                'weight.between'                     => 'The weight must be between 1 and 250 kg.',
+                'philhealth_no.regex'                => 'Please enter a valid PhilHealth number format (e.g., 12-123456789-0).',
+                'age.max'                            => 'The age may not be greater than :max years.',
             ]);
             $middle = substr($data['middle_initial'] ?? '', 0, 1);
             $middle = $middle ? strtoupper($middle) . '.' : null;
@@ -1161,80 +1199,62 @@ class FamilyPlanningController extends Controller
             ]);
 
             $caseData = $request->validate([
-                'side_A_add_client_id' => 'sometimes|nullable|string',
+                'side_A_add_client_id'                                       => 'sometimes|nullable|string',
                 'side_A_add_philhealth_no' => [
                     'sometimes',
                     'nullable',
                     'regex:/^\d{2}-\d{9}-\d{1}$/'
                 ],
-                'side_A_add_NHTS' => 'sometimes|nullable|string',
-                'side_A_add_spouse_lname' => 'sometimes|nullable|string',
-                'side_A_add_spouse_fname' => 'sometimes|nullable|string',
-                'side_A_add_spouse_MI' => 'sometimes|nullable|string|max:2',
-                'side_A_add_spouse_date_of_birth' => 'sometimes|nullable|date|before_or_equal:today',
-                'side_A_add_spouse_age' => 'sometimes|nullable|numeric|max:100',
-                'side_A_add_spouse_occupation' => 'sometimes|nullable|string',
-                'side_A_add_spouse_suffix' => 'sometimes|nullable|string',
-
-                'side_A_add_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
-                'side_A_add_plan_to_have_more_children' => 'sometimes|nullable|string',
-                'side_A_add_average_montly_income' => 'sometimes|nullable|numeric',
-                'side_A_add_type_of_patient' => 'sometimes|nullable|string',
-                'side_A_add_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
-                'side_A_add_current_user_reason_for_FP' => 'sometimes|nullable|string',
-                'side_A_add_current_method_reason' => 'sometimes|nullable|string',
-                'side_A_add_previously_used_method' => 'sometimes|nullable|array',
-
-                // acknowledgement
-                'side_A_add_choosen_method' => 'sometimes|nullable|string',
-
+                'side_A_add_NHTS'                                            => 'sometimes|nullable|string',
+                'side_A_add_spouse_lname'                                    => 'sometimes|nullable|string',
+                'side_A_add_spouse_fname'                                    => 'sometimes|nullable|string',
+                'side_A_add_spouse_MI'                                       => 'sometimes|nullable|string|max:2',
+                'side_A_add_spouse_date_of_birth'                            => 'sometimes|nullable|date|before_or_equal:today',
+                'side_A_add_spouse_age'                                      => 'sometimes|nullable|numeric|max:100',
+                'side_A_add_spouse_occupation'                               => 'sometimes|nullable|string',
+                'side_A_add_spouse_suffix'                                   => 'sometimes|nullable|string',
+                'side_A_add_number_of_living_children'                       => 'sometimes|nullable|numeric|max:50',
+                'side_A_add_plan_to_have_more_children'                      => 'sometimes|nullable|string',
+                'side_A_add_average_montly_income'                           => 'sometimes|nullable|numeric',
+                'side_A_add_type_of_patient'                                 => 'sometimes|nullable|string',
+                'side_A_add_new_acceptor_reason_for_FP'                      => 'sometimes|nullable|string',
+                'side_A_add_current_user_reason_for_FP'                      => 'sometimes|nullable|string',
+                'side_A_add_current_method_reason'                           => 'sometimes|nullable|string',
+                'side_A_add_previously_used_method'                          => 'sometimes|nullable|array',
+                'side_A_add_choosen_method'                                  => 'sometimes|nullable|string',
                 'side_A_add_family_planning_acknowledgement_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'side_A_add_family_planning_acknowledgement_signature_data' => 'sometimes|nullable|string',
-
-                'side_A_add_family_planning_date_of_acknowledgement' => 'sometimes|nullable|date',
-
-                'side_A_add_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'side_A_add_family_planning_consent_signature_data' => 'sometimes|nullable|string',
-
-                'side_A_add_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
-                'side_A_add_current_user_type' => 'sometimes|nullable|string',
-                'side_A_add_health_worker_id' => 'required'
+                'side_A_add_family_planning_acknowledgement_signature_data'  => 'sometimes|nullable|string',
+                'side_A_add_family_planning_date_of_acknowledgement'         => 'sometimes|nullable|date|before_or_equal:today',  // ← updated
+                'side_A_add_family_planning_consent_signature_image'         => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'side_A_add_family_planning_consent_signature_data'          => 'sometimes|nullable|string',
+                'side_A_add_family_planning_date_of_acknowledgement_consent' => 'sometimes|nullable|date|before_or_equal:today',  // ← updated
+                'side_A_add_current_user_type'                               => 'sometimes|nullable|string',
+                'side_A_add_health_worker_id'                                => 'required',
             ], [
-                // Custom messages with friendly attribute names
-                'side_A_add_client_id.string' => 'The client ID must be a string.',
-
-                'side_A_add_philhealth_no.regex' => 'The PhilHealth number format is invalid. Must be in format: XX-XXXXXXXXX-X',
-
-                'side_A_add_spouse_lname.string' => 'The spouse last name must be a string.',
-                'side_A_add_spouse_fname.string' => 'The spouse first name must be a string.',
-
-                'side_A_add_spouse_MI.string' => 'The spouse middle initial must be a string.',
-                'side_A_add_spouse_MI.max' => 'The spouse middle initial may not be greater than :max characters.',
-
-                'side_A_add_spouse_date_of_birth.date' => 'The spouse date of birth must be a valid date.',
-                'side_A_add_spouse_date_of_birth.before_or_equal' => 'The spouse date of birth must be today or earlier.',
-
-                'side_A_add_spouse_age.numeric' => 'The spouse age must be a number.',
-                'side_A_add_spouse_age.max' => 'The spouse age may not be greater than :max.',
-
-                'side_A_add_number_of_living_children.numeric' => 'The number of living children must be a number.',
-                'side_A_add_number_of_living_children.max' => 'The number of living children may not be greater than :max.',
-
-                'side_A_add_average_montly_income.numeric' => 'The average monthly income must be a number.',
-
-                'side_A_add_family_planning_acknowledgement_signature_image.image' => 'The acknowledgement signature must be an image.',
-                'side_A_add_family_planning_acknowledgement_signature_image.mimes' => 'The acknowledgement signature must be a file of type: jpg, jpeg, png.',
-                'side_A_add_family_planning_acknowledgement_signature_image.max' => 'The acknowledgement signature may not be greater than :max kilobytes.',
-
-                'side_A_add_family_planning_date_of_acknowledgement.date' => 'The date of acknowledgement must be a valid date.',
-
-                'side_A_add_family_planning_consent_signature_image.image' => 'The consent signature must be an image.',
-                'side_A_add_family_planning_consent_signature_image.mimes' => 'The consent signature must be a file of type: jpg, jpeg, png.',
-                'side_A_add_family_planning_consent_signature_image.max' => 'The consent signature may not be greater than :max kilobytes.',
-
-                'side_A_add_family_planning_date_of_acknowledgement_consent.date' => 'The date of acknowledgement consent must be a valid date.',
-
-                'side_A_add_health_worker_id.required' => 'The health worker ID field is required.',
+                'side_A_add_client_id.string'                                                    => 'The client ID must be a valid text value.',
+                'side_A_add_philhealth_no.regex'                                                 => 'Please enter a valid PhilHealth number format (e.g., 12-123456789-0).',
+                'side_A_add_spouse_lname.string'                                                 => 'The spouse last name must be a valid text value.',
+                'side_A_add_spouse_fname.string'                                                 => 'The spouse first name must be a valid text value.',
+                'side_A_add_spouse_MI.string'                                                    => 'The spouse middle initial must be a valid text value.',
+                'side_A_add_spouse_MI.max'                                                       => 'The spouse middle initial may not exceed :max characters.',
+                'side_A_add_spouse_date_of_birth.date'                                           => 'Please enter a valid spouse date of birth.',
+                'side_A_add_spouse_date_of_birth.before_or_equal'                                => 'The spouse date of birth cannot be a future date.',
+                'side_A_add_spouse_age.numeric'                                                  => 'The spouse age must be a number.',
+                'side_A_add_spouse_age.max'                                                      => 'The spouse age may not be greater than :max years.',
+                'side_A_add_number_of_living_children.numeric'                                   => 'The number of living children must be a number.',
+                'side_A_add_number_of_living_children.max'                                       => 'The number of living children may not be greater than :max.',
+                'side_A_add_average_montly_income.numeric'                                       => 'The average monthly income must be a valid number.',
+                'side_A_add_family_planning_acknowledgement_signature_image.image'               => 'The acknowledgement signature must be an image file.',
+                'side_A_add_family_planning_acknowledgement_signature_image.mimes'               => 'The acknowledgement signature must be a jpg, jpeg, or png file.',
+                'side_A_add_family_planning_acknowledgement_signature_image.max'                 => 'The acknowledgement signature may not exceed :max kilobytes.',
+                'side_A_add_family_planning_date_of_acknowledgement.date'                        => 'Please enter a valid acknowledgement date.',
+                'side_A_add_family_planning_date_of_acknowledgement.before_or_equal'             => 'The acknowledgement date cannot be a future date.',
+                'side_A_add_family_planning_consent_signature_image.image'                       => 'The consent signature must be an image file.',
+                'side_A_add_family_planning_consent_signature_image.mimes'                       => 'The consent signature must be a jpg, jpeg, or png file.',
+                'side_A_add_family_planning_consent_signature_image.max'                         => 'The consent signature may not exceed :max kilobytes.',
+                'side_A_add_family_planning_date_of_acknowledgement_consent.date'                => 'Please enter a valid consent date.',
+                'side_A_add_family_planning_date_of_acknowledgement_consent.before_or_equal'     => 'The consent date cannot be a future date.',
+                'side_A_add_health_worker_id.required'                                           => 'Please select the health worker assigned to this record.',
             ]);
 
             // medical history
@@ -1678,72 +1698,82 @@ class FamilyPlanningController extends Controller
 
             $caseData = $request->validate(
                 [
-                    'edit_client_id' => 'sometimes|nullable|string',
+                    'edit_client_id'                                       => 'sometimes|nullable|string',
                     'edit_philhealth_no' => [
                         'sometimes',
                         'nullable',
                         'regex:/^\d{2}-\d{9}-\d{1}$/'
                     ],
-                    'edit_NHTS' => 'sometimes|nullable|string',
-                    'edit_spouse_lname' => 'sometimes|nullable|string',
-                    'edit_spouse_fname' => 'sometimes|nullable|string',
-                    'edit_spouse_MI' => 'sometimes|nullable|string',
-                    'edit_spouse_date_of_birth' => 'sometimes|nullable|date|before_or_equal:today',
-                    'edit_spouse_age' => 'sometimes|nullable|numeric|max:100',
-                    'edit_spouse_occupation' => 'sometimes|nullable|string',
-                    'edit_spouse_suffix' => 'sometimes|nullable|string',
-
-                    'edit_number_of_living_children' => 'sometimes|nullable|numeric|max:50',
-                    'edit_plan_to_have_more_children' => 'sometimes|nullable|string',
-                    'edit_average_montly_income' => 'sometimes|nullable|numeric',
-                    'edit_type_of_patient' => 'sometimes|nullable|string',
-                    'edit_new_acceptor_reason_for_FP' => 'sometimes|nullable|string',
-                    'edit_current_user_reason_for_FP' => 'sometimes|nullable|string',
-                    'edit_current_user_reason_for_FP_other' => 'sometimes|nullable|string',
-                    'edit_current_method_reason' => 'sometimes|nullable|string',
-                    'edit_previously_used_method' => 'sometimes|nullable|array',
-
-                    // acknowledgement
-                    'edit_choosen_method' => 'sometimes|nullable|string',
+                    'edit_NHTS'                                            => 'sometimes|nullable|string',
+                    'edit_spouse_lname'                                    => 'sometimes|nullable|string',
+                    'edit_spouse_fname'                                    => 'sometimes|nullable|string',
+                    'edit_spouse_MI'                                       => 'sometimes|nullable|string',
+                    'edit_spouse_date_of_birth'                            => 'sometimes|nullable|date|before_or_equal:today',
+                    'edit_spouse_age'                                      => 'sometimes|nullable|numeric|max:100',
+                    'edit_spouse_occupation'                               => 'sometimes|nullable|string',
+                    'edit_spouse_suffix'                                   => 'sometimes|nullable|string',
+                    'edit_number_of_living_children'                       => 'sometimes|nullable|numeric|max:50',
+                    'edit_plan_to_have_more_children'                      => 'sometimes|nullable|string',
+                    'edit_average_montly_income'                           => 'sometimes|nullable|numeric',
+                    'edit_type_of_patient'                                 => 'sometimes|nullable|string',
+                    'edit_new_acceptor_reason_for_FP'                      => 'sometimes|nullable|string',
+                    'edit_current_user_reason_for_FP'                      => 'sometimes|nullable|string',
+                    'edit_current_user_reason_for_FP_other'                => 'sometimes|nullable|string',
+                    'edit_current_method_reason'                           => 'sometimes|nullable|string',
+                    'edit_previously_used_method'                          => 'sometimes|nullable|array',
+                    'edit_choosen_method'                                  => 'sometimes|nullable|string',
                     'edit_family_planning_acknowledgement_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                    'edit_family_planning_acknowledgement_signature_data' => 'sometimes|nullable|string',
-
-                    'edit_date_of_acknowledgement' => 'sometimes|nullable|date',
-
-                    'edit_family_planning_consent_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                    'edit_family_planning_consent_signature_data' => 'sometimes|nullable|string',
-
-                    'edit_date_of_acknowledgement_consent' => 'sometimes|nullable|date',
-                    'edit_current_user_type' => 'sometimes|nullable|string'
+                    'edit_family_planning_acknowledgement_signature_data'  => 'sometimes|nullable|string',
+                    'edit_date_of_acknowledgement'                         => 'sometimes|nullable|date|before_or_equal:today', // ← updated
+                    'edit_family_planning_consent_signature_image'         => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                    'edit_family_planning_consent_signature_data'          => 'sometimes|nullable|string',
+                    'edit_date_of_acknowledgement_consent'                 => 'sometimes|nullable|date|before_or_equal:today', // ← updated
+                    'edit_current_user_type'                               => 'sometimes|nullable|string',
                 ],
-
-                [],
-                [ // ✅ Custom attribute names is for removing the edit_
-                    'edit_client_id' => 'client ID',
-                    'edit_philhealth_no' => 'PhilHealth number',
-                    'edit_NHTS' => 'NHTS status',
-                    'edit_spouse_lname' => 'spouse last name',
-                    'edit_spouse_fname' => 'spouse first name',
-                    'edit_spouse_MI' => 'spouse middle initial',
-                    'edit_spouse_date_of_birth' => 'spouse date of birth',
-                    'edit_spouse_age' => 'spouse age',
-                    'edit_spouse_occupation' => 'spouse occupation',
-
-                    'edit_number_of_living_children' => 'number of living children',
-                    'edit_plan_to_have_more_children' => 'plan to have more children',
-                    'edit_average_montly_income' => 'average monthly income',
-                    'edit_type_of_patient' => 'type of family planning patient',
-                    'edit_new_acceptor_reason_for_FP' => 'reason for new acceptor of family planning',
-                    'edit_current_user_reason_for_FP' => 'reason for current user of family planning',
-                    'edit_current_method_reason' => 'reason for current method',
-                    'edit_previously_used_method' => 'previously used method',
-
-                    'edit_choosen_method' => 'chosen method',
-                    'edit_family_planning_signature_image' => 'client signature',
-                    'edit_family_planning_date_of_acknowledgement' => 'date of acknowledgement',
-                    'edit_family_planning_acknowlegement_consent_signature_image' => 'consent signature',
-                    'edit_family_planning_date_of_acknowledgement_consent' => 'date of acknowledgement consent',
-                    'edit_current_user_type' => 'current user type',
+                [
+                    'edit_philhealth_no.regex'                                          => 'Please enter a valid PhilHealth number format (e.g., 12-123456789-0).',
+                    'edit_spouse_date_of_birth.date'                                    => 'Please enter a valid spouse date of birth.',
+                    'edit_spouse_date_of_birth.before_or_equal'                         => 'The spouse date of birth cannot be a future date.',
+                    'edit_spouse_age.numeric'                                           => 'The spouse age must be a number.',
+                    'edit_spouse_age.max'                                               => 'The spouse age may not be greater than :max years.',
+                    'edit_number_of_living_children.numeric'                            => 'The number of living children must be a number.',
+                    'edit_number_of_living_children.max'                                => 'The number of living children may not be greater than :max.',
+                    'edit_average_montly_income.numeric'                                => 'The average monthly income must be a valid number.',
+                    'edit_family_planning_acknowledgement_signature_image.image'        => 'The acknowledgement signature must be an image file.',
+                    'edit_family_planning_acknowledgement_signature_image.mimes'        => 'The acknowledgement signature must be a jpg, jpeg, or png file.',
+                    'edit_family_planning_acknowledgement_signature_image.max'          => 'The acknowledgement signature may not exceed :max kilobytes.',
+                    'edit_date_of_acknowledgement.date'                                 => 'Please enter a valid acknowledgement date.',
+                    'edit_date_of_acknowledgement.before_or_equal'                      => 'The acknowledgement date cannot be a future date.',
+                    'edit_family_planning_consent_signature_image.image'                => 'The consent signature must be an image file.',
+                    'edit_family_planning_consent_signature_image.mimes'                => 'The consent signature must be a jpg, jpeg, or png file.',
+                    'edit_family_planning_consent_signature_image.max'                  => 'The consent signature may not exceed :max kilobytes.',
+                    'edit_date_of_acknowledgement_consent.date'                         => 'Please enter a valid consent date.',
+                    'edit_date_of_acknowledgement_consent.before_or_equal'              => 'The consent date cannot be a future date.',
+                ],
+                [
+                    'edit_client_id'                                              => 'client ID',
+                    'edit_philhealth_no'                                          => 'PhilHealth number',
+                    'edit_NHTS'                                                   => 'NHTS status',
+                    'edit_spouse_lname'                                           => 'spouse last name',
+                    'edit_spouse_fname'                                           => 'spouse first name',
+                    'edit_spouse_MI'                                              => 'spouse middle initial',
+                    'edit_spouse_date_of_birth'                                   => 'spouse date of birth',
+                    'edit_spouse_age'                                             => 'spouse age',
+                    'edit_spouse_occupation'                                      => 'spouse occupation',
+                    'edit_number_of_living_children'                              => 'number of living children',
+                    'edit_plan_to_have_more_children'                             => 'plan to have more children',
+                    'edit_average_montly_income'                                  => 'average monthly income',
+                    'edit_type_of_patient'                                        => 'type of family planning patient',
+                    'edit_new_acceptor_reason_for_FP'                             => 'reason for new acceptor of family planning',
+                    'edit_current_user_reason_for_FP'                             => 'reason for current user of family planning',
+                    'edit_current_method_reason'                                  => 'reason for current method',
+                    'edit_previously_used_method'                                 => 'previously used method',
+                    'edit_choosen_method'                                         => 'chosen method',
+                    'edit_family_planning_acknowledgement_signature_image'        => 'acknowledgement signature',
+                    'edit_date_of_acknowledgement'                                => 'date of acknowledgement',
+                    'edit_family_planning_consent_signature_image'                => 'consent signature',
+                    'edit_date_of_acknowledgement_consent'                        => 'date of acknowledgement consent',
+                    'edit_current_user_type'                                      => 'current user type',
                 ]
             );
 
@@ -2209,91 +2239,106 @@ class FamilyPlanningController extends Controller
     {
         try {
             $data = $request->validate([
-                'side_b_medical_record_case_id' => 'required',
-                'side_b_health_worker_id' => 'required',
-                'side_b_date_of_visit' => 'required|date',
-                'side_b_medical_findings' => 'sometimes|nullable|string',
-                'side_b_method_accepted' => 'required|string',
-                'add_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'add_side_b_signature_data' => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit' => 'required|date',
-                'baby_Less_than_six_months_question' => 'sometimes|nullable|string',
-                'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
-                'baby_last_4_weeks_question' => 'sometimes|nullable|string',
-                'menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
-                'miscarriage_or_abortion_question' => 'sometimes|nullable|string',
-                'contraceptive_question' => 'sometimes|nullable|string'
+                'side_b_medical_record_case_id'                          => 'required',
+                'side_b_health_worker_id'                                => 'required',
+                'side_b_date_of_visit'                                   => 'required|date|before_or_equal:today',
+                'side_b_medical_findings'                                => 'sometimes|nullable|string',
+                'side_b_method_accepted'                                 => 'required|string',
+                'add_side_b_signature_image'                             => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'add_side_b_signature_data'                              => 'sometimes|nullable|string',
+                'side_b_date_of_follow_up_visit'                         => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
+                'baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
+                'sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
+                'baby_last_4_weeks_question'                             => 'sometimes|nullable|string',
+                'menstrual_period_in_seven_days_question'                => 'sometimes|nullable|string',
+                'miscarriage_or_abortion_question'                       => 'sometimes|nullable|string',
+                'contraceptive_question'                                 => 'sometimes|nullable|string',
+                'is_final'                                               => 'required|in:0,1',
             ], [
-                // Custom messages with friendly attribute names
-                'side_b_medical_record_case_id.required' => 'The medical record case ID field is required.',
-
-                'side_b_health_worker_id.required' => 'The health worker ID field is required.',
-
-                'side_b_date_of_visit.required' => 'The date of visit field is required.',
-                'side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
-
-                'side_b_method_accepted.required' => 'The method accepted field is required.',
-                'side_b_method_accepted.string' => 'The method accepted must be a string.',
-
-                'add_side_b_signature_image.image' => 'The signature must be an image.',
-                'add_side_b_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
-                'add_side_b_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
-
-                'side_b_date_of_follow_up_visit.required' => 'The date of follow up visit field is required.',
-                'side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
-
-                'baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
-                'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
-                'baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
-                'menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
-                'miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
+                'side_b_medical_record_case_id.required'                 => 'The medical record case is required.',
+                'side_b_health_worker_id.required'                       => 'Please select the health worker assigned to this record.',
+                'side_b_date_of_visit.required'                          => 'The date of visit is required.',
+                'side_b_date_of_visit.date'                              => 'Please enter a valid date of visit.',
+                'side_b_date_of_visit.before_or_equal'                   => 'The date of visit cannot be a future date.',
+                'side_b_method_accepted.required'                        => 'Please specify the method accepted.',
+                'side_b_method_accepted.string'                          => 'The method accepted must be a valid text value.',
+                'add_side_b_signature_image.image'                       => 'The signature must be an image file.',
+                'add_side_b_signature_image.mimes'                       => 'The signature must be a jpg, jpeg, or png file.',
+                'add_side_b_signature_image.max'                         => 'The signature may not exceed :max kilobytes.',
+                'side_b_date_of_follow_up_visit.required'                => 'The follow up visit date is required.',
+                'side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
+                'side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'is_final.required'                                      => 'The final record field is required.',
+                'is_final.in'                                            => 'The final record field must be 0 or 1.',
             ]);
+
+            // Guard: block add if any record in this case is already marked final
+            $caseId = $data['side_b_medical_record_case_id'];
+            $alreadyFinal = family_planning_side_b_records::where('medical_record_case_id', $caseId)
+                ->where('is_final', true)
+                ->where('status', 'Active')
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case has already been closed. No new records can be added.'],
+                    ],
+                ], 422);
+            }
+
             $sideBsignaturePath = null;
 
-            // If user uploaded an image file
             if ($request->hasFile('add_side_b_signature_image')) {
                 $sideBsignaturePath = $this->compressAndSaveSignature($request->file('add_side_b_signature_image'));
-            }
-            // If user drew a signature
-            else if ($request->filled('add_side_b_signature_data')) {
+            } elseif ($request->filled('add_side_b_signature_data')) {
                 $sideBsignaturePath = $this->saveCanvasSignature($request->add_side_b_signature_data);
             }
 
-            // add the data
             family_planning_side_b_records::create([
-                'medical_record_case_id' => $data['side_b_medical_record_case_id'],
-                'health_worker_id' => $data['side_b_health_worker_id'],
-                'date_of_visit' => $data['side_b_date_of_visit'] ?? null,
-                'medical_findings' => $data['side_b_medical_findings'] ?? null,
-                'method_accepted' => $data['side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $sideBsignaturePath ?? null,
-                'date_of_follow_up_visit' => $data['side_b_date_of_follow_up_visit'] ?? null,
-                'baby_Less_than_six_months_question' => $data['baby_Less_than_six_months_question'] ?? null,
-                'sexual_intercouse_or_mesntrual_period_question' => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
-                'baby_last_4_weeks_question' => $data['baby_last_4_weeks_question'] ?? null,
-                'menstrual_period_in_seven_days_question' => $data['menstrual_period_in_seven_days_question'] ?? null,
-                'miscarriage_or_abortion_question' => $data['miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['contraceptive_question'] ?? null,
-                'status' => 'Active'
-
+                'medical_record_case_id'                            => $data['side_b_medical_record_case_id'],
+                'health_worker_id'                                  => $data['side_b_health_worker_id'],
+                'date_of_visit'                                     => $data['side_b_date_of_visit'] ?? null,
+                'medical_findings'                                  => $data['side_b_medical_findings'] ?? null,
+                'method_accepted'                                   => $data['side_b_method_accepted'] ?? null,
+                'signature_of_the_provider'                         => $sideBsignaturePath ?? null,
+                'date_of_follow_up_visit'                           => $data['side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question'                => $data['baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question'    => $data['sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question'                        => $data['baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question'           => $data['menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question'                  => $data['miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question'                            => $data['contraceptive_question'] ?? null,
+                'is_final'                                          => (bool) $data['is_final'],
+                'status'                                            => 'Active',
             ]);
+
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Added'], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
     public function sideBrecords($id)
     {
         try {
             $sideBrecord = family_planning_side_b_records::findorFail($id);
+            // case_is_final: true if ANY active record in this case has is_final = true
+            $caseIsFinal = family_planning_side_b_records::where('medical_record_case_id', $sideBrecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->where('status', 'Active')
+                ->exists();
 
-            return response()->json(['sideBrecord' => $sideBrecord], 200);
+            return response()->json([
+                'sideBrecord'          => $sideBrecord,
+                'case_is_final'        => $caseIsFinal,
+                'this_record_is_final' => (bool) $sideBrecord->is_final,
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -2305,59 +2350,68 @@ class FamilyPlanningController extends Controller
     {
         try {
             $sideBrecord = family_planning_side_b_records::findOrFail($id);
+
             $data = $request->validate([
-                'edit_side_b_medical_record_case_id' => 'required',
-                'edit_side_b_health_worker_id' => 'required',
-                'edit_side_b_date_of_visit' => 'required|date',
-                'edit_side_b_medical_findings' => 'sometimes|nullable|string',
-                'edit_side_b_method_accepted' => 'required|string',
-                'edit_side_b_signature_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
-                'edit_side_b_signature_data' => 'sometimes|nullable|string',
-                'edit_side_b_date_of_follow_up_visit' => 'sometimes|nullable|date',
-                'edit_baby_Less_than_six_months_question' => 'sometimes|nullable|string',
-                'edit_sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
-                'edit_baby_last_4_weeks_question' => 'sometimes|nullable|string',
-                'edit_menstrual_period_in_seven_days_question' => 'sometimes|nullable|string',
-                'edit_miscarriage_or_abortion_question' => 'sometimes|nullable|string',
-                'edit_contraceptive_question' => 'sometimes|nullable|string'
+                'edit_side_b_medical_record_case_id'                          => 'required',
+                'edit_side_b_health_worker_id'                                => 'required',
+                'edit_side_b_date_of_visit'                                   => 'required|date|before_or_equal:today',
+                'edit_side_b_medical_findings'                                => 'sometimes|nullable|string',
+                'edit_side_b_method_accepted'                                 => 'required|string',
+                'edit_side_b_signature_image'                                 => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
+                'edit_side_b_signature_data'                                  => 'sometimes|nullable|string',
+                'edit_side_b_date_of_follow_up_visit'                         => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
+                'edit_baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
+                'edit_sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
+                'edit_baby_last_4_weeks_question'                             => 'sometimes|nullable|string',
+                'edit_menstrual_period_in_seven_days_question'                => 'sometimes|nullable|string',
+                'edit_miscarriage_or_abortion_question'                       => 'sometimes|nullable|string',
+                'edit_contraceptive_question'                                 => 'sometimes|nullable|string',
+                'is_final'                                                    => 'required|in:0,1',
             ], [
-                // Custom messages with friendly attribute names
-                'edit_side_b_medical_record_case_id.required' => 'The medical record case ID field is required.',
-
-                'edit_side_b_health_worker_id.required' => 'The health worker ID field is required.',
-
-                'edit_side_b_date_of_visit.required' => 'The date of visit field is required.',
-                'edit_side_b_date_of_visit.date' => 'The date of visit must be a valid date.',
-
-                'edit_side_b_method_accepted.required' => 'The method accepted field is required.',
-                'edit_side_b_method_accepted.string' => 'The method accepted must be a string.',
-
-                'edit_side_b_signature_image.image' => 'The signature must be an image.',
-                'edit_side_b_signature_image.mimes' => 'The signature must be a file of type: jpg, jpeg, png.',
-                'edit_side_b_signature_image.max' => 'The signature may not be greater than :max kilobytes.',
-
-                'edit_side_b_date_of_follow_up_visit.date' => 'The date of follow up visit must be a valid date.',
-
-                'edit_baby_Less_than_six_months_question.string' => 'The baby less than six months question field must be a string.',
-                'edit_sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period question field must be a string.',
-                'edit_baby_last_4_weeks_question.string' => 'The baby last 4 weeks question field must be a string.',
-                'edit_menstrual_period_in_seven_days_question.string' => 'The menstrual period in seven days question field must be a string.',
-                'edit_miscarriage_or_abortion_question.string' => 'The miscarriage or abortion question field must be a string.',
+                'edit_side_b_medical_record_case_id.required'                 => 'The medical record case is required.',
+                'edit_side_b_health_worker_id.required'                       => 'Please select the health worker assigned to this record.',
+                'edit_side_b_date_of_visit.required'                          => 'The date of visit is required.',
+                'edit_side_b_date_of_visit.date'                              => 'Please enter a valid date of visit.',
+                'edit_side_b_date_of_visit.before_or_equal'                   => 'The date of visit cannot be a future date.',
+                'edit_side_b_method_accepted.required'                        => 'Please specify the method accepted.',
+                'edit_side_b_method_accepted.string'                          => 'The method accepted must be a valid text value.',
+                'edit_side_b_signature_image.image'                           => 'The signature must be an image file.',
+                'edit_side_b_signature_image.mimes'                           => 'The signature must be a jpg, jpeg, or png file.',
+                'edit_side_b_signature_image.max'                             => 'The signature may not exceed :max kilobytes.',
+                'edit_side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
+                'edit_side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'is_final.required'                                           => 'The final record field is required.',
+                'is_final.in'                                                 => 'The final record field must be 0 or 1.',
             ]);
+
+            // Guard: only the latest active record may be marked as final
+            if ((bool) $data['is_final']) {
+                $latestRecord = family_planning_side_b_records::where('medical_record_case_id', $sideBrecord->medical_record_case_id)
+                    ->where('status', 'Active')
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                if ($latestRecord && $latestRecord->id !== $sideBrecord->id) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as final.'],
+                        ],
+                    ], 422);
+                }
+            }
 
             $signaturePath = $sideBrecord->signature_of_the_provider;
 
-            // Check if new signature provided (drawn)
             if ($request->filled('edit_side_b_signature_data')) {
-                // Delete old file if exists
                 if ($sideBrecord->signature_of_the_provider) {
                     Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
                 }
                 $signaturePath = $this->saveCanvasSignature($request->edit_side_b_signature_data);
-            }
-            // Check if new signature provided (uploaded)
-            else if ($request->hasFile('edit_side_b_signature_image')) {
-                // Delete old file if exists
+            } elseif ($request->hasFile('edit_side_b_signature_image')) {
                 if ($sideBrecord->signature_of_the_provider) {
                     Storage::disk('public')->delete($sideBrecord->signature_of_the_provider);
                 }
@@ -2365,31 +2419,28 @@ class FamilyPlanningController extends Controller
             }
 
             $sideBrecord->update([
-                'medical_record_case_id' => $data['edit_side_b_medical_record_case_id'],
-                'health_worker_id' => $data['edit_side_b_health_worker_id'],
-                'date_of_visit' => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
-                'medical_findings' => $data['edit_side_b_medical_findings'] ?? null,
-                'method_accepted' => $data['edit_side_b_method_accepted'] ?? null,
-                'signature_of_the_provider' => $signaturePath ?? $sideBrecord->signature_of_the_provider,
-                'date_of_follow_up_visit' => $data['edit_side_b_date_of_follow_up_visit'] ?? null,
-                'baby_Less_than_six_months_question' => $data['edit_baby_Less_than_six_months_question'] ?? null,
-                'sexual_intercouse_or_mesntrual_period_question' => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? null,
-                'baby_last_4_weeks_question' => $data['edit_baby_last_4_weeks_question'] ?? null,
-                'menstrual_period_in_seven_days_question' => $data['edit_menstrual_period_in_seven_days_question'] ?? null,
-                'miscarriage_or_abortion_question' => $data['edit_miscarriage_or_abortion_question'] ?? null,
-                'contraceptive_question' => $data['edit_contraceptive_question'] ?? null,
-                'status' => 'Active'
+                'medical_record_case_id'                            => $data['edit_side_b_medical_record_case_id'],
+                'health_worker_id'                                  => $data['edit_side_b_health_worker_id'],
+                'date_of_visit'                                     => $data['edit_side_b_date_of_visit'] ?? $sideBrecord->date_of_visit,
+                'medical_findings'                                  => $data['edit_side_b_medical_findings'] ?? null,
+                'method_accepted'                                   => $data['edit_side_b_method_accepted'] ?? null,
+                'signature_of_the_provider'                         => $signaturePath,
+                'date_of_follow_up_visit'                           => $data['edit_side_b_date_of_follow_up_visit'] ?? null,
+                'baby_Less_than_six_months_question'                => $data['edit_baby_Less_than_six_months_question'] ?? null,
+                'sexual_intercouse_or_mesntrual_period_question'    => $data['edit_sexual_intercouse_or_mesntrual_period_question'] ?? null,
+                'baby_last_4_weeks_question'                        => $data['edit_baby_last_4_weeks_question'] ?? null,
+                'menstrual_period_in_seven_days_question'           => $data['edit_menstrual_period_in_seven_days_question'] ?? null,
+                'miscarriage_or_abortion_question'                  => $data['edit_miscarriage_or_abortion_question'] ?? null,
+                'contraceptive_question'                            => $data['edit_contraceptive_question'] ?? null,
+                'is_final'                                          => (bool) $data['is_final'],
+                'status'                                            => 'Active',
             ]);
 
             return response()->json(['message' => 'Family Planning Assessment Record Successfully Updated'], 200);
         } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage() // e.g. "Attempt to read property 'blood_pressure' on null"
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
     public function removeRecord($type_of_record, $id)

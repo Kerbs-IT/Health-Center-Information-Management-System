@@ -105,8 +105,8 @@
                                         <div class="mt-3">
                                             <label for="fileInput" class="btn btn-success w-100 mb-2">Update Profile</label>
                                             <input type="file" name="profile_image" class="d-none" id="fileInput" onchange="showFileName(this)">
-                                            <small class="text-muted d-block" id="fileName">No file chosen</small>
-                                            <small class="text-danger d-block error-element" id="image-error "></small>
+                                            <small class="text-muted d-block text-truncate w-100" id="fileName" >No file chosen</small>
+                                            <small class="text-danger d-block error-element" id="image-error"></small>
                                         </div>
                                         <div class="input-fieldxl:w-[50%] flex-fill">
 
@@ -385,7 +385,9 @@
 
 
                         <div class="mb-3 w-95">
-                            <input type="submit" value="Register Patient Account" class="d-block btn btn-success py-1 m-auto fw-bold fs-5" id="add-patient-submit-btn">
+                            <button type="button" class="d-block btn btn-success py-1 m-auto fw-bold fs-5" id="add-patient-submit-btn">
+                                Register Patient Account
+                            </button>
                         </div>
 
                         @if ($errors->any())
@@ -430,6 +432,14 @@
         function showFileName(input) {
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("edit_profile_image").src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     </script>
     @endif

@@ -167,13 +167,21 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
+            const subMenuElement = document.querySelectorAll(".sub-menu-bar-item");
+
+            subMenuElement.forEach(element => element.classList.remove('active'));
             const con = document.getElementById('patient_medical_record');
 
             if (con) {
                 con.classList.add('active');
             }
         })
-
     </script>
     @endif
 

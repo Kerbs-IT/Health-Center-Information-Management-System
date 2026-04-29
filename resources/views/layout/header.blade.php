@@ -13,7 +13,7 @@
     <div class="right-info d-flex align-items-center justify-content-center gap-3 z-1">
 
       <!-- UPDATED: Notification Bell with Dynamic Badge -->
-      <button type="button" class="btn position-relative p-0 border-0 bg-transparent" id="notificationBell" data-bs-toggle="modal" data-bs-target="#notificationModal">
+      <button type="button" class="btn position-relative p-0 border-0 bg-transparent" id="notificationBell" data-bs-toggle="modal" data-bs-target="#notificationModal" style="overflow: visible;">
         <!-- Bell SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
           class="bi bi-bell" viewBox="0 0 16 16">
@@ -21,11 +21,11 @@
           <path d="M8 1a4 4 0 0 0-4 4c0 1.098-.354 2.5-.975 3.5-.356.596-.525 1.057-.525 1.5h11c0-.443-.169-.904-.525-1.5C12.354 7.5 12 6.098 12 5a4 4 0 0 0-4-4z" />
         </svg>
 
-        <!-- Dynamic Badge - Hidden if no unread notifications -->
+        <!-- Dynamic Badge -->
         <span id="notificationBadge" style="
           position: absolute;
-          top: 2px;
-          right: 2px;
+          top: -6px;
+          right: -8px;
           min-width: 18px;
           height: 18px;
           background-color: red;
@@ -37,28 +37,34 @@
           display: none;
           align-items: center;
           justify-content: center;
-          padding: 0 4px;">
+          padding: 0 4px;
+          line-height: 1;">
         </span>
       </button>
 
       @php
       $profileImage = null;
+      $default = asset('images/profile_images/default_profile.png');
 
-      if (optional(Auth::user()->nurses)->profile_image) {
+      if (optional(Auth::user()->nurses)->profile_image && file_exists(public_path(Auth::user()->nurses->profile_image))) {
       $profileImage = asset(Auth::user()->nurses->profile_image);
-      } elseif (optional(Auth::user()->staff)->profile_image) {
+      } elseif (optional(Auth::user()->staff)->profile_image && file_exists(public_path(Auth::user()->staff->profile_image))) {
       $profileImage = asset(Auth::user()->staff->profile_image);
-      } elseif (optional(Auth::user())->profile_image) {
+      } elseif (optional(Auth::user())->profile_image && file_exists(public_path(Auth::user()->profile_image))) {
       $profileImage = asset(Auth::user()->profile_image);
-      } elseif (optional(Auth::user()->patient)->profile_image) {
+      } elseif (optional(Auth::user()->patient)->profile_image && file_exists(public_path(Auth::user()->patient->profile_image))) {
       $profileImage = asset(Auth::user()->patient->profile_image);
       } else {
-      $profileImage = asset('images/profile_images/default_profile.png');
+      $profileImage = $default;
       }
       @endphp
 
       <div class="profile-con position-relative justify-content-space d-flex align-items-center gap-2" style="min-width: 150px;">
-        <img src="{{ $profileImage }}" alt="profile picture" class="profile-img z-1" id="profile_img">
+        <img src="{{ $profileImage }}"
+          alt="profile picture"
+          class="profile-img z-1"
+          id="profile_img"
+          onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
         <div class="username-n-role">
           <h5 class="mb-0">
             {{
@@ -73,7 +79,7 @@
               ?? 'none'
             }}
           </h5>
-          <h6 class="mb-0 text-muted fw-light">{{Auth::user()->role ?? 'none'}}</h6>
+          <h6 class="mb-0 text-muted fw-light text-capitalize">{{Auth::user()->role ?? 'none'}}</h6>
         </div>
         <div class="links position-absolute z-index flex-column top-17 w-100 bg-white" id="links" style="z-index: 9999;">
           @if(Auth::user()->role === 'patient')
@@ -240,7 +246,7 @@
       .then(data => {
         const badge = document.getElementById('notificationBadge');
         if (data.count > 0) {
-          badge.textContent = data.count > 99 ? '99+' : data.count;
+          badge.textContent = data.count > 10 ? '9+' : data.count;
           badge.style.display = 'flex';
         } else {
           badge.style.display = 'none';

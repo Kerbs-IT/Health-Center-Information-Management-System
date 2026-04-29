@@ -15,18 +15,20 @@ class PatientCaseTable extends Component
 {
     use WithPagination;
 
-    protected $paginationTheme = 'bootstrap'; // Add this if you're using Bootstrap
+    protected $paginationTheme = 'bootstrap';
 
     public $caseId;
     public $sortField = 'created_at';
-    public $sortDirection = 'desc'; // Changed to desc as default (most recent first)
+    public $sortDirection = 'desc';
     public $medicalRecordCase;
 
-    protected $listeners = ['prenatalRefreshTable' => '$refresh'];
+    // ── NEW: tracks whether this case already has a final check-up
+    public bool $hasFinalCheckup = false;
+
+    protected $listeners = ['prenatalRefreshTable' => 'refreshTable'];
 
     public function mount($caseId, $medicalRecordCase = null)
     {
-        // Fetch the medical record case if not provided
         if ($medicalRecordCase === null) {
             $this->medicalRecordCase = medical_record_cases::findOrFail($caseId);
         } else {
@@ -34,6 +36,25 @@ class PatientCaseTable extends Component
         }
         $this->caseId = $caseId;
         $this->medicalRecordCase = $medicalRecordCase;
+
+        // ── NEW: check on initial load
+        $this->checkFinalCheckup();
+    }
+
+    // ── NEW: reusable method so we don't repeat the query
+    private function checkFinalCheckup(): void
+    {
+        $this->hasFinalCheckup = pregnancy_checkups::where('medical_record_case_id', $this->caseId)
+            ->where('is_final', true)
+            ->exists();
+    }
+
+    // ── CHANGED: was '$refresh', now calls refreshTable() so we can
+    //             re-run checkFinalCheckup() alongside the re-render
+    public function refreshTable(): void
+    {
+        $this->checkFinalCheckup();
+        // Livewire will automatically re-render after this method runs
     }
 
     public function sortBy($field)
@@ -45,7 +66,6 @@ class PatientCaseTable extends Component
             $this->sortDirection = 'asc';
         }
 
-        // Reset to page 1 when sorting
         $this->resetPage();
     }
 
@@ -55,7 +75,6 @@ class PatientCaseTable extends Component
             ->where('id', $this->caseId)
             ->firstOrFail();
 
-        // Get all records without pagination first
         $prenatal_case_record = prenatal_case_records::with('pregnancy_timeline_records')
             ->where("medical_record_case_id", $this->caseId)
             ->where("status", '!=', 'Archived')
@@ -98,7 +117,6 @@ class PatientCaseTable extends Component
         // Combine all records into one collection
         $allRecords = collect();
 
-        // Add prenatal case records
         foreach ($prenatal_case_record as $record) {
             $allRecords->push([
                 'id' => $record->id,
@@ -110,7 +128,6 @@ class PatientCaseTable extends Component
             ]);
         }
 
-        // Add pregnancy plan
         if ($pregnancy_plan) {
             $allRecords->push([
                 'id' => $pregnancy_plan->id,
@@ -122,7 +139,6 @@ class PatientCaseTable extends Component
             ]);
         }
 
-        // Add family planning records
         if ($familyPlanCaseInfo) {
             $allRecords->push([
                 'id' => $familyPlanCaseInfo->id,
@@ -145,7 +161,6 @@ class PatientCaseTable extends Component
             ]);
         }
 
-        // Add prenatal checkup records
         foreach ($prenatalCheckupRecords as $checkup) {
             $allRecords->push([
                 'id' => $checkup->id,
@@ -157,16 +172,14 @@ class PatientCaseTable extends Component
             ]);
         }
 
-        // Sort the collection
         if ($this->sortDirection === 'asc') {
             $allRecords = $allRecords->sortBy('created_at')->values();
         } else {
             $allRecords = $allRecords->sortByDesc('created_at')->values();
         }
 
-        // Use Livewire's pagination - FIXED
         $perPage = 10;
-        $currentPage = $this->getPage(); // Use Livewire's page tracker
+        $currentPage = $this->getPage();
 
         $paginatedRecords = new \Illuminate\Pagination\LengthAwarePaginator(
             $allRecords->forPage($currentPage, $perPage)->values(),
@@ -190,6 +203,8 @@ class PatientCaseTable extends Component
             'patientInfo' => $patientInfo,
             'caseId' => $this->caseId,
             'allRecords' => $paginatedRecords,
+            // ── NEW: passed to the blade view for the button condition
+            'hasFinalCheckup' => $this->hasFinalCheckup,
         ]);
     }
 

@@ -74,7 +74,7 @@ class TbDotsController extends Controller
                 'sex' => 'required|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← fixed
                 'handled_by' => 'required|exists:users,id',
                 'street' => 'required|string',
                 'brgy' => 'required|string',
@@ -95,6 +95,7 @@ class TbDotsController extends Controller
                 'date_of_birth.required_without' => 'The date of birth field is required.',
                 'contact_number.required_without' => 'The contact number field is required.',
                 'date_of_registration.required_without' => 'The date of registration field is required.',
+                'date_of_registration.before_or_equal' => 'The date of registration must be today or earlier.', // ← added
                 'handled_by.required' => 'The health worker field is required.',
                 'handled_by.exists' => 'The selected health worker does not exist.',
             ]);
@@ -113,14 +114,21 @@ class TbDotsController extends Controller
             $caseData = $request->validate([
                 'tb_type' => 'required|string',
                 'tb_case_type' => 'required|string',
-                'tb_date_of_diagnosis' => 'required|date',
+                'tb_date_of_diagnosis' => 'required|date|before_or_equal:today', // ← fixed
                 'name_of_physician' => 'sometimes|nullable|string',
                 'sputum_result' => 'sometimes|nullable|string',
                 'treatment_medicine_name' => 'sometimes|nullable|string',
-                'tb_date_of_medication_administered' => 'required|date',
+                'tb_date_of_medication_administered' => 'required|date|before_or_equal:today', // ← fixed
                 'treatment_side_effect' => 'sometimes|nullable|string',
                 'tb_outcome' => 'sometimes|nullable|string',
                 'tb_remarks' => 'sometimes|nullable|string',
+            ], [
+                'tb_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
+                'tb_date_of_diagnosis.date' => 'The date of diagnosis must be a valid date.',
+                'tb_date_of_diagnosis.before_or_equal' => 'The date of diagnosis must be today or earlier.', // ← added
+                'tb_date_of_medication_administered.required' => 'The date of medication administered field is required.',
+                'tb_date_of_medication_administered.date' => 'The date of medication administered must be a valid date.',
+                'tb_date_of_medication_administered.before_or_equal' => 'The date of medication administered must be today or earlier.', // ← added
             ]);
 
             $maintenanceMedicationData = $request->validate([
@@ -491,7 +499,7 @@ class TbDotsController extends Controller
                     'required',
                     'string',
                     Rule::unique('patients')
-                        ->ignore($tbDotsRecord->patient->id) // <-- IMPORTANT
+                        ->ignore($tbDotsRecord->patient->id)
                         ->where(function ($query) use ($request) {
                             return $query->where('first_name', $request->first_name)
                                 ->where('last_name', $request->last_name);
@@ -505,7 +513,7 @@ class TbDotsController extends Controller
                 'sex' => 'required|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← fixed
                 'handled_by' => 'required',
                 'street' => 'required',
                 'brgy' => 'required',
@@ -514,15 +522,14 @@ class TbDotsController extends Controller
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45',
-                'pulse_rate'        => 'nullable|string|max:20',
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:1,250',
-                'weight'            => 'nullable|numeric|between:1,250',
-                'philheath_id' => 'sometimes|nullable|string',
-                'suffix' => 'sometimes|nullable|string'
+                'temperature'      => 'nullable|numeric|between:30,45',
+                'pulse_rate'       => 'nullable|string|max:20',
+                'respiratory_rate' => 'nullable|integer|min:5|max:60',
+                'height'           => 'nullable|numeric|between:1,250',
+                'weight'           => 'nullable|numeric|between:1,250',
+                'philheath_id'     => 'sometimes|nullable|string',
+                'suffix'           => 'sometimes|nullable|string',
             ], [
-                // Custom messages with friendly attribute names
                 'first_name.required' => 'The first name field is required.',
                 'first_name.string' => 'The first name must be a string.',
                 'first_name.unique' => 'This patient already exists.',
@@ -542,6 +549,7 @@ class TbDotsController extends Controller
 
                 'date_of_registration.required' => 'The date of registration field is required.',
                 'date_of_registration.date' => 'The date of registration must be a valid date.',
+                'date_of_registration.before_or_equal' => 'The date of registration must be today or earlier.', // ← added
 
                 'handled_by.required' => 'The handled by field is required.',
 
@@ -659,30 +667,32 @@ class TbDotsController extends Controller
 
             $data = $request->validate([
                 'edit_type_of_tuberculosis' => 'required|string',
-                'edit_type_of_tb_case' =>  'required|string',
-                'edit_date_of_diagnosis' => 'required|date',
-                'edit_name_of_physician' => 'sometimes|nullable|string',
-                'edit_sputum_test_results' => 'sometimes|nullable|string',
-                'edit_treatment_category' => 'sometimes|nullable|string',
-                'edit_date_administered' => 'required|date',
-                'edit_side_effect' =>  'sometimes|nullable|string',
-                'edit_tb_remarks' => 'sometimes|nullable|string',
-                'edit_tb_outcome' => 'sometimes|nullable|string',
+                'edit_type_of_tb_case'      => 'required|string',
+                'edit_date_of_diagnosis'    => 'required|date|before_or_equal:today', // ← fixed
+                'edit_name_of_physician'    => 'sometimes|nullable|string',
+                'edit_sputum_test_results'  => 'sometimes|nullable|string',
+                'edit_treatment_category'   => 'sometimes|nullable|string',
+                'edit_date_administered'    => 'required|date|before_or_equal:today', // ← fixed
+                'edit_side_effect'          => 'sometimes|nullable|string',
+                'edit_tb_remarks'           => 'sometimes|nullable|string',
+                'edit_tb_outcome'           => 'sometimes|nullable|string',
             ], [
                 'edit_type_of_tuberculosis.required' => 'The type of tuberculosis field is required.',
-                'edit_type_of_tuberculosis.string' => 'The type of tuberculosis field must be a string.',
-                'edit_type_of_tb_case.required' => 'The type of tb case field is required.',
-                'edit_type_of_tb_case.string' => 'The type of tb case field must be a string.',
-                'edit_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
-                'edit_date_of_diagnosis.date' => 'The date of diagnosis field must be a valid date.',
-                'edit_name_of_physician.string' => 'The name of physician field must be a string.',
-                'edit_sputum_test_results.string' => 'The sputum test results field must be a string.',
-                'edit_treatment_category.string' => 'The treatment category field must be a string.',
-                'edit_date_administered.required' => 'The date administered field is required.',
-                'edit_date_administered.date' => 'The date administered field must be a valid date.',
-                'edit_side_effect.string' => 'The side effect field must be a string.',
-                'edit_tb_remarks.string' => 'The remarks field must be a string.',
-                'edit_tb_outcome.string' => 'The outcome field must be a string.',
+                'edit_type_of_tuberculosis.string'   => 'The type of tuberculosis field must be a string.',
+                'edit_type_of_tb_case.required'      => 'The type of tb case field is required.',
+                'edit_type_of_tb_case.string'        => 'The type of tb case field must be a string.',
+                'edit_date_of_diagnosis.required'    => 'The date of diagnosis field is required.',
+                'edit_date_of_diagnosis.date'        => 'The date of diagnosis field must be a valid date.',
+                'edit_date_of_diagnosis.before_or_equal' => 'The date of diagnosis must be today or earlier.', // ← added
+                'edit_name_of_physician.string'      => 'The name of physician field must be a string.',
+                'edit_sputum_test_results.string'    => 'The sputum test results field must be a string.',
+                'edit_treatment_category.string'     => 'The treatment category field must be a string.',
+                'edit_date_administered.required'    => 'The date administered field is required.',
+                'edit_date_administered.date'        => 'The date administered field must be a valid date.',
+                'edit_date_administered.before_or_equal' => 'The date of medication administered must be today or earlier.', // ← added
+                'edit_side_effect.string'            => 'The side effect field must be a string.',
+                'edit_tb_remarks.string'             => 'The remarks field must be a string.',
+                'edit_tb_outcome.string'             => 'The outcome field must be a string.',
             ]);
 
             $caseRecord->update([
@@ -735,52 +745,71 @@ class TbDotsController extends Controller
     public function addPatientCheckUp(Request $request, $id)
     {
         try {
+            // --- BLOCK IF CASE IS ALREADY CLOSED ---
+            $alreadyFinal = tb_dots_check_ups::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => [
+                        'is_final' => ['This case is already closed. No new records can be added.']
+                    ]
+                ], 422);
+            }
             $data = $request->validate([
                 'patient_name' => 'required|string',
-                'date_of_visit' => 'required|date',
+                'date_of_visit' => 'required|date|before_or_equal:today', // ← fixed
                 'blood_pressure' => [
                     'sometimes',
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'temperature'       => 'nullable|numeric|between:30,45',
-                'pulse_rate'        => 'nullable|string|max:20',
-                'respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'height'            => 'nullable|numeric|between:1,250',
-                'weight'            => 'nullable|numeric|between:1,250',
+                'temperature'            => 'nullable|numeric|between:30,45',
+                'pulse_rate'             => 'nullable|string|max:20',
+                'respiratory_rate'       => 'nullable|integer|min:5|max:60',
+                'height'                 => 'nullable|numeric|between:1,250',
+                'weight'                 => 'nullable|numeric|between:1,250',
                 'adherence_of_treatment' => 'required|string',
-                'side_effect' => 'sometimes|nullable|string',
-                'progress_note' => 'sometimes|nullable|string',
-                'sputum_test_result' => 'sometimes|nullable|string',
-                'treatment_phase' => 'sometimes|nullable|string',
-                'outcome' => 'sometimes|nullable|string',
-                'handled_by' => 'required',
-                'add_date_of_comeback' => 'required|date'
+                'side_effect'            => 'sometimes|nullable|string',
+                'progress_note'          => 'sometimes|nullable|string',
+                'sputum_test_result'     => 'sometimes|nullable|string',
+                'treatment_phase'        => 'sometimes|nullable|string',
+                'outcome'                => 'sometimes|nullable|string',
+                'handled_by'             => 'required',
+                'add_date_of_comeback'   => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], // ← fixed
             ], [
-                // Custom messages with friendly attribute names
                 'patient_name.required' => 'The patient name field is required.',
-                'patient_name.string' => 'The patient name must be a string.',
+                'patient_name.string'   => 'The patient name must be a string.',
 
-                'date_of_visit.required' => 'The date of visit field is required.',
-                'date_of_visit.date' => 'The date of visit must be a valid date.',
+                'date_of_visit.required'       => 'The date of visit field is required.',
+                'date_of_visit.date'           => 'The date of visit must be a valid date.',
+                'date_of_visit.before_or_equal' => 'The date of visit must be today or earlier.', // ← added
 
                 'blood_pressure.regex' => 'The blood pressure format is invalid.',
 
                 'pulse_rate.string' => 'The pulse rate must be a string.',
-                'pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+                'pulse_rate.max'    => 'The pulse rate may not be greater than :max characters.',
 
                 'respiratory_rate.integer' => 'The respiratory rate must be an integer.',
-                'respiratory_rate.min' => 'The respiratory rate must be at least :min.',
-                'respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+                'respiratory_rate.min'     => 'The respiratory rate must be at least :min.',
+                'respiratory_rate.max'     => 'The respiratory rate may not be greater than :max.',
 
                 'adherence_of_treatment.required' => 'The adherence of treatment field is required.',
-                'adherence_of_treatment.string' => 'The adherence of treatment must be a string.',
+                'adherence_of_treatment.string'   => 'The adherence of treatment must be a string.',
 
                 'handled_by.required' => 'The handled by field is required.',
 
-                'add_date_of_comeback.required' => 'The date of comeback field is required.',
-                'add_date_of_comeback.date' => 'The date of comeback must be a valid date.',
+                'add_date_of_comeback.required'       => 'The date of comeback field is required.',
+                'add_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
+                'add_date_of_comeback.before_or_equal' => 'The date of comeback must be past or a 5 years from now future date.', // ← added
             ]);
+
+            $isFinal = $request->input('is_final', 0);
 
             // create the record
             $tbDotsCheckUpRecord = tb_dots_check_ups::create([
@@ -801,7 +830,8 @@ class TbDotsController extends Controller
                 'treatment_phase' => $data['treatment_phase'] ?? null,
                 'outcome' => $data['outcome'] ?? null,
                 'status' => 'Done',
-                'date_of_comeback' => $data['add_date_of_comeback']
+                'date_of_comeback' => $data['add_date_of_comeback'],
+                'is_final'=> (bool) $isFinal,
             ]);
 
             return response()->json(['message' => 'Tb Dots Patient information is added Successfully'], 200);
@@ -820,8 +850,13 @@ class TbDotsController extends Controller
     {
         try {
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
+            $case_is_final = tb_dots_check_ups::where('medical_record_case_id', $checkUpRecord->medical_record_case_id)
+                ->where('is_final', true)
+                ->exists();
 
-            return response()->json(['checkUpInfo' => $checkUpRecord], 200);
+            return response()->json(['checkUpInfo' => $checkUpRecord,
+                'case_is_final'        => $case_is_final,
+                'this_record_is_final' => (bool) $checkUpRecord->is_final,], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
@@ -832,29 +867,50 @@ class TbDotsController extends Controller
     {
         try {
             $checkUpRecord = tb_dots_check_ups::findOrFail($id);
+            // --- FINAL TOGGLE GUARD ---
+            // If is_final is being turned on, this record MUST be the last one.
+            $isFinal = $request->input('is_final', 0);
+            if ($isFinal) {
+                $isLastRecord = !tb_dots_check_ups::where('medical_record_case_id', $checkUpRecord->medical_record_case_id)
+                    ->where('id', '>', $id)
+                    ->exists();
+
+                if (!$isLastRecord) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent record can be marked as the final record.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $data = $request->validate([
-                'edit_checkup_date_of_visit' => 'required|date',
+                'edit_checkup_date_of_visit'          => 'required|date|before_or_equal:today', // ← fixed
                 'edit_checkup_blood_pressure' => [
                     'sometimes',
                     'nullable',
                     'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'
                 ],
-                'edit_checkup_temperature'       => 'nullable|numeric|between:30,45',
-                'edit_checkup_pulse_rate'        => 'nullable|string|max:20',
-                'edit_checkup_respiratory_rate'  => 'nullable|integer|min:5|max:60',
-                'edit_checkup_height'            => 'nullable|numeric|between:1,250',
-                'edit_checkup_weight'            => 'nullable|numeric|between:1,250',
+                'edit_checkup_temperature'            => 'nullable|numeric|between:30,45',
+                'edit_checkup_pulse_rate'             => 'nullable|string|max:20',
+                'edit_checkup_respiratory_rate'       => 'nullable|integer|min:5|max:60',
+                'edit_checkup_height'                 => 'nullable|numeric|between:1,250',
+                'edit_checkup_weight'                 => 'nullable|numeric|between:1,250',
                 'edit_checkup_adherence_of_treatment' => 'required|string',
-                'edit_checkup_side_effect' => 'sometimes|nullable|string',
-                'edit_checkup_progress_note' => 'sometimes|nullable|string',
-                'edit_checkup_sputum_test_result' => 'sometimes|nullable|string',
-                'edit_checkup_treatment_phase' => 'sometimes|nullable|string',
-                'edit_checkup_outcome' => 'sometimes|nullable|string',
-                'edit_date_of_comeback' => 'required|date'
+                'edit_checkup_side_effect'            => 'sometimes|nullable|string',
+                'edit_checkup_progress_note'          => 'sometimes|nullable|string',
+                'edit_checkup_sputum_test_result'     => 'sometimes|nullable|string',
+                'edit_checkup_treatment_phase'        => 'sometimes|nullable|string',
+                'edit_checkup_outcome'                => 'sometimes|nullable|string',
+                'edit_date_of_comeback'               => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ], 
             ], [
-                // Custom messages with friendly attribute names
-                'edit_checkup_date_of_visit.required' => 'The date of visit field is required.',
-                'edit_checkup_date_of_visit.date' => 'The date of visit must be a valid date.',
+                'edit_checkup_date_of_visit.required'       => 'The date of visit field is required.',
+                'edit_checkup_date_of_visit.date'           => 'The date of visit must be a valid date.',
+                'edit_checkup_date_of_visit.before_or_equal' => 'The date of visit must be today or earlier.', // ← added
 
                 'edit_checkup_blood_pressure.regex' => 'The blood pressure format is invalid.',
 
@@ -862,11 +918,11 @@ class TbDotsController extends Controller
                 'edit_checkup_temperature.between' => 'The temperature must be between :min and :max °C.',
 
                 'edit_checkup_pulse_rate.string' => 'The pulse rate must be a string.',
-                'edit_checkup_pulse_rate.max' => 'The pulse rate may not be greater than :max characters.',
+                'edit_checkup_pulse_rate.max'    => 'The pulse rate may not be greater than :max characters.',
 
                 'edit_checkup_respiratory_rate.integer' => 'The respiratory rate must be an integer.',
-                'edit_checkup_respiratory_rate.min' => 'The respiratory rate must be at least :min.',
-                'edit_checkup_respiratory_rate.max' => 'The respiratory rate may not be greater than :max.',
+                'edit_checkup_respiratory_rate.min'     => 'The respiratory rate must be at least :min.',
+                'edit_checkup_respiratory_rate.max'     => 'The respiratory rate may not be greater than :max.',
 
                 'edit_checkup_height.numeric' => 'The height must be a number.',
                 'edit_checkup_height.between' => 'The height must be between :min and :max cm.',
@@ -875,12 +931,13 @@ class TbDotsController extends Controller
                 'edit_checkup_weight.between' => 'The weight must be between :min and :max kg.',
 
                 'edit_checkup_adherence_of_treatment.required' => 'The adherence of treatment field is required.',
-                'edit_checkup_adherence_of_treatment.string' => 'The adherence of treatment must be a string.',
+                'edit_checkup_adherence_of_treatment.string'   => 'The adherence of treatment must be a string.',
 
                 'edit_checkup_sputum_test_result.string' => 'The sputum test result must be a string.',
 
-                'edit_date_of_comeback.required' => 'The date of comeback field is required.',
-                'edit_date_of_comeback.date' => 'The date of comeback must be a valid date.',
+                'edit_date_of_comeback.required'       => 'The date of comeback field is required.',
+                'edit_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
+                'edit_date_of_comeback.before_or_equal' => 'The date of comeback must be today,past or a 5 years future date.', // ← added
             ]);
 
             $checkUpRecord->update([
@@ -898,7 +955,8 @@ class TbDotsController extends Controller
                 'treatment_phase' => $data['edit_checkup_treatment_phase'] ?? null,
                 'outcome' => $data['edit_checkup_outcome'] ?? null,
                 'status' => 'Active',
-                'date_of_comeback' => $data['edit_date_of_comeback']
+                'date_of_comeback' => $data['edit_date_of_comeback'],
+                'is_final' => (bool) $isFinal,
             ]);
             return response()->json(['message' => 'Tb Dots Patient Check-up information is updated Successfully'], 200);
         } catch (ValidationException $e) {
@@ -948,35 +1006,37 @@ class TbDotsController extends Controller
             }
 
             $data = $request->validate([
-                'add_tb_case_patient_name' => 'required',
-                'add_tb_health_worker_id' => 'required',
+                'add_tb_case_patient_name'    => 'required',
+                'add_tb_health_worker_id'     => 'required',
                 'add_tb_type_of_tuberculosis' => 'required|string',
-                'add_tb_type_of_tb_case' =>  'required|string',
-                'add_tb_date_of_diagnosis' => 'required|date',
-                'add_tb_name_of_physician' => 'sometimes|nullable|string',
-                'add_tb_sputum_test_results' => 'sometimes|nullable|string',
-                'add_tb_treatment_category' => 'sometimes|nullable|string',
-                'add_tb_date_administered' => 'required|date',
-                'add_tb_side_effect' =>  'sometimes|nullable|string',
-                'add_tb_remarks' => 'sometimes|nullable|string',
-                'add_tb_outcome' => 'sometimes|nullable|string',
+                'add_tb_type_of_tb_case'      => 'required|string',
+                'add_tb_date_of_diagnosis'    => 'required|date|before_or_equal:today', // ← fixed
+                'add_tb_name_of_physician'    => 'sometimes|nullable|string',
+                'add_tb_sputum_test_results'  => 'sometimes|nullable|string',
+                'add_tb_treatment_category'   => 'sometimes|nullable|string',
+                'add_tb_date_administered'    => 'required|date|before_or_equal:today', // ← fixed
+                'add_tb_side_effect'          => 'sometimes|nullable|string',
+                'add_tb_remarks'              => 'sometimes|nullable|string',
+                'add_tb_outcome'              => 'sometimes|nullable|string',
             ], [
-                'add_tb_case_patient_name.required' => 'The case patient name field is required.',
-                'add_tb_health_worker_id.required' => 'The health worker id field is required.',
+                'add_tb_case_patient_name.required'    => 'The case patient name field is required.',
+                'add_tb_health_worker_id.required'     => 'The health worker id field is required.',
                 'add_tb_type_of_tuberculosis.required' => 'The type of tuberculosis field is required.',
-                'add_tb_type_of_tuberculosis.string' => 'The type of tuberculosis field must be a string.',
-                'add_tb_type_of_tb_case.required' => 'The type of tb case field is required.',
-                'add_tb_type_of_tb_case.string' => 'The type of tb case field must be a string.',
-                'add_tb_date_of_diagnosis.required' => 'The date of diagnosis field is required.',
-                'add_tb_date_of_diagnosis.date' => 'The date of diagnosis field must be a valid date.',
-                'add_tb_name_of_physician.string' => 'The name of physician field must be a string.',
-                'add_tb_sputum_test_results.string' => 'The sputum test results field must be a string.',
-                'add_tb_treatment_category.string' => 'The treatment category field must be a string.',
-                'add_tb_date_administered.required' => 'The date administered field is required.',
-                'add_tb_date_administered.date' => 'The date administered field must be a valid date.',
-                'add_tb_side_effect.string' => 'The side effect field must be a string.',
-                'add_tb_remarks.string' => 'The remarks field must be a string.',
-                'add_tb_outcome.string' => 'The outcome field must be a string.',
+                'add_tb_type_of_tuberculosis.string'   => 'The type of tuberculosis field must be a string.',
+                'add_tb_type_of_tb_case.required'      => 'The type of tb case field is required.',
+                'add_tb_type_of_tb_case.string'        => 'The type of tb case field must be a string.',
+                'add_tb_date_of_diagnosis.required'    => 'The date of diagnosis field is required.',
+                'add_tb_date_of_diagnosis.date'        => 'The date of diagnosis field must be a valid date.',
+                'add_tb_date_of_diagnosis.before_or_equal' => 'The date of diagnosis must be today or earlier.', // ← added
+                'add_tb_name_of_physician.string'      => 'The name of physician field must be a string.',
+                'add_tb_sputum_test_results.string'    => 'The sputum test results field must be a string.',
+                'add_tb_treatment_category.string'     => 'The treatment category field must be a string.',
+                'add_tb_date_administered.required'    => 'The date administered field is required.',
+                'add_tb_date_administered.date'        => 'The date administered field must be a valid date.',
+                'add_tb_date_administered.before_or_equal' => 'The date of medication administered must be today or earlier.', // ← added
+                'add_tb_side_effect.string'            => 'The side effect field must be a string.',
+                'add_tb_remarks.string'                => 'The remarks field must be a string.',
+                'add_tb_outcome.string'                => 'The outcome field must be a string.',
             ]);
 
             $caseRecord = tb_dots_case_records::create([

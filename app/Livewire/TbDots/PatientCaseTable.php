@@ -17,12 +17,27 @@ class PatientCaseTable extends Component
     public $sortDirection = 'asc';
 
     // Optional: listen to events for add/edit/archive
-    protected $listeners = ['tbRefreshTable' => '$refresh'];
+    protected $listeners = ['tbRefreshTable' => 'refreshTable'];
     protected $paginationTheme = 'bootstrap';
+    public bool $hasFinalRecord = false;
+
     public function mount($medicalRecordCaseId)
     {
-        $this->$medicalRecordCaseId = $medicalRecordCaseId; // THIS catches the ID from URL
+        $this->medicalRecordCaseId = $medicalRecordCaseId; // THIS catches the ID from URL
+        $this->checkFinalRecord();
     }
+    private function checkFinalRecord(): void
+    {
+        $this->hasFinalRecord = tb_dots_check_ups::where('medical_record_case_id', $this->medicalRecordCaseId)
+            ->where('is_final', true)
+            ->exists();
+    }
+    public function refreshTable(): void
+    {
+        $this->checkFinalRecord();
+        // Livewire re-renders automatically after this
+    }
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -32,6 +47,7 @@ class PatientCaseTable extends Component
             $this->sortDirection = 'asc';
         }
     }
+    
     public function render()
     {
         $patientRecord = medical_record_cases::with('patient', 'tb_dots_medical_record')
@@ -100,6 +116,7 @@ class PatientCaseTable extends Component
             'medicalRecordId' => $this->medicalRecordCaseId,
             'patientInfo' => $patientRecord,
             'allRecords' => $paginatedRecords,
+            'hasFinalRecord'  => $this->hasFinalRecord,
         ]);
     }
     public function exportPdf($caseId)

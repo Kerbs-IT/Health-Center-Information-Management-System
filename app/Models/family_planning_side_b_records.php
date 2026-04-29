@@ -21,10 +21,14 @@ class family_planning_side_b_records extends Model
         'menstrual_period_in_seven_days_question',
         'miscarriage_or_abortion_question',
         'contraceptive_question',
-        'status'
-        
+        'status',
+        'is_final'
+
     ];
 
+    protected $casts = [
+        'is_final' => 'boolean'
+    ];
     public function medical_record_case()
     {
         return $this->belongsTo(medical_record_cases::class, 'medical_record_case_id', 'id');

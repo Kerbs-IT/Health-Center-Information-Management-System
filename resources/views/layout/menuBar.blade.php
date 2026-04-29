@@ -85,11 +85,8 @@
         </div>
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="{{route('patient-list')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none   w-100 px-3 py-2" id="patient-list">
-                <div class="d-flex align-items-center gap-3 w-100">
-                    <i class="fa-solid fa-users"></i>
+                    <i class="fa-solid fs-5 fa-users"></i>
                     <h4 class="mb-0 fs-5">Patients List</h4>
-                </div>
-
             </a>
 
         </div>

@@ -411,7 +411,10 @@
 
                                     <!-- save btn -->
                                     <div class="save-record d-flex justify-content-end w-100">
-                                        <input type="submit" class="btn btn-success px-4 fs-5" value="Save Record" id="update-patient-detail-BTN" data-bs-id="{{ $prenatalRecord->id }}">
+                                       
+                                        <button type="button" id="update-patient-detail-BTN" class="btn btn-success px-4 fs-5" data-bs-id="{{ $prenatalRecord->id }}">
+                                            Update Record
+                                        </button>
                                     </div>
                                 </div>
                             </div>

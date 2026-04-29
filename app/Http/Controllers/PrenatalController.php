@@ -88,16 +88,12 @@ class PrenatalController extends Controller
                 'sex'                  => 'sometimes|nullable|string',
                 'contact_number'       => 'required|digits_between:7,12',
                 'nationality'          => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← updated
                 'handled_by'           => 'nullable|exists:users,id',
                 'street'               => 'required|string',
                 'brgy'                 => 'required',
                 'suffix'               => 'sometimes|nullable|string',
-
-                // Guardian account — optional, only used when notification_mode = guardian
                 'guardian_account_id'  => 'nullable|exists:users,id',
-
-                // Email: not required when guardian is linked or existing patient
                 'email' => array_filter([
                     !$request->filled('guardian_account_id') && !$request->filled('patient_id')
                         ? 'required_without:patient_id'
@@ -107,31 +103,33 @@ class PrenatalController extends Controller
                         ? Rule::unique('users', 'email')
                         : null,
                 ]),
-
                 'user_account'         => 'sometimes|nullable|numeric',
             ], [
-                'patient_id.exists'                     => 'The selected patient record does not exist.',
-                'type_of_patient.required'              => 'The type of patient field is required.',
-                'first_name.required_without'           => 'The first name field is required.',
-                'first_name.string'                     => 'The first name must be a string.',
-                'first_name.unique'                     => 'This patient already exists.',
-                'last_name.required_without'            => 'The last name field is required.',
-                'last_name.string'                      => 'The last name must be a string.',
-                'date_of_birth.required_without'        => 'The date of birth field is required.',
-                'date_of_birth.date'                    => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal'         => 'The date of birth must be today or earlier.',
-                'age.required_without'                  => 'The age field is required.',
-                'age.numeric'                           => 'The age must be a number.',
-                'contact_number.required_without'       => 'The contact number field is required.',
-                'contact_number.digits_between'         => 'The contact number must be between :min and :max digits.',
-                'date_of_registration.required_without' => 'The date of registration field is required.',
-                'date_of_registration.date'             => 'The date of registration must be a valid date.',
-                'handled_by.exists'                     => 'The selected health worker does not exist.',
-                'guardian_account_id.exists'            => 'The selected guardian account does not exist.',
-                'street.required_without'               => 'The street field is required.',
-                'brgy.required_without'                 => 'The barangay field is required.',
-                'email.required_without'                => 'The email field is required.',
-                'user_account.numeric'                  => 'The user account must be a number.',
+                'patient_id.exists'                      => 'The selected patient record does not exist.',
+                'type_of_patient.required'               => 'The type of patient is required.',
+                'first_name.required'                    => 'The first name is required.',
+                'first_name.string'                      => 'The first name must be a valid text value.',
+                'first_name.unique'                      => 'This patient already exists.',
+                'last_name.required'                     => 'The last name is required.',
+                'last_name.string'                       => 'The last name must be a valid text value.',
+                'date_of_birth.required'                 => 'The date of birth is required.',
+                'date_of_birth.date'                     => 'Please enter a valid date of birth.',
+                'date_of_birth.before_or_equal'          => 'The date of birth cannot be a future date.',
+                'age.required'                           => 'The age is required.',
+                'age.numeric'                            => 'The age must be a number.',
+                'contact_number.required'                => 'The contact number is required.',
+                'contact_number.digits_between'          => 'The contact number must be between :min and :max digits.',
+                'date_of_registration.required'          => 'The date of registration is required.',
+                'date_of_registration.date'              => 'Please enter a valid date of registration.',
+                'date_of_registration.before_or_equal'   => 'The date of registration cannot be a future date.',
+                'handled_by.exists'                      => 'The selected health worker does not exist.',
+                'guardian_account_id.exists'             => 'The selected guardian account does not exist.',
+                'street.required'                        => 'The street address is required.',
+                'brgy.required'                          => 'The barangay is required.',
+                'email.required_without'                 => 'The email is required when no guardian account is selected.',
+                'email.email'                            => 'Please enter a valid email address.',
+                'email.unique'                           => 'This email is already taken.',
+                'user_account.numeric'                   => 'The user account must be a number.',
             ]);
 
             // ============================================================================
@@ -174,49 +172,57 @@ class PrenatalController extends Controller
             ]);
 
             $prenatalCaseData = $request->validate([
-                'G'                  => 'sometimes|nullable|numeric',
-                'P'                  => 'sometimes|nullable|numeric',
-                'T'                  => 'sometimes|nullable|numeric',
-                'premature'          => 'sometimes|nullable|numeric',
-                'abortion'           => 'sometimes|nullable|numeric',
-                'living_children'    => 'sometimes|nullable|numeric',
-                'preg_year'          => 'sometimes|nullable|array',
-                'type_of_delivery'   => 'sometimes|nullable|array',
-                'place_of_delivery'  => 'sometimes|nullable|array',
-                'birth_attendant'    => 'sometimes|nullable|array',
-                'compilation'        => 'sometimes|nullable|array',
-                'outcome'            => 'sometimes|nullable|array',
-                'LMP'                => 'required|date',
-                'expected_delivery'  => 'required|date',
-                'menarche'           => 'sometimes|nullable|numeric',
-                'TT1'                => 'sometimes|nullable|numeric',
-                'TT2'                => 'sometimes|nullable|numeric',
-                'TT3'                => 'sometimes|nullable|numeric',
-                'TT4'                => 'sometimes|nullable|numeric',
-                'TT5'                => 'sometimes|nullable|numeric',
-                'nurse_decision'     => 'sometimes|nullable|string',
-                'blood_pressure'     => ['sometimes', 'nullable', 'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'],
-                'temperature'        => 'nullable|numeric|between:30,45',
-                'pulse_rate'         => 'nullable|string|max:20',
-                'respiratory_rate'   => 'nullable|integer|min:5|max:60',
-                'height'             => 'nullable|numeric|between:1,250',
-                'weight'             => 'nullable|numeric|between:1,250',
-                'add_prenatal_planning' => 'nullable|string:max:2000',
+                'G'                     => 'sometimes|nullable|numeric',
+                'P'                     => 'sometimes|nullable|numeric',
+                'T'                     => 'sometimes|nullable|numeric',
+                'premature'             => 'sometimes|nullable|numeric',
+                'abortion'              => 'sometimes|nullable|numeric',
+                'living_children'       => 'sometimes|nullable|numeric',
+                'preg_year'             => 'sometimes|nullable|array',
+                'type_of_delivery'      => 'sometimes|nullable|array',
+                'place_of_delivery'     => 'sometimes|nullable|array',
+                'birth_attendant'       => 'sometimes|nullable|array',
+                'compilation'           => 'sometimes|nullable|array',
+                'outcome'               => 'sometimes|nullable|array',
+                'LMP'                   => 'required|date|before_or_equal:today',   // ← updated
+                'expected_delivery'     => 'required|date|after_or_equal:today',    // ← updated
+                'menarche'              => 'sometimes|nullable|numeric',
+                'TT1'                   => 'sometimes|nullable|numeric',
+                'TT2'                   => 'sometimes|nullable|numeric',
+                'TT3'                   => 'sometimes|nullable|numeric',
+                'TT4'                   => 'sometimes|nullable|numeric',
+                'TT5'                   => 'sometimes|nullable|numeric',
+                'nurse_decision'        => 'sometimes|nullable|string',
+                'blood_pressure'        => ['sometimes', 'nullable', 'regex:/^(7\d|[8-9]\d|1\d{2}|2[0-4]\d|250)\/(4\d|[5-9]\d|1[0-4]\d|150)$/'],
+                'temperature'           => 'nullable|numeric|between:30,45',
+                'pulse_rate'            => 'nullable|string|max:20',
+                'respiratory_rate'      => 'nullable|integer|min:5|max:60',
+                'height'                => 'nullable|numeric|between:1,250',
+                'weight'                => 'nullable|numeric|between:1,250',
+                'add_prenatal_planning' => 'nullable|string|max:2000',
             ], [
-                'G.numeric'                  => 'The G (gravida) must be a number.',
-                'P.numeric'                  => 'The P (para) must be a number.',
-                'T.numeric'                  => 'The T (term) must be a number.',
-                'LMP.required'               => 'The LMP (Last Menstrual Period) field is required.',
-                'LMP.date'                   => 'The LMP must be a valid date.',
-                'expected_delivery.required' => 'The expected delivery field is required.',
-                'expected_delivery.date'     => 'The expected delivery must be a valid date.',
-                'blood_pressure.regex'       => 'The blood pressure format is invalid.',
-                'pulse_rate.string'          => 'The pulse rate must be a string.',
-                'pulse_rate.max'             => 'The pulse rate may not be greater than :max characters.',
-                'respiratory_rate.integer'   => 'The respiratory rate must be an integer.',
-                'respiratory_rate.min'       => 'The respiratory rate must be at least :min.',
-                'respiratory_rate.max'       => 'The respiratory rate may not be greater than :max.',
-                'add_prenatal_planning.max'  => 'The prenatal planning may not be greater than :max characters.',
+                'G.numeric'                    => 'The G (gravida) must be a number.',
+                'P.numeric'                    => 'The P (para) must be a number.',
+                'T.numeric'                    => 'The T (term) must be a number.',
+                'LMP.required'                 => 'The LMP (Last Menstrual Period) is required.',
+                'LMP.date'                     => 'Please enter a valid Last Menstrual Period date.',
+                'LMP.before_or_equal'          => 'The Last Menstrual Period cannot be a future date.',
+                'expected_delivery.required'   => 'The expected delivery date is required.',
+                'expected_delivery.date'       => 'Please enter a valid expected delivery date.',
+                'expected_delivery.after_or_equal' => 'The expected delivery date must be today or a future date.',
+                'blood_pressure.regex'         => 'Please enter a valid blood pressure format (e.g., 120/80).',
+                'temperature.numeric'          => 'The temperature must be a valid number.',
+                'temperature.between'          => 'The temperature must be between 30°C and 45°C.',
+                'pulse_rate.string'            => 'The pulse rate must be a valid text value.',
+                'pulse_rate.max'               => 'The pulse rate may not exceed :max characters.',
+                'respiratory_rate.integer'     => 'The respiratory rate must be a whole number.',
+                'respiratory_rate.min'         => 'The respiratory rate must be at least :min breaths per minute.',
+                'respiratory_rate.max'         => 'The respiratory rate may not exceed :max breaths per minute.',
+                'height.numeric'               => 'The height must be a valid number.',
+                'height.between'               => 'The height must be between 1 and 250 cm.',
+                'weight.numeric'               => 'The weight must be a valid number.',
+                'weight.between'               => 'The weight must be between 1 and 250 kg.',
+                'add_prenatal_planning.max'    => 'The prenatal planning may not exceed :max characters.',
             ]);
 
             $assessment = $request->validate([
@@ -967,7 +973,7 @@ class PrenatalController extends Controller
                 'sex' => 'sometimes|nullable|string',
                 'contact_number' => 'required|digits_between:7,12',
                 'nationality' => 'sometimes|nullable|string',
-                'date_of_registration' => 'required|date',
+                'date_of_registration' => 'required|date|before_or_equal:today', // ← fixed
                 'handled_by' => 'required',
                 'family_head' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
@@ -1002,7 +1008,6 @@ class PrenatalController extends Controller
                 'nurse_decision' => 'sometimes|nullable|numeric',
                 'suffix' => 'sometimes|nullable|string'
             ], [
-                // Custom messages with friendly attribute names
                 'first_name.required' => 'The first name field is required.',
                 'first_name.string' => 'The first name must be a string.',
                 'first_name.unique' => 'This patient already exists.',
@@ -1022,6 +1027,7 @@ class PrenatalController extends Controller
 
                 'date_of_registration.required' => 'The date of registration field is required.',
                 'date_of_registration.date' => 'The date of registration must be a valid date.',
+                'date_of_registration.before_or_equal' => 'The date of registration must be today or earlier.', // ← added
 
                 'handled_by.required' => 'The handled by field is required.',
 
@@ -1674,8 +1680,8 @@ class PrenatalController extends Controller
                 'birth_attendant' => 'sometimes|nullable|array',
                 'compilation' => 'sometimes|nullable|array',
                 'outcome' => 'sometimes|nullable|array',
-                'LMP' => 'required|date',
-                'expected_delivery' => 'required|date',
+                'LMP' => 'required|date|before_or_equal:today', // ← fixed
+                'expected_delivery' => 'required|date|after:LMP', // ← fixed
                 'menarche' => 'sometimes|nullable|numeric',
                 'tt1' => 'sometimes|nullable|numeric',
                 'tt2' => 'sometimes|nullable|numeric',
@@ -1697,8 +1703,10 @@ class PrenatalController extends Controller
                 // Required fields
                 'LMP.required' => 'The LMP field is required.',
                 'LMP.date' => 'The LMP field must be a valid date.',
+                'LMP.before_or_equal' => 'The LMP must be today or earlier.', // ← added
                 'expected_delivery.required' => 'The expected delivery field is required.',
                 'expected_delivery.date' => 'The expected delivery field must be a valid date.',
+                'expected_delivery.after' => 'The expected delivery date must be after the LMP date.', // ← added
 
                 // Numeric fields
                 'G.numeric' => 'The G field must be a number.',
@@ -1989,6 +1997,19 @@ class PrenatalController extends Controller
     public function uploadPregnancyCheckup(Request $request, $id)
     {
         try {
+            $isFinal = $request->boolean('is_final', false);
+
+            // Block adding a new check-up if any record in this case is already marked final
+            $alreadyFinal = pregnancy_checkups::where('medical_record_case_id', $id)
+                ->where('is_final', true)
+                ->exists();
+
+            if ($alreadyFinal) {
+                return response()->json([
+                    'errors' => ['is_final' => ['This prenatal case is already closed. No new check-ups can be added.']]
+                ], 422);
+            }
+
             $request->validate(
                 [
                     // Required fields
@@ -2008,7 +2029,7 @@ class PrenatalController extends Controller
                     'check_up_height'          => 'nullable|numeric|between:1,250',
                     'check_up_weight'          => 'nullable|numeric|min:1|between:1,250',
 
-                    // Symptom questions (all optional but strings)
+                    // Symptom questions
                     'abdomen_question'                 => 'nullable|string|max:255',
                     'abdomen_question_remarks'         => 'nullable|string|max:500',
                     'vaginal_question'                 => 'nullable|string|max:255',
@@ -2027,12 +2048,24 @@ class PrenatalController extends Controller
                     'other_symptoms_question_remarks'  => 'nullable|string|max:500',
 
                     // Final remarks
-                    'overall_remarks'           => 'nullable|string|max:1000',
-                    'date_of_comeback' => 'required|date'
+                    'overall_remarks'  => 'nullable|string|max:1000',
+
+                    // is_final flag
+                    'is_final' => 'nullable|boolean',
+
+                    // date_of_comeback is only required when NOT marking as final
+                    'date_of_comeback' => [
+                        $isFinal ? 'nullable' : 'required',
+                        'date',
+                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    ],
                 ],
-                [], // this is empty because we didn't customize the error message for each field we just change the name 
                 [
-                    // Replace attribute names for cleaner error messages
+                    'date_of_comeback.required'       => 'The date of comeback field is required.',
+                    'date_of_comeback.date'           => 'The date of comeback must be a valid date.',
+                    'date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                ],
+                [
                     'check_up_time'             => 'Time',
                     'check_up_blood_pressure'   => 'Blood Pressure',
                     'check_up_temperature'      => 'Temperature',
@@ -2040,7 +2073,6 @@ class PrenatalController extends Controller
                     'check_up_respiratory_rate' => 'Respiratory Rate',
                     'check_up_height'           => 'Height',
                     'check_up_weight'           => 'Weight',
-
                     'abdomen_question'                 => 'Abdomen Question',
                     'abdomen_question_remarks'         => 'Abdomen Remarks',
                     'vaginal_question'                 => 'Vaginal Question',
@@ -2057,12 +2089,11 @@ class PrenatalController extends Controller
                     'decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
                     'other_symptoms_question'          => 'Other Symptoms Question',
                     'other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
-
-                    'overall_remarks'           => 'Overall Remarks',
+                    'overall_remarks'                  => 'Overall Remarks',
+                    'date_of_comeback'                 => 'Date of Comeback',
                 ]
             );
 
-            // data insertion
             $prenatalCheckup = pregnancy_checkups::create([
                 'medical_record_case_id'    => $id,
                 'patient_name'              => $request->check_up_full_name,
@@ -2092,16 +2123,18 @@ class PrenatalController extends Controller
                 'other_symptoms_question'          => $request->other_symptoms_question,
                 'other_symptoms_question_remarks'  => $request->other_symptoms_question_remarks,
 
-                'overall_remarks' => $request->overall_remarks,
-                'status' => 'Done',
-                'date_of_comeback' => $request->date_of_comeback
+                'overall_remarks'  => $request->overall_remarks,
+                'status'           => 'Done',
+                'is_final'         => $isFinal,
+                'date_of_comeback' => $request->date_of_comeback,
             ]);
+
             return response()->json(['message' => 'Prenatal Check-up info is added successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
-            ], 404);
-        };
+            ], 422);
+        }
     }
 
     public function viewCheckUpInfo($id)
@@ -2109,9 +2142,19 @@ class PrenatalController extends Controller
         try {
             $pregnancy_checkup = pregnancy_checkups::findOrFail($id);
             $healthWorker = staff::where('user_id', $pregnancy_checkup->health_worker_id)->firstOrFail();
+
+            // Returns true if ANY checkup in the same prenatal case is marked final.
+            // When true, the JS will open ALL records in this case as read-only.
+            $case_is_final = pregnancy_checkups::where('medical_record_case_id', $pregnancy_checkup->medical_record_case_id)
+                ->where('is_final', true)->exists();
+
+
+
             return response()->json([
                 'pregnancy_checkup_info' => $pregnancy_checkup,
-                'healthWorker' => $healthWorker
+                'healthWorker'           => $healthWorker,
+                'case_is_final'          => $case_is_final,
+                'this_record_is_final'   => (bool) $pregnancy_checkup->is_final, // <-- add this
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -2123,6 +2166,23 @@ class PrenatalController extends Controller
     {
         try {
             $checkUp = pregnancy_checkups::findOrFail($id);
+            $isFinal = $request->boolean('is_final', false);
+
+            // Condition 1: Cannot mark is_final = true if this is NOT the latest record
+            if ($isFinal) {
+                $latestId = pregnancy_checkups::where('medical_record_case_id', $checkUp->medical_record_case_id)
+                    ->orderBy('created_at', 'desc')
+                    ->value('id');
+
+                if ($latestId !== $checkUp->id) {
+                    return response()->json([
+                        'errors' => [
+                            'is_final' => ['Only the most recent check-up record can be marked as the final check-up.']
+                        ]
+                    ], 422);
+                }
+            }
+
             $request->validate(
                 [
                     // Required fields
@@ -2142,7 +2202,7 @@ class PrenatalController extends Controller
                     'edit_check_up_height'          => 'nullable|numeric|between:1,250',
                     'edit_check_up_weight'          => 'nullable|numeric|between:1,250',
 
-                    // Symptom questions (all optional but strings)
+                    // Symptom questions
                     'edit_abdomen_question'                 => 'nullable|string|max:255',
                     'edit_abdomen_question_remarks'         => 'nullable|string|max:500',
                     'edit_vaginal_question'                 => 'nullable|string|max:255',
@@ -2164,11 +2224,22 @@ class PrenatalController extends Controller
 
                     // Final remarks
                     'edit_overall_remarks' => 'nullable|string|max:1000',
-                    'edit_date_of_comeback' => 'required|date'
+
+                    // is_final flag
+                    'is_final' => 'nullable|boolean',
+
+                    'edit_date_of_comeback' => [
+                        $isFinal ? 'nullable' : 'required',
+                        'date',
+                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    ],
                 ],
-                [], // this is empty because we didn't customize the error message for each field we just change the name 
                 [
-                    // Replace attribute names for cleaner error messages
+                    'edit_date_of_comeback.required'       => 'The date of comeback field is required.',
+                    'edit_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
+                    'edit_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                ],
+                [
                     'edit_check_up_time'             => 'Time',
                     'edit_check_up_blood_pressure'   => 'Blood Pressure',
                     'edit_check_up_temperature'      => 'Temperature',
@@ -2176,7 +2247,6 @@ class PrenatalController extends Controller
                     'edit_check_up_respiratory_rate' => 'Respiratory Rate',
                     'edit_check_up_height'           => 'Height',
                     'edit_check_up_weight'           => 'Weight',
-
                     'edit_abdomen_question'                 => 'Abdomen Question',
                     'edit_abdomen_question_remarks'         => 'Abdomen Remarks',
                     'edit_vaginal_question'                 => 'Vaginal Question',
@@ -2193,15 +2263,11 @@ class PrenatalController extends Controller
                     'edit_decreased_baby_movement_remarks'  => 'Decreased Baby Movement Remarks',
                     'edit_other_symptoms_question'          => 'Other Symptoms Question',
                     'edit_other_symptoms_question_remarks'  => 'Other Symptoms Remarks',
-
-                    'edit_overall_remarks'           => 'Overall Remarks',
-                    'edit_date_of_comeback' => 'Date of Comeback'
+                    'edit_overall_remarks'                  => 'Overall Remarks',
+                    'edit_date_of_comeback'                 => 'Date of Comeback',
                 ]
             );
 
-            // dd($request->edit_check_up_pulse_rate);
-
-            // data insertion
             $checkUp->update([
                 'patient_name'              => $request->edit_check_up_full_name ?? $checkUp->patient_name,
                 'health_worker_id'          => $request->edit_health_worker_id ?? $checkUp->health_worker_id,
@@ -2211,45 +2277,39 @@ class PrenatalController extends Controller
                 'check_up_pulse_rate'       => $request->edit_check_up_pulse_rate ?? null,
                 'check_up_respiratory_rate' => $request->edit_check_up_respiratory_rate ?? null,
                 'check_up_height'           => $request->edit_check_up_height ?? null,
-                'check_up_weight'               => $request->edit_check_up_weight ?? null,
+                'check_up_weight'           => $request->edit_check_up_weight ?? null,
 
                 'abdomen_question'              => $request->edit_abdomen_question ?? null,
                 'abdomen_question_remarks'      => $request->edit_abdomen_question_remarks ?? null,
-
                 'vaginal_question'              => $request->edit_vaginal_question ?? null,
                 'vaginal_question_remarks'      => $request->edit_vaginal_question_remarks ?? null,
-
                 'headache_question'             => $request->edit_headache_question ?? null,
                 'headache_question_remarks'     => $request->edit_headache_question_remarks ?? null,
-
                 'swelling_question'             => $request->edit_swelling_question ?? null,
                 'swelling_question_remarks'     => $request->edit_swelling_question_remarks ?? null,
-
                 'blurry_vission_question'       => $request->edit_blurry_vission_question ?? null,
                 'blurry_vission_question_remarks' => $request->edit_blurry_vission_question_remarks ?? null,
-
                 'urination_question'            => $request->edit_urination_question ?? null,
                 'urination_question_remarks'    => $request->edit_urination_question_remarks ?? null,
-
                 'baby_move_question'            => $request->edit_baby_move_question ?? null,
                 'baby_move_question_remarks'    => $request->edit_baby_move_question_remarks ?? null,
-
                 'decreased_baby_movement'       => $request->edit_decreased_baby_movement ?? null,
                 'decreased_baby_movement_remarks' => $request->edit_decreased_baby_movement_remarks ?? null,
-
                 'other_symptoms_question'       => $request->edit_other_symptoms_question ?? null,
                 'other_symptoms_question_remarks' => $request->edit_other_symptoms_question_remarks ?? null,
 
-                'overall_remarks'               => $request->edit_overall_remarks ?? null,
-                'status' => 'Done',
-                'date_of_comeback' => $request->edit_date_of_comeback
+                'overall_remarks'  => $request->edit_overall_remarks ?? null,
+                'status'           => 'Done',
+                'is_final'         => $isFinal,
+                'date_of_comeback' => $isFinal ? $checkUp->date_of_comeback : $request->edit_date_of_comeback,
             ]);
+
             return response()->json(['message' => 'Prenatal Check-up info is updated successfully'], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
-            ], 404);
-        };
+            ], 422);
+        }
     }
 
     public function archive($id)
@@ -2291,8 +2351,8 @@ class PrenatalController extends Controller
                 'add_birth_attendant' => 'sometimes|nullable|array',
                 'add_compilation' => 'sometimes|nullable|array',
                 'add_outcome' => 'sometimes|nullable|array',
-                'add_LMP' => 'required|date',
-                'add_expected_delivery' => 'required|date',
+                'add_LMP' => 'required|date|before_or_equal:today', // ← fixed
+                'add_expected_delivery' => 'required|date|after:add_LMP', // ← fixed
                 'add_menarche' => 'sometimes|nullable|numeric',
                 'add_tt1' => 'sometimes|nullable|numeric',
                 'add_tt2' => 'sometimes|nullable|numeric',
@@ -2312,8 +2372,10 @@ class PrenatalController extends Controller
                 'add_prenatal_case_patient_name.required' => 'The prenatal case patient name field is required.',
                 'add_LMP.required' => 'The LMP field is required.',
                 'add_LMP.date' => 'The LMP field must be a valid date.',
+                'add_LMP.before_or_equal' => 'The LMP must be today or earlier.', // ← added
                 'add_expected_delivery.required' => 'The expected delivery field is required.',
                 'add_expected_delivery.date' => 'The expected delivery field must be a valid date.',
+                'add_expected_delivery.after' => 'The expected delivery date must be after the LMP date.', // ← added
 
                 // Numeric fields
                 'add_G.numeric' => 'The G field must be a number.',
