@@ -152,10 +152,11 @@ class RecordsTable extends Component
                 return null;
             }
 
+            // Only check if a checkup was made ON the exact comeback date (not just any newer record)
             $checkupExists = DB::table('pregnancy_checkups')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
-                ->whereDate('created_at', '>=', $comebackDate)
+                ->whereDate('created_at', $comebackDate->toDateString())
                 ->where('id', '!=', $lastCheckup->id)
                 ->exists();
 
@@ -163,7 +164,6 @@ class RecordsTable extends Component
                 return null;
             }
 
-            // Check if the last checkup is marked as final
             $isFinal = (bool) $lastCheckup->is_final;
 
             if ($comebackDate->isToday()) {
@@ -176,7 +176,6 @@ class RecordsTable extends Component
                     'sort_priority' => 2,
                 ];
             } else {
-                // Case is final — suppress overdue, the case is already closed
                 if ($isFinal) {
                     return null;
                 }
