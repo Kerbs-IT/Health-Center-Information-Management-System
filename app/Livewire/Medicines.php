@@ -4,9 +4,10 @@
 
     use Livewire\Component;
     use App\Models\Medicine;
-    use App\Models\MedicineBatch;
+ 
     use App\Models\Category;
-    use Livewire\WithPagination;
+use App\Models\MedicineBatch;
+use Livewire\WithPagination;
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\DB;
 
