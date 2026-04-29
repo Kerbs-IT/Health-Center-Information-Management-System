@@ -6,8 +6,8 @@
     use App\Models\Medicine;
  
     use App\Models\Category;
-use App\Models\MedicineBatch;
-use Livewire\WithPagination;
+    use App\Models\MedicineBatch;
+    use Livewire\WithPagination;
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\DB;
 
