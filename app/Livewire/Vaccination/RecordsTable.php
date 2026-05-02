@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Vaccination;
 
+use App\Exports\PatientRecordsExport;
 use App\Models\medical_record_cases;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RecordsTable extends Component
 {
@@ -136,6 +138,40 @@ class RecordsTable extends Component
             'endDate'       => $this->end_date,
             'entries'       => $this->entries,
         ]);
+    }
+    public function exportExcel()
+    {
+        $rows = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
+            ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->where('type_of_case', 'vaccination')
+            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.full_name', 'like', '%' . $this->search . '%')
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date)
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->get();
+
+        $filters = [
+            'search'   => $this->search,
+            'dateFrom' => $this->start_date,
+            'dateTo'   => $this->end_date,
+        ];
+
+        $columns = [
+            ['label' => '#',               'key' => fn($r) => $rows->search(fn($i) => $i->id === $r->id) + 1],
+            ['label' => 'Full Name',       'key' => 'full_name'],
+            ['label' => 'Age',             'key' => 'age'],
+            ['label' => 'Sex',             'key' => 'sex'],
+            ['label' => 'Contact Number',  'key' => 'contact_number'],
+            ['label' => 'Date Registered', 'key' => fn($r) => $r->date_of_registration
+                ? \Carbon\Carbon::parse($r->date_of_registration)->format('Y-m-d') : '—'],
+        ];
+
+        return Excel::download(
+            new PatientRecordsExport($rows, $filters, 'Vaccination Patient Records', $columns),
+            'vaccination-records-' . now()->format('Ymd_His') . '.xlsx'
+        );
     }
 
     private function calculateVaccinationStatus($medicalRecordCase)

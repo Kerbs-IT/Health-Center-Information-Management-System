@@ -2,6 +2,7 @@
 
 namespace App\Livewire\AllRecord;
 
+use App\Exports\PatientRecordsExport;
 use App\Models\patients;
 use App\Models\staff;
 use App\Models\brgy_unit;
@@ -11,6 +12,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class RecordsTable extends Component
 {
@@ -198,5 +201,65 @@ class RecordsTable extends Component
             'startingNumber',
             'patientTypes'
         ));
+    }
+
+    public function exportExcel()
+    {
+        $records = $this->getQuery()->get();
+
+        $filters = [
+            'search'   => $this->search,
+            'dateFrom' => $this->start_date,
+            'dateTo'   => $this->end_date,
+            'purok'    => $this->purok ?: 'all',
+            'type'     => $this->type_of_patient ?: 'all',
+        ];
+
+        // Flatten: one row per (patient + case), same as the PDF loop
+        $flatRows = collect();
+        foreach ($records as $record) {
+            if ($record->medical_record_case->isNotEmpty()) {
+                foreach ($record->medical_record_case as $case) {
+                    $flatRows->push((object)[
+                        'full_name'      => $record->full_name,
+                        'age'            => $record->age_display ?? $record->age,
+                        'sex'            => $record->sex,
+                        'contact_number' => $record->contact_number,
+                        'type_of_case'   => $case->type_of_case,
+                        'purok'          => $record->address->purok ?? '—',
+                        'date_registered' => $case->created_at
+                            ? $case->created_at->format('Y-m-d') : '—',
+                    ]);
+                }
+            } else {
+                $flatRows->push((object)[
+                    'full_name'      => $record->full_name,
+                    'age'            => $record->age_display ?? $record->age,
+                    'sex'            => $record->sex,
+                    'contact_number' => $record->contact_number,
+                    'type_of_case'   => null,
+                    'purok'          => $record->address->purok ?? '—',
+                    'date_registered' => $record->created_at
+                        ? $record->created_at->format('Y-m-d') : '—',
+                ]);
+            }
+        }
+
+        $columns = [
+            ['label' => '#',               'key' => fn($r) => $flatRows->search(fn($i) => $i === $r) + 1],
+            ['label' => 'Full Name',       'key' => 'full_name'],
+            ['label' => 'Age',             'key' => 'age'],
+            ['label' => 'Sex',             'key' => 'sex'],
+            ['label' => 'Contact Number',  'key' => 'contact_number'],
+            ['label' => 'Type of Patient', 'key' => fn($r) => $r->type_of_case
+                ? Str::title(str_replace('-', ' ', $r->type_of_case)) : '—'],
+            ['label' => 'Purok',           'key' => 'purok'],
+            ['label' => 'Date Registered', 'key' => 'date_registered'],
+        ];
+
+        return Excel::download(
+            new PatientRecordsExport($flatRows, $filters, 'Patient Records', $columns),
+            'all-patient-records-' . now()->format('Ymd_His') . '.xlsx'
+        );
     }
 }

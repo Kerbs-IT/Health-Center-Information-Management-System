@@ -81,11 +81,25 @@
                     <div class="col-md-2 d-flex align-items-end">
                         <button wire:click="downloadPdf"
                             wire:loading.attr="disabled"
-                            class="btn btn-success w-100">
+                            class="btn btn-danger w-100">
                             <span wire:loading.remove wire:target="downloadPdf">
                                 <i class="fas fa-file-pdf me-1"></i> Download PDF
                             </span>
                             <span wire:loading wire:target="downloadPdf">
+                                <i class="fas fa-spinner fa-spin me-1"></i> Generating...
+                            </span>
+                        </button>
+                    </div>
+
+                    {{-- Download Excel --}}
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button wire:click="downloadExcel"
+                            wire:loading.attr="disabled"
+                            class="btn btn-success w-100">
+                            <span wire:loading.remove wire:target="downloadExcel">
+                                <i class="fas fa-file-excel me-1"></i> Download Excel
+                            </span>
+                            <span wire:loading wire:target="downloadExcel">
                                 <i class="fas fa-spinner fa-spin me-1"></i> Generating...
                             </span>
                         </button>

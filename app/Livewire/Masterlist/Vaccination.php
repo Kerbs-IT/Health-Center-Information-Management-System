@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Masterlist;
 
+use App\Exports\PatientRecordsExport;
 use App\Models\brgy_unit;
 use App\Models\vaccination_masterlists;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Vaccination extends Component
 {
@@ -197,5 +199,86 @@ class Vaccination extends Component
 
         $url = route('vaccination-masterlist.pdf', $params);
         return redirect($url);
+    }
+
+    public function exportExcel()
+    {
+        $query = vaccination_masterlists::where('status', '!=', 'Archived');
+
+        if (!empty($this->search))
+            $query->where('name_of_child', 'like', '%' . $this->search . '%');
+
+        if (!empty($this->selectedBrgy))
+            $query->where('brgy_name', $this->selectedBrgy);
+
+        if (!empty($this->filterMonth))
+            $query->whereMonth('created_at', $this->filterMonth);
+
+        if (!empty($this->filterYear))
+            $query->whereYear('created_at', $this->filterYear);
+
+        if (Auth::user()->role == 'staff')
+            $query->where('health_worker_id', Auth::id());
+
+        if (!empty($this->ageRange)) {
+            switch ($this->ageRange) {
+                case '0-4':
+                    $query->whereBetween('age', [0, 4]);
+                    break;
+                case '5-9':
+                    $query->whereBetween('age', [5, 9]);
+                    break;
+                case '10-14':
+                    $query->whereBetween('age', [10, 14]);
+                    break;
+                case '15-49':
+                    $query->whereBetween('age', [15, 49]);
+                    break;
+            }
+        }
+
+        $rows = $query->orderBy('name_of_child', 'ASC')->get();
+
+        $filters = [
+            'search'   => $this->search,
+            'dateFrom' => $this->filterMonth && $this->filterYear
+                ? $this->filterMonth . '/' . $this->filterYear
+                : ($this->filterYear ?: ''),
+            'dateTo'   => '',
+            'purok'    => $this->selectedBrgy ?: 'all',
+            'type'     => 'Vaccination - ' . $this->selectedRange,
+        ];
+
+        $columns = [
+            ['label' => '#',            'key' => fn($r) => $rows->search(fn($i) => $i->id === $r->id) + 1],
+            ['label' => 'Name of Child', 'key' => 'name_of_child'],
+            ['label' => 'Address',      'key' => 'Address'],
+            ['label' => 'Sex',          'key' => 'sex'],
+            ['label' => 'Age',          'key' => fn($r) => $r->age_display ?? $r->age],
+            ['label' => 'Date of Birth', 'key' => fn($r) => $r->date_of_birth
+                ? \Carbon\Carbon::parse($r->date_of_birth)->format('Y-m-d') : '—'],
+            ['label' => 'SE Status',    'key' => 'SE_status'],
+            ['label' => 'BCG',          'key' => 'BCG'],
+            ['label' => 'Hepa B',       'key' => fn($r) => $r->{'Hepatitis B'} ?? ''],
+            ['label' => 'PENTA 1',      'key' => 'PENTA_1'],
+            ['label' => 'PENTA 2',      'key' => 'PENTA_2'],
+            ['label' => 'PENTA 3',      'key' => 'PENTA_3'],
+            ['label' => 'OPV 1',        'key' => 'OPV_1'],
+            ['label' => 'OPV 2',        'key' => 'OPV_2'],
+            ['label' => 'OPV 3',        'key' => 'OPV_3'],
+            ['label' => 'PCV 1',        'key' => 'PCV_1'],
+            ['label' => 'PCV 2',        'key' => 'PCV_2'],
+            ['label' => 'PCV 3',        'key' => 'PCV_3'],
+            ['label' => 'IPV 1',        'key' => 'IPV_1'],
+            ['label' => 'IPV 2',        'key' => 'IPV_2'],
+            ['label' => 'MCV 1',        'key' => 'MCV_1'],
+            ['label' => 'MCV 2',        'key' => 'MCV_2'],
+            ['label' => 'Remarks',      'key' => 'remarks'],
+        ];
+
+        return Excel::download(
+            new PatientRecordsExport($rows, $filters, 'Master List of ' . $this->selectedRange, $columns),
+            'vaccination-masterlist-' . now()->format('Ymd_His') . '.xlsx'
+        );
     }
 }

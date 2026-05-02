@@ -85,13 +85,14 @@ class PdfController extends Controller
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'vaccination')
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')
             ->when(Auth::user()->role == 'staff', function ($query) {
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
 
@@ -155,15 +156,15 @@ class PdfController extends Controller
         $prenatalRecord = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'prenatal')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')        // ← add this
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
             ->when(Auth::user()->role == 'staff', function ($query) {
-                // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('prenatal_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
 
@@ -225,14 +226,15 @@ class PdfController extends Controller
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'senior-citizen')
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')
             ->when(Auth::user()->role == 'staff', function ($query) {
                 // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('senior_citizen_medical_records', 'senior_citizen_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('senior_citizen_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
         $recordPages =  $seniorCitizenRecords->chunk($entriesPerPage);
@@ -293,14 +295,15 @@ class PdfController extends Controller
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'tb-dots')
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')
             ->when(Auth::user()->role == 'staff', function ($query) {
                 // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('tb_dots_medical_records', 'tb_dots_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('tb_dots_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
         $recordPages =  $tbRecords->chunk($entriesPerPage);
@@ -361,14 +364,15 @@ class PdfController extends Controller
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'general-consultation')
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')
             ->when(Auth::user()->role == 'staff', function ($query) {
                 // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('gc_medical_records', 'gc_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('gc_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy($sortField, $sortDirection)
             ->get();
         $recordPages =  $generalConsultation->chunk($entriesPerPage);
@@ -430,14 +434,15 @@ class PdfController extends Controller
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'family-planning')
             ->where('patients.full_name', 'like', '%' . $search . '%')
-            ->where('patients.status', '!=', 'Archived')
+            ->where('medical_record_cases.status', 'Active')
+            ->where('patients.status', 'Active')
             ->when(Auth::user()->role == 'staff', function ($query) {
                 // Add join to vaccination_medical_records to filter by health_worker_id
                 $query->join('family_planning_medical_records', 'family_planning_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('family_planning_medical_records.health_worker_id', Auth::id());
             })
-            ->whereDate('patients.created_at', '>=', $startDate)
-            ->whereDate('patients.created_at', '<=', $endDate)
+            ->whereDate('medical_record_cases.date_of_registration', '>=', $startDate)
+            ->whereDate('medical_record_cases.date_of_registration', '<=', $endDate)
             ->orderBy("patients.$sortField", $sortDirection)
             ->get();
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Exports\PatientsExport;
 use App\Models\brgy_unit;
 use App\Models\medical_record_cases;
 use App\Models\patient_addresses;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PatientList extends Component
 {
@@ -580,5 +582,22 @@ class PatientList extends Component
             'isStaff'       => $isStaff,
             'assignedPurok' => $assignedPurok,
         ]);
+    }
+
+    public function downloadExcel()
+    {
+        $rows = $this->buildQuery()->get();
+
+        $filters = [
+            'status'   => $this->statusFilter,
+            'purok'    => $this->purokFilter,
+            'type'     => $this->typeFilter,
+            'dateFrom' => $this->start_date,
+            'dateTo'   => $this->end_date,
+        ];
+
+        $filename = 'patients_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new PatientsExport($rows, $filters), $filename);
     }
 }

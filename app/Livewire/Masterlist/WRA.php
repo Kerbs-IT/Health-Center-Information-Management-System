@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Masterlist;
 
+use App\Exports\WRAMasterlistExport;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\wra_masterlists;
 use App\Models\brgy_unit;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class WRA extends Component
 {
@@ -16,7 +19,7 @@ class WRA extends Component
     public $entries = 10;
 
     // Sorting
-    public $sortField = 'created_at';
+    public $sortField = 'name_of_wra';
     public $sortDirection = 'asc';
     protected $paginationTheme = 'bootstrap';
 
@@ -162,7 +165,7 @@ class WRA extends Component
 
         $query->orderBy($this->sortField, $this->sortDirection);
 
-        $wra_masterList = $query->latest()->paginate($this->entries);
+        $wra_masterList = $query->paginate($this->entries);
 
         $brgyList = brgy_unit::where('status','Active') -> orderBy('brgy_unit', 'ASC')->get();
 
@@ -199,5 +202,41 @@ class WRA extends Component
 
         $url = route('wra-masterlist.pdf', $params);
         return redirect($url);
+    }
+    public function exportExcel()
+    {
+        $query = wra_masterlists::where('status', '!=', 'Archived');
+
+        if (!empty($this->search))        $query->where('name_of_wra', 'like', '%' . $this->search . '%');
+        if (!empty($this->selectedBrgy))  $query->where('brgy_name', $this->selectedBrgy);
+        if (!empty($this->selectedMonth)) $query->whereMonth('created_at', $this->selectedMonth);
+        if (!empty($this->selectedYear))  $query->whereYear('created_at', $this->selectedYear);
+        if (!empty($this->withUnmetNeed)) $query->where('wra_with_MFP_unmet_need', $this->withUnmetNeed);
+        if (!empty($this->selectedAge)) {
+            [$min, $max] = explode('-', $this->selectedAge);
+            $query->whereBetween('age', [(int)$min, (int)$max]);
+        }
+        if (Auth::user()->role == 'staff') $query->where('health_worker_id', Auth::id());
+
+        $rows = $query->orderBy('name_of_wra', 'ASC')->get();
+
+        $midwife = User::where('role','nurse')->first();
+        $midwifeName = $midwife?->nurses?->full_name;
+
+        $filters = [
+            'search'       => $this->search,
+            'selectedBrgy' => $this->selectedBrgy,
+            'selectedMonth' => $this->selectedMonth,
+            'monthName'    => $this->monthName($this->selectedMonth),
+            'selectedYear' => $this->selectedYear,
+            'withUnmetNeed' => $this->withUnmetNeed,
+            'selectedAge'  => $this->selectedAge,
+            'midwifeName'  => $midwifeName,
+        ];
+
+        return Excel::download(
+            new WRAMasterlistExport($rows, $filters),
+            'wra-masterlist-' . now()->format('Ymd_His') . '.xlsx'
+        );
     }
 }
