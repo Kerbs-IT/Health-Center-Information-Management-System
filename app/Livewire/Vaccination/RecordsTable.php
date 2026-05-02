@@ -141,20 +141,17 @@ class RecordsTable extends Component
     private function calculateVaccinationStatus($medicalRecordCase)
     {
         try {
-            $vaccineDoseConfig = [
-                'BCG'                  => ['acronym' => 'BCG',                  'maxDoses' => 1, 'description' => 'at birth',  'name' => 'BCG Vaccine'],
-                'Hepatitis B'          => ['acronym' => 'Hepatitis B',          'maxDoses' => 1, 'description' => 'at birth',  'name' => 'Hepatitis B Vaccine'],
-                'PENTA'                => ['acronym' => 'PENTA',                'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pentavalent Vaccine (DPT-HEP B-HIB)'],
-                'OPV'                  => ['acronym' => 'OPV',                  'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Oral Polio Vaccine (OPV)'],
-                'IPV'                  => ['acronym' => 'IPV',                  'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Inactived Polio Vaccine (IPV)'],
-                'PCV'                  => ['acronym' => 'PCV',                  'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnueumococcal Conjugate Vaccine (PCV)'],
-                'MMR'                  => ['acronym' => 'MMR',                  'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Measles, Mumps, Rubella Vaccine (MMR)'],
-                'MCV'                  => ['acronym' => 'MCV',                  'maxDoses' => 1, 'description' => 'dose 1',    'name' => 'Measles Containing Vaccine (MCV) MR/MMR (Grade 1)'],
-                'TD'                   => ['acronym' => 'TD',                   'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Tetanus Diphtheria (TD)'],
-                'Human Papiliomavirus' => ['acronym' => 'Human Papiliomavirus', 'maxDoses' => 2, 'description' => 'doses 1-2', 'name' => 'Human Papiliomavirus Vaccine'],
-                'Influenza Vaccine'    => ['acronym' => 'Influenza Vaccine',    'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Influenza Vaccine'],
-                'Pnuemococcal Vaccine' => ['acronym' => 'Pnuemococcal Vaccine', 'maxDoses' => 3, 'description' => 'doses 1-3', 'name' => 'Pnuemococcal Vaccine'],
-            ];
+            // Load vaccine config dynamically from DB, only Active ones
+            $vaccineDoseConfig = DB::table('vaccines')
+                ->where('status', 'Active')
+                ->get()
+                ->keyBy('vaccine_acronym')
+                ->map(fn($v) => [
+                    'acronym'     => $v->vaccine_acronym,
+                    'maxDoses'    => $v->max_doses,
+                    'name'        => $v->type_of_vaccine,
+                ])
+                ->toArray();
 
             $lastVaccinationCase = DB::table('vaccination_case_records')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
@@ -167,9 +164,10 @@ class RecordsTable extends Component
                 return null;
             }
 
-            $comebackDate = Carbon::parse($lastVaccinationCase->date_of_comeback);
+            $comebackDate = Carbon::parse($lastVaccinationCase->date_of_comeback)->startOfDay();
+            $today        = Carbon::today();
 
-            if ($comebackDate->isFuture()) {
+            if ($comebackDate->gt($today)) {
                 return null;
             }
 
@@ -202,15 +200,13 @@ class RecordsTable extends Component
                             $dueVaccines[] = $vaccineName . ' Dose ' . $nextDosage;
                         }
                     } else {
-                        if ($currentDose >= $maxDoses) {
-                            $vaccineCompleted[] = $vaccine;
-                        }
+                        $vaccineCompleted[] = $vaccine;
                     }
                 }
             }
 
             if ($allVaccinesComplete && !empty($vaccineCompleted)) {
-                $implodedVaccineCompleted = implode(",", $vaccineCompleted);
+                $implodedVaccineCompleted = implode(', ', $vaccineCompleted);
                 return [
                     'status'        => 'complete',
                     'badge'         => 'Vaccination Complete',
@@ -225,7 +221,7 @@ class RecordsTable extends Component
                 return null;
             }
 
-            if ($comebackDate->isToday()) {
+            if ($comebackDate->eq($today)) {
                 return [
                     'status'        => 'due_today',
                     'badge'         => 'Due Today',
@@ -235,19 +231,20 @@ class RecordsTable extends Component
                     'next_dosage'   => $nextDosage,
                     'sort_priority' => 2,
                 ];
-            } else {
-                $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
-                return [
-                    'status'        => 'overdue',
-                    'badge'         => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
-                    'class'         => 'table-danger',
-                    'badge_class'   => 'badge bg-danger',
-                    'due_vaccines'  => $dueVaccines,
-                    'next_dosage'   => $nextDosage,
-                    'days_overdue'  => $daysOverdue,
-                    'sort_priority' => 1,
-                ];
             }
+
+            $daysOverdue = (int) $today->diffInDays($comebackDate);
+
+            return [
+                'status'        => 'overdue',
+                'badge'         => $daysOverdue . ($daysOverdue == 1 ? ' day' : ' days') . ' overdue',
+                'class'         => 'table-danger',
+                'badge_class'   => 'badge bg-danger',
+                'due_vaccines'  => $dueVaccines,
+                'next_dosage'   => $nextDosage,
+                'days_overdue'  => $daysOverdue,
+                'sort_priority' => 1,
+            ];
         } catch (\Exception $e) {
             Log::error('Vaccination status calculation error: ' . $e->getMessage());
             return null;

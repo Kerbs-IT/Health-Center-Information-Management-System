@@ -27,7 +27,7 @@ class PatientCaseTable extends Component
 
     public function mount($medicalRecordCaseId)
     {
-        $this->medicalRecordCaseId = $medicalRecordCaseId; // fixed: was $this->$medicalRecordCaseId
+        $this->medicalRecordCaseId = $medicalRecordCaseId;
         $this->checkFinalRecord();
     }
 
@@ -42,7 +42,6 @@ class PatientCaseTable extends Component
     public function refreshTable(): void
     {
         $this->checkFinalRecord();
-        // Livewire re-renders automatically after this
     }
 
     public function sortBy($field)
@@ -70,9 +69,9 @@ class PatientCaseTable extends Component
         $patientInfo = medical_record_cases::with(['family_planning_medical_record', 'patient'])
             ->findOrFail($this->medicalRecordCaseId);
 
-        // Combine all records
         $allRecords = collect();
 
+        // Side A — is_final always false
         foreach ($familyPlanningCases as $record) {
             $allRecords->push([
                 'id'             => $record->id,
@@ -80,10 +79,12 @@ class PatientCaseTable extends Component
                 'created_at'     => $record->created_at,
                 'status'         => $record->status,
                 'record_type'    => 'family_planning_side_a',
+                'is_final'       => false,
                 'data'           => $record,
             ]);
         }
 
+        // Side B — only side B records can be final
         foreach ($familyPlanningSideB as $record) {
             $allRecords->push([
                 'id'             => $record->id,
@@ -91,6 +92,7 @@ class PatientCaseTable extends Component
                 'created_at'     => $record->created_at,
                 'status'         => $record->status,
                 'record_type'    => 'family_planning_side_b',
+                'is_final'       => (bool) ($record->is_final ?? false),
                 'data'           => $record,
             ]);
         }
@@ -101,7 +103,6 @@ class PatientCaseTable extends Component
             $allRecords = $allRecords->sortByDesc('created_at');
         }
 
-        // Manual pagination
         $perPage = 15;
         $currentPage = request()->get('page', 1);
         $paginatedRecords = new \Illuminate\Pagination\LengthAwarePaginator(

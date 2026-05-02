@@ -657,9 +657,13 @@ class RecordsController extends Controller
                     'numeric',
                     'between:35,42'
                 ],
-                'add_date_of_comeback' => 'required|date|after_of_equal:today'
+                'add_date_of_comeback' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
-                'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must not be a future date.',
+                'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must past,today or a future date.',
                 'add_date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
                 // Custom messages with friendly attribute names
                 'add_patient_full_name.required' => 'The patient full name field is required.',
@@ -916,7 +920,10 @@ class RecordsController extends Controller
         $familyPlanCaseInfo = family_planning_case_records::with(['medical_history', 'obsterical_history', 'risk_for_sexually_transmitted_infection', 'physical_examinations'])
             ->where('medical_record_case_id', $familyPlanningMedicalCase->id)->first() ?? null;
         // dd($familyPlanCaseInfo);
-        $familyPlanSideB = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)->first() ?? null;
+        $familyPlanSideB = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)
+            ->where('status', '!=', 'Archived')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view(
             'records.prenatal.prenatalPatientCase',

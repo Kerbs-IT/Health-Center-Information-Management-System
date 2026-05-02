@@ -148,26 +148,15 @@ class RecordsTable extends Component
                 return null;
             }
 
-            $comebackDate = Carbon::parse($lastCaseRecord->date_of_comeback);
-
-            if ($comebackDate->isFuture()) {
+            // If final, case is closed
+            if ((bool) $lastCaseRecord->is_final) {
                 return null;
             }
 
-            $checkupExists = DB::table('senior_citizen_case_records')
-                ->where('medical_record_case_id', $medicalRecordCase->id)
-                ->where('status', '!=', 'Archived')
-                ->whereDate('created_at', '>=', $comebackDate)
-                ->where('id', '!=', $lastCaseRecord->id)
-                ->exists();
+            $comebackDate = Carbon::parse($lastCaseRecord->date_of_comeback)->startOfDay();
+            $today = Carbon::today();
 
-            if ($checkupExists) {
-                return null;
-            }
-
-            $isFinal = (bool) $lastCaseRecord->is_final;
-
-            if ($comebackDate->isToday()) {
+            if ($comebackDate->eq($today)) {
                 return [
                     'status'        => 'due_today',
                     'badge'         => 'Checkup Due Today',
@@ -176,12 +165,10 @@ class RecordsTable extends Component
                     'comeback_date' => $comebackDate->format('M j, Y'),
                     'sort_priority' => 2,
                 ];
-            } else {
-                if ($isFinal) {
-                    return null;
-                }
+            }
 
-                $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
+            if ($comebackDate->lt($today)) {
+                $daysOverdue = (int) $comebackDate->diffInDays($today);
 
                 return [
                     'status'        => 'overdue',
@@ -193,6 +180,8 @@ class RecordsTable extends Component
                     'sort_priority' => 1,
                 ];
             }
+
+            return null;
         } catch (\Exception $e) {
             return null;
         }

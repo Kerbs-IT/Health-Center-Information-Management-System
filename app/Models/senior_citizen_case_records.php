@@ -20,9 +20,10 @@ class senior_citizen_case_records extends Model
         'is_final'
     ];
     protected $casts = [
-        'date_of_comeback' => 'date',
+        'date_of_comeback' => 'date:Y-m-d',
         'is_final' => 'boolean',
     ];
+
     public function medical_record_case()
     {
         return $this->belongsTo(medical_record_cases::class, 'medical_record_case_id', 'id');

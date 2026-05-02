@@ -135,6 +135,16 @@ class RecordsTable extends Component
     private function calculateCheckupStatus($medicalRecordCase)
     {
         try {
+            $hasFinalCheckup = DB::table('tb_dots_check_ups')
+                ->where('medical_record_case_id', $medicalRecordCase->id)
+                ->where('status', '!=', 'Archived')
+                ->where('is_final', true)
+                ->exists();
+
+            if ($hasFinalCheckup) {
+                return null;
+            }
+
             $lastCheckup = DB::table('tb_dots_check_ups')
                 ->where('medical_record_case_id', $medicalRecordCase->id)
                 ->where('status', '!=', 'Archived')
@@ -146,26 +156,15 @@ class RecordsTable extends Component
                 return null;
             }
 
-            $comebackDate = Carbon::parse($lastCheckup->date_of_comeback);
-
-            if ($comebackDate->isFuture()) {
+            try {
+                $comebackDate = Carbon::parse($lastCheckup->date_of_comeback)->startOfDay();
+            } catch (\Exception $e) {
                 return null;
             }
 
-            $checkupExists = DB::table('tb_dots_check_ups')
-                ->where('medical_record_case_id', $medicalRecordCase->id)
-                ->where('status', '!=', 'Archived')
-                ->whereDate('created_at', '>=', $comebackDate)
-                ->where('id', '!=', $lastCheckup->id)
-                ->exists();
+            $today = Carbon::today();
 
-            if ($checkupExists) {
-                return null;
-            }
-
-            $isFinal = (bool) $lastCheckup->is_final;
-
-            if ($comebackDate->isToday()) {
+            if ($comebackDate->eq($today)) {
                 return [
                     'status'        => 'due_today',
                     'badge'         => 'Checkup Due Today',
@@ -174,12 +173,10 @@ class RecordsTable extends Component
                     'comeback_date' => $comebackDate->format('M j, Y'),
                     'sort_priority' => 2,
                 ];
-            } else {
-                if ($isFinal) {
-                    return null;
-                }
+            }
 
-                $daysOverdue = (int) $comebackDate->diffInDays(now(), false);
+            if ($comebackDate->lt($today)) {
+                $daysOverdue = (int) $today->diffInDays($comebackDate);
 
                 return [
                     'status'        => 'overdue',
@@ -191,6 +188,8 @@ class RecordsTable extends Component
                     'sort_priority' => 1,
                 ];
             }
+
+            return null;
         } catch (\Exception $e) {
             return null;
         }

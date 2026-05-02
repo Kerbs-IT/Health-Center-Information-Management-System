@@ -39,9 +39,9 @@
                     <tr>
                         <th>#</th>
                         <th>Type of Record</th>
-                        <th>Nurse</th>
+
                         <th style="cursor:pointer;" wire:click="sortBy('created_at')">
-                            Date
+                            Date/Date of Follow-up visit
                             @if ($sortField === 'created_at')
                             {{ $sortDirection === 'asc' ? '▼' : '▲' }}
                             @endif
@@ -55,8 +55,15 @@
                     <tr class="px-">
                         <td>{{ $allRecords->firstItem() + $loop->index }}</td>
                         <td>{{ $record['type_of_record'] }}</td>
-                        <td>Nurse Joy</td>
-                        <td>{{ optional($record['created_at'])->format('M d, Y') }}</td>
+                        <td>
+                            @if($record['record_type'] === 'family_planning_side_b')
+                            {{ \Carbon\Carbon::parse($record['date_of_follow_up_visit'])->format('M d, Y') }}
+                            @else
+                            {{ optional($record['created_at'])->format('M d, Y') }}
+                            @endif
+                        </td>
+
+
                         <td><span class="badge bg-secondary">{{ $record['status'] }}</span></td>
                         <td>
                             <div class="actions d-flex gap-2 justify-content-center align-items-center">

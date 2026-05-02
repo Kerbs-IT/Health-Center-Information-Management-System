@@ -2010,6 +2010,20 @@ class PrenatalController extends Controller
                 ], 422);
             }
 
+            // Block adding a new check-up if the date_of_comeback already exists in this case
+            if ($request->filled('date_of_comeback')) {
+                $duplicateDate = pregnancy_checkups::where('medical_record_case_id', $id)
+                    ->where('date_of_comeback', $request->date_of_comeback)
+                    ->where('status', 'Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['date_of_comeback' => ['A check-up with this comeback date already exists for this prenatal case.']]
+                    ], 422);
+                }
+            }
+
             $request->validate(
                 [
                     // Required fields
@@ -2179,6 +2193,21 @@ class PrenatalController extends Controller
                         'errors' => [
                             'is_final' => ['Only the most recent check-up record can be marked as the final check-up.']
                         ]
+                    ], 422);
+                }
+            }
+
+            // Block updating if the new date_of_comeback already exists in another record of the same case
+            if (!$isFinal && $request->filled('edit_date_of_comeback')) {
+                $duplicateDate = pregnancy_checkups::where('medical_record_case_id', $checkUp->medical_record_case_id)
+                    ->where('date_of_comeback', $request->edit_date_of_comeback)
+                    ->where('id', '!=', $checkUp->id)
+                    ->where('status','Active') // exclude the current record
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['edit_date_of_comeback' => ['A check-up with this comeback date already exists for this prenatal case.']]
                     ], 422);
                 }
             }

@@ -138,6 +138,7 @@ class FamilyPlanningCaseArchive extends Component
                 'created_at' => $record->created_at,
                 'status' => $record->status,
                 'record_type' => 'family_planning_side_b',
+                'date_of_follow_up_visit' => $record->date_of_follow_up_visit,
                 'data' => $record
             ]);
         }

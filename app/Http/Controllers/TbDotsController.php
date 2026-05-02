@@ -757,6 +757,20 @@ class TbDotsController extends Controller
                     ]
                 ], 422);
             }
+
+            if ($request->filled('add_date_of_comeback')) {
+                $duplicateDate = tb_dots_check_ups::where('medical_record_case_id', $id)
+                    ->where('date_of_comeback', $request->add_date_of_comeback)
+                    ->where('id', '!=', $id) // exclude the current record
+                    ->where('status', 'Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['edit_date_of_comeback' => ['A record with this comeback date already exists for this case.']]
+                    ], 422);
+                }
+            }
             $data = $request->validate([
                 'patient_name' => 'required|string',
                 'date_of_visit' => 'required|date|before_or_equal:today', // ← fixed
@@ -880,6 +894,20 @@ class TbDotsController extends Controller
                         'errors' => [
                             'is_final' => ['Only the most recent record can be marked as the final record.']
                         ]
+                    ], 422);
+                }
+            }
+
+            if ($request->filled('edit_date_of_comeback')) {
+                $duplicateDate = tb_dots_check_ups::where('medical_record_case_id', $checkUpRecord->medical_record_case_id)
+                    ->where('date_of_comeback', $request->edit_date_of_comeback)
+                    ->where('id', '!=', $id) // exclude the current record
+                    ->where('status', 'Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['edit_date_of_comeback' => ['A record with this comeback date already exists for this case.']]
                     ], 422);
                 }
             }

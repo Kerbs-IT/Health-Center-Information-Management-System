@@ -23,19 +23,20 @@ class PatientCaseTable extends Component
 
     public function mount($medicalRecordCaseId)
     {
-        $this->medicalRecordCaseId = $medicalRecordCaseId; // THIS catches the ID from URL
+        $this->medicalRecordCaseId = $medicalRecordCaseId;
         $this->checkFinalRecord();
     }
+
     private function checkFinalRecord(): void
     {
         $this->hasFinalRecord = tb_dots_check_ups::where('medical_record_case_id', $this->medicalRecordCaseId)
             ->where('is_final', true)
             ->exists();
     }
+
     public function refreshTable(): void
     {
         $this->checkFinalRecord();
-        // Livewire re-renders automatically after this
     }
 
     public function sortBy($field)
@@ -47,14 +48,13 @@ class PatientCaseTable extends Component
             $this->sortDirection = 'asc';
         }
     }
-    
+
     public function render()
     {
         $patientRecord = medical_record_cases::with('patient', 'tb_dots_medical_record')
             ->where('status', '!=', 'Archived')
             ->findOrFail($this->medicalRecordCaseId);
 
-        // Get all records without pagination first
         $tbDotsCaseRecords = tb_dots_case_records::where('medical_record_case_id', $this->medicalRecordCaseId)
             ->where('status', '!=', 'Archived')
             ->get();
@@ -63,41 +63,40 @@ class PatientCaseTable extends Component
             ->where('status', '!=', 'Archived')
             ->get();
 
-        // Combine all records into one collection
         $allRecords = collect();
 
-        // Add TB DOTS case records
+        // Add TB DOTS case records — is_final is always false for case records
         foreach ($tbDotsCaseRecords as $record) {
             $allRecords->push([
-                'id' => $record->id,
+                'id'             => $record->id,
                 'type_of_record' => $record->type_of_record,
-                'created_at' => $record->created_at,
-                'status' => $record->status,
-                'record_type' => 'tb_dots_case',
-                'data' => $record
+                'created_at'     => $record->created_at,
+                'status'         => $record->status,
+                'record_type'    => 'tb_dots_case',
+                'is_final'       => false,
+                'data'           => $record
             ]);
         }
 
-        // Add check-up records
+        // Add check-up records — only checkups can be final
         foreach ($checkUpRecords as $record) {
             $allRecords->push([
-                'id' => $record->id,
+                'id'             => $record->id,
                 'type_of_record' => $record->type_of_record,
-                'created_at' => $record->created_at,
-                'status' => $record->status,
-                'record_type' => 'checkup',
-                'data' => $record
+                'created_at'     => $record->created_at,
+                'status'         => $record->status,
+                'record_type'    => 'checkup',
+                'is_final'       => (bool) ($record->is_final ?? false),
+                'data'           => $record
             ]);
         }
 
-        // Sort the collection
         if ($this->sortDirection === 'asc') {
             $allRecords = $allRecords->sortBy('created_at');
         } else {
             $allRecords = $allRecords->sortByDesc('created_at');
         }
 
-        // Manual pagination
         $perPage = 15;
         $currentPage = request()->get('page', 1);
         $paginatedRecords = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -109,26 +108,28 @@ class PatientCaseTable extends Component
         );
 
         return view('livewire.tb-dots.patient-case-table', [
-            'isActive' => true,
-            'page' => 'RECORD',
-            'patient_name' => $patientRecord->patient->full_name,
+            'isActive'       => true,
+            'page'           => 'RECORD',
+            'patient_name'   => $patientRecord->patient->full_name,
             'healthWorkerId' => $patientRecord->tb_dots_medical_record->health_worker_id,
             'medicalRecordId' => $this->medicalRecordCaseId,
-            'patientInfo' => $patientRecord,
-            'allRecords' => $paginatedRecords,
-            'hasFinalRecord'  => $this->hasFinalRecord,
+            'patientInfo'    => $patientRecord,
+            'allRecords'     => $paginatedRecords,
+            'hasFinalRecord' => $this->hasFinalRecord,
         ]);
     }
+
     public function exportPdf($caseId)
     {
         return redirect()->route('tb-dots-case.pdf', [
-            'caseId' => $caseId,              // Sends "Maria"
+            'caseId' => $caseId,
         ]);
     }
+
     public function exportCheckUpPdf($caseId)
     {
         return redirect()->route('tb-dots-checkup.pdf', [
-            'checkupId' => $caseId,              // Sends "Maria"
+            'checkupId' => $caseId,
         ]);
     }
 }

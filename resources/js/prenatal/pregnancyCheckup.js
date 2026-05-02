@@ -279,9 +279,11 @@ document
  *                               as final (disables all fields, can't undo)
  */
 function applyFinalToggleState(isFinal, lockToggle = false) {
-    const toggle = document.getElementById("edit_is_final_toggle");
-    const hiddenInput = document.getElementById("edit_is_final_hidden");
-    const warning = document.getElementById("edit_is_final_warning");
+      const toggle = document.getElementById("edit_checkup_is_final_toggle"); // ← renamed
+      const hiddenInput = document.getElementById(
+          "edit_checkup_is_final_hidden",
+      ); // ← renamed
+      const warning = document.getElementById("edit_checkup_is_final_warning"); 
     const dateWrapper = document.getElementById("edit_comeback_wrapper");
     const dateInput = document.getElementById("edit_date_of_comeback");
 
@@ -376,12 +378,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const editToggle = document.getElementById("edit_is_final_toggle");
-    if (editToggle) {
-        editToggle.addEventListener("change", function () {
-            applyFinalToggleState(this.checked, false);
-        });
-    }
+   const editToggle = document.getElementById("edit_checkup_is_final_toggle"); // ← renamed
+   if (editToggle) {
+       editToggle.addEventListener("change", function () {
+           applyFinalToggleState(this.checked, false);
+       });
+   }
 });
 
 // Reset ADD modal when it closes
@@ -396,10 +398,11 @@ document
     });
 
 // Reset EDIT modal when it closes
+// ✅ CORRECT
 document
     .getElementById("checkUpModal")
     ?.addEventListener("hidden.bs.modal", function () {
-        const form = document.getElementById("edit-check-up-form");
+        const form = document.getElementById("edit-check-up-form"); // ← fix this
         if (form) {
             form.querySelectorAll("input, select, textarea").forEach((el) => {
                 el.disabled = false;
@@ -415,10 +418,9 @@ document
 
         applyFinalToggleState(false, false);
 
-        const isFinalError = document.getElementById("is_final_error");
+        const isFinalError = document.getElementById("edit_checkup_is_final_error");
         if (isFinalError) isFinalError.textContent = "";
     });
-
 // ============================================================================
 // EDIT BUTTON - Event Delegation
 // ============================================================================
@@ -604,6 +606,10 @@ updateBTN.addEventListener("click", async (e) => {
     try {
         const form = document.getElementById("edit-check-up-form");
         const formData = new FormData(form);
+        const isFinalHidden = document.getElementById(
+            "edit_checkup_is_final_hidden",
+        ); // ← renamed
+        formData.set("is_final", isFinalHidden ? isFinalHidden.value : "0"); 
 
         const response = await fetch(`/update/prenatal-check-up/${medicalId}`, {
             method: "POST",

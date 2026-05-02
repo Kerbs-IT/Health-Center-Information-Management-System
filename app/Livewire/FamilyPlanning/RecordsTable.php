@@ -149,26 +149,15 @@ class RecordsTable extends Component
                 return null;
             }
 
-            $followUpDate = Carbon::parse($lastRecord->date_of_follow_up_visit);
-
-            if ($followUpDate->isFuture()) {
+            // If the last record is final, no follow-up is needed
+            if ((bool) $lastRecord->is_final) {
                 return null;
             }
 
-            $visitExists = DB::table('family_planning_side_b_records')
-                ->where('medical_record_case_id', $medicalRecordCase->id)
-                ->where('status', '!=', 'Archived')
-                ->whereDate('created_at', '>=', $followUpDate)
-                ->where('id', '!=', $lastRecord->id)
-                ->exists();
+            $followUpDate = Carbon::parse($lastRecord->date_of_follow_up_visit)->startOfDay();
+            $today = Carbon::today();
 
-            if ($visitExists) {
-                return null;
-            }
-
-            $isFinal = (bool) $lastRecord->is_final;
-
-            if ($followUpDate->isToday()) {
+            if ($followUpDate->eq($today)) {
                 return [
                     'status'        => 'due_today',
                     'badge'         => 'Follow-up Due Today',
@@ -177,12 +166,10 @@ class RecordsTable extends Component
                     'followup_date' => $followUpDate->format('M j, Y'),
                     'sort_priority' => 2,
                 ];
-            } else {
-                if ($isFinal) {
-                    return null;
-                }
+            }
 
-                $daysOverdue = (int) $followUpDate->diffInDays(now(), false);
+            if ($followUpDate->lt($today)) {
+                $daysOverdue = (int) $followUpDate->diffInDays($today);
 
                 return [
                     'status'        => 'overdue',
@@ -194,6 +181,8 @@ class RecordsTable extends Component
                     'sort_priority' => 1,
                 ];
             }
+
+            return null;
         } catch (\Exception $e) {
             return null;
         }

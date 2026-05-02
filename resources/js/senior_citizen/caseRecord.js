@@ -4,6 +4,15 @@ import Swal from "sweetalert2";
 // Helpers
 // ---------------------------------------------------------------------------
 
+function toLocalDateString(value) {
+    if (!value) return "";
+    const str = String(value);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+    const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+    return str.slice(0, 10);
+}
+
 function escapeHtml(text) {
     if (text === null || text === undefined || text === "") return "";
     const div = document.createElement("div");
@@ -179,10 +188,9 @@ document.addEventListener("click", async (e) => {
                 try {
                     const element = document.getElementById(`view_${key}`);
                     if (!element) return;
+
                     if (key === "date_of_comeback") {
-                        element.value = value
-                            ? String(value).slice(0, 10)
-                            : "N/A";
+                        element.value = toLocalDateString(value);
                     } else {
                         const safeValue =
                             value !== null && value !== undefined
@@ -305,19 +313,22 @@ document.addEventListener("click", async function (e) {
             Object.entries(data.seniorCaseRecord).forEach(([key, value]) => {
                 try {
                     if (typeof value === "object" && value !== null) return;
+
                     const element = document.getElementById(`edit_${key}`);
                     if (!element) return;
+
+                    // Date fields — always use timezone-safe helper, skip generic assignment
+                    if (key === "date_of_comeback") {
+                        element.value = toLocalDateString(value);
+                        return;
+                    }
+
                     if (
                         ["INPUT", "TEXTAREA", "SELECT"].includes(
                             element.tagName,
                         )
                     ) {
                         element.value = value ?? "";
-                    }
-                    if (key === "date_of_comeback") {
-                        element.value = value
-                            ? String(value).slice(0, 10)
-                            : "N/A";
                     }
                 } catch (fieldError) {
                     console.error(`Error setting field ${key}:`, fieldError);
@@ -428,7 +439,6 @@ if (addBTN) {
         );
         const end_date = document.getElementById("edit_maintenance_end_date");
 
-        // Reset borders
         [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
             (f) => (f.style.border = ""),
         );

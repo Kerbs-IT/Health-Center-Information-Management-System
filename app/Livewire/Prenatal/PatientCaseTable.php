@@ -25,6 +25,7 @@ class PatientCaseTable extends Component
     // ── NEW: tracks whether this case already has a final check-up
     public bool $hasFinalCheckup = false;
 
+
     protected $listeners = ['prenatalRefreshTable' => 'refreshTable'];
 
     public function mount($caseId, $medicalRecordCase = null)
@@ -95,7 +96,7 @@ class PatientCaseTable extends Component
             ->first();
 
         $familyPlanCaseInfo = null;
-        $familyPlanSideB = null;
+        $familyPlanSideBRecords = collect();
 
         if ($familyPlanningMedicalCase) {
             $familyPlanCaseInfo = family_planning_case_records::with([
@@ -108,10 +109,10 @@ class PatientCaseTable extends Component
                 ->latest()
                 ->first();
 
-            $familyPlanSideB = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)
+            $familyPlanSideBRecords = family_planning_side_b_records::where('medical_record_case_id', $familyPlanningMedicalCase->id)
                 ->where('status', '!=', 'Archived')
                 ->latest()
-                ->first();
+                ->get();
         }
 
         // Combine all records into one collection
@@ -150,15 +151,19 @@ class PatientCaseTable extends Component
             ]);
         }
 
-        if ($familyPlanSideB) {
-            $allRecords->push([
-                'id' => $familyPlanSideB->id,
-                'type_of_record' => $familyPlanSideB->type_of_record,
-                'created_at' => $familyPlanSideB->created_at,
-                'status' => $familyPlanSideB->status,
-                'record_type' => 'family_planning_side_b',
-                'data' => $familyPlanSideB
-            ]);
+        if ($familyPlanSideBRecords) {
+            // REPLACE with
+            foreach ($familyPlanSideBRecords  as $sideB) {
+                $allRecords->push([
+                    'id'             => $sideB->id,
+                    'type_of_record' => $sideB->type_of_record,
+                    'created_at'     => $sideB->created_at,
+                    'status'         => $sideB->status,
+                    'record_type'    => 'family_planning_side_b',
+                    'is_final'       => (bool) $sideB->is_final,  // ← consistent with checkup
+                    'data'           => $sideB
+                ]);
+            }
         }
 
         foreach ($prenatalCheckupRecords as $checkup) {
@@ -168,6 +173,7 @@ class PatientCaseTable extends Component
                 'created_at' => $checkup->created_at,
                 'status' => $checkup->status,
                 'record_type' => 'checkup',
+                'is_final'       => (bool) $checkup->is_final,
                 'data' => $checkup
             ]);
         }

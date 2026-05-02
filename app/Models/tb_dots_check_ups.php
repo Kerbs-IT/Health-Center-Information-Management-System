@@ -30,7 +30,7 @@ class tb_dots_check_ups extends Model
         'is_final'
     ];
     protected $casts = [
-        'date_of_comeback' => 'date',
+        'date_of_comeback' => 'date:Y-m-d',
         'is_final' => 'boolean'
     ];
 

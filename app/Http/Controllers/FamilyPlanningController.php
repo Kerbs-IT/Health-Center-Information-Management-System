@@ -2238,6 +2238,8 @@ class FamilyPlanningController extends Controller
     public function addSideBrecord(Request $request)
     {
         try {
+
+
             $data = $request->validate([
                 'side_b_medical_record_case_id'                          => 'required',
                 'side_b_health_worker_id'                                => 'required',
@@ -2278,6 +2280,22 @@ class FamilyPlanningController extends Controller
 
             // Guard: block add if any record in this case is already marked final
             $caseId = $data['side_b_medical_record_case_id'];
+
+            if($request->filled('side_b_date_of_follow_up_visit')){
+                // Block adding a new record if the date_of_follow_up_visit already exists in this case
+                $duplicateDate = family_planning_side_b_records::where('medical_record_case_id', $caseId)
+                    ->where('status', 'Active')
+                    ->where('date_of_follow_up_visit', $data['side_b_date_of_follow_up_visit'])
+                    ->where('status','Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['side_b_date_of_follow_up_visit' => ['A record with this follow-up visit date already exists for this case.']]
+                    ], 422);
+                }
+            }
+
             $alreadyFinal = family_planning_side_b_records::where('medical_record_case_id', $caseId)
                 ->where('is_final', true)
                 ->where('status', 'Active')
@@ -2290,6 +2308,7 @@ class FamilyPlanningController extends Controller
                     ],
                 ], 422);
             }
+
 
             $sideBsignaturePath = null;
 
@@ -2403,6 +2422,21 @@ class FamilyPlanningController extends Controller
                     ], 422);
                 }
             }
+            // Block updating if the new date_of_follow_up_visit already exists in another record of the same case
+            $duplicateDate = family_planning_side_b_records::where('medical_record_case_id', $sideBrecord->medical_record_case_id)
+                ->where('status', 'Active')
+                ->where('date_of_follow_up_visit', $data['edit_side_b_date_of_follow_up_visit'])
+                ->where('id', '!=', $sideBrecord->id) // exclude the current record
+                ->where('status','Active')
+                ->exists();
+
+            if ($duplicateDate) {
+                return response()->json([
+                    'errors' => ['edit_side_b_date_of_follow_up_visit' => ['A record with this follow-up visit date already exists for this case.']]
+                ], 422);
+            }
+
+
 
             $signaturePath = $sideBrecord->signature_of_the_provider;
 

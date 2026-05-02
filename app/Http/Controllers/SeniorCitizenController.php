@@ -686,6 +686,19 @@ class SeniorCitizenController extends Controller
                     ], 422);
                 }
             }
+            if ($request->filled('edit_date_of_comeback')) {
+                $duplicateDate = senior_citizen_case_records::where('medical_record_case_id', $seniorCitizenCase->medical_record_case_id)
+                    ->where('date_of_comeback', $request->edit_date_of_comeback)
+                    ->where('id', '!=', $id) // exclude the current record
+                    ->where('status','Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['edit_date_of_comeback' => ['A record with this comeback date already exists for this case.']]
+                    ], 422);
+                }
+            }
 
             $data = $request->validate([
                 'edit_existing_medical_condition'     => 'sometimes|nullable|string',
@@ -710,6 +723,7 @@ class SeniorCitizenController extends Controller
                 'prescribe_by_nurse'         => $data['edit_prescribe_by_nurse'] ? ucwords($data['edit_prescribe_by_nurse']) : '',
                 'remarks'                    => $data['edit_medication_maintenance_remarks'] ?? '',
                 'date_of_comeback'           => $data['edit_date_of_comeback'],
+                'status'                    => 'Active',
                 'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
@@ -757,6 +771,18 @@ class SeniorCitizenController extends Controller
                     ]
                 ], 422);
             }
+            if ($request->filled('add_date_of_comeback')) {
+                $duplicateDate = senior_citizen_case_records::where('medical_record_case_id', $id)
+                    ->where('date_of_comeback', $request->add_date_of_comeback)
+                    ->where('status','Active')
+                    ->exists();
+
+                if ($duplicateDate) {
+                    return response()->json([
+                        'errors' => ['add_date_of_comeback' => ['A record with this comeback date already exists for this case.']]
+                    ], 422);
+                }
+            }
 
             $data = $request->validate([
                 'new_patient_name'                   => 'required',
@@ -793,6 +819,7 @@ class SeniorCitizenController extends Controller
                 'remarks'                    => $data['add_medication_maintenance_remarks'] ?? '',
                 'type_of_record'             => 'Case Record',
                 'date_of_comeback'           => $data['add_date_of_comeback'],
+                'status'                    => 'Active',
                 'is_final'                   => (bool) $isFinal,  // <-- save it
             ]);
 
