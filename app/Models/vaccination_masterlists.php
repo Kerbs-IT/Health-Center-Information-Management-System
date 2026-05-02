@@ -41,8 +41,25 @@ class vaccination_masterlists extends Model
         'remarks',
         'status'
     ];
+
     protected $casts = [
-        'date_of_birth' => 'date'
+    
+        'date_of_birth' => 'date:Y-m-d',
+        'BCG'           => 'date:Y-m-d',
+        'Hepatitis B'   => 'date:Y-m-d',
+        'PENTA_1'       => 'date:Y-m-d',
+        'PENTA_2'       => 'date:Y-m-d',
+        'PENTA_3'       => 'date:Y-m-d',
+        'OPV_1'         => 'date:Y-m-d',
+        'OPV_2'         => 'date:Y-m-d',
+        'OPV_3'         => 'date:Y-m-d',
+        'PCV_1'         => 'date:Y-m-d',
+        'PCV_2'         => 'date:Y-m-d',
+        'PCV_3'         => 'date:Y-m-d',
+        'IPV_1'         => 'date:Y-m-d',
+        'IPV_2'         => 'date:Y-m-d',
+        'MCV_1'         => 'date:Y-m-d',
+        'MCV_2'         => 'date:Y-m-d',
     ];
 
     public function health_worker()

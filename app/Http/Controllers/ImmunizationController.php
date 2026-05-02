@@ -48,7 +48,7 @@ class ImmunizationController extends Controller
 
     public function getCardContent($medicalRecordId)
     {
-        $caseRecords = vaccination_case_records::where('medical_record_case_id', $medicalRecordId)->where('status', '!=', 'Archived')->get();
+        $caseRecords = vaccination_case_records::where('medical_record_case_id', $medicalRecordId)->where('status', 'Active')->get();
 
         // Get the first or latest case record for patient info
         $medicalRecord = medical_record_cases::with(['patient', 'vaccination_medical_record'])->findOrFail($medicalRecordId);
@@ -69,7 +69,7 @@ class ImmunizationController extends Controller
         // Get ALL vaccine administrations for ALL case records of this patient
         // This will combine vaccinations from case records 11, 23, 44, 45, 46, 47, etc.
         $vaccineAdministered = vaccineAdministered::whereIn('vaccination_case_record_id', $caseRecordIds)
-            ->with('vaccination_case_record')
+            ->with(['vaccination_case_record', 'vaccineInfo']) // add vaccineInfo
             ->orderBy('vaccine_id')
             ->orderBy('dose_number')
             ->get();
@@ -101,7 +101,7 @@ class ImmunizationController extends Controller
         // Get ALL vaccine administrations for ALL case records of this patient
         // This will combine vaccinations from case records 11, 23, 44, 45, 46, 47, etc.
         $vaccineAdministered = vaccineAdministered::whereIn('vaccination_case_record_id', $caseRecordIds)
-            ->with('vaccination_case_record')
+            ->with(['vaccination_case_record', 'vaccineInfo']) // add vaccineInfo
             ->orderBy('vaccine_id')
             ->orderBy('dose_number')
             ->get();

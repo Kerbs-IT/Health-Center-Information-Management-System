@@ -3,9 +3,8 @@ import { automateAge } from "../automateAge.js";
 import Swal from "sweetalert2";
 import { displayAage } from "../automateAge.js";
 
-const editBtn = document.querySelectorAll(".vaccination-masterlist-edit-btn");
 const saveBtn = document.getElementById(
-    "update_vaccination_masterlist_save_btn"
+    "update_vaccination_masterlist_save_btn",
 );
 const dob = document.getElementById("birthdate");
 const age = document.getElementById("age");
@@ -14,144 +13,128 @@ const hiddenAge = document.getElementById("hiddenAge");
 document.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".vaccination-masterlist-edit-btn");
     if (!editBtn) return;
+
     const id = editBtn.dataset.masterlistId;
-    // Validate case ID
+
     if (!id || id === "undefined" || id === "null") {
-        console.error("Invalid case ID:", id);
-        alert("Unable to archive: Invalid ID");
+        console.error("Invalid masterlist ID:", id);
+        alert("Unable to open record: Invalid ID");
         return;
     }
-    // console.log(id);
 
-    // RESET THE ERRORS
-    const errors = document.querySelectorAll(".error-text");
-    if (errors) {
-        errors.forEach((error) => (error.innerHTML = ""));
-    }
+    // Reset all error messages
+    document
+        .querySelectorAll(".error-text")
+        .forEach((el) => (el.innerHTML = ""));
 
-    // == try catch block ==
     try {
         const response = await fetch(`/masterist/vaccination/${id}`, {
-            headers: {
-                accept: "application/json",
-            },
+            headers: { Accept: "application/json" },
         });
 
-        if (response.ok) {
-            const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
+        }
 
-            // console.log(data.info);
+        const data = await response.json();
 
-            // populate the existing records
-            Object.entries(data.info).forEach(([key, value]) => {
-                if (key == "name_of_child") {
-                    const fname = document.getElementById(
-                        "vaccination_masterlist_fname"
-                    );
-                    const MI = document.getElementById(
-                        "vaccination_masterlist_MI"
-                    );
-                    const lname = document.getElementById(
-                        "vaccination_masterlist_lname"
-                    );
-                    const suffix_element = document.getElementById(
-                        "vaccination_masterlist_suffix",
-                    );
-
-                    const [fnameVal, MIVal, lnameVal, suffix] = [
-                        data.patientDetails.first_name ?? null,
-                        data.patientDetails.middle_initial ?? null,
-                        data.patientDetails.last_name ?? null,
-                        data.patientDetails.suffix ?? null,
-                    ];
-                    fname.value = fnameVal;
-                    MI.value = MIVal;
-                    lname.value = lnameVal;
-                    suffix_element.value = suffix
-
-                    // set the bg
-                } else if (key == "date_of_birth") {
-                    const formatted = new Date(value)
-                        .toISOString()
-                        .split("T")[0];
-                    // console.log("Formatted: ", formatted);
-
-                    document.querySelector(`input[name="${key}"]`).value =
-                        formatted;
-                    if (value != null) {
-                        document
-                            .querySelector(`input[name="${key}"]`)
-                            .classList.add("bg-light");
-                        document
-                            .querySelector(`input[name="${key}"]`)
-                            .classList.add("border-dark", "border-2");
+        // Populate fields from API response
+        Object.entries(data.info).forEach(([key, value]) => {
+            if (key === "name_of_child") {
+                document.getElementById("vaccination_masterlist_fname").value =
+                    data.patientDetails.first_name ?? "";
+                document.getElementById("vaccination_masterlist_MI").value =
+                    data.patientDetails.middle_initial ?? "";
+                document.getElementById("vaccination_masterlist_lname").value =
+                    data.patientDetails.last_name ?? "";
+                document.getElementById("vaccination_masterlist_suffix").value =
+                    data.patientDetails.suffix ?? "";
+            } else if (key === "date_of_birth") {
+                const input = document.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    // FIX Risk 6: avoid timezone offset shifting the date by 1 day.
+                    // Instead of new Date(value).toISOString(), just slice the date part directly.
+                    const formatted = value ? value.split("T")[0] : "";
+                    input.value = formatted;
+                    if (formatted) {
+                        input.classList.add(
+                            "bg-light",
+                            "border-dark",
+                            "border-2",
+                        );
                     } else {
-                        document
-                            .querySelector(`input[name="${key}"]`)
-                            .classList.remove("bg-light");
-                    }
-                } else if (key == "age" && value != null) {
-                    const age = document.getElementById("age");
-                    const hiddenAge = document.getElementById("hiddenAge");
-                    if (age && hiddenAge) {
-                        age.value = value;
-                        hiddenAge.value = value;
-                    }
-                } else if (key == "sex") {
-                    const sex = document.querySelectorAll('input[name="sex"]');
-                    sex.forEach((input) => {
-                        input.checked = input.value == value;
-                    });
-                } else if (key == "Address") {
-                    const addressText = [
-                        data.address_info.house_number,
-                        data.address_info.street,
-                    ]
-                        .filter(Boolean) // removes null, undefined, empty strings
-                        .join(",")
-                        .trim();
-                    const street = document.getElementById("street");
-                    street.value = addressText;
-
-                    const brgy = document.getElementById("brgy");
-
-                    puroks(brgy, data.address_info.purok);
-                } else {
-                    if (document.querySelector(`input[name="${key}"]`)) {
-                        document.querySelector(`input[name="${key}"]`).value =
-                            value;
-                        if (value != null) {
-                            document
-                                .querySelector(`input[name="${key}"]`)
-                                .classList.add("bg-light");
-                            document
-                                .querySelector(`input[name="${key}"]`)
-                                .classList.add("border-dark", "border-2");
-                        } else {
-                            document
-                                .querySelector(`input[name="${key}"]`)
-                                .classList.remove("bg-light");
-                        }
-                        // console.log(value);
+                        input.classList.remove(
+                            "bg-light",
+                            "border-dark",
+                            "border-2",
+                        );
                     }
                 }
-            });
+            } else if (key === "age" && value != null) {
+                const ageEl = document.getElementById("age");
+                const hiddenAgeEl = document.getElementById("hiddenAge");
+                if (ageEl) ageEl.value = value;
+                if (hiddenAgeEl) hiddenAgeEl.value = value;
+            } else if (key === "sex") {
+                document
+                    .querySelectorAll('input[name="sex"]')
+                    .forEach((input) => {
+                        input.checked = input.value === value;
+                    });
+            } else if (key === "Address") {
+                const addressText = [
+                    data.address_info.house_number,
+                    data.address_info.street,
+                ]
+                    .filter(Boolean)
+                    .join(", ")
+                    .trim();
 
-            // display the age properly
-            if (dob && age && hiddenAge) {
-                // console.log("checking if its working");
-                displayAage(dob, age, hiddenAge);
+                const streetEl = document.getElementById("street");
+                if (streetEl) streetEl.value = addressText;
+
+                const brgyEl = document.getElementById("brgy");
+                if (brgyEl) puroks(brgyEl, data.address_info.purok);
+            } else {
+                // Generic field handler — covers BCG, Hepatitis B, PENTA_1, etc.
+                const input = document.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    // FIX Risk 6: same timezone-safe slicing for all date fields
+                    if (input.type === "date" && value) {
+                        input.value = value.split("T")[0];
+                    } else {
+                        input.value = value ?? "";
+                    }
+
+                    if (value != null && value !== "") {
+                        input.classList.add(
+                            "bg-light",
+                            "border-dark",
+                            "border-2",
+                        );
+                    } else {
+                        input.classList.remove(
+                            "bg-light",
+                            "border-dark",
+                            "border-2",
+                        );
+                    }
+                }
             }
-            // add the medical record case id to update btn
+        });
 
-            saveBtn.dataset.medicalRecordCaseId =
-                data.info.medical_record_case_id;
+        // Recompute displayed age from DOB
+        if (dob && age && hiddenAge) {
+            displayAage(dob, age, hiddenAge);
         }
+
+        // Attach record ID to save button for the update request
+        saveBtn.dataset.medicalRecordCaseId = data.info.medical_record_case_id;
     } catch (error) {
-        console.error("Error archiving case:", error);
+        console.error("Error fetching vaccination record:", error);
         Swal.fire({
             title: "Error",
-            text: `Failed to archive record: ${error.message}`,
+            text: `Failed to load record: ${error.message}`,
             icon: "error",
             confirmButtonColor: "#3085d6",
         });
@@ -161,22 +144,17 @@ document.addEventListener("click", async (e) => {
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    // Store original text and disable button
     const originalText = saveBtn.innerHTML;
     saveBtn.disabled = true;
     saveBtn.innerHTML =
         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
-    
+
     try {
         const form = document.getElementById(
             "edit-vaccination-masterlist-form",
         );
         const formData = new FormData(form);
-
         const id = e.target.dataset.medicalRecordCaseId;
-        // for (let [key, value] of formData.entries()) {
-        //     console.log(`${key}: ${value}`);
-        // }
 
         const response = await fetch(`/masterlist/update/vaccination/${id}`, {
             method: "POST",
@@ -193,30 +171,26 @@ saveBtn.addEventListener("click", async (e) => {
         const errorElements = document.querySelectorAll(".error-text");
 
         if (!response.ok) {
-            // reset the error element text first
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
-            // if there's an validation error load the error text
-            Object.entries(data.errors).forEach(([key, value]) => {
-                if (document.getElementById(`${key}_error`)) {
-                    document.getElementById(`${key}_error`).textContent = value;
-                }
-            });
-            let errorMessage = "";
+            // Clear previous errors
+            errorElements.forEach((el) => (el.textContent = ""));
 
+            // Map validation errors to their elements
             if (data.errors) {
-                // Handle ValidationException
-                errorMessage = Object.values(data.errors)
-                    .flat() // flatten nested arrays if present
-                    .join("\n");
-            } else if (data.message) {
-                // Handle general backend errors
-                errorMessage = data.message;
-            } else {
-                // Handle unexpected responses
-                errorMessage = "An unexpected error occurred.";
+                Object.entries(data.errors).forEach(([key, value]) => {
+                    // FIX: error element IDs use underscores, but field name may have spaces
+                    // e.g. key "Hepatitis B" -> look for "Hepatitis_B_error"
+                    const safeKey = key.replace(/ /g, "_");
+                    const errorEl = document.getElementById(`${safeKey}_error`);
+                    if (errorEl)
+                        errorEl.textContent = Array.isArray(value)
+                            ? value[0]
+                            : value;
+                });
             }
+
+            const errorMessage = data.errors
+                ? Object.values(data.errors).flat().join("\n")
+                : (data.message ?? "An unexpected error occurred.");
 
             Swal.fire({
                 title: "Error",
@@ -229,9 +203,8 @@ saveBtn.addEventListener("click", async (e) => {
                 saveBtn.innerHTML = originalText;
             });
         } else {
-            errorElements.forEach((element) => {
-                element.textContent = "";
-            });
+            errorElements.forEach((el) => (el.textContent = ""));
+
             Swal.fire({
                 title: "Update",
                 text: capitalizeEachWord(data.message),
@@ -245,33 +218,29 @@ saveBtn.addEventListener("click", async (e) => {
                             "editvaccinationMasterListModal",
                         ),
                     );
-                    modal.hide();
+                    if (modal) modal.hide();
                 }
-                 saveBtn.disabled = false;
+
+                saveBtn.disabled = false;
                 saveBtn.innerHTML = originalText;
-                
+
                 if (typeof Livewire !== "undefined") {
-                    Livewire.dispatch("vaccinationMasterlistRefreshTable"); // ✅ Update dispatch name if needed
+                    Livewire.dispatch("vaccinationMasterlistRefreshTable");
                 }
             });
-
-            
         }
     } catch (error) {
-         console.log("Error:", error);
-         // Re-enable button on error
-         saveBtn.disabled = false;
-         saveBtn.innerHTML = originalText;
+        console.error("Error updating vaccination record:", error);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
     }
-    
 });
 
-// handle the automation of age
-
+// Automate age calculation from DOB
 if (dob && age && hiddenAge) {
-    // console.log("checking if its working");
     automateAge(dob, age, hiddenAge);
 }
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

@@ -131,27 +131,22 @@ class VaccinationCaseArchive extends Component
             'MCV_2',
         ];
 
-        $noDoseSuffixVaccines = ['Hepatitis B', 'BCG'];
-
         $masterlist = vaccination_masterlists::where('medical_record_case_id', $record->medical_record_case_id)->first();
+        $singleDose = ['BCG', 'HEPATITIS B'];
 
         if ($masterlist) {
-            foreach ($vaccinesArray as $type) {
-                $vaccine = vaccines::where("vaccine_acronym", $type)->first();
+            foreach ($vaccinesArray as $upper) {
+                // $vaccinesArray is already uppercased from the top of the method
 
-                if (!$vaccine) {
-                    continue;
+                if (in_array($upper, $singleDose)) {
+                    $itemColumn = $upper === 'HEPATITIS B' ? 'Hepatitis B' : 'BCG';
+                } else {
+                    $itemColumn = $upper . '_' . $record->dose_number;
                 }
 
-                $itemColumn = in_array($vaccine->vaccine_acronym, $noDoseSuffixVaccines)
-                    ? $vaccine->vaccine_acronym
-                    : Str::upper($vaccine->vaccine_acronym) . "_" . $record->dose_number;
-
-                if (in_array($itemColumn, $validVaccineColumns)) {
-                    $masterlist->update([
-                        $itemColumn => $record->date_of_vaccination,
-                    ]);
-                }
+                $masterlist->update([
+                    $itemColumn => $record->date_of_vaccination,
+                ]);
             }
         }
 

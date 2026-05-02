@@ -114,7 +114,6 @@
         </div>
     </div>
 
-
     <div class="mb-3 text-center">
         <h2>MASTER LIST OF {{ $this->selectedRange }}</h2>
     </div>
@@ -122,28 +121,29 @@
         <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
         @php
         $nurse = App\Models\User::where('role','nurse')->first();
-        $nurseName = $nurse -> full_name??'Gladys';
+        $nurseName = $nurse->full_name ?? 'Gladys';
         @endphp
         <h4 class="flex-fill text-center">Name of Midwife: <span class="fw-light text-decoration-underline">{{$nurseName}}</span></h4>
     </div>
+
     <div class="table-con" wire:key="table-container-{{ $refreshKey }}">
         <table>
             <thead class="table-header">
                 <tr>
                     <th class="need-space">Name of Child</th>
                     <th class="need-space">Address</th>
-                    <th>sex</th>
+                    <th>Sex</th>
                     <th>Age</th>
                     <th class="need-space">Date of Birth</th>
-                    <th class="" style="font-size: 15px;">SE status 1 Months 4 months</th>
+                    <th style="font-size: 15px;">SE status 1 Months 4 months</th>
                     <th>BCG</th>
-                    <th>NEPA w/in 24 hrs</th>
+                    <th>HEPA w/in 24 hrs</th>
                     <th>PENTA 1</th>
                     <th>PENTA 2</th>
                     <th>PENTA 3</th>
                     <th>OPV 1</th>
                     <th>OPV 2</th>
-                    <th>OPV3</th>
+                    <th>OPV 3</th>
                     <th>PCV 1</th>
                     <th>PCV 2</th>
                     <th>PCV 3</th>
@@ -158,30 +158,38 @@
             <tbody>
                 @forelse($vaccinationMasterlist as $masterlist)
                 <tr wire:key="vaccination-{{ $masterlist->id }}-{{ $refreshKey }}">
-                    <td class="need-space">{{optional($masterlist)->name_of_child??''}}</td>
-                    <td class="need-space">{{optional($masterlist)->Address ?? ''}}</td>
-                    <td>{{optional($masterlist)->sex ?? ''}}</td>
+                    <td class="need-space">{{ optional($masterlist)->name_of_child ?? '' }}</td>
+                    <td class="need-space">{{ optional($masterlist)->Address ?? '' }}</td>
+                    <td>{{ optional($masterlist)->sex ?? '' }}</td>
                     <td>{{ $masterlist->age_display }}</td>
-                    <td class="need-space">{{optional($masterlist)->date_of_birth?->format('Y-m-d') ?? ''}}</td>
-                    <td class="" style="font-size: 15px;">{{optional($masterlist)->SE_status??''}}</td>
-                    <td>{{optional($masterlist)->BCG??''}}</td>
-                    <td>{{optional($masterlist)->{'Hepatitis B'}??''}}</td>
-                    <td>{{optional($masterlist)->PENTA_1??''}}</td>
-                    <td>{{optional($masterlist)->PENTA_2??''}}</td>
-                    <td>{{optional($masterlist)->PENTA_3??''}}</td>
-                    <td>{{optional($masterlist)->OPV_1}}</td>
-                    <td>{{optional($masterlist)->OPV_2}}</td>
-                    <td>{{optional($masterlist)->OPV_3}}</td>
-                    <td>{{optional($masterlist)->PCV_1}}</td>
-                    <td>{{optional($masterlist)->PCV_2}}</td>
-                    <td>{{optional($masterlist)->PCV_3}}</td>
-                    <td>{{optional($masterlist)->IPV_1}}</td>
-                    <td>{{optional($masterlist)->IPV_2}}</td>
-                    <td>{{optional($masterlist)->MCV_1??''}}</td>
-                    <td>{{optional($masterlist)->MCV_2}}</td>
-                    <td>{{optional($masterlist)->remarks}}</td>
+                    <td class="need-space">{{ optional($masterlist)->date_of_birth?->format('Y-m-d') ?? '' }}</td>
+                    <td style="font-size: 15px;">{{ optional($masterlist)->SE_status ?? '' }}</td>
+
+                    {{-- FIX Bug 2: vaccine date columns cast to Carbon — must use ?->format() --}}
+                    <td>{{ optional($masterlist)->BCG?->format('Y-m-d') ?? '' }}</td>
+
+                    {{-- FIX Bug 3: space-column + date format --}}
+                    <td>{{ optional($masterlist)->{'Hepatitis B'}?->format('Y-m-d') ?? '' }}</td>
+
+                    <td>{{ optional($masterlist)->PENTA_1?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->PENTA_2?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->PENTA_3?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->OPV_1?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->OPV_2?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->OPV_3?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->PCV_1?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->PCV_2?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->PCV_3?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->IPV_1?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->IPV_2?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->MCV_1?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->MCV_2?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ optional($masterlist)->remarks ?? '' }}</td>
                     <td>
-                        <button class=" fs-2 text-success vaccination-masterlist-edit-btn" data-bs-toggle="modal" data-bs-target="#editvaccinationMasterListModal" data-masterlist-id="{{$masterlist->id}}">
+                        <button class="fs-2 text-success vaccination-masterlist-edit-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editvaccinationMasterListModal"
+                            data-masterlist-id="{{ $masterlist->id }}">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                     </td>
@@ -202,9 +210,12 @@
             </tbody>
         </table>
     </div>
-    @if(Auth::user() -> role == 'staff')
+
+    {{ $vaccinationMasterlist->links() }}
+
+    @if(Auth::user()->role == 'staff')
     <div class="mb-3">
-        <h2>Name of BHM:<span>{{Auth::user() -> staff -> full_name}}</span></h2>
+        <h2>Name of BHM: <span>{{ Auth::user()->staff->full_name }}</span></h2>
     </div>
     @endif
 </div>

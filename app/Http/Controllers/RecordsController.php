@@ -56,9 +56,7 @@ class RecordsController extends Controller
     }
     public function updateVacciationCaseRecord(Request $request, $id)
     {
-
         try {
-
             $data = $request->validate([
                 'update_handled_by'  => 'required',
                 'date_of_vaccination' => 'required|date|before_or_equal:today',
@@ -82,7 +80,11 @@ class RecordsController extends Controller
                     'numeric',
                     'between:35,42'
                 ],
-                'date_of_comeback' => 'required|date|after_or_equal:today',
+                'date_of_comeback' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                ],
             ], [
                 'update_handled_by.required'        => 'Please select the health worker who handled this record.',
                 'date_of_vaccination.required'      => 'The date of vaccination is required.',
@@ -99,7 +101,7 @@ class RecordsController extends Controller
                 'temperature.between'               => 'Temperature must be between 35°C and 42°C.',
                 'date_of_comeback.required'         => 'The comeback date is required.',
                 'date_of_comeback.date'             => 'Please enter a valid comeback date.',
-                'date_of_comeback.after_or_equal'   => 'The comeback date must be today or a future date.',
+                'date_of_comeback.before_or_equal'  => 'The comeback date must be past,today or a future date.',
             ]);
 
             // get the vaccine types
@@ -108,7 +110,6 @@ class RecordsController extends Controller
 
             foreach ($vaccines as $key => $vaccineId) {
                 $vaccineText = vaccines::find($vaccineId);
-
                 $selectedVaccinesArray[] = $vaccineText->vaccine_acronym;
             }
 
@@ -119,16 +120,14 @@ class RecordsController extends Controller
             $vaccinationCase = vaccination_case_records::findOrFail($data['case_record_id']);
             $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $vaccinationCase->medical_record_case_id)->first();
 
-
-            // this is for the update, check for exisiting vaccination, updates
-            // handle if the selected vaccination are already existed
-
             // add condition for trying to add existing record
             $existingVaccinesAdministered = [];
-            $vaccinationCaseRecord = vaccination_case_records::where('medical_record_case_id', $vaccinationCase->medical_record_case_id)->where('id', '!=', $vaccinationCase->id)->where('status', '!=', 'Archived')->get();
+            $vaccinationCaseRecord = vaccination_case_records::where('medical_record_case_id', $vaccinationCase->medical_record_case_id)
+                ->where('id', '!=', $vaccinationCase->id)
+                ->where('status', '!=', 'Archived')
+                ->get();
 
             foreach ($vaccinationCaseRecord as $record) {
-                // explode the vaccination
                 $administeredVaccines = explode(',', $record->vaccine_type);
                 foreach ($administeredVaccines as $vaccine) {
                     $vaccineName = Str::upper($vaccine) . "_" . $record->dose_number;
@@ -136,41 +135,40 @@ class RecordsController extends Controller
                 }
             }
 
-            // dd($existingVaccinesAdministered);
-
-            // there's a white space on each element, so i trimmed it
             $trimmedExistingVaccineAdministed = array_map('trim', $existingVaccinesAdministered);
-
-
-            // check if the vaccine is in the existing administered vaccine
 
             if ($existingVaccinesAdministered) {
                 $existingVaccineError = [];
-                // dd($selectedVaccinesArray);
-                foreach ($selectedVaccinesArray as  $selectedVaccine) {
-                    $vaccine =  Str::upper($selectedVaccine) . "_" . $data['dose'];
-
+                foreach ($selectedVaccinesArray as $selectedVaccine) {
+                    $vaccine = Str::upper($selectedVaccine) . "_" . $data['dose'];
                     if (in_array($vaccine, $trimmedExistingVaccineAdministed)) {
                         $existingVaccineError[] = $vaccine;
                     }
                 }
                 if ($existingVaccineError) {
                     $converted = implode(",", $existingVaccineError);
-
                     return response()->json([
                         'errors' => "Unable to administer the vaccines. $converted already existed."
                     ], 422);
                 }
             }
 
-            // this handle the updates of masterlist
-
+            // -------------------------------------------------------
+            // FIX Bug 1: clear old vaccines from masterlist
+            // vaccine_type stores acronyms in all caps e.g. "HEPATITIS B"
+            // so comparing against 'Hepatitis B' always fails
+            // -------------------------------------------------------
             $existingVaccine = explode(',', $vaccinationCase->vaccine_type);
+            $singleDose = ['BCG', 'HEPATITIS B'];
 
-            // dd($existingVaccine);
             foreach ($existingVaccine as $vaccine) {
-                $vaccineText = $vaccine == 'Hepatitis B' ? $vaccine : Str::upper($vaccine);
-                $itemColumn = $vaccineText == 'Hepatitis B' ? $vaccineText : $vaccineText . "_" . $vaccinationCase->dose_number;
+                $upper = Str::upper(trim($vaccine));
+
+                if (in_array($upper, $singleDose)) {
+                    $itemColumn = $upper === 'HEPATITIS B' ? 'Hepatitis B' : 'BCG';
+                } else {
+                    $itemColumn = $upper . '_' . $vaccinationCase->dose_number;
+                }
 
                 if ($vaccinationMasterlist) {
                     $vaccinationMasterlist->update([
@@ -178,71 +176,69 @@ class RecordsController extends Controller
                     ]);
                 }
             }
-            // we empty the vaccination of this record as the logic of update, then later on we will update again with the value of the selected vaccines
 
-
-            // delete the existing vaccine administed first, then create a new record of the vaccines
+            // delete the existing vaccine administered first, then create a new record of the vaccines
             $currentlyAdministedVaccine = vaccineAdministered::where('vaccination_case_record_id', $data['case_record_id'])->delete();
-
-
-            // this if for compiling the selected vaccines
-
-
-
 
             // GET THE MEDICAL RECORD CASE THAT WE WANT TO UPDATE
             $vaccination_case_record = vaccination_case_records::findOrFail($data['case_record_id']);
+
             // UPDATE THE DATA
             $vaccination_case_record->update([
-                'health_worker_id' => $data['update_handled_by'] ?? $vaccination_case_record->health_worker_id,
+                'health_worker_id'   => $data['update_handled_by'] ?? $vaccination_case_record->health_worker_id,
                 'date_of_vaccination' => $data['date_of_vaccination'] ?? $vaccination_case_record->date_of_vaccination,
-                'time' => $data['time_of_vaccination'] ?? $vaccination_case_record->time,
-                'vaccine_type' => $selectedVaccines ?? $vaccination_case_record->vaccine_type,
-                'dose_number' => $data['dose'] ?? $vaccination_case_record->dose,
-                'remarks' => $data['remarks'] ?? $vaccination_case_record->remarks,
-                'height' => $data['height'] ?? $vaccination_case_record->height,
-                'weight' => $data['weight'] ?? $vaccination_case_record->weight,
-                'temperature' => $data['temperature'] ?? $vaccination_case_record->temperature,
-                'date_of_comeback' => $data['date_of_comeback'] ?? $vaccination_case_record->date_of_comeback,
+                'time'               => $data['time_of_vaccination'] ?? $vaccination_case_record->time,
+                'vaccine_type'       => $selectedVaccines ?? $vaccination_case_record->vaccine_type,
+                'dose_number'        => $data['dose'] ?? $vaccination_case_record->dose,
+                'remarks'            => $data['remarks'] ?? $vaccination_case_record->remarks,
+                'height'             => $data['height'] ?? $vaccination_case_record->height,
+                'weight'             => $data['weight'] ?? $vaccination_case_record->weight,
+                'temperature'        => $data['temperature'] ?? $vaccination_case_record->temperature,
+                'date_of_comeback'   => $data['date_of_comeback'] ?? $vaccination_case_record->date_of_comeback,
                 'vaccination_status' => 'completed'
             ]);
 
             // UPLOAD THE NEW SET OF VACCINES
             foreach ($vaccines as $vaccineId) {
                 $vaccine = vaccines::find($vaccineId);
-
                 $vaccineAdministered = vaccineAdministered::create([
                     'vaccination_case_record_id' => $data['case_record_id'],
-                    'vaccine_type' => $vaccine->type_of_vaccine,
-                    'dose_number' => $data['dose'] ?? null,
-                    'vaccine_id' => $vaccineId ?? null
+                    'vaccine_type'               => $vaccine->type_of_vaccine,
+                    'dose_number'                => $data['dose'] ?? null,
+                    'vaccine_id'                 => $vaccineId ?? null
                 ]);
             }
 
             // update again the master list
-            //  loop through
             if ($vaccinationMasterlist) {
                 $vaccinationMasterlist->refresh();
             }
 
+            // -------------------------------------------------------
+            // FIX Bug 2: write new vaccine dates to masterlist
+            // vaccine_acronym is all caps e.g. "HEPATITIS B"
+            // so comparing against 'Hepatitis B' always fails
+            // and in_array against $vaccineTypes always misses it
+            // -------------------------------------------------------
             foreach ($vaccines as $vaccineId) {
                 $vaccine = vaccines::find($vaccineId);
-                $vaccineText = $vaccine->vaccine_acronym == 'Hepatitis B' ? $vaccine->vaccine_acronym : Str::upper($vaccine->vaccine_acronym);
-                $itemColumn = $vaccineText == 'Hepatitis B' ? $vaccineText : $vaccineText . "_" . $data['dose'];
+                $upper = Str::upper(trim($vaccine->vaccine_acronym));
 
-                $vaccineTypes = ['BCG', 'Hepatitis B', 'PENTA_1', 'PENTA_2', 'PENTA_3', 'OPV_1', 'OPV_2', 'OPV_3', 'PCV_1', 'PCV_2', 'PCV_3', 'IPV_1', 'IPV_2', 'MCV_1', 'MCV_2'];
-                if (in_array($itemColumn, $vaccineTypes)) {
-                    if ($vaccinationMasterlist) {
-                        $vaccinationMasterlist->update([
-                            "$itemColumn" => $data['date_of_vaccination']
-                        ]);
-                    }
+                if (in_array($upper, $singleDose)) {
+                    $itemColumn = $upper === 'HEPATITIS B' ? 'Hepatitis B' : 'BCG';
+                } else {
+                    $itemColumn = $upper . '_' . $data['dose'];
+                }
+
+                if ($vaccinationMasterlist) {
+                    $vaccinationMasterlist->update([
+                        $itemColumn => $data['date_of_vaccination']
+                    ]);
                 }
             }
-            // end of updating
 
             return response()->json([
-                'message' => 'updating information successfully'
+                'message' => 'Updating Patient vaccination case information successfully'
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -632,7 +628,6 @@ class RecordsController extends Controller
     // add vaccination case record
     public function addVaccinationCaseRecord(Request $request, $id)
     {
-
         try {
             $data = $request->validate([
                 'add_patient_full_name' => 'required',
@@ -665,28 +660,19 @@ class RecordsController extends Controller
             ], [
                 'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must past,today or a future date.',
                 'add_date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
-                // Custom messages with friendly attribute names
-                'add_patient_full_name.required' => 'The patient full name field is required.',
-
-                'add_handled_by.required' => 'The handled by field is required.',
-
-                'add_date_of_vaccination.required' => 'The date of vaccination field is required.',
-
-                'selected_vaccine_type.required' => 'The vaccine type field is required.',
-
-                'add_record_dose.required' => 'The dose field is required.',
-
-                'add_height.numeric' => 'The height must be a number.',
-                'add_height.between' => 'The height must be between :min and :max cm.',
-
-                'add_weight.numeric' => 'The weight must be a number.',
-                'add_weight.between' => 'The weight must be between :min and :max kg.',
-
-                'add_temperature.numeric' => 'The temperature must be a number.',
-                'add_temperature.between' => 'The temperature must be between :min and :max °C.',
-
-                'add_date_of_comeback.required' => 'The date of comeback field is required.',
-                'add_date_of_comeback.date' => 'The date of comeback must be a valid date.',
+                'add_patient_full_name.required'          => 'The patient full name field is required.',
+                'add_handled_by.required'                 => 'The handled by field is required.',
+                'add_date_of_vaccination.required'        => 'The date of vaccination field is required.',
+                'selected_vaccine_type.required'          => 'The vaccine type field is required.',
+                'add_record_dose.required'                => 'The dose field is required.',
+                'add_height.numeric'                      => 'The height must be a number.',
+                'add_height.between'                      => 'The height must be between :min and :max cm.',
+                'add_weight.numeric'                      => 'The weight must be a number.',
+                'add_weight.between'                      => 'The weight must be between :min and :max kg.',
+                'add_temperature.numeric'                 => 'The temperature must be a number.',
+                'add_temperature.between'                 => 'The temperature must be between :min and :max °C.',
+                'add_date_of_comeback.required'           => 'The date of comeback field is required.',
+                'add_date_of_comeback.date'               => 'The date of comeback must be a valid date.',
             ]);
 
             // get the vaccine types
@@ -695,17 +681,14 @@ class RecordsController extends Controller
 
             foreach ($vaccines as $key => $vaccineId) {
                 $vaccineText = vaccines::find($vaccineId);
-
                 $selectedVaccinesArray[] = $vaccineText->vaccine_acronym;
             }
-
 
             // add condition for trying to add existing record
             $existingVaccinesAdministered = [];
             $vaccinationCaseRecord = vaccination_case_records::where('medical_record_case_id', $id)->where('status', '!=', 'Archived')->get();
 
             foreach ($vaccinationCaseRecord as $record) {
-                // explode the vaccination
                 $administeredVaccines = explode(',', $record->vaccine_type);
                 foreach ($administeredVaccines as $vaccine) {
                     $vaccineName = Str::upper($vaccine) . "_" . $record->dose_number;
@@ -713,86 +696,79 @@ class RecordsController extends Controller
                 }
             }
 
-            // there's a white space on each element, so i trimmed it
             $trimmedExistingVaccineAdministed = array_map('trim', $existingVaccinesAdministered);
-
-
-            // check if the vaccine is in the existing administered vaccine
 
             if ($existingVaccinesAdministered) {
                 $existingVaccineError = [];
-                // dd($selectedVaccinesArray);
-                foreach ($selectedVaccinesArray as  $selectedVaccine) {
-                    $vaccine =  Str::upper($selectedVaccine) . "_" . $data['add_record_dose'];
-
+                foreach ($selectedVaccinesArray as $selectedVaccine) {
+                    $vaccine = Str::upper($selectedVaccine) . "_" . $data['add_record_dose'];
                     if (in_array($vaccine, $trimmedExistingVaccineAdministed)) {
                         $existingVaccineError[] = $vaccine;
                     }
                 }
                 if ($existingVaccineError) {
                     $converted = implode(",", $existingVaccineError);
-
                     return response()->json([
                         'errors' => "Unable to administer the vaccines. $converted already existed."
                     ], 422);
                 }
             }
 
-
-
             $selectedVaccines = implode(',', $selectedVaccinesArray);
 
             $newCaseRecord = vaccination_case_records::create([
                 'medical_record_case_id' => $id,
-                'patient_name' => $data['add_patient_full_name'],
-                'date_of_vaccination' => $data['add_date_of_vaccination'],
-                'time' => $data['add_time_of_vaccination'] ?? null,
-                'vaccine_type' => $selectedVaccines,
-                'dose_number' => (int) $data['add_record_dose'],
-                'remarks' => $data['add_case_remarks'] ?? null,
-                'type_of_record' => 'Case Record',
-                'health_worker_id' => (int) $data['add_handled_by'],
-                'height' => $data['add_height'] ?? null,
-                'weight' => $data['add_weight'] ?? null,
-                'temperature' => $data['add_temperature'] ?? null,
-                'date_of_comeback' => $data['add_date_of_comeback'],
-                'vaccination_status' => 'completed'
+                'patient_name'           => $data['add_patient_full_name'],
+                'date_of_vaccination'    => $data['add_date_of_vaccination'],
+                'time'                   => $data['add_time_of_vaccination'] ?? null,
+                'vaccine_type'           => $selectedVaccines,
+                'dose_number'            => (int) $data['add_record_dose'],
+                'remarks'                => $data['add_case_remarks'] ?? null,
+                'type_of_record'         => 'Case Record',
+                'health_worker_id'       => (int) $data['add_handled_by'],
+                'height'                 => $data['add_height'] ?? null,
+                'weight'                 => $data['add_weight'] ?? null,
+                'temperature'            => $data['add_temperature'] ?? null,
+                'date_of_comeback'       => $data['add_date_of_comeback'],
+                'vaccination_status'     => 'completed'
             ]);
 
-            // id of medical case record
             $medicalCaseRecordId = $newCaseRecord->id;
 
             foreach ($vaccines as $vaccineId) {
                 $vaccine = vaccines::find($vaccineId);
-
-                $vaccineAdministered = vaccineAdministered::create([
+                vaccineAdministered::create([
                     'vaccination_case_record_id' => $medicalCaseRecordId,
-                    'vaccine_type' => $vaccine->type_of_vaccine,
-                    'dose_number' => $data['add_record_dose'] ?? null,
-                    'vaccine_id' => $vaccineId ?? null
+                    'vaccine_type'               => $vaccine->type_of_vaccine,
+                    'dose_number'                => $data['add_record_dose'] ?? null,
+                    'vaccine_id'                 => $vaccineId ?? null
                 ]);
             }
 
-            // vaccination Masterlist list
+            // vaccination Masterlist update
             $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $id)->first();
+            $singleDose = ['BCG', 'HEPATITIS B'];
 
-            //  loop through
+            // FIX: same broken logic as update/delete — vaccine_acronym is all caps
+            // e.g. "HEPATITIS B", "BCG" — comparing against 'Hepatitis B' always fails
             foreach ($vaccines as $vaccineId) {
                 $vaccine = vaccines::find($vaccineId);
-                $vaccineText = $vaccine->vaccine_acronym == 'Hepatitis B' ? $vaccine->vaccine_acronym : Str::upper($vaccine->vaccine_acronym);
-                $itemColumn = $vaccineText == 'Hepatitis B' ? $vaccineText : $vaccineText . "_" . $data['add_record_dose'];
+                $upper = Str::upper(trim($vaccine->vaccine_acronym));
 
-                $vaccineTypes = ['BCG', 'Hepatitis B', 'PENTA_1', 'PENTA_2', 'PENTA_3', 'OPV_1', 'OPV_2', 'OPV_3', 'PCV_1', 'PCV_2', 'PCV_3', 'IPV_1', 'IPV_2', 'MCV_1', 'MCV_2'];
-                if (in_array($itemColumn, $vaccineTypes)) {
-                    if ($vaccinationMasterlist) {
-                        $vaccinationMasterlist->update([
-                            "$itemColumn" => $data['add_date_of_vaccination']
-                        ]);
-                    }
+                if (in_array($upper, $singleDose)) {
+                    $itemColumn = $upper === 'HEPATITIS B' ? 'Hepatitis B' : 'BCG';
+                } else {
+                    $itemColumn = $upper . '_' . $data['add_record_dose'];
+                }
+
+                if ($vaccinationMasterlist) {
+                    $vaccinationMasterlist->update([
+                        $itemColumn => $data['add_date_of_vaccination']
+                    ]);
                 }
             }
 
-            return response()->json(['message' => 'Patient has been added'], 201);
+            return response()->json(['message' => 'Patient new vaccination case has been added'], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors()
@@ -811,19 +787,34 @@ class RecordsController extends Controller
                 'status' => 'Archived'
             ]);
 
-            // update the masterlist record
-            $vaccinationMasterlist = vaccination_masterlists::where('medical_record_case_id', $vaccination_case_record->medical_record_case_id)->first();
-            $vaccines = explode(",", $vaccination_case_record->vaccine_type);
+            $vaccinationMasterlist = vaccination_masterlists::where(
+                'medical_record_case_id',
+                $vaccination_case_record->medical_record_case_id
+            )->first();
+
+            if (!$vaccinationMasterlist) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Vaccination case archived. No masterlist record found to update.'
+                ]);
+            }
+
+            $vaccines = array_map('trim', explode(",", $vaccination_case_record->vaccine_type));
+            $singleDose = ['BCG', 'HEPATITIS B'];
 
             foreach ($vaccines as $vaccine) {
-                $vaccineText = $vaccine == 'Hepatitis B' ? $vaccine : Str::upper($vaccine);
-                $itemColumn = $vaccineText == 'Hepatitis B' ? $vaccineText : $vaccineText . "_" . $vaccination_case_record->dose_number;
+                $upper = Str::upper(trim($vaccine));
 
+                if (in_array($upper, $singleDose)) {
+                    $itemColumn = $upper === 'HEPATITIS B' ? 'Hepatitis B' : 'BCG';
+                } else {
+                    $itemColumn = $upper . '_' . $vaccination_case_record->dose_number;
+                }
 
                 $vaccinationMasterlist->update([
                     $itemColumn => null
                 ]);
-            };
+            }
 
             return response()->json([
                 'success' => true,
@@ -837,7 +828,6 @@ class RecordsController extends Controller
             ], 500);
         }
     }
-
 
     // prenatal
     public function prenatalRecord()
@@ -979,7 +969,7 @@ class RecordsController extends Controller
     public function viewSeniorCitizenCases($id)
     {
         $seniorCaseRecords = senior_citizen_case_records::where('medical_record_case_id', $id)->where('status', '!=', 'Archived')->get();
-        $patientRecord = medical_record_cases::with('patient', 'senior_citizen_medical_record')->findOrFail($id);
+        $patientRecord = medical_record_cases::with(['patient', 'senior_citizen_medical_record'])->findOrFail($id);
         $nurseFullName = nurses::value('full_name') ?? 'N/A';
         return view(
             'records.seniorCitizen.seniorCitizenPatientCase',

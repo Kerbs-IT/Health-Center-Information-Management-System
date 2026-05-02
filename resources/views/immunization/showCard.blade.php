@@ -22,7 +22,7 @@
                 <label>Address:</label>
                 <span>{{ $fullAddress?? 'N/A' }}</span>
             </div>
-            
+
         </div>
         <div class="w-[100%] lg:w-[50%]">
             <div class="info-field">
@@ -56,7 +56,7 @@
     <div class="table-responsive">
         <table class="vaccine-table">
             <thead>
-                <tr >
+                <tr>
                     <th style="width: 30%;" class="text-center">BAKUNA</th>
                     <th style="width: 20%;" class="text-center">DOSES</th>
                     <th colspan="3" style="text-align: center;" class="text-center">PETSA NG BAKUNA</th>
@@ -243,9 +243,61 @@
                         </td>
                 </tr>
                 @endforeach
+
+                @php
+                $hardcodedIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
+                $otherVaccines = $vaccineAdministered
+                ->whereNotIn('vaccine_id', $hardcodedIds)
+                ->groupBy('vaccine_id');
+                @endphp
+                {{-- IBA PANG MGA BAKUNA --}}
+                @if($otherVaccines->isNotEmpty())
+                <tr>
+                    <td colspan="6" class="category-header">IBA PANG MGA BAKUNA</td>
+                </tr>
+
+                @foreach($otherVaccines as $vaccineId => $records)
+                @php
+                $firstRecord = $records->first();
+                $vaccineName = $firstRecord->vaccineInfo->type_of_vaccine
+                ?? $firstRecord->vaccine_type
+                ?? 'Unknown Vaccine';
+
+                $maxDoses = $firstRecord->vaccine->max_doses ?? 3;
+                @endphp
+                <tr>
+                    <td class="vaccine-name">{{ $vaccineName }}</td>
+                    <td></td>
+
+                    @for($dose = 1; $dose <= 3; $dose++)
+                        @php
+                        $record=$records->firstWhere('dose_number', $dose);
+                        @endphp
+                        <td class="dose-cell {{ $record ? 'filled' : 'empty' }}">
+                            @if($record)
+                            {{ \Carbon\Carbon::parse($record->vaccination_case_record->date_of_vaccination)->format('m/d/Y') }}
+                            @endif
+                        </td>
+                        @endfor
+
+                        <td class="remarks-cell">
+                            @php
+                            $remarks = $records
+                            ->map(fn($item) => $item->vaccination_case_record->remarks ?? null)
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                            @endphp
+                            {{ $remarks }}
+                        </td>
+                </tr>
+                @endforeach
+                @endif
+
             </tbody>
         </table>
-     </div>
+    </div>
 </div>
 
 <style>

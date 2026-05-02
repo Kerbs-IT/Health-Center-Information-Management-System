@@ -17,6 +17,10 @@ class vaccineAdministered extends Model
         return $this ->belongsTo(vaccination_case_records::class, 'vaccination_case_record_id','id');
     }
     public function vaccines(){
-        return $this-> belongsTo(vaccines::class,'vaccined_id','id');
+        return $this-> belongsTo(vaccines::class,'vaccine_id','id');
+    }
+    public function vaccineInfo()
+    {
+        return $this->belongsTo(vaccines::class, 'vaccine_id', 'id');
     }
 }

@@ -19,6 +19,7 @@
     'resources/css/patient/record.css',
     'resources/css/masterList/masterlist.css',
     'resources/js/masterlist/vaccination.js'])
+
     <div class="masterList-vaccination min-vh-100 d-flex">
         <aside>
             @include('layout.menuBar')
@@ -33,8 +34,7 @@
                             <a href="#" class="text-decoration-none text-black">
                                 <h5 class="fw-light text-nowrap mb-0">Master List</h5>
                             </a>
-
-                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512">
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
                             <a href="#" class="text-decoration-none text-black">
@@ -59,8 +59,10 @@
                         </div>
 
                         <div class="modal-body w-100">
+
+                            {{-- Name --}}
                             <div class="input-group mb-2">
-                                <div class="bg-light border-start  border-primary px-3 py-2 mb-4 rounded">
+                                <div class="bg-light border-start border-primary px-3 py-2 mb-4 rounded">
                                     <span class="fs-6">
                                         <strong>Note:</strong>
                                         <span class="text-danger">*</span>
@@ -70,23 +72,20 @@
                                 <label for="" class="w-100">Name of Child</label>
                                 <div class="full-name d-flex gap-2 w-100 flex-grow-1 flex-wrap flex-lg-nowrap">
                                     <div class="input-group">
-                                        <label for="vaccination_masterlist_fname" class="w-100">First Name<span class=" text-danger">*</span></label>
+                                        <label for="vaccination_masterlist_fname" class="w-100">First Name<span class="text-danger">*</span></label>
                                         <input type="text" name="vaccination_masterlist_fname" id="vaccination_masterlist_fname" placeholder="Enter First Name" class="form-control border flex-fill">
-
                                     </div>
                                     <div class="input-group">
                                         <label for="vaccination_masterlist_MI" class="w-100">Middle Name</label>
-                                        <input type="text" name="vaccination_masterlist_MI" id="vaccination_masterlist_MI" placeholder="Enter Middle Initial" class="form-control  border flex-fill">
-
+                                        <input type="text" name="vaccination_masterlist_MI" id="vaccination_masterlist_MI" placeholder="Enter Middle Initial" class="form-control border flex-fill">
                                     </div>
                                     <div class="input-group">
-                                        <label for="vaccination_masterlist_lname" class="w-100">Last Name<span class=" text-danger">*</span></label>
-                                        <input type="text" name="vaccination_masterlist_lname" id="vaccination_masterlist_lname" placeholder="Enter Last Name" class="form-control  border flex-fill">
-
+                                        <label for="vaccination_masterlist_lname" class="w-100">Last Name<span class="text-danger">*</span></label>
+                                        <input type="text" name="vaccination_masterlist_lname" id="vaccination_masterlist_lname" placeholder="Enter Last Name" class="form-control border flex-fill">
                                     </div>
                                     <div class="input-form flex-fill lg:w-[50%]">
                                         <label for="vaccination_masterlist_suffix" class="w-100">Suffix</label>
-                                        <select name="vaccination_masterlist_suffix" id="vaccination_masterlist_suffix" class="form-control  border flex-fill">
+                                        <select name="vaccination_masterlist_suffix" id="vaccination_masterlist_suffix" class="form-control border flex-fill">
                                             <option value="" selected>Select Suffix</option>
                                             <option value="Jr.">Jr</option>
                                             <option value="Sr.">Sr</option>
@@ -95,7 +94,6 @@
                                             <option value="IV.">IV</option>
                                             <option value="V.">V</option>
                                         </select>
-
                                     </div>
                                 </div>
                                 <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_fname_error"></small>
@@ -103,50 +101,52 @@
                                 <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_MI_error"></small>
                                 <small class="text-danger error-text flex-grow-1" id="vaccination_masterlist_lname_error"></small>
                             </div>
+
+                            {{-- Address --}}
                             <div class="input-group mb-2">
                                 <h4>Address</h4>
                                 <div class="input-field d-flex gap-2 align-items-center w-100 flex-wrap flex-lg-nowrap">
-                                    <div class=" mb-2 w-[100%]  w-lg-[50%]">
-                                        <label for="street">House No., Street,<span class=" text-danger">*</span></label>
+                                    <div class="mb-2 w-[100%] w-lg-[50%]">
+                                        <label for="street">House No., Street,<span class="text-danger">*</span></label>
                                         <input type="text" id="street" placeholder="Blk & Lot n Street" class="form-control py-2 border" name="street" value="">
                                         <small class="text-danger error-text flex-grow-1" id="street_error"></small>
                                     </div>
-                                    <div class="mb-2 w-[100%]  w-lg-[50%]">
-                                        <label for="brgy">Barangay<span class=" text-danger">*</span></label>
+                                    <div class="mb-2 w-[100%] w-lg-[50%]">
+                                        <label for="brgy">Barangay<span class="text-danger">*</span></label>
                                         @php
-                                        $brgy = \App\Models\brgy_unit::orderBy('brgy_unit') -> get();
+                                        $brgy = \App\Models\brgy_unit::orderBy('brgy_unit')->get();
                                         @endphp
                                         <select name="brgy" id="brgy" class="form-select py-2">
                                             <option value="" disabled selected>Select a brgy</option>
                                             @foreach($brgy as $brgy_unit)
-                                            <option value="{{ $brgy_unit -> brgy_unit }}">{{$brgy_unit -> brgy_unit}}</option>
+                                            <option value="{{ $brgy_unit->brgy_unit }}">{{ $brgy_unit->brgy_unit }}</option>
                                             @endforeach
                                         </select>
                                         <small class="text-danger error-text flex-grow-1" id="brgy_error"></small>
                                     </div>
                                 </div>
                             </div>
-                            <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2 ">
-                                <div class="input-field flex-grow-1 ">
-                                    <label for="">Sex<span class=" text-danger">*</span></label>
+
+                            {{-- Sex, DOB, Age --}}
+                            <div class="input-group mb-2 w-100 d-flex flex-grow-1 gap-2">
+                                <div class="input-field flex-grow-1">
+                                    <label for="">Sex<span class="text-danger">*</span></label>
                                     <div class="input-field d-flex align-items-center p-2">
                                         <div class="sex-input d-flex align-items-center justify-content-center w-100 gap-1">
-                                            <input type="radio" id="male" class="mb-0" name="sex" value="Male" class="mb-0">
+                                            <input type="radio" id="male" name="sex" value="Male">
                                             <label for="male">Male</label>
-                                            <input type="radio" id="female" class="mb-0" name="sex" value="Female" class="mb-0">
+                                            <input type="radio" id="female" name="sex" value="Female">
                                             <label for="female">Female</label>
                                         </div>
-
                                     </div>
                                     <small class="text-danger error-text flex-grow-1" id="sex_error"></small>
                                 </div>
-
-                                <div class="input-field flex-grow-1 ">
-                                    <label for="birthdate">Date of Birth<span class=" text-danger">*</span></label>
-                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" placeholder="01-02-25" class="form-control w-100 px-5" name="date_of_birth" value="">
+                                <div class="input-field flex-grow-1">
+                                    <label for="birthdate">Date of Birth<span class="text-danger">*</span></label>
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" id="birthdate" class="form-control w-100 px-5" name="date_of_birth" value="">
                                     <small class="text-danger error-text flex-grow-1" id="date_of_birth_error"></small>
                                 </div>
-                                <div class="input-field flex-grow-1 ">
+                                <div class="input-field flex-grow-1">
                                     <label for="age">Age</label>
                                     <input type="text" id="age" placeholder="Enter the age" class="form-control" disabled value="">
                                     <input type="hidden" id="hiddenAge" name="age">
@@ -154,110 +154,123 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex gap-2 w-100 flex-wrap">
+                            {{-- SE Status, BCG, Hepatitis B — row of 3 matching physical form --}}
+                            <div class="d-flex gap-2 w-100 flex-wrap mb-2">
                                 <div class="vaccination-date flex-grow-1">
                                     <label>SE status</label>
                                     <input type="text" name="SE_status" class="form-control">
                                     <small class="text-danger error-text flex-grow-1" id="SE_status_error"></small>
                                 </div>
-
                                 <div class="vaccination-date flex-grow-1">
                                     <label for="BCG_input">BCG</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="BCG" id="BCG_input">
                                     <small class="text-danger error-text flex-grow-1" id="BCG_error"></small>
                                 </div>
-
+                                {{--
+                                    FIX Bug 1: name was "Hepatitis_B" (underscore) but the DB column
+                                    is "Hepatitis B" (space). The JS uses input[name="${key}"] where
+                                    key = "Hepatitis B" from the API — so the name must match exactly.
+                                --}}
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="Hepatitis_w/in_24hrs">Hepatitis w/in 24hrs</label>
-                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="Hepatitis_B" id="Hepatitis_w/in_24hrs_input">
+                                    <label for="Hepatitis_B_input">Hepatitis w/in 24hrs</label>
+                                    <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" class="form-control" name="Hepatitis B" id="Hepatitis_B_input">
                                     <small class="text-danger error-text flex-grow-1" id="Hepatitis_B_error"></small>
                                 </div>
                             </div>
 
-                            <div class="input-group d-flex gap-2 w-100">
+                            {{-- PENTA --}}
+                            <div class="input-group d-flex gap-2 w-100 mb-2">
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PENTA 1</label>
+                                    <label>PENTA 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_1" class="form-control w-100 border">
                                     <small class="text-danger error-text flex-grow-1" id="PENTA_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PENTA 2</label>
+                                    <label>PENTA 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_2" class="form-control w-100 border">
                                     <small class="text-danger error-text flex-grow-1" id="PENTA_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PENTA 3</label>
+                                    <label>PENTA 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PENTA_3" class="form-control w-100 border">
                                     <small class="text-danger error-text flex-grow-1" id="PENTA_3_error"></small>
                                 </div>
                             </div>
-                            <div class="input-group d-flex gap-2">
+
+                            {{-- OPV --}}
+                            <div class="input-group d-flex gap-2 mb-2">
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">OPV 1</label>
+                                    <label>OPV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_1" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="OPV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">OPV 2</label>
+                                    <label>OPV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_2" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="OPV_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">OPV 3</label>
+                                    <label>OPV 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="OPV_3" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="OPV_3_error"></small>
                                 </div>
                             </div>
-                            <div class="input-group d-flex gap-2">
+
+                            {{-- PCV --}}
+                            <div class="input-group d-flex gap-2 mb-2">
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PCV 1</label>
+                                    <label>PCV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_1" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="PCV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PCV 2</label>
+                                    <label>PCV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_2" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="PCV_2_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">PCV 3</label>
+                                    <label>PCV 3</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="PCV_3" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="PCV_3_error"></small>
                                 </div>
                             </div>
-                            <!-- ipv -->
-                            <div class="input-group d-flex gap-2">
+
+                            {{-- IPV --}}
+                            <div class="input-group d-flex gap-2 mb-2">
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">IPV 1</label>
+                                    <label>IPV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_1" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="IPV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">IPV 2</label>
+                                    <label>IPV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="IPV_2" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="IPV_2_error"></small>
                                 </div>
                             </div>
-                            <!-- mcv -->
-                            <div class="input-group d-flex gap-2">
+
+                            {{-- MCV --}}
+                            <div class="input-group d-flex gap-2 mb-2">
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">MCV 1</label>
+                                    <label>MCV 1</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_1" class="form-control border w-100" id="MCV_1">
                                     <small class="text-danger error-text flex-grow-1" id="MCV_1_error"></small>
                                 </div>
                                 <div class="vaccination-date flex-grow-1">
-                                    <label for="">MCV 2</label>
+                                    <label>MCV 2</label>
                                     <input type="date" min="1950-01-01" max="{{date('Y-m-d')}}" name="MCV_2" class="form-control border w-100">
                                     <small class="text-danger error-text flex-grow-1" id="MCV_2_error"></small>
                                 </div>
                             </div>
+
+                            {{-- Remarks --}}
                             <div class="mb-2">
-                                <label for="" class="">Remarks</label>
+                                <label>Remarks</label>
                                 <input type="text" name="remarks" class="form-control">
-                                <small class="text-danger error-text flex-grow-1" id="remarks"></small>
+                                {{-- FIX Risk 4: was id="remarks", must be id="remarks_error" for JS error handler --}}
+                                <small class="text-danger error-text flex-grow-1" id="remarks_error"></small>
                             </div>
                         </div>
-
 
                         <div class="modal-footer d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="add-cancel-btn">Cancel</button>
@@ -268,16 +281,15 @@
             </div>
         </div>
     </div>
+
     @if($isActive)
     <script>
-        // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
             const con = document.getElementById('masterlist_vaccination');
-
             if (con) {
                 con.classList.add('active');
             }
-        })
+        });
     </script>
     @endif
 </body>
