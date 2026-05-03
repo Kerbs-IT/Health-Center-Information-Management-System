@@ -83,7 +83,7 @@ class RecordsController extends Controller
                 'date_of_comeback' => [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYear()->toDateString(),
                 ],
             ], [
                 'update_handled_by.required'        => 'Please select the health worker who handled this record.',
@@ -101,7 +101,7 @@ class RecordsController extends Controller
                 'temperature.between'               => 'Temperature must be between 35°C and 42°C.',
                 'date_of_comeback.required'         => 'The comeback date is required.',
                 'date_of_comeback.date'             => 'Please enter a valid comeback date.',
-                'date_of_comeback.before_or_equal'  => 'The comeback date must be past,today or a future date.',
+                'date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
             ]);
 
             // get the vaccine types
@@ -655,11 +655,11 @@ class RecordsController extends Controller
                 'add_date_of_comeback' => [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYear()->toDateString(),
                 ],
             ], [
-                'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must past,today or a future date.',
-                'add_date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
+                'add_date_of_vaccination.before_or_equal' => 'The date of vaccination must past or today date.',
+                'add_date_of_comeback.before_or_equal'     => 'The comeback date cannot be more than 1 year in the future.',
                 'add_patient_full_name.required'          => 'The patient full name field is required.',
                 'add_handled_by.required'                 => 'The handled by field is required.',
                 'add_date_of_vaccination.required'        => 'The date of vaccination field is required.',

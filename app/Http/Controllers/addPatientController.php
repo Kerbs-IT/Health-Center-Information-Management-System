@@ -117,7 +117,11 @@ class addPatientController extends Controller
                 'current_height'          => ['nullable', 'numeric', 'between:1,250'],
                 'current_weight'          => ['nullable', 'numeric', 'between:1,300'],
                 'current_temperature'     => ['nullable', 'numeric', 'between:35,42'],
-                'date_of_comeback'    => 'required|date|after_or_equal:today',
+                'date_of_comeback' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYear()->toDateString(),
+                ],
                 'suffix'                  => 'sometimes|nullable|string',
 
                 // Guardian account — optional, only used when notification_mode = guardian
@@ -173,7 +177,7 @@ class addPatientController extends Controller
                 'current_temperature.numeric'        => 'The current temperature must be a number.',
                 'current_temperature.between'        => 'The current temperature must be between :min and :max °C.',
                 'date_of_vaccination.before_or_equal' => 'The date of vaccination must not be a future date.',
-                'date_of_comeback.after_or_equal'     => 'The comeback date must be today or a future date.',
+                'date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
                 'date_of_registration.before_or_equal' => 'The date of registration must not be a future date.',
             ]);
 

@@ -2071,13 +2071,13 @@ class PrenatalController extends Controller
                     'date_of_comeback' => [
                         $isFinal ? 'nullable' : 'required',
                         'date',
-                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                        'before_or_equal:' . now()->addYear()->toDateString(),
                     ],
                 ],
                 [
                     'date_of_comeback.required'       => 'The date of comeback field is required.',
                     'date_of_comeback.date'           => 'The date of comeback must be a valid date.',
-                    'date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                    'date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
                 ],
                 [
                     'check_up_time'             => 'Time',
@@ -2260,13 +2260,13 @@ class PrenatalController extends Controller
                     'edit_date_of_comeback' => [
                         $isFinal ? 'nullable' : 'required',
                         'date',
-                        'before_or_equal:' . now()->addYears(5)->toDateString(),
+                        'before_or_equal:' . now()->addYear()->toDateString(),
                     ],
                 ],
                 [
                     'edit_date_of_comeback.required'       => 'The date of comeback field is required.',
                     'edit_date_of_comeback.date'           => 'The date of comeback must be a valid date.',
-                    'edit_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                    'edit_date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
                 ],
                 [
                     'edit_check_up_time'             => 'Time',

@@ -348,7 +348,11 @@ class FamilyPlanningController extends Controller
                 'side_b_method_accepted'                         => 'sometimes|nullable|string',
                 'add_side_b_name_n_signature_image'              => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:512',
                 'add_side_b_name_n_signature_data'               => 'sometimes|nullable|string',
-                'side_b_date_of_follow_up_visit'                 => 'required|date|after_or_equal:today',
+                'side_b_date_of_follow_up_visit'                 => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->addYear()->toDateString(),
+                ],
                 'baby_Less_than_six_months_question'             => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question' => 'sometimes|nullable|string',
                 'baby_last_4_weeks_question'                     => 'sometimes|nullable|string',
@@ -366,7 +370,7 @@ class FamilyPlanningController extends Controller
                 'add_side_b_name_n_signature_image.max'                 => 'The signature image may not exceed :max kilobytes.',
                 'side_b_date_of_follow_up_visit.required'               => 'The date of follow up visit is required.',
                 'side_b_date_of_follow_up_visit.date'                   => 'Please enter a valid follow up visit date.',
-                'side_b_date_of_follow_up_visit.after_or_equal'         => 'The follow up visit date must be today or a future date.',
+                'side_b_date_of_follow_up_visit.before_or_equal'         => 'The follow up visit date cannot be more than 1 year in the future.',
                 'baby_Less_than_six_months_question.string'             => 'The baby less than six months field must be a valid text value.',
                 'sexual_intercouse_or_mesntrual_period_question.string' => 'The sexual intercourse or menstrual period field must be a valid text value.',
                 'baby_last_4_weeks_question.string'                     => 'The baby last 4 weeks field must be a valid text value.',
@@ -2251,7 +2255,7 @@ class FamilyPlanningController extends Controller
                 'side_b_date_of_follow_up_visit'                         => [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYears()->toDateString(),
                 ],
                 'baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
                 'sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
@@ -2273,7 +2277,7 @@ class FamilyPlanningController extends Controller
                 'add_side_b_signature_image.max'                         => 'The signature may not exceed :max kilobytes.',
                 'side_b_date_of_follow_up_visit.required'                => 'The follow up visit date is required.',
                 'side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
-                'side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'side_b_date_of_follow_up_visit.before_or_equal'          => 'The Follow-up visit date cannot be more than 1 year in the future.',
                 'is_final.required'                                      => 'The final record field is required.',
                 'is_final.in'                                            => 'The final record field must be 0 or 1.',
             ]);
@@ -2381,7 +2385,7 @@ class FamilyPlanningController extends Controller
                 'edit_side_b_date_of_follow_up_visit'                         => [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYears()->toDateString(),
                 ],
                 'edit_baby_Less_than_six_months_question'                     => 'sometimes|nullable|string',
                 'edit_sexual_intercouse_or_mesntrual_period_question'         => 'sometimes|nullable|string',
@@ -2402,7 +2406,7 @@ class FamilyPlanningController extends Controller
                 'edit_side_b_signature_image.mimes'                           => 'The signature must be a jpg, jpeg, or png file.',
                 'edit_side_b_signature_image.max'                             => 'The signature may not exceed :max kilobytes.',
                 'edit_side_b_date_of_follow_up_visit.date'                    => 'Please enter a valid follow up visit date.',
-                'edit_side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date must be past,today or a future date.',
+                'edit_side_b_date_of_follow_up_visit.before_or_equal'          => 'The follow up visit date cannot be more than 1 year in the future.',
                 'is_final.required'                                           => 'The final record field is required.',
                 'is_final.in'                                                 => 'The final record field must be 0 or 1.',
             ]);

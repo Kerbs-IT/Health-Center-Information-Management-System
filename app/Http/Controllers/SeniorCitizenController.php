@@ -152,7 +152,7 @@ class SeniorCitizenController extends Controller
                 'senior_citizen_date_of_comeback' => [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYears()->toDateString(),
                 ], // ← fixed
             ], [
                 'existing_medical_condition.string'        => 'The existing medical condition must be a string.',
@@ -160,7 +160,7 @@ class SeniorCitizenController extends Controller
                 'medication_maintenance_remarks.string'    => 'The medication maintenance remarks must be a string.',
                 'senior_citizen_date_of_comeback.required' => 'The date of comeback field is required.',
                 'senior_citizen_date_of_comeback.date'     => 'The date of comeback must be a valid date.',
-                'senior_citizen_date_of_comeback.before_or_equal' => 'The date of comeback must be today or a future date.', // ← added
+                'senior_citizen_date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.', // ← added
             ]);
 
             $maintenanceMedicationData = $request->validate([
@@ -708,13 +708,13 @@ class SeniorCitizenController extends Controller
                 'edit_date_of_comeback'               =>  [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYears()->toDateString(),
                 ],
             ], [
                 'edit_prescribe_by_nurse.string'    => 'The prescribe by nurse field is required.',
                 'edit_date_of_comeback.required'    => 'The date of comeback field is required.',
                 'edit_date_of_comeback.date'        => 'The date of comeback field must be a valid date.',
-                'edit_date_of_comeback.before_or_equal' => 'The date of comeback must be past or only 5 years future date.',
+                'edit_date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
             ]);
 
             $seniorCitizenCase->update([
@@ -795,7 +795,7 @@ class SeniorCitizenController extends Controller
                 [
                     'required',
                     'date',
-                    'before_or_equal:' . now()->addYears(5)->toDateString(),
+                    'before_or_equal:' . now()->addYear()->toDateString(),
                 ],
             ], [
                 'new_patient_name.required'          => 'The patient name field is required.',
@@ -803,7 +803,7 @@ class SeniorCitizenController extends Controller
                 'add_prescribe_by_nurse.string'      => 'The prescribe by nurse field is required.',
                 'add_date_of_comeback.required'      => 'The date of comeback field is required.',
                 'add_date_of_comeback.date'          => 'The date of comeback field must be a valid date.',
-                'add_date_of_comeback.after_or_equal' => 'The date of comeback must be today or a future date.',
+                'add_date_of_comeback.before_or_equal' => 'The comeback date cannot be more than 1 year in the future.',
                 
             ]);
 
