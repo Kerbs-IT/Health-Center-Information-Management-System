@@ -4,11 +4,16 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Medicine;
+use App\Models\MedicineBatch;
 use App\Models\MedicineRequest;
 use App\Models\patients;
+use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class MedicineRequestComponent extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public $medicines;
     public $selectedMedicineId;
     public $quantity = 1;
@@ -16,6 +21,7 @@ class MedicineRequestComponent extends Component
 
     public $edit_id;
     public $deleteRequestMedicineId;
+
 
     // Who is the request for
     public $requestFor = 'self'; // 'self' or 'child'
@@ -29,6 +35,24 @@ class MedicineRequestComponent extends Component
     public $search = '';
     public $statusFilter = '';
     public $perPage = 10;
+
+
+    public function updatedSearch()
+    {
+        $this->resetPage('activePage');
+        $this->resetPage('historyPage');
+    }
+
+    public function updatedStatusFilter()
+    {
+        $this->resetPage('historyPage');
+    }
+
+    public function updatedPerPage()
+    {
+        $this->resetPage('activePage');
+        $this->resetPage('historyPage');
+    }
 
     protected $rules = [
         'selectedMedicineId' => 'required|exists:medicines,medicine_id',
@@ -50,14 +74,28 @@ class MedicineRequestComponent extends Component
 
     public function loadMedicines()
     {
+        // Load medicines and compute available stock (physical - reserved) per medicine.
+        // Only show medicines that actually have unreserved units ready to be requested.
         $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
             ->where('expiry_status', '!=', 'Expired')
             ->where(function ($query) {
                 $query->where('expiry_date', '>', now())
-                      ->orWhereNull('expiry_date');
+                    ->orWhereNull('expiry_date');
             })
-            ->get();
+            ->whereHas('batches') // has at least one valid batch
+            ->get()
+            ->map(function ($medicine) {
+                // Compute truly available stock = sum(quantity - reserved_quantity)
+                // across all non-expired, non-trashed batches
+                $medicine->available_stock = (int) MedicineBatch::where('medicine_id', $medicine->medicine_id)
+                    ->where('expiry_date', '>', now())
+                    ->sum(DB::raw('quantity - reserved_quantity'));
+
+                return $medicine;
+            })
+            ->filter(fn($medicine) => $medicine->available_stock > 0) // hide fully-reserved ones
+            ->values();
     }
 
     public function loadChildren()
@@ -87,17 +125,27 @@ class MedicineRequestComponent extends Component
 
     public function updatedRequestFor()
     {
-        // Reset child selection when toggling
         $this->reset(['selectedChildId', 'childSearch']);
         $this->resetErrorBag(['selectedChildId', 'childSearch']);
         $this->loadChildren();
     }
 
+    // ─── Helper: get available stock for a medicine ───────────────
+    // Reusable so both submitRequest and updateRequest use the same logic.
+
+    private function getAvailableStock(int $medicineId): int
+    {
+        return (int) MedicineBatch::where('medicine_id', $medicineId)
+            ->where('expiry_date', '>', now())
+            ->sum(DB::raw('quantity - reserved_quantity'));
+    }
+
+    // ─── Submit ───────────────────────────────────────────────────
+
     public function submitRequest()
     {
         $this->validate();
 
-        // Extra check: child must be selected when requestFor = child
         if ($this->requestFor === 'child' && !$this->selectedChildId) {
             $this->addError('selectedChildId', 'Please select a child to request medicine for.');
             return;
@@ -110,12 +158,17 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        if ($this->quantity > $medicine->stock) {
-            $this->addError('quantity', 'Requested quantity exceeds available stock.');
+        // ── Validate against AVAILABLE stock, not total stock ──
+        $available = $this->getAvailableStock($medicine->medicine_id);
+        if ($this->quantity > $available) {
+            $this->addError(
+                'quantity',
+                "Requested quantity exceeds available stock. Only {$available} unit(s) available (some may be reserved for other approved requests)."
+            );
             return;
         }
 
-        $user  = auth()->user();
+        $user = auth()->user();
 
         $requestData = [
             'medicine_id'        => $this->selectedMedicineId,
@@ -125,13 +178,11 @@ class MedicineRequestComponent extends Component
         ];
 
         if ($this->requestFor === 'child') {
-            // Verify child actually belongs to this guardian
             $child = patients::where('id', $this->selectedChildId)
                 ->where('guardian_user_id', $user->id)
                 ->firstOrFail();
             $requestData['patients_id'] = $child->id;
         } else {
-            // Self — use the user's own patient record or user_id
             $patient = $user->patient;
             if ($patient) {
                 $requestData['patients_id'] = $patient->id;
@@ -144,7 +195,10 @@ class MedicineRequestComponent extends Component
 
         $this->resetForm();
         $this->dispatch('medicineRequest-added');
+        $this->dispatch('close-medicineRequest');
     }
+
+    // ─── Edit ─────────────────────────────────────────────────────
 
     public function editRequest($requestId)
     {
@@ -165,7 +219,6 @@ class MedicineRequestComponent extends Component
         } elseif ($request->user_id === $user->id) {
             $authorized = true;
         } else {
-            // Check if it's one of the user's children
             $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
             if (in_array($request->patients_id, $childIds)) {
                 $authorized = true;
@@ -182,7 +235,6 @@ class MedicineRequestComponent extends Component
         $this->quantity           = $request->quantity_requested;
         $this->reason             = $request->reason;
 
-        // Determine if this was originally for self or child
         $childIds = patients::where('guardian_user_id', $user->id)->pluck('id')->toArray();
         if ($request->patients_id && in_array($request->patients_id, $childIds)) {
             $this->requestFor      = 'child';
@@ -191,6 +243,8 @@ class MedicineRequestComponent extends Component
             $this->requestFor = 'self';
         }
     }
+
+    // ─── Update ───────────────────────────────────────────────────
 
     public function updateRequest()
     {
@@ -205,7 +259,6 @@ class MedicineRequestComponent extends Component
         $user    = auth()->user();
         $patient = $user->patient;
 
-        // Authorization check
         $authorized = false;
         if ($patient && $request->patients_id === $patient->id) {
             $authorized = true;
@@ -235,8 +288,13 @@ class MedicineRequestComponent extends Component
             return;
         }
 
-        if ($this->quantity > $medicine->stock) {
-            $this->addError('quantity', 'Requested quantity exceeds available stock.');
+        // ── Validate against AVAILABLE stock, not total stock ──
+        $available = $this->getAvailableStock($medicine->medicine_id);
+        if ($this->quantity > $available) {
+            $this->addError(
+                'quantity',
+                "Requested quantity exceeds available stock. Only {$available} unit(s) available (some may be reserved for other approved requests)."
+            );
             return;
         }
 
@@ -268,6 +326,8 @@ class MedicineRequestComponent extends Component
         $this->dispatch('close-medicineRequest-modal');
         $this->resetForm();
     }
+
+    // ─── View / Delete ────────────────────────────────────────────
 
     public function viewDetails($requestId)
     {
@@ -330,6 +390,8 @@ class MedicineRequestComponent extends Component
         $this->dispatch('success-deleteMedicineRequestModal');
     }
 
+    // ─── Reset ────────────────────────────────────────────────────
+
     public function resetForm()
     {
         $this->reset([
@@ -348,6 +410,8 @@ class MedicineRequestComponent extends Component
         $this->loadMedicines();
         $this->loadChildren();
     }
+
+    // ─── Render ───────────────────────────────────────────────────
 
     public function render()
     {
@@ -373,13 +437,11 @@ class MedicineRequestComponent extends Component
                 );
             });
 
-        // Active: pending and ready_to_pickup only
         $activeRequests = (clone $baseQuery)
             ->whereIn('status', ['pending', 'ready_to_pickup'])
             ->latest()
             ->paginate($this->perPage, ['*'], 'activePage');
 
-        // History: completed and rejected
         $historyRequests = (clone $baseQuery)
             ->whereIn('status', ['completed', 'rejected'])
             ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
@@ -390,5 +452,5 @@ class MedicineRequestComponent extends Component
             ->layout('livewire.layouts.requestMedicineLayout', [
                 'page' => 'Medicine Request'
             ]);
-        }
+    }
 }

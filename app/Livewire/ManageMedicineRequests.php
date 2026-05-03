@@ -78,10 +78,12 @@ class ManageMedicineRequests extends Component
 
     public function loadMedicines(): void
     {
+        // Show medicines that have at least some available (non-reserved) stock
         $this->medicines = Medicine::where('stock_status', '!=', 'Out of Stock')
             ->where('stock', '>', 0)
             ->where('expiry_status', '!=', 'Expired')
             ->where(fn($q) => $q->where('expiry_date', '>', now())->orWhereNull('expiry_date'))
+            ->whereHas('batches')
             ->get();
     }
 
@@ -91,19 +93,31 @@ class ManageMedicineRequests extends Component
         $this->loadUsers();
     }
 
-    // ─── FIFO deduction ───────────────────────────────────────────
+    // ─── RESERVE (Approve step) ───────────────────────────────────
+    //
+    // Locks units into reserved_quantity on the batches in FIFO order.
+    // Does NOT decrement quantity — the medicine is still physically on the shelf.
+    // Returns a snapshot of which batches were reserved and how many.
 
-    private function deductFIFO(Medicine $medicine, int $qty): array
+    private function reserveFIFO(Medicine $medicine, int $qty): array
     {
-        $batches     = $medicine->batches; // sorted by expiry_date ASC, qty > 0
+        $batches = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+            ->where('expiry_date', '>', now())
+            ->whereRaw('quantity - reserved_quantity > 0')  // only batches with free units
+            ->orderBy('expiry_date', 'asc')
+            ->lockForUpdate()
+            ->get();
+
         $remaining   = $qty;
         $batchesUsed = [];
 
         foreach ($batches as $batch) {
             if ($remaining <= 0) break;
 
-            $take = min($batch->quantity, $remaining);
-            $batch->decrement('quantity', $take);
+            $available = $batch->quantity - $batch->reserved_quantity;
+            $take      = min($available, $remaining);
+
+            $batch->increment('reserved_quantity', $take);
 
             $batchesUsed[] = [
                 'batch_id'     => $batch->id,
@@ -115,13 +129,58 @@ class ManageMedicineRequests extends Component
             $remaining -= $take;
         }
 
-        $newStock = $medicine->stock - $qty;
-        $medicine->update([
-            'stock'        => $newStock,
-            'stock_status' => $this->determineStockStatus($newStock),
-        ]);
+        if ($remaining > 0) {
+            throw new \Exception("Insufficient available stock to reserve this request. ({$remaining} units could not be reserved)");
+        }
 
         return ['batches_used' => $batchesUsed];
+    }
+
+    // ─── DEDUCT (Dispense step) ───────────────────────────────────
+    //
+    // Walks the batches_snapshot saved at approval time and performs the
+    // actual quantity decrement + reserved_quantity decrement.
+    // This is the only place physical stock leaves the shelf.
+
+    private function deductReserved(MedicineRequest $request): void
+    {
+        $snapshot = $request->batches_snapshot ?? [];
+
+        foreach ($snapshot as $snap) {
+            $batch = MedicineBatch::lockForUpdate()->find($snap['batch_id']);
+
+            if (!$batch) {
+                // Batch was archived after approval — skip silently (stock was
+                // already removed when the batch was archived).
+                continue;
+            }
+
+            $qty = (int) $snap['qty_taken'];
+
+            // Decrement physical stock
+            $batch->decrement('quantity', $qty);
+            // Release the reservation lock
+            $batch->decrement('reserved_quantity', min($qty, $batch->reserved_quantity));
+        }
+    }
+
+    // ─── RELEASE RESERVATION (Cancel step) ───────────────────────
+    //
+    // Walks the snapshot and releases reserved_quantity only.
+    // Physical quantity is untouched — nothing ever left the shelf.
+
+    private function releaseReserved(MedicineRequest $request): void
+    {
+        $snapshot = $request->batches_snapshot ?? [];
+
+        foreach ($snapshot as $snap) {
+            $batch = MedicineBatch::lockForUpdate()->find($snap['batch_id']);
+
+            if (!$batch) continue;
+
+            $qty = (int) $snap['qty_taken'];
+            $batch->decrement('reserved_quantity', min($qty, $batch->reserved_quantity));
+        }
     }
 
     // ─── Approve ─────────────────────────────────────────────────
@@ -148,18 +207,19 @@ class ManageMedicineRequests extends Component
             $medicine  = $request->medicine;
             $qtyNeeded = $request->quantity_requested;
 
-            if (!$medicine || $medicine->stock < $qtyNeeded) {
-                session()->flash('error', 'Insufficient stock to approve this request.');
+            // Check available (non-reserved) batch stock
+            $availableBatchStock = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+                ->where('expiry_date', '>', now())
+                ->whereRaw('quantity - reserved_quantity > 0')
+                ->sum(DB::raw('quantity - reserved_quantity'));
+
+            if ($availableBatchStock < $qtyNeeded) {
+                session()->flash('error', "Insufficient available stock. Only {$availableBatchStock} unreserved units available.");
                 return;
             }
 
-            $totalAvailable = $medicine->batches->sum('quantity');
-            if ($totalAvailable < $qtyNeeded) {
-                session()->flash('error', "Insufficient batch stock. Only {$totalAvailable} available.");
-                return;
-            }
-
-            $fifo = $this->deductFIFO($medicine, $qtyNeeded);
+            // Reserve — no physical deduction yet
+            $snapshot = $this->reserveFIFO($medicine, $qtyNeeded);
 
             $request->update([
                 'status'            => 'ready_to_pickup',
@@ -169,7 +229,7 @@ class ManageMedicineRequests extends Component
                 'ready_at'          => now(),
                 'reserved_at'       => now(),
                 'reserved_quantity' => $qtyNeeded,
-                'batches_snapshot'  => $fifo['batches_used'], // cast handles encoding
+                'batches_snapshot'  => $snapshot['batches_used'],
             ]);
 
             MedicineRequestLog::create([
@@ -186,7 +246,8 @@ class ManageMedicineRequests extends Component
         });
 
         $this->dispatch('approve-modal');
-        session()->flash('message', 'Request approved and stock reserved. Patient notified to pick up.');
+        // session()->flash('message', 'Request approved and stock reserved. Patient notified to pick up.');
+        $this->dispatch('swal-success', message: 'Request approved and stock reserved. Patient notified to pick up.');
     }
 
     // ─── Dispense ────────────────────────────────────────────────
@@ -205,11 +266,24 @@ class ManageMedicineRequests extends Component
                 return;
             }
 
-            // ✅ NEW: block dispense if medicine is archived
             if ($request->medicine?->trashed()) {
                 session()->flash('error', 'Cannot dispense — medicine has been archived. Please cancel this request instead.');
                 return;
             }
+
+            // ── Actual physical deduction happens HERE, not at approval ──
+            $this->deductReserved($request);
+
+            // Sync medicine.stock = sum of all valid batch quantities
+            $medicine  = $request->medicine;
+            $newStock  = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+                ->where('expiry_date', '>', now())
+                ->sum('quantity');
+
+            $medicine->update([
+                'stock'        => $newStock,
+                'stock_status' => $this->determineStockStatus($newStock),
+            ]);
 
             $request->update([
                 'status'          => 'completed',
@@ -220,10 +294,10 @@ class ManageMedicineRequests extends Component
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $request->requester_name,
-                'medicine_name'       => $request->medicine->medicine_name,
-                'dosage'              => $request->medicine->dosage,
+                'medicine_name'       => $medicine->medicine_name,
+                'dosage'              => $medicine->dosage,
                 'quantity'            => $request->reserved_quantity ?? $request->quantity_requested,
-                'batches_used'        => $request->batches_snapshot ?? [], // reuse snapshot
+                'batches_used'        => $request->batches_snapshot ?? [],
                 'action'              => 'dispensed',
                 'performed_by_id'     => auth()->id(),
                 'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
@@ -231,7 +305,8 @@ class ManageMedicineRequests extends Component
             ]);
         });
 
-        session()->flash('message', 'Medicine dispensed successfully.');
+        // session()->flash('message', 'Medicine dispensed successfully.');
+        $this->dispatch('swal-success', message: 'Medicine dispensed successfully.');
     }
 
     // ─── Cancel ready request ─────────────────────────────────────
@@ -240,7 +315,7 @@ class ManageMedicineRequests extends Component
     {
         DB::transaction(function () use ($requestId) {
             $request = MedicineRequest::with([
-                    'medicine' => fn($q) => $q->withTrashed()->with('batches'),
+                    'medicine' => fn($q) => $q->withTrashed(),
                 ])
                 ->lockForUpdate()
                 ->findOrFail($requestId);
@@ -250,37 +325,27 @@ class ManageMedicineRequests extends Component
                 return;
             }
 
-            $medicine        = $request->medicine;
-            $qtyToRestore    = $request->reserved_quantity ?? $request->quantity_requested;
-            // ✅ cast handles decoding — no json_decode() needed
-            $batchesSnapshot = $request->batches_snapshot ?? [];
+            // Release the reservation — physical stock was never decremented
+            $this->releaseReserved($request);
 
-            foreach ($batchesSnapshot as $snap) {
-                $batch = MedicineBatch::find($snap['batch_id']);
-                if ($batch) {
-                    $batch->increment('quantity', $snap['qty_taken']);
-                }
-            }
-
-            if ($medicine && !$medicine->trashed()) {
-                $newStock = $medicine->stock + $qtyToRestore;
-                $medicine->update([
-                    'stock'        => $newStock,
-                    'stock_status' => $this->determineStockStatus($newStock),
-                ]);
-            }
+            // medicine.stock does NOT need adjusting — quantity was never touched
+            // We only need to reflect that reserved units are now free again.
+            // However, if you display available_stock in the UI you may want to
+            // dispatch a refresh event here.
 
             $request->update([
                 'status'       => 'cancelled',
                 'cancelled_at' => now(),
             ]);
 
+            $medicine = $request->medicine;
+
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $request->requester_name,
                 'medicine_name'       => $medicine->medicine_name ?? 'Unknown',
                 'dosage'              => $medicine->dosage ?? 'N/A',
-                'quantity'            => $qtyToRestore,
+                'quantity'            => $request->reserved_quantity ?? $request->quantity_requested,
                 'action'              => 'cancelled',
                 'performed_by_id'     => auth()->id(),
                 'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
@@ -288,7 +353,8 @@ class ManageMedicineRequests extends Component
             ]);
         });
 
-        session()->flash('message', 'Request cancelled and stock restored successfully.');
+        // session()->flash('message', 'Request cancelled and reservation released.');
+        $this->dispatch('swal-warning', message: 'Request cancelled and reservation released.');
     }
 
     // ─── Reject ───────────────────────────────────────────────────
@@ -320,10 +386,59 @@ class ManageMedicineRequests extends Component
             ]);
         });
 
-        session()->flash('message', 'Medicine request rejected.');
+        // session()->flash('message', 'Medicine request rejected.');
+        $this->dispatch('swal-error', message: 'Medicine request rejected.');
     }
 
     // ─── Walk-in ──────────────────────────────────────────────────
+    // Walk-ins are approved + dispensed in a single step, so we use
+    // deductFIFO directly (reserve then immediately deduct).
+
+    private function deductFIFO(Medicine $medicine, int $qty): array
+    {
+        $batches = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+            ->where('quantity', '>', 0)
+            ->where('expiry_date', '>', now())
+            ->orderBy('expiry_date', 'asc')
+            ->lockForUpdate()
+            ->get();
+
+        $remaining   = $qty;
+        $batchesUsed = [];
+
+        foreach ($batches as $batch) {
+            if ($remaining <= 0) break;
+
+            $take = min($batch->quantity - $batch->reserved_quantity, $remaining);
+            if ($take <= 0) continue;
+
+            $batch->decrement('quantity', $take);
+
+            $batchesUsed[] = [
+                'batch_id'     => $batch->id,
+                'batch_number' => $batch->batch_number,
+                'expiry_date'  => $batch->expiry_date->format('Y-m-d'),
+                'qty_taken'    => $take,
+            ];
+
+            $remaining -= $take;
+        }
+
+        if ($remaining > 0) {
+            throw new \Exception("Insufficient non-reserved, non-expired stock to fulfill this walk-in.");
+        }
+
+        $newStock = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+            ->where('expiry_date', '>', now())
+            ->sum('quantity');
+
+        $medicine->update([
+            'stock'        => $newStock,
+            'stock_status' => $this->determineStockStatus($newStock),
+        ]);
+
+        return ['batches_used' => $batchesUsed];
+    }
 
     public function createWalkIn(): void
     {
@@ -350,13 +465,13 @@ class ManageMedicineRequests extends Component
             $medicine  = Medicine::with('batches')->lockForUpdate()->findOrFail($this->walkInMedicineId);
             $qtyNeeded = (int) $this->walkInQuantity;
 
-            if ($medicine->stock < $qtyNeeded) {
-                throw new \Exception("Insufficient stock. Only {$medicine->stock} available.");
-            }
+            // Check unreserved available stock
+            $availableStock = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+                ->where('expiry_date', '>', now())
+                ->sum(DB::raw('quantity - reserved_quantity'));
 
-            $totalAvailable = $medicine->batches->sum('quantity');
-            if ($totalAvailable < $qtyNeeded) {
-                throw new \Exception("Insufficient batch stock. Only {$totalAvailable} available.");
+            if ($availableStock < $qtyNeeded) {
+                throw new \Exception("Insufficient available stock. Only {$availableStock} unreserved units available.");
             }
 
             $isChild     = str_starts_with((string) $this->walkInUserId, 'child:');
@@ -399,11 +514,9 @@ class ManageMedicineRequests extends Component
                 $requestData[$patient ? 'patients_id' : 'user_id'] = $patient ? $patient->id : $user->id;
             }
 
-            // ✅ FIFO deduction — $fifo resolved before log creation
             $fifo    = $this->deductFIFO($medicine, $qtyNeeded);
             $request = MedicineRequest::create($requestData);
 
-            // ✅ Use $patientName, $medicine, $qtyNeeded, $fifo — NOT $request->*
             MedicineRequestLog::create([
                 'medicine_request_id' => $request->id,
                 'patient_name'        => $patientName,
@@ -420,7 +533,7 @@ class ManageMedicineRequests extends Component
 
         $this->resetWalkInForm();
         $this->dispatch('close-walkin-modal');
-        session()->flash('message', 'Walk-in medicine dispensed successfully.');
+        // session()->flash('message', 'Walk-in medicine dispensed successfully.');
     }
 
     protected function validateWalkInStock(): bool
@@ -431,8 +544,13 @@ class ManageMedicineRequests extends Component
                 $this->addError('walkInMedicineId', 'Selected medicine not found.');
                 return false;
             }
-            if ($this->walkInQuantity > $medicine->stock) {
-                $this->addError('walkInQuantity', "Quantity exceeds available stock ({$medicine->stock} available).");
+
+            $available = MedicineBatch::where('medicine_id', $medicine->medicine_id)
+                ->where('expiry_date', '>', now())
+                ->sum(DB::raw('quantity - reserved_quantity'));
+
+            if ($this->walkInQuantity > $available) {
+                $this->addError('walkInQuantity', "Quantity exceeds available stock ({$available} unreserved units available).");
                 return false;
             }
         }
@@ -513,11 +631,11 @@ class ManageMedicineRequests extends Component
                 $q->where(function ($query) {
                     $query->whereHas('patients', fn($p) =>
                             $p->where('first_name', 'like', "%{$this->search}%")
-                              ->orWhere('last_name',  'like', "%{$this->search}%")
-                              ->orWhereRaw(
-                                  "CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name, ' ', IFNULL(suffix, '')) LIKE ?",
-                                  ["%{$this->search}%"]
-                              )
+                            ->orWhere('last_name',  'like', "%{$this->search}%")
+                            ->orWhereRaw(
+                                "CONCAT(first_name, ' ', IFNULL(middle_initial, ''), ' ', last_name, ' ', IFNULL(suffix, '')) LIKE ?",
+                                ["%{$this->search}%"]
+                            )
                         )
                         ->orWhereHas('user', fn($u) =>
                             $u->whereRaw(

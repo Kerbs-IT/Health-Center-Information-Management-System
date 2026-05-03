@@ -115,31 +115,58 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%">#</th>
-                <th style="width: 25%">Medicine Name</th>
-                <th style="width: 15%">Category</th>
-                <th style="width: 15%">Dosage</th>
-                <th style="width: 10%">Stock</th>
-                <th style="width: 15%">Status</th>
-                <th style="width: 15%">Expiry Date</th>
+                <th style="width: 4%">#</th>
+                <th style="width: 22%">Medicine Name</th>
+                <th style="width: 13%">Category</th>
+                <th style="width: 12%">Dosage</th>
+                <th style="width: 7%">Stock</th>
+                <th style="width: 13%">Status</th>
+                <th style="width: 16%">Current Batch Expiry</th>
             </tr>
         </thead>
         <tbody>
             @foreach($medicines as $index => $medicine)
+            @php
+                $fifo      = $medicine->batches->first();
+                $lastBatch = $medicine->allBatches->last();
+
+                // Available stock
+                $available   = $medicine->available_stock;
+
+                // Stock status based on available stock
+                $stockStatus = $available <= 0 ? 'Out of Stock'
+                            : ($available <= 10 ? 'Low Stock' : 'In Stock');
+                $stockClass  = $available <= 0 ? 'badge-danger'
+                            : ($available <= 10 ? 'badge-warning' : 'badge-success');
+
+                // Expiry status based on last batch
+                $expiryStatus = 'No Batches';
+                $expiryClass  = '';
+                if ($lastBatch) {
+                    $days         = now()->diffInDays($lastBatch->expiry_date, false);
+                    $expiryStatus = $days < 0 ? 'Expired' : ($days <= 30 ? 'Expiring Soon' : 'Valid');
+                    $expiryClass  = $days < 0 ? 'badge-danger' : ($days <= 30 ? 'badge-warning' : 'badge-success');
+                }
+            @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $medicine->medicine_name }}</td>
                 <td>{{ $medicine->category_name }}</td>
                 <td>{{ $medicine->dosage }}</td>
-                <td>{{ $medicine->stock }}</td>
+                <td>{{ $available }}</td>
                 <td>
-                    <span class="badge badge-{{ $medicine->stock_status == 'In Stock' ? 'success' : ($medicine->stock_status == 'Low Stock' ? 'warning' : 'danger') }}">
-                        {{ $medicine->stock_status }}
-                    </span>
+                    <span class="badge {{ $stockClass }}">{{ $stockStatus }}</span>
                 </td>
-                <td>{{ \Carbon\Carbon::parse($medicine->expiry_date)->format('M d, Y') }}</td>
+                <td>
+                    @if($fifo)
+                        {{ $fifo->expiry_date->format('M d, Y') }}
+                        <!-- <br><small style="color:#666; font-size:8px;">{{ $fifo->batch_number }}</small> -->
+                    @else
+                        N/A
+                    @endif
+                </td>
             </tr>
-            @endforeach
+@endforeach
         </tbody>
     </table>
 

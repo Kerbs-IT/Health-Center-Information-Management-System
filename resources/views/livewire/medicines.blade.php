@@ -60,7 +60,7 @@
                 <a href="{{ route('medicines.download-csv') }}" target="_blank" class="btn btn-success" style="background-color: #217346; border-color: #217346;">
                     <i class="fa-solid fa-file-csv pe-1"></i>Download CSV
                 </a>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMedicineModal">
+                <button class="btn btn-success" id="openAddMedicineBtn">
                     <i class="fa-solid fa-plus pe-1"></i>Add Medicine
                 </button>
             </div>
@@ -137,22 +137,22 @@
                             {{-- tbody row, after dosage <td> --}}
                             <td class="text-center">
                                 @php $fifo = $medicine->fifo_batch; @endphp
-                                {{ $medicine->stock }}
+                                {{ $medicine->available_stock }}
                                 <!-- <small class="d-block text-muted">{{ $medicine->stock_status }}</small> -->
                             </td>
 
                             <td class="text-center">
-                                @if($fifo)
+                                @php $lastBatch = $medicine->last_batch; @endphp
+                                @if($lastBatch)
                                     @php
-                                        $statusClass = match($fifo->expiry_status) {
+                                        $statusClass = match($lastBatch->expiry_status) {
                                             'Valid'         => 'bg-success',
                                             'Expiring Soon' => 'bg-warning text-dark',
                                             'Expired'       => 'bg-danger',
                                             default         => 'bg-secondary',
                                         };
                                     @endphp
-                                    <span class="badge {{ $statusClass }}">{{ $fifo->expiry_status }}</span>
-                                    <!-- <small class="d-block text-muted">{{ $fifo->expiry_date->format('M d, Y') }}</small> -->
+                                    <span class="badge {{ $statusClass }}">{{ $lastBatch->expiry_status }}</span>
                                 @else
                                     <span class="badge bg-secondary">No Batches</span>
                                 @endif
@@ -228,12 +228,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Dosage <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" wire:model="dosage" placeholder="e.g., 500mg, 10ml">
                                 @error('dosage') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Stock <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" wire:model="stock" min="1" max="99999" step="1"
                                        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,5)"
@@ -243,24 +243,24 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" min="{{ now()->toDateString() }}" wire:model="expiry_date">
-                                @error('expiry_date') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                        </div>
-                        {{-- Batch Info --}}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Batch Number</label>
                                 <input type="text" class="form-control" wire:model="batch_number"
                                     placeholder="e.g., LOT-2025-001 (auto-generated if blank)">
                                 @error('batch_number') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
+                        </div>
+                        {{-- Batch Info --}}
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Manufactured Date</label>
                                 <input type="date" class="form-control" wire:model="manufactured_date"
                                     max="{{ now()->toDateString() }}">
                                 @error('manufactured_date') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" min="{{ now()->toDateString() }}" wire:model="expiry_date">
+                                @error('expiry_date') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                         </div>
                         {{-- Age Range --}}
@@ -309,7 +309,7 @@
     {{-- ═══════════════════════════════════════════════════════════ --}}
     {{-- EDIT MEDICINE MODAL                                         --}}
     {{-- ═══════════════════════════════════════════════════════════ --}}
-    <div wire:ignore.self class="modal fade" id="editMedicineModal" tabindex="-1" aria-hidden="true">
+    <div  class="modal fade" id="editMedicineModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <div class="modal-header bg-success text-white">
@@ -318,71 +318,64 @@
                 </div>
                 <form wire:submit.prevent="updateMedicineData">
                     @csrf
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Medicine Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" wire:model="medicine_name">
-                                @error('medicine_name') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Category <span class="text-danger">*</span></label>
-                                <select class="form-select" wire:model="category_id">
-                                    <option value="">-- Select Category --</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Medicine Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" wire:model="medicine_name">
+                            @error('medicine_name') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Dosage <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" wire:model="dosage">
-                                @error('dosage') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Stock <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" wire:model="stock">
-                                @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" min="{{ now()->toDateString() }}" wire:model="expiry_date">
-                                @error('expiry_date') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                        </div>
-                        <div class="border-top pt-3 mt-2">
-                            <h6 class="mb-3"><i class="fa-solid fa-user-group me-2"></i>Age Range (Optional)</h6>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Minimum Age</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" wire:model.live="min_age_value" min="0">
-                                        <select class="form-select" style="max-width:120px" wire:model.live="min_age_unit">
-                                            <option value="months">Months</option>
-                                            <option value="years">Years</option>
-                                        </select>
-                                    </div>
-                                    @error('min_age_value') <small class="text-danger d-block">{{ $message }}</small> @enderror
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Maximum Age</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" wire:model.live="max_age_value" min="0">
-                                        <select class="form-select" style="max-width:120px" wire:model.live="max_age_unit">
-                                            <option value="months">Months</option>
-                                            <option value="years">Years</option>
-                                        </select>
-                                    </div>
-                                    @error('max_age_value') <small class="text-danger d-block">{{ $message }}</small> @enderror
-                                </div>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-select" wire:model="category_id">
+                                <option value="">-- Select Category --</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Dosage <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" wire:model="dosage">
+                            @error('dosage') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Age Range --}}
+                    <div class="border-top pt-3 mt-2">
+                        <h6 class="mb-3"><i class="fa-solid fa-user-group me-2"></i>Age Range (Optional)</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Minimum Age</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" wire:model.live="min_age_value" min="0">
+                                    <select class="form-select" style="max-width:120px" wire:model.live="min_age_unit">
+                                        <option value="months">Months</option>
+                                        <option value="years">Years</option>
+                                    </select>
+                                </div>
+                                @error('min_age_value') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maximum Age</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" wire:model.live="max_age_value" min="0">
+                                    <select class="form-select" style="max-width:120px" wire:model.live="max_age_unit">
+                                        <option value="months">Months</option>
+                                        <option value="years">Years</option>
+                                    </select>
+                                </div>
+                                @error('max_age_value') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                            </div>
+                        </div>
+                        <div class="alert alert-info py-2">
+                            <small><strong>Quick Guide:</strong> Use months for infants/toddlers (0–24 months), years for older children and adults (2+ years)</small>
+                        </div>
+                    </div>
+                </div>
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-success">Update Medicine</button>
@@ -392,19 +385,4 @@
         </div>
     </div>
 
-    @push('scripts')
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('show-editMedicine-modal', () => {
-                const modal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
-                modal.show();
-            });
-            Livewire.on('close-editMedicine-modal', () => {
-                const el = document.getElementById('editMedicineModal');
-                const modal = bootstrap.Modal.getInstance(el);
-                if (modal) modal.hide();
-            });
-        });
-    </script>
-    @endpush
 </div>

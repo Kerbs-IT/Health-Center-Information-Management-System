@@ -1,125 +1,150 @@
 <?php
 
-    namespace App\Livewire;
+namespace App\Livewire;
 
-    use Livewire\Component;
-    use App\Models\Medicine;
-    use App\Models\MedicineBatch;
-    use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use App\Models\Medicine;
+use App\Models\MedicineBatch;
+use Illuminate\Support\Facades\DB;
 
-    class MedicineBatches extends Component
+class MedicineBatches extends Component
+{
+    public Medicine $medicine;
+
+    // ─── Add batch fields ─────────────────────────────────────────
+    public $newBatchNumber       = '';
+    public $newBatchQty          = '';
+    public $newBatchExpiry       = '';
+    public $newBatchManufactured = '';
+
+    // ─── Edit batch fields ────────────────────────────────────────
+    public $editBatchId           = null;
+    public $editBatchNumber       = '';
+    public $editBatchQty          = '';
+    public $editBatchExpiry       = '';
+    public $editBatchManufactured = '';
+
+    // ─── Archive state ────────────────────────────────────────────
+    public $archiveBatchId = null;
+    public $showArchived   = false;
+
+    // ─── Mount ───────────────────────────────────────────────────
+
+    public function mount(Medicine $medicine): void
     {
-        public Medicine $medicine;
+        $this->medicine = $medicine;
+    }
 
-        // ─── Add batch fields ─────────────────────────────────────────
-        public $newBatchNumber      = '';
-        public $newBatchQty         = '';
-        public $newBatchExpiry      = '';
-        public $newBatchManufactured= '';
+    // ─── Expiry / stock helpers ───────────────────────────────────
 
-        // ─── Edit batch fields ────────────────────────────────────────
-        public $editBatchId         = null;
-        public $editBatchNumber     = '';
-        public $editBatchQty        = '';
-        public $editBatchExpiry     = '';
-        public $editBatchManufactured = '';
+    private function determineExpiryStatus($expiry_date): string
+    {
+        $days = now()->diffInDays($expiry_date, false);
+        if ($days <= 0)  return 'Expired';
+        if ($days <= 30) return 'Expiring Soon';
+        return 'Valid';
+    }
 
-        // ─── Archive state ────────────────────────────────────────────
-        public $archiveBatchId      = null;
-        public $showArchived        = false;
+    private function determineStockStatus($stock): string
+    {
+        if ($stock <= 0)  return 'Out of Stock';
+        if ($stock <= 10) return 'Low Stock';
+        return 'In Stock';
+    }
 
-        // ─── Mount ───────────────────────────────────────────────────
+    private function syncMedicineExpiryFromBatches(): void
+    {
+        $allActiveBatches = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)->get();
 
-        public function mount(Medicine $medicine): void
-        {
-            $this->medicine      = $medicine;
+        if ($allActiveBatches->isEmpty()) {
+            $this->medicine->update([
+                'expiry_date'   => null,
+                'expiry_status' => 'N/A',
+                'stock'         => 0,
+                'stock_status'  => 'Out of Stock',
+            ]);
+            return;
         }
 
-        // ─── Expiry status helper ─────────────────────────────────────
+        $latestBatch  = $allActiveBatches->sortByDesc('expiry_date')->first();
+        $latestExpiry = $latestBatch->expiry_date;
+        $status       = $this->determineExpiryStatus($latestExpiry);
 
-        private function determineExpiryStatus($expiry_date): string
-        {
-            $days = now()->diffInDays($expiry_date, false);
-            if ($days < 0)   return 'Expired';
-            if ($days <= 30) return 'Expiring Soon';
-            return 'Valid';
-        }
+        // Stock = sum of physical quantities from valid batches only
+        $validStock = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
+            ->where('expiry_date', '>', now())
+            ->where('quantity', '>', 0)
+            ->sum('quantity');
 
-        private function determineStockStatus($stock): string
-        {
-            if ($stock <= 0)  return 'Out of Stock';
-            if ($stock <= 10) return 'Low Stock';
-            return 'In Stock';
-        }
+        $this->medicine->update([
+            'expiry_date'   => $latestExpiry,
+            'expiry_status' => $status,
+            'stock'         => $validStock,
+            'stock_status'  => $this->determineStockStatus($validStock),
+        ]);
+    }
 
-        // ─── Add batch ────────────────────────────────────────────────
+    // ─── Add batch ────────────────────────────────────────────────
 
-        public function addBatch(): void
-        {
-            $this->validate([
-                'newBatchQty'         => 'required|integer|min:1',
-                'newBatchExpiry'      => 'required|date|after:today',
-                'newBatchNumber'      => 'nullable|string|max:100',
-                'newBatchManufactured'=> 'nullable|date',
-            ], [
-                'newBatchQty.required'    => 'Quantity is required.',
-                'newBatchExpiry.required' => 'Expiry date is required.',
-                'newBatchExpiry.after'    => 'Expiry date must be in the future.',
+    public function addBatch(): void
+    {
+        $this->validate([
+            'newBatchQty'         => 'required|integer|min:1',
+            'newBatchExpiry'      => 'required|date|after:today',
+            'newBatchNumber'      => 'nullable|string|max:100',
+            'newBatchManufactured'=> 'nullable|date',
+        ], [
+            'newBatchQty.required'    => 'Quantity is required.',
+            'newBatchExpiry.required' => 'Expiry date is required.',
+            'newBatchExpiry.after'    => 'Expiry date must be in the future.',
+        ]);
+
+        $expiryStatus = $this->determineExpiryStatus($this->newBatchExpiry);
+
+        DB::transaction(function () use ($expiryStatus) {
+            MedicineBatch::create([
+                'medicine_id'       => $this->medicine->medicine_id,
+                'batch_number'      => $this->newBatchNumber ?: 'BATCH-' . strtoupper(uniqid()),
+                'quantity'          => (int) $this->newBatchQty,
+                'initial_quantity'  => (int) $this->newBatchQty,
+                'reserved_quantity' => 0,
+                'manufactured_date' => $this->newBatchManufactured ?: null,
+                'expiry_date'       => $this->newBatchExpiry,
+                'expiry_status'     => $expiryStatus,
             ]);
 
-            $expiryStatus = $this->determineExpiryStatus($this->newBatchExpiry);
+            $this->syncMedicineExpiryFromBatches();
+            $this->medicine->refresh();
+        });
 
-            DB::transaction(function () use ($expiryStatus) {
-                MedicineBatch::create([
-                    'medicine_id'       => $this->medicine->medicine_id,
-                    'batch_number'      => $this->newBatchNumber ?: 'BATCH-' . strtoupper(uniqid()),
-                    'quantity'          => (int) $this->newBatchQty,
-                    'initial_quantity'  => (int) $this->newBatchQty,
-                    'manufactured_date' => $this->newBatchManufactured ?: null,
-                    'expiry_date'       => $this->newBatchExpiry,
-                    'expiry_status'     => $expiryStatus,
-                ]);
+        $this->reset(['newBatchNumber', 'newBatchQty', 'newBatchExpiry', 'newBatchManufactured']);
+        session()->flash('batch_success', 'Batch added successfully.');
+    }
 
-                // Update parent medicine aggregate stock
-                $newStock = $this->medicine->stock + (int) $this->newBatchQty;
-                $this->medicine->update([
-                    'stock'         => $newStock,
-                    'stock_status'  => $this->determineStockStatus($newStock),
-                    'expiry_date'   => $this->newBatchExpiry,
-                    'expiry_status' => $expiryStatus,
-                ]);
+    // ─── Edit batch ───────────────────────────────────────────────
 
-                // Refresh medicine model
-                $this->medicine->refresh();
-            });
+    public function editBatch($batchId): void
+    {
+        $batch = MedicineBatch::findOrFail($batchId);
 
-            $this->reset(['newBatchNumber', 'newBatchQty', 'newBatchExpiry', 'newBatchManufactured']);
+        $this->editBatchId           = $batchId;
+        $this->editBatchNumber       = $batch->batch_number;
+        $this->editBatchQty          = $batch->quantity;
+        $this->editBatchExpiry       = $batch->expiry_date->format('Y-m-d');
+        $this->editBatchManufactured = $batch->manufactured_date
+            ? $batch->manufactured_date->format('Y-m-d')
+            : '';
 
-            session()->flash('batch_success', 'Batch added successfully.');
-        }
-
-        // ─── Edit batch ───────────────────────────────────────────────
-
-        public function editBatch($batchId): void
-        {
-            $batch = MedicineBatch::findOrFail($batchId);
-
-            $this->editBatchId           = $batchId;
-            $this->editBatchNumber       = $batch->batch_number;
-            $this->editBatchQty          = $batch->quantity;
-            $this->editBatchExpiry       = $batch->expiry_date->format('Y-m-d');
-            $this->editBatchManufactured = $batch->manufactured_date
-                ? $batch->manufactured_date->format('Y-m-d')
-                : '';
-
-            $this->dispatch('show-edit-batch-modal');
-        }
+        $this->dispatch('show-edit-batch-modal');
+    }
 
     public function updateBatch(): void
     {
+        $batch = MedicineBatch::findOrFail($this->editBatchId);
+
         $this->validate([
             'editBatchNumber'       => 'nullable|string|max:100',
-            'editBatchQty'          => 'required|integer|min:0',
+            'editBatchQty'          => ['required', 'integer', 'min:0'],
             'editBatchExpiry'       => 'required|date',
             'editBatchManufactured' => 'nullable|date',
         ], [
@@ -127,30 +152,32 @@
             'editBatchExpiry.required' => 'Expiry date is required.',
         ]);
 
-        $batch        = MedicineBatch::findOrFail($this->editBatchId);
+        $newQty = (int) $this->editBatchQty;
+
+        // ── RESERVATION GUARD ──────────────────────────────────────
+        // Prevent reducing quantity below what is already reserved by
+        // approved-but-not-yet-dispensed requests.
+        if ($newQty < $batch->reserved_quantity) {
+            $this->addError(
+                'editBatchQty',
+                "Cannot set quantity below the reserved amount ({$batch->reserved_quantity} units are currently reserved for pending dispensing)."
+            );
+            return;
+        }
+
         $oldQty       = $batch->quantity;
         $expiryStatus = $this->determineExpiryStatus($this->editBatchExpiry);
-        $newQty       = (int) $this->editBatchQty;
 
         DB::transaction(function () use ($batch, $oldQty, $expiryStatus, $newQty) {
             $batch->update([
                 'batch_number'      => $this->editBatchNumber ?: $batch->batch_number,
                 'quantity'          => $newQty,
-                // initial_quantity is intentionally NOT updated here.
-                // It is set once on creation and represents the original
-                // stock received. Editing remaining qty must not alter it.
                 'manufactured_date' => $this->editBatchManufactured ?: null,
                 'expiry_date'       => $this->editBatchExpiry,
                 'expiry_status'     => $expiryStatus,
             ]);
 
-            $qtyDiff  = $newQty - $oldQty;
-            $newStock = max(0, $this->medicine->stock + $qtyDiff);
-            $this->medicine->update([
-                'stock'        => $newStock,
-                'stock_status' => $this->determineStockStatus($newStock),
-            ]);
-
+            $this->syncMedicineExpiryFromBatches();
             $this->medicine->refresh();
         });
 
@@ -159,95 +186,90 @@
         session()->flash('batch_success', 'Batch updated successfully.');
     }
 
-        public function cancelEdit(): void
-        {
-            $this->resetEditFields();
-            $this->dispatch('close-edit-batch-modal');
-        }
+    public function cancelEdit(): void
+    {
+        $this->resetEditFields();
+        $this->dispatch('close-edit-batch-modal');
+    }
 
-        private function resetEditFields(): void
-        {
-            $this->editBatchId           = null;
-            $this->editBatchNumber       = '';
-            $this->editBatchQty          = '';
-            $this->editBatchExpiry       = '';
-            $this->editBatchManufactured = '';
-            $this->resetErrorBag();
-        }
+    private function resetEditFields(): void
+    {
+        $this->editBatchId           = null;
+        $this->editBatchNumber       = '';
+        $this->editBatchQty          = '';
+        $this->editBatchExpiry       = '';
+        $this->editBatchManufactured = '';
+        $this->resetErrorBag();
+    }
 
-        // ─── Archive / restore batch ──────────────────────────────────
+    // ─── Archive / restore batch ──────────────────────────────────
 
-        public function confirmArchiveBatch($batchId): void
-        {
-            $this->archiveBatchId = $batchId;
-            $this->dispatch('show-archive-batch-confirmation');
-        }
+    public function confirmArchiveBatch($batchId): void
+    {
+        $this->archiveBatchId = $batchId;
+        $this->dispatch('show-archive-batch-confirmation');
+    }
 
-        public function archiveBatch(): void
-        {
-            $batch    = MedicineBatch::findOrFail($this->archiveBatchId);
-            $archivedQty = $batch->quantity;
+    public function archiveBatch(): void
+    {
+        $batch = MedicineBatch::findOrFail($this->archiveBatchId);
 
-            DB::transaction(function () use ($batch, $archivedQty) {
-                $batch->delete();
-
-                // Deduct archived qty from medicine stock
-                $newStock = max(0, $this->medicine->stock - $archivedQty);
-                $this->medicine->update([
-                    'stock'        => $newStock,
-                    'stock_status' => $this->determineStockStatus($newStock),
-                ]);
-
-                $this->medicine->refresh();
-            });
-
+        // Warn if this batch has reserved units — archiving removes the physical
+        // stock so any pending reservations on it would be unfulfillable.
+        // In a real system you'd want to cancel those requests first.
+        if ($batch->reserved_quantity > 0) {
+            session()->flash('batch_error', "Warning: this batch has {$batch->reserved_quantity} units reserved for approved requests. Those requests may fail to dispense. Cancel or dispense them before archiving.");
             $this->archiveBatchId = null;
-            session()->flash('batch_success', 'Batch archived successfully.');
+            return;
         }
 
-        public function restoreBatch($batchId): void
-        {
-            $batch = MedicineBatch::withTrashed()->findOrFail($batchId);
+        DB::transaction(function () use ($batch) {
+            $batch->delete();
+            $this->medicine->refresh();
+        });
 
-            DB::transaction(function () use ($batch) {
-                $batch->restore();
+        $this->syncMedicineExpiryFromBatches();
+        $this->medicine->refresh();
 
-                $newStock = $this->medicine->stock + $batch->quantity;
-                $this->medicine->update([
-                    'stock'        => $newStock,
-                    'stock_status' => $this->determineStockStatus($newStock),
-                ]);
-
-                $this->medicine->refresh();
-            });
-
-            session()->flash('batch_success', 'Batch restored successfully.');
-        }
-
-        public function toggleArchived(): void
-        {
-            $this->showArchived = !$this->showArchived;
-        }
-
-        // ─── Render ───────────────────────────────────────────────────
-
-public function render()
-{
-    $batchQuery = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
-        ->orderBy('expiry_date', 'asc');
-
-    if ($this->showArchived) {
-        $batchQuery->onlyTrashed();
+        $this->archiveBatchId = null;
+        session()->flash('batch_success', 'Batch archived successfully.');
     }
 
-    $batches = $batchQuery->get();
+    public function restoreBatch($batchId): void
+    {
+        $batch = MedicineBatch::withTrashed()->findOrFail($batchId);
 
-    // ── Cost summaries (always from non-trashed batches) ──
-    $allActiveBatches = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)->get();
+        DB::transaction(function () use ($batch) {
+            $batch->restore();
+            $this->medicine->refresh();
+        });
 
+        $this->syncMedicineExpiryFromBatches();
+        $this->medicine->refresh();
 
-    return view('livewire.medicine-batches', [
-        'batches'           => $batches,
-    ])->layout('livewire.layouts.base', ['page' => 'BATCH MANAGEMENT']);
+        session()->flash('batch_success', 'Batch restored successfully.');
+    }
+
+    public function toggleArchived(): void
+    {
+        $this->showArchived = !$this->showArchived;
+    }
+
+    // ─── Render ───────────────────────────────────────────────────
+
+    public function render()
+    {
+        $batchQuery = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
+            ->orderBy('expiry_date', 'asc');
+
+        if ($this->showArchived) {
+            $batchQuery->onlyTrashed();
+        }
+
+        $batches = $batchQuery->get();
+
+        return view('livewire.medicine-batches', [
+            'batches' => $batches,
+        ])->layout('livewire.layouts.base', ['page' => 'BATCH MANAGEMENT']);
+    }
 }
-    }

@@ -9,7 +9,7 @@ use Livewire\WithPagination;
 class CategoriesTable extends Component
 {
     use WithPagination;
-
+    protected $paginationTheme = 'bootstrap'; // ← ADD THIS
     public $category_name, $edit_id;
     public $sortField = null;
     public $sortDirection = null;
@@ -144,6 +144,7 @@ class CategoriesTable extends Component
 
         $this->reset(['category_name']);
         $this->dispatch('category-added');
+        $this->dispatch('close-addCategoryModal');
     }
 
     // ── Edit / Update ─────────────────────────────────────────────────────────

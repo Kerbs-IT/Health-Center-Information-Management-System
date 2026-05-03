@@ -129,8 +129,7 @@
     </div>
 
     <!-- MODALS (keeping all existing modals) -->
-    <!-- MODAL 1: All Medicines -->
-    <div wire.ignore.self class="modal fade" id="medicineModal" tabindex="-1" aria-labelledby="medicineModalLabel" aria-hidden="true">
+    <div class="modal fade" id="medicineModal" tabindex="-1" aria-labelledby="medicineModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-green-600 text-white w-100">
@@ -138,49 +137,107 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Medicine Name</th>
-                                    <th>Category</th>
-                                    <th>Dosage</th>
-                                    <th>Stock</th>
-                                    <th>Status</th>
-                                    <th>Expiry Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->getAllMedicinesData() as $index => $medicine )
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{$medicine->medicine_name}}</td>
-                                    <td>{{ $medicine->category_name }}</td>
-                                    <td>{{ $medicine->dosage }}</td>
-                                    <td>{{$medicine->stock}}</td>
-                                   <td>
-                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                        @if ($medicine->stock_status === 'In Stock') bg-success bg-opacity-25 text-success
-                                        @elseif ($medicine->stock_status === 'Low Stock') bg-warning bg-opacity-25 text-yellow-800
-                                        @elseif ($medicine->stock_status === 'Out of Stock') bg-danger bg-opacity-25 text-danger
-                                        @endif">
-                                        {{ $medicine->stock_status }}
-                                    </span>
-                                    </td>
-                                    <td>{{ $medicine->expiry_date }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <center>
+                    <div wire:loading wire:target="medicinesPage, medicinesPerPage"
+                        class="text-center py-5"
+                        style="min-height: 300px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Loading medicines...</p>
                     </div>
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong>Total Medicines: {{ $this->totalMedicineCount() }}</strong>
+                    </center>
+
+                    <div wire:loading.class="d-none" wire:target="medicinesPage, medicinesPerPage">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 text-muted small">Show:</label>
+                                <select wire:model.live="medicinesPerPage" class="form-select form-select-sm" style="width:auto">
+                                    <option value="15">15</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">
+                                Showing {{ $allMedicines->firstItem() ?? 0 }}–{{ $allMedicines->lastItem() ?? 0 }}
+                                of {{ $allMedicines->total() }} records
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Medicine Name</th>
+                                        <th>Category</th>
+                                        <th>Dosage</th>
+                                        <th>Stock</th>
+                                        <th>Stock Status</th>
+                                        <th>Current Batch Expiry</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($allMedicines as $index => $medicine)
+                                    @php
+                                        $fifo      = $medicine->batches->first();
+                                        $lastBatch = $medicine->allBatches->last();
+                                        $available   = $medicine->available_stock;
+                                        $stockStatus = $available <= 0 ? 'Out of Stock'
+                                                    : ($available <= 10 ? 'Low Stock' : 'In Stock');
+                                        $stockClass  = $available <= 0 ? 'bg-danger'
+                                                    : ($available <= 10 ? 'bg-warning text-dark' : 'bg-success');
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $allMedicines->firstItem() + $index }}</td>
+                                        <td>{{ $medicine->medicine_name }}</td>
+                                        <td>{{ $medicine->category?->category_name ?? 'N/A' }}</td>
+                                        <td>{{ $medicine->dosage }}</td>
+                                        <td>{{ $available }}</td>
+                                        <td><span class="badge {{ $stockClass }}">{{ $stockStatus }}</span></td>
+                                        <td>
+                                            @if($fifo)
+                                                {{ $fifo->expiry_date->format('M d, Y') }}
+                                            @else
+                                                <span class="text-muted">N/A</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($allMedicines->hasPages())
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item {{ $allMedicines->onFirstPage() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('medicinesPage', {{ $allMedicines->currentPage() - 1 }})" {{ $allMedicines->onFirstPage() ? 'disabled' : '' }}>&laquo;</button>
+                                        </li>
+                                        @foreach(range(max(1, $allMedicines->currentPage() - 2), min($allMedicines->lastPage(), $allMedicines->currentPage() + 2)) as $page)
+                                            <li class="page-item {{ $page == $allMedicines->currentPage() ? 'active' : '' }}">
+                                                <button class="page-link" wire:click="$set('medicinesPage', {{ $page }})">{{ $page }}</button>
+                                            </li>
+                                        @endforeach
+                                        <li class="page-item {{ !$allMedicines->hasMorePages() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('medicinesPage', {{ $allMedicines->currentPage() + 1 }})" {{ !$allMedicines->hasMorePages() ? 'disabled' : '' }}>&raquo;</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        @endif
+
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>Total Medicines: {{ $allMedicines->total() }}</strong>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.medicine.report') }}" class="btn btn-success btn-sm me-2 ms-5" >
+                        <a href="{{ route('download.medicine.report') }}" class="btn btn-success btn-sm me-2 ms-5">
                             <i class="bi bi-download"></i> Download PDF
                         </a>
                         <a href="{{ route('download.medicine.report.excel') }}" class="btn btn-success btn-sm">
@@ -194,7 +251,7 @@
     </div>
 
     <!-- MODAL 2: All Request -->
-    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-green-600 text-white w-100">
@@ -202,41 +259,92 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Patient Name</th>
-                                    <th>Medicine</th>
-                                    <th>Dosage</th>
-                                    <th>Quantity</th>
-                                    <th>Status</th>
-                                    <th>Date Requested</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->getAllRequestsData() as $index => $request )
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $request->requester_name }}</td>
-                                    <td>{{ $request->medicine_name }}</td>
-                                    <td>{{ $request->dosage }}</td>
-                                    <td>{{ $request->quantity_requested }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $request->status == 'completed' ? 'success' : ($request->status == 'pending' ? 'warning' : ($request->status == 'approved' ? 'info' : 'danger')) }}">
-                                            {{ $request->status }}
-                                        </span>
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y h:i A') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <center>
+                    <div wire:loading wire:target="requestsPage, requestsPerPage"
+                        class="text-center py-5"
+                        style="min-height: 300px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Loading requests...</p>
                     </div>
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong>Total Requests: {{ $this->totalRequests() }}</strong>
+                    </center>
+
+                    <div wire:loading.class="d-none" wire:target="requestsPage, requestsPerPage">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 text-muted small">Show:</label>
+                                <select wire:model.live="requestsPerPage" class="form-select form-select-sm" style="width:auto">
+                                    <option value="15">15</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">
+                                Showing {{ $allRequests->firstItem() ?? 0 }}–{{ $allRequests->lastItem() ?? 0 }}
+                                of {{ $allRequests->total() }} records
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Patient Name</th>
+                                        <th>Medicine</th>
+                                        <th>Dosage</th>
+                                        <th>Quantity</th>
+                                        <th>Status</th>
+                                        <th>Date Requested</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($allRequests as $index => $request)
+                                    <tr>
+                                        <td>{{ $allRequests->firstItem() + $index }}</td>
+                                        <td>{{ $request->requester_name }}</td>
+                                        <td>{{ $request->medicine?->medicine_name ?? 'N/A' }}</td>
+                                        <td>{{ $request->medicine?->dosage ?? 'N/A' }}</td>
+                                        <td>{{ $request->quantity_requested }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $request->status == 'completed' ? 'success' : ($request->status == 'pending' ? 'warning' : ($request->status == 'approved' ? 'info' : 'danger')) }}">
+                                                {{ $request->status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y h:i A') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($allRequests->hasPages())
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item {{ $allRequests->onFirstPage() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('requestsPage', {{ $allRequests->currentPage() - 1 }})" {{ $allRequests->onFirstPage() ? 'disabled' : '' }}>&laquo;</button>
+                                        </li>
+                                        @foreach(range(max(1, $allRequests->currentPage() - 2), min($allRequests->lastPage(), $allRequests->currentPage() + 2)) as $page)
+                                            <li class="page-item {{ $page == $allRequests->currentPage() ? 'active' : '' }}">
+                                                <button class="page-link" wire:click="$set('requestsPage', {{ $page }})">{{ $page }}</button>
+                                            </li>
+                                        @endforeach
+                                        <li class="page-item {{ !$allRequests->hasMorePages() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('requestsPage', {{ $allRequests->currentPage() + 1 }})" {{ !$allRequests->hasMorePages() ? 'disabled' : '' }}>&raquo;</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        @endif
+
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>Total Requests: {{ $allRequests->total() }}</strong>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
@@ -254,42 +362,124 @@
     </div>
 
     <!-- MODAL 3: All Medicine Distributed -->
-    <div class="modal fade" id="distributedModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal fade" id="distributedModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-green-600 text-white w-100">
-                    <h5 class="modal-title" id="requestModalLabel"><i class="bi bi-capsule me-2"></i>All Total Medicine Distributed </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-arrow-right me-2"></i>All Total Medicine Distributed
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Patient Name</th>
-                                    <th>Medicine</th>
-                                    <th>Quantity</th>
-                                    <th>Date Distributed</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->getAllDistributedData() as $index => $dist )
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{$dist->patient_name}}</td>
-                                    <td>{{ $dist->medicine_name }}</td>
-                                    <td>{{ $dist->quantity }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($dist->performed_at)->format('M d, Y h:i A') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+
+                    {{-- Loading Spinner — triggers on property changes --}}
+                    <center>
+                    <div wire:loading wire:target="distributedPage, distributedPerPage"
+                        class="text-center py-5"
+                        style="min-height: 300px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Loading distributed records...</p>
                     </div>
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong>Total Distributed Medicine: {{ $this->totalMedicineDispense() }}</strong>
+                    </center>
+
+                    {{-- Table --}}
+                    <div wire:loading.class wire:target="distributedPage, distributedPerPage">
+
+                        {{-- Per page + total controls --}}
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 text-muted small">Show:</label>
+                                <select wire:model.live="distributedPerPage"
+                                        class="form-select form-select-sm" style="width:auto">
+                                    <option value="15">15</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">
+                                Showing {{ $distributed->firstItem() ?? 0 }}–{{ $distributed->lastItem() ?? 0 }}
+                                of {{ $distributed->total() }} records
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Patient Name</th>
+                                        <th>Medicine</th>
+                                        <th>Dosage</th>
+                                        <th>Quantity</th>
+                                        <th>Date Distributed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($distributed as $index => $dist)
+                                    <tr>
+                                        <td>{{ $distributed->firstItem() + $index }}</td>
+                                        <td>{{ $dist->patient_name }}</td>
+                                        <td>{{ $dist->medicine_name }}</td>
+                                        <td>{{ $dist->dosage ?? 'N/A' }}</td>
+                                        <td>{{ $dist->quantity }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($dist->performed_at)->format('M d, Y h:i A') }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <i class="bi bi-inbox fs-2 text-muted d-block mb-2"></i>
+                                            <p class="text-muted mb-0">No distributed records found</p>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Pagination --}}
+                        @if($distributed->hasPages())
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item {{ $distributed->onFirstPage() ? 'disabled' : '' }}">
+                                            <button class="page-link"
+                                                    wire:click="$set('distributedPage', {{ $distributed->currentPage() - 1 }})"
+                                                    {{ $distributed->onFirstPage() ? 'disabled' : '' }}>
+                                                &laquo;
+                                            </button>
+                                        </li>
+
+                                        @foreach(range(max(1, $distributed->currentPage() - 2), min($distributed->lastPage(), $distributed->currentPage() + 2)) as $page)
+                                            <li class="page-item {{ $page == $distributed->currentPage() ? 'active' : '' }}">
+                                                <button class="page-link"
+                                                        wire:click="$set('distributedPage', {{ $page }})">
+                                                    {{ $page }}
+                                                </button>
+                                            </li>
+                                        @endforeach
+
+                                        <li class="page-item {{ !$distributed->hasMorePages() ? 'disabled' : '' }}">
+                                            <button class="page-link"
+                                                    wire:click="$set('distributedPage', {{ $distributed->currentPage() + 1 }})"
+                                                    {{ !$distributed->hasMorePages() ? 'disabled' : '' }}>
+                                                &raquo;
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        @endif
+
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>Total Distributed: {{ $this->totalMedicineDispense() }}</strong>
+                        </div>
                     </div>
                 </div>
+
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
                         <a href="{{ route('download.distributed.report') }}" class="btn btn-success btn-sm me-2 ms-5">
@@ -306,7 +496,7 @@
     </div>
 
     <!-- MODAL 4: All Low Stock -->
-    <div class="modal fade" id="lowStockModal" tabindex="-1" aria-labelledby="lowStockModalLabel" aria-hidden="true">
+    <div class="modal fade" id="lowStockModal" tabindex="-1" aria-labelledby="lowStockModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-green-600 text-white w-100">
@@ -314,43 +504,103 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Medicine Name</th>
-                                    <th>Dosage</th>
-                                    <th>Stock</th>
-                                    <th>Expiry Date</th>
-                                    <th>Expiry Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->getLowStockData() as $index => $medicine )
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $medicine->medicine_name }}</td>
-                                    <td>{{ $medicine->dosage }}</td>
-                                    <td><span class="badge bg-warning text-dark">{{ $medicine->stock }}</span></td>
-                                    <td>{{ \Carbon\Carbon::parse($medicine->expiry_date)->format('M d, Y') }}</td>
-                                    <td>
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                            @if ($medicine->expiry_status === 'Valid') bg-success bg-opacity-25 text-success
-                                            @elseif ($medicine->expiry_status === 'Expiring Soon') bg-warning bg-opacity-25 text-yellow-800
-                                            @elseif ($medicine->expiry_status === 'Expired') bg-danger bg-opacity-25 text-danger
-                                            @endif">
-                                            {{ $medicine->expiry_status }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <center>
+                    <div wire:loading wire:target="lowStockPage, lowStockPerPage"
+                        class="text-center py-5"
+                        style="min-height: 300px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Loading low stock medicines...</p>
                     </div>
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong>Total Low Stock Medicine: {{ $this->totalLowStock() }}</strong>
+                    </center>
+                    <div wire:loading.class="d-none" wire:target="lowStockPage, lowStockPerPage">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 text-muted small">Show:</label>
+                                <select wire:model.live="lowStockPerPage" class="form-select form-select-sm" style="width:auto">
+                                    <option value="15">15</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">
+                                Showing {{ $lowStockData->firstItem() ?? 0 }}–{{ $lowStockData->lastItem() ?? 0 }}
+                                of {{ $lowStockData->total() }} records
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Medicine Name</th>
+                                        <th>Dosage</th>
+                                        <th>Available Stock</th>
+                                        <!-- <th># of Batches</th> -->
+                                        <th>Current Batch Expiry</th>
+                                        <th>Expiry Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($lowStockData as $index => $medicine)
+                                    <tr>
+                                        <td>{{ $lowStockData->firstItem() + $index }}</td>
+                                        <td>{{ $medicine->medicine_name }}</td>
+                                        <td>{{ $medicine->dosage }}</td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">{{ $medicine->available_stock }}</span>
+                                        </td>
+                                        <td>
+                                            @if($medicine->fifo_expiry_date)
+                                                {{ \Carbon\Carbon::parse($medicine->fifo_expiry_date)->format('M d, Y') }}
+                                            @else
+                                                <span class="text-muted">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                                @if ($medicine->expiry_status === 'Valid') bg-success bg-opacity-25 text-success
+                                                @elseif ($medicine->expiry_status === 'Expiring Soon') bg-warning bg-opacity-25 text-yellow-800
+                                                @elseif ($medicine->expiry_status === 'Expired') bg-danger bg-opacity-25 text-danger
+                                                @else bg-secondary bg-opacity-25 text-secondary
+                                                @endif">
+                                                {{ $medicine->expiry_status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($lowStockData->hasPages())
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item {{ $lowStockData->onFirstPage() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('lowStockPage', {{ $lowStockData->currentPage() - 1 }})" {{ $lowStockData->onFirstPage() ? 'disabled' : '' }}>&laquo;</button>
+                                        </li>
+                                        @foreach(range(max(1, $lowStockData->currentPage() - 2), min($lowStockData->lastPage(), $lowStockData->currentPage() + 2)) as $page)
+                                            <li class="page-item {{ $page == $lowStockData->currentPage() ? 'active' : '' }}">
+                                                <button class="page-link" wire:click="$set('lowStockPage', {{ $page }})">{{ $page }}</button>
+                                            </li>
+                                        @endforeach
+                                        <li class="page-item {{ !$lowStockData->hasMorePages() ? 'disabled' : '' }}">
+                                            <button class="page-link" wire:click="$set('lowStockPage', {{ $lowStockData->currentPage() + 1 }})" {{ !$lowStockData->hasMorePages() ? 'disabled' : '' }}>&raquo;</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        @endif
+
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>Total Low Stock Medicine: {{ $lowStockData->total() }}</strong>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
@@ -368,51 +618,115 @@
     </div>
 
     <!-- MODAL 5: All Expiring Soon-->
-    <div class="modal fade" id="expiringSoonModal" tabindex="-1" aria-labelledby="expiringSoonModalLabel" aria-hidden="true">
+    <div class="modal fade" id="expiringSoonModal" tabindex="-1" aria-labelledby="expiringSoonModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-green-600 text-white w-100">
-                    <h5 class="modal-title" id="expiringSoonModalLabel"><i class="bi bi-capsule me-2"></i> Total Expiring Soon</h5>
+                    <h5 class="modal-title" id="expiringSoonModalLabel">
+                        <i class="bi bi-calendar-x me-2"></i> Total Expiring Soon
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Medicine Name</th>
-                                    <th>Dosage</th>
-                                    <th>Stock</th>
-                                    <th>Stock Status</th>
-                                    <th>Expiry Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->getExpiringSoonData() as $index => $medicine )
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $medicine->medicine_name }}</td>
-                                    <td>{{ $medicine->dosage }}</td>
-                                    <td><span class="badge bg-warning text-dark">{{ $medicine->stock }}</span></td>
-                                    <td>
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                            @if ($medicine->stock_status === 'In Stock') bg-success bg-opacity-25 text-success
-                                            @elseif ($medicine->stock_status === 'Low Stock') bg-warning bg-opacity-25 text-yellow-800
-                                            @elseif ($medicine->stock_status === 'Out of Stock') bg-danger bg-opacity-25 text-danger
-                                            @endif">
-                                            {{ $medicine->stock_status }}
-                                        </span>
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($medicine->expiry_date)->format('M d, Y') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <center>
+                    <div wire:loading wire:target="expiringSoonPage, expiringSoonPerPage"
+                        class="text-center py-5"
+                        style="min-height: 300px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Loading expiring batches...</p>
                     </div>
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong>Total Expiring Soon Medicine: {{ $this->totalExpSoon() }}</strong>
+                    </center>
+                    <div wire:loading.class="d-none" wire:target="expiringSoonPage, expiringSoonPerPage">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0 text-muted small">Show:</label>
+                                <select wire:model.live="expiringSoonPerPage" class="form-select form-select-sm" style="width:auto">
+                                    <option value="15">15</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">
+                                Showing {{ $expiringSoonData->firstItem() ?? 0 }}–{{ $expiringSoonData->lastItem() ?? 0 }}
+                                of {{ $expiringSoonData->total() }} batches
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Medicine Name</th>
+                                        <th>Dosage</th>
+                                        <th>Batch No.</th>
+                                        <th>Available Stock</th>
+                                        <th>Stock Status</th>
+                                        <th>Expiry Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($expiringSoonData as $index => $batch)
+                                    <tr>
+                                        <td>{{ $expiringSoonData->firstItem() + $index }}</td>
+                                        <td>{{ $batch->medicine?->medicine_name ?? 'N/A' }}</td>
+                                        <td>{{ $batch->medicine?->dosage ?? 'N/A' }}</td>
+                                        <td>
+                                            <span class="text-dark">{{ $batch->batch_number ?? '—' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">{{ $batch->available_stock }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                                @if ($batch->computed_stock_status === 'In Stock') bg-success bg-opacity-25 text-success
+                                                @elseif ($batch->computed_stock_status === 'Low Stock') bg-warning bg-opacity-25 text-yellow-800
+                                                @elseif ($batch->computed_stock_status === 'Out of Stock') bg-danger bg-opacity-25 text-danger
+                                                @endif">
+                                                {{ $batch->computed_stock_status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($batch->expiry_date)->format('M d, Y') }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($expiringSoonData->hasPages())
+                            <div class="d-flex justify-content-center mt-3">
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item {{ $expiringSoonData->onFirstPage() ? 'disabled' : '' }}">
+                                            <button class="page-link"
+                                                wire:click="$set('expiringSoonPage', {{ $expiringSoonData->currentPage() - 1 }})"
+                                                {{ $expiringSoonData->onFirstPage() ? 'disabled' : '' }}>&laquo;</button>
+                                        </li>
+                                        @foreach(range(max(1, $expiringSoonData->currentPage() - 2), min($expiringSoonData->lastPage(), $expiringSoonData->currentPage() + 2)) as $page)
+                                            <li class="page-item {{ $page == $expiringSoonData->currentPage() ? 'active' : '' }}">
+                                                <button class="page-link" wire:click="$set('expiringSoonPage', {{ $page }})">{{ $page }}</button>
+                                            </li>
+                                        @endforeach
+                                        <li class="page-item {{ !$expiringSoonData->hasMorePages() ? 'disabled' : '' }}">
+                                            <button class="page-link"
+                                                wire:click="$set('expiringSoonPage', {{ $expiringSoonData->currentPage() + 1 }})"
+                                                {{ !$expiringSoonData->hasMorePages() ? 'disabled' : '' }}>&raquo;</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        @endif
+
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>Total Expiring Soon Batches: {{ $expiringSoonData->total() }}</strong>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>

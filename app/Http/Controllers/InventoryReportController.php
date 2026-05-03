@@ -6,6 +6,7 @@ use App\Models\Medicine;
 use App\Models\MedicineRequestLog;
 use App\Models\MedicineRequest;
 use Illuminate\Http\Request;
+use App\Models\MedicineBatch;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -27,10 +28,10 @@ class InventoryReportController extends Controller
         $data = [
             'totalMedicines' => Medicine::count(),
             'totalRequests' => MedicineRequest::count(),
-            'totalDispensed' => MedicineRequestLog::where('action', 'approved')->sum('quantity'),
+            'totalDispensed' => MedicineRequestLog::where('action', 'dispensed')->sum('quantity'),
             'lowStock' => Medicine::where('stock_status', 'Low Stock')->count(),
-            'expiringSoon' => Medicine::where('expiry_status', 'Expiring Soon')->count(),
-
+            'expiringSoon' => MedicineBatch::where('expiry_status', 'Expiring Soon')->count(),
+P
             'categoriesData' => $this->getMedicineCategoriesData($barChartStartDate, $barChartEndDate),
             'pieChartData' => $this->getPieChartData($pieChartStartDate, $pieChartEndDate),
             'dateRangeGivenData' => $this->getDateRangeGivenData($startDate, $endDate),
@@ -62,9 +63,9 @@ public function downloadReport(Request $request)
     $data = [
         'totalMedicines' => Medicine::count(),
         'totalRequests' => MedicineRequest::count(),
-        'totalDispensed' => MedicineRequestLog::where('action', 'approved')->sum('quantity'),
+        'totalDispensed' => MedicineRequestLog::where('action', 'dispensed')->sum('quantity'),
         'lowStock' => Medicine::where('stock_status', 'Low Stock')->count(),
-        'expiringSoon' => Medicine::where('expiry_status', 'Expiring Soon')->count(),
+        'expiringSoon' => MedicineBatch::where('expiry_status', 'Expiring Soon')->count(),
 
         'categoriesData' => $this->getMedicineCategoriesData($barChartStartDate, $barChartEndDate),
         'pieChartData' => $this->getPieChartData($pieChartStartDate, $pieChartEndDate),
@@ -105,7 +106,7 @@ public function downloadReport(Request $request)
             $hourlyData = DB::table('medicine_request_logs')
                 ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
                 ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
-                ->where('medicine_request_logs.action', 'approved')
+                ->where('medicine_request_logs.action', 'dispensed')
                 ->whereDate('medicine_request_logs.performed_at', $start)
                 ->selectRaw('categories.category_name, HOUR(medicine_request_logs.performed_at) as hour, SUM(medicine_request_logs.quantity) as count')
                 ->groupBy('categories.category_id', 'categories.category_name', 'hour')
@@ -125,7 +126,7 @@ public function downloadReport(Request $request)
         $categories = DB::table('medicine_request_logs')
             ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
             ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
-            ->where('medicine_request_logs.action', 'approved')
+            ->where('medicine_request_logs.action', 'dispensed')
             ->whereBetween('medicine_request_logs.performed_at', [$start, $end])
             ->select('categories.category_name', DB::raw('SUM(medicine_request_logs.quantity) as count'))
             ->groupBy('categories.category_id', 'categories.category_name')
@@ -148,12 +149,12 @@ public function downloadReport(Request $request)
 
         // Get medicines dispensed in this date range
         if ($daysDiff == 0) {
-            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+            $dispensedMedicines = MedicineRequestLog::where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->distinct()
                 ->pluck('medicine_name');
         } else {
-            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+            $dispensedMedicines = MedicineRequestLog::where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->distinct()
                 ->pluck('medicine_name');
@@ -201,7 +202,7 @@ public function downloadReport(Request $request)
         // Single day - hourly breakdown
         if ($daysDiff == 0) {
             $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->groupBy('hour')
                 ->orderBy('hour')
@@ -224,7 +225,7 @@ public function downloadReport(Request $request)
         // Over 1 year - monthly breakdown
         elseif ($daysDiff >= 364) {
             $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -248,7 +249,7 @@ public function downloadReport(Request $request)
         // 2-12 months - weekly breakdown
         elseif ($daysDiff > 60) {
             $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('week')
                 ->orderBy('week')
@@ -272,7 +273,7 @@ public function downloadReport(Request $request)
         // Under 2 months - daily breakdown
         else {
             $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -400,7 +401,7 @@ public function downloadReport(Request $request)
         // Get top 5 medicines for the selected date range
         if ($isSingleDay) {
             $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->groupBy('medicine_name')
                 ->orderByDesc('total')
@@ -408,7 +409,7 @@ public function downloadReport(Request $request)
                 ->get();
         } else {
             $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('medicine_name')
                 ->orderByDesc('total')
@@ -459,7 +460,7 @@ public function downloadReport(Request $request)
             foreach ($topMedicines as $medicine) {
                 $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
                     ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
+                    ->where('action', 'dispensed')
                     ->whereDate('performed_at', $start)
                     ->groupBy('hour')
                     ->orderBy('hour')
@@ -489,7 +490,7 @@ public function downloadReport(Request $request)
             foreach ($topMedicines as $medicine) {
                 $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
                     ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
+                    ->where('action', 'dispensed')
                     ->whereBetween('performed_at', [$start, $end])
                     ->groupBy('date')
                     ->orderBy('date')
@@ -522,7 +523,7 @@ public function downloadReport(Request $request)
             foreach ($topMedicines as $medicine) {
                 $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
                     ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
+                    ->where('action', 'dispensed')
                     ->whereBetween('performed_at', [$start, $end])
                     ->groupBy('week')
                     ->orderBy('week')
@@ -554,7 +555,7 @@ public function downloadReport(Request $request)
             foreach ($topMedicines as $medicine) {
                 $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
                     ->where('medicine_name', $medicine->medicine_name)
-                    ->where('action', 'approved')
+                    ->where('action', 'dispensed')
                     ->whereBetween('performed_at', [$start, $end])
                     ->groupBy('date')
                     ->orderBy('date')

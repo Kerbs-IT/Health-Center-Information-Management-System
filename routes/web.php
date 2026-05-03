@@ -492,8 +492,8 @@ Route::middleware(['auth', 'role:nurse,staff'])->group(function () {
     Route::get('/medicine-request-logs', MedicineRequestLogComponent::class)->name('medicineRequestLog');
 
     // Route to medicine csv
-    Route::get('/medicines/download-csv', [MedicinePdfController::class, 'downloadCsv'])
-    ->name('medicines.download-csv');
+    Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
+    Route::get('/medicines/download-csv', [MedicinePdfController::class, 'downloadCsv'])->name('medicines.download-csv');
 
     // Route to inventory report csv
     Route::get('/reports/medicine-list/excel',    [InventoryController::class, 'downloadMedicineReportExcel'])->name('download.medicine.report.excel');
@@ -752,7 +752,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/dashboard/pie-chart-data', [HealthCenterDashboard::class, 'pieChartData']);
 
-Route::get('/medicines/download-pdf', [MedicinePdfController::class, 'downloadPdf'])->name('medicines.download-pdf');
+
+
 
 Route::get('run-command', function () {
     Artisan::call('staff:send-daily-schedule');

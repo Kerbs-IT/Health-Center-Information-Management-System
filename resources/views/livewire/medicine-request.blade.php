@@ -26,8 +26,7 @@
                     <input wire:model.live.debounce.300ms="search" type="search"
                            class="form-control" placeholder="Search by medicine name...">
                 </div>
-                <button class="btn btn-success" data-bs-toggle="modal"
-                        data-bs-target="#requestMedicineModal" wire:click="resetForm">
+                <button class="btn btn-success" id="openRequestModalBtn">
                     <i class="fa-solid fa-plus pe-1"></i>Request Medicine
                 </button>
             </div>
@@ -320,7 +319,7 @@
                                 @foreach($medicines as $medicine)
                                     <option value="{{ $medicine->medicine_id }}">
                                         {{ $medicine->medicine_name }} - {{ $medicine->dosage }}
-                                        (Available: {{ $medicine->stock }})
+                                        (Available: {{ $medicine->available_stock }})
                                     </option>
                                 @endforeach
                             </select>
@@ -609,6 +608,8 @@
                 }
             });
         });
+
+
     </script>
     @endpush
 

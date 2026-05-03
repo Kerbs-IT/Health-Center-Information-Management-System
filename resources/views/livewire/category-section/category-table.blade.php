@@ -23,7 +23,9 @@
                     <i class="fa-solid fa-{{ $showArchived ? 'list' : 'archive' }} pe-1"></i>
                     {{ $showArchived ? 'Show Active' : 'Show Archived' }}
                 </button>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fa-solid fa-plus pe-1"></i>Add Category</button>
+                <button class="btn btn-success" id="openAddCategoryModal">
+                    <i class="fa-solid fa-plus pe-1"></i>Add Category
+                </button>
             </div>
             <div class="table-responsive mt-5">
                 <table class="table table-hover" id="categoryTable">

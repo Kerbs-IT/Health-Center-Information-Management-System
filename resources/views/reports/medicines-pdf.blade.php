@@ -228,26 +228,50 @@
                 <td class="col-category">{{ $medicine->category->category_name ?? 'N/A' }}</td>
                 <td class="col-dosage">{{ $medicine->dosage }}</td>
                 <td class="col-age">{{ formatAgeRange($medicine->min_age_months, $medicine->max_age_months) }}</td>
-                <td class="col-stock">{{ $medicine->stock }}</td>
+                {{-- Stock column: available stock --}}
+                <td class="col-stock">{{ $medicine->available_stock }}</td>
+
+                {{-- Stock Status: based on available_stock --}}
                 <td class="col-stock-status">
-                    <span class="status-badge
-                        @if ($medicine->stock_status === 'In Stock') status-in-stock
-                        @elseif ($medicine->stock_status === 'Low Stock') status-low-stock
-                        @else status-out-stock
-                        @endif">
-                        {{ $medicine->stock_status }}
-                    </span>
+                    @php
+                        $availableStock = $medicine->available_stock;
+                        $stockStatus = $availableStock <= 0 ? 'Out of Stock'
+                                    : ($availableStock <= 10 ? 'Low Stock' : 'In Stock');
+                        $stockClass  = $availableStock <= 0 ? 'status-out-stock'
+                                    : ($availableStock <= 10 ? 'status-low-stock' : 'status-in-stock');
+                    @endphp
+                    <span class="status-badge {{ $stockClass }}">{{ $stockStatus }}</span>
                 </td>
+
+                {{-- Expiry Status: based on the LAST (latest) batch expiry date --}}
                 <td class="col-expiry-status">
-                    <span class="status-badge
-                        @if ($medicine->expiry_status === 'Valid') status-valid
-                        @elseif ($medicine->expiry_status === 'Expiring Soon') status-expiring
-                        @else status-expired
-                        @endif">
-                        {{ $medicine->expiry_status }}
-                    </span>
+                    @php
+                        $lastBatch = $medicine->allBatches->last();
+                        if ($lastBatch) {
+                            $days = now()->diffInDays($lastBatch->expiry_date, false);
+                            $expiryStatus = $days < 0 ? 'Expired'
+                                        : ($days <= 30 ? 'Expiring Soon' : 'Valid');
+                            $expiryClass  = $days < 0 ? 'status-expired'
+                                        : ($days <= 30 ? 'status-expiring' : 'status-valid');
+                        }
+                    @endphp
+                    @if($lastBatch)
+                        <span class="status-badge {{ $expiryClass }}">{{ $expiryStatus }}</span>
+                    @else
+                        <span class="status-badge">No Batches</span>
+                    @endif
                 </td>
-                <td class="col-expiry-date">{{ date('M d, Y', strtotime($medicine->expiry_date)) }}</td>
+
+                {{-- Expiry Date + Batch Number: based on FIFO (current-use) batch --}}
+                <td class="col-expiry-date">
+                    @php $fifo = $medicine->fifo_batch; @endphp
+                    @if($fifo)
+                        {{ $fifo->expiry_date->format('M d, Y') }}
+                        <br><small style="color:#666;">{{ $fifo->batch_number }}</small>
+                    @else
+                        N/A
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>

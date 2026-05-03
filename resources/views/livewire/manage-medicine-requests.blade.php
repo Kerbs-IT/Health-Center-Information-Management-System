@@ -44,8 +44,7 @@
                             <option value="">All Status</option>
                         </select>
                 </div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#walkInModal"
-                        wire:click="resetWalkInForm">
+                <button class="btn btn-success" id="openWalkInBtn" wire:click="resetWalkInForm">
                     <i class="fa-solid fa-user-plus me-1"></i>Add Walk-In
                 </button>
             </div>
@@ -165,11 +164,11 @@
                                     @elseif($request->status === 'ready_to_pickup')
                                         @if($request->medicine && $request->medicine->trashed())
                                             {{-- Medicine archived: cancel only, no dispense --}}
-                                            <span class="badge bg-secondary text-nowrap mb-1">
-                                                <i class="fa-solid fa-archive me-1"></i>Medicine Archived
+                                            <span class="badge bg-secondary text-nowrap p-3">
+                                                <i class="fa-solid fa-archive me-1"></i>Archived
                                             </span>
                                             <button onclick="confirmCancel({{ $request->id }})"
-                                                    class="btn btn-sm btn-danger text-nowrap">
+                                                    class="btn btn-sm btn-outline-danger text-nowrap">
                                                 <i class="fa-solid fa-rotate-left me-1"></i>Cancel
                                             </button>
                                         @else
@@ -358,23 +357,9 @@
                                 <p class="fw-bold">{{ $viewRequest->medicine->dosage ?? 'N/A' }}</p>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label text-muted small">Price per Unit</label>
-                                <p class="fw-bold">
-                                    ₱{{ $viewRequest->medicine ? number_format($viewRequest->medicine->price, 2) : 'N/A' }}
-                                </p>
-                            </div>
-                            <div class="col-md-4">
                                 <label class="form-label text-muted small">Quantity Requested</label>
                                 <p class="fw-bold text-primary">{{ $viewRequest->quantity_requested }}</p>
                             </div>
-                            @if($viewRequest->medicine)
-                            <div class="col-md-4">
-                                <label class="form-label text-muted small">Estimated Total</label>
-                                <p class="fw-bold text-success">
-                                    ₱{{ number_format($viewRequest->medicine->price * $viewRequest->quantity_requested, 2) }}
-                                </p>
-                            </div>
-                            @endif
 
                             {{-- Reason --}}
                             <div class="col-12">
@@ -490,6 +475,7 @@
         </div>
     </div>
 </div>
+
 <script>
     // ── Approve ──────────────────────────────────────────────────
     function confirmApprove(id) {
@@ -577,4 +563,41 @@
             });
         });
     });
+    document.addEventListener('livewire:init', () => {
+
+    Livewire.on('swal-success', (params) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: params.message,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            toast: false,
+            confirmButtonColor: '#198754',
+        });
+    });
+
+    Livewire.on('swal-warning', (params) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cancelled',
+            text: params.message,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            confirmButtonColor: '#ffc107',
+        });
+    });
+
+    Livewire.on('swal-error', (params) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: params.message,
+            confirmButtonColor: '#dc3545',
+        });
+    });
+
+});
 </script>

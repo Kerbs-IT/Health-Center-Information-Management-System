@@ -5,9 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Low Stock Medicine Report</title>
     <style>
-        @page {
-            margin: 15mm 10mm;
-        }
+        @page { margin: 15mm 10mm; }
 
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
@@ -21,18 +19,8 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #4CAF50;
         }
-
-        .header h1 {
-            margin: 0 0 5px 0;
-            font-size: 22px;
-            color: #4CAF50;
-        }
-
-        .header p {
-            margin: 5px 0;
-            color: #666;
-            font-size: 10px;
-        }
+        .header h1 { margin: 0 0 5px 0; font-size: 22px; color: #4CAF50; }
+        .header p  { margin: 5px 0; color: #666; font-size: 10px; }
 
         .alert-box {
             background-color: #d2ffcd;
@@ -43,17 +31,9 @@
             font-weight: 600;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+        th, td { border: 1px solid #ddd; padding: 7px; text-align: left; }
 
         th {
             background-color: #4CAF50;
@@ -62,13 +42,8 @@
             font-size: 10px;
         }
 
-        td {
-            font-size: 10px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+        td { font-size: 10px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
 
         .total-box {
             margin-top: 20px;
@@ -87,20 +62,11 @@
             white-space: nowrap;
         }
 
-        .badge-warning {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-danger {
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        .badge-success {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
+        .badge-success { background-color: #d1e7dd; color: #0f5132; }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-danger  { background-color: #f8d7da; color: #842029; }
+        .badge-secondary { background-color: #e2e3e5; color: #41464b; }
+        .text-center { text-align: center; }
     </style>
 </head>
 <body>
@@ -118,35 +84,50 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%">#</th>
-                <th style="width: 30%">Medicine Name</th>
-                <th style="width: 20%">Dosage</th>
-                <th style="width: 12%">Stock</th>
-                <th style="width: 15%">Expiry Date</th>
-                <th style="width: 15%">Expiry Status</th>
+                <th style="width:4%"  class="text-center">#</th>
+                <th style="width:25%">Medicine Name</th>
+                <th style="width:14%">Dosage</th>
+                <th style="width:12%" class="text-center">Avail. Stock</th>
+                <!-- <th style="width:10%" class="text-center"># Batches</th> -->
+                <th style="width:17%" class="text-center">Current Batch Expiry</th>
+                <th style="width:18%" class="text-center">Expiry Status</th>
             </tr>
         </thead>
         <tbody>
             @forelse($medicines as $index => $medicine)
+            @php
+                // Support both the paginated->through() objects and plain collection items
+                $availableStock   = $medicine->available_stock   ?? $medicine->stock;
+                $fifoDt           = $medicine->fifo_expiry_date  ?? $medicine->expiry_date;
+                $expiryStatus     = $medicine->expiry_status     ?? 'N/A';
+                $statusBadge      = match($expiryStatus) {
+                    'Valid'         => 'badge-success',
+                    'Expiring Soon' => 'badge-warning',
+                    'Expired'       => 'badge-danger',
+                    default         => 'badge-secondary',
+                };
+            @endphp
             <tr>
-                <td>{{ $index + 1 }}</td>
+                <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $medicine->medicine_name }}</td>
                 <td>{{ $medicine->dosage }}</td>
-                <td>
-                    <span class="badge badge-warning">
-                        {{ $medicine->stock }}
-                    </span>
+                <td class="text-center">
+                    <span class="badge badge-warning">{{ $availableStock }}</span>
                 </td>
-                <td>{{ \Carbon\Carbon::parse($medicine->expiry_date)->format('M d, Y') }}</td>
-                <td>
-                    <span class="badge badge-{{ $medicine->expiry_status == 'Valid' ? 'success' : ($medicine->expiry_status == 'Expiring Soon' ? 'warning' : 'danger') }}">
-                        {{ $medicine->expiry_status }}
-                    </span>
+                <td class="text-center">
+                    @if($fifoDt)
+                        {{ \Carbon\Carbon::parse($fifoDt)->format('M d, Y') }}
+                    @else
+                        N/A
+                    @endif
+                </td>
+                <td class="text-center">
+                    <span class="badge {{ $statusBadge }}">{{ $expiryStatus }}</span>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" style="text-align: center; padding: 20px; color: #666;">
+                <td colspan="7" style="text-align:center; padding:20px; color:#666;">
                     No low stock medicines found.
                 </td>
             </tr>
