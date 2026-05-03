@@ -34,7 +34,7 @@ export default defineConfig({
                 "resources/css/patient/add-patient-prenatal.css",
                 "resources/css/patient/patient-dashboard.css",
                 "resources/css/patient/record.css",
-                'resources/css/final-record-toggle.css',
+                "resources/css/final-record-toggle.css",
 
                 // JS Files
                 "resources/js/app.js",
@@ -114,6 +114,7 @@ export default defineConfig({
                 "resources/js/general_consultation/editPatientDetails.js",
                 "resources/js/general_consultation/gcCase.js",
                 "resources/js/manageVaccines/manage-vaccines.js",
+                "resources/js/inventory_system/medicines.js",
             ],
             refresh: true,
         }),
