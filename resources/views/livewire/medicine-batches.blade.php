@@ -24,11 +24,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
+            @if (session()->has('batch_error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('batch_error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
             {{-- ── Medicine summary cards ──────────────────────────── --}}
-            <div class="row g-3 mb-4 row-cols-1 row-cols-sm-3">
+            <div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-4">
                 <div class="col">
-                    <div class="card text-center bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-purple-200 hover:shadow-lg shadow-md transition-shadow duration-300">
+                    <div class="card text-center shadow-sm">
                         <div class="card-body py-3">
                             <div class="fs-5 fw-bold">{{ $medicine->stock }}</div>
                             <div class="text-muted small">Total Stock</div>
@@ -36,17 +42,28 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="card text-center bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-purple-200 hover:shadow-lg shadow-md transition-shadow duration-300">
+                    {{-- Available = total stock − total reserved across all batches --}}
+                    @php
+                        $totalReserved = $batches->sum('reserved_quantity');
+                        $availableStock = max(0, $medicine->stock - $totalReserved);
+                    @endphp
+                    <div class="card text-center shadow-sm border-info">
                         <div class="card-body py-3">
-                            <div class="fs-5 fw-bold">
-                                {{ $medicine->stock_status }}
-                            </div>
-                            <div class="text-muted small">Stock Status</div>
+                            <div class="fs-5 fw-bold text-info">{{ $availableStock }}</div>
+                            <div class="text-muted small">Available Stock</div>
                         </div>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="card text-center bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-purple-200 hover:shadow-lg shadow-md transition-shadow duration-300">
+                    <div class="card text-center shadow-sm border-warning">
+                        <div class="card-body py-3">
+                            <div class="fs-5 fw-bold text-warning">{{ $totalReserved }}</div>
+                            <div class="text-muted small">Reserved (pending)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-center shadow-sm">
                         <div class="card-body py-3">
                             <div class="fs-5 fw-bold
                                 @if($medicine->expiry_status === 'Valid') text-success
@@ -79,7 +96,6 @@
                                    min="1" placeholder="0">
                             @error('newBatchQty') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
-
                         <div class="col-md-2">
                             <label class="form-label">Manufactured Date</label>
                             <input type="date" class="form-control" wire:model="newBatchManufactured">
@@ -120,20 +136,32 @@
                             <th>Batch Number</th>
                             <th class="text-center">Manufactured</th>
                             <th class="text-center">Expiry Date</th>
-                            <!-- <th class="text-center">Price / Unit</th> -->
-                            <!-- <th class="text-center">Total Cost</th> -->
-                            <th class="text-center">Remaining</th>
+                            <!-- <th class="text-center">Qty (physical)</th> -->
+                            <th class="text-center">Reserved</th>
+                            <th class="text-center">Available</th>
                             <th class="text-center">Initial Qty</th>
-
                             <th class="text-center">Expiry Status</th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($batches as $index => $batch)
-                        <tr class="{{ $batch->quantity == 0 ? 'text-muted' : '' }}">
+                        @php
+                            $isExpired = $batch->expiry_date->isToday() || $batch->expiry_date->isPast();
+                            $available = max(0, $batch->quantity - $batch->reserved_quantity);
+                            $firstValidIndex = null;
+                            foreach ($batches as $i => $b) {
+                                if (!$b->expiry_date->isPast() && $b->quantity > 0) {
+                                    $firstValidIndex = $i;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        <tr class="{{ $isExpired ? 'table-danger text-muted' : ($batch->quantity == 0 ? 'text-muted' : '') }}">
                             <td class="text-center">
-                                @if($index === 0 && $batch->quantity > 0 && !$showArchived)
+                                @if($isExpired)
+                                    <span class="badge bg-danger">Expired</span>
+                                @elseif($index === $firstValidIndex && $batch->quantity > 0 && !$showArchived)
                                     <span class="badge bg-warning text-dark" title="Next to be consumed">NEXT</span>
                                 @else
                                     {{ $index + 1 }}
@@ -141,14 +169,19 @@
                             </td>
                             <td>{{ $batch->batch_number ?? '—' }}</td>
                             <td class="text-center">
-                                {{ $batch->manufactured_date
-                                    ? $batch->manufactured_date->format('M d, Y')
-                                    : '—' }}
+                                {{ $batch->manufactured_date ? $batch->manufactured_date->format('M d, Y') : '—' }}
                             </td>
                             <td class="text-center">{{ $batch->expiry_date->format('M d, Y') }}</td>
                             <td class="text-center">
-                                <span>
-                                    {{ $batch->quantity }}
+                                @if($batch->reserved_quantity > 0)
+                                    <span class="text-dark">{{ $batch->reserved_quantity }}</span>
+                                @else
+                                    <span class="text-muted">0</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <span class="{{ $available == 0 ? 'text-danger fw-bold' : 'text-success fw-semibold' }}">
+                                    {{ $available }}
                                 </span>
                             </td>
                             <td class="text-center">{{ $batch->initial_quantity }}</td>
@@ -172,9 +205,10 @@
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-primary"
-                                                wire:click="editBatch({{ $batch->id }})"
-                                                title="Edit Batch">
+                                        <button class="btn btn-sm btn-primary {{ $isExpired ? 'disabled' : '' }}"
+                                                wire:click="{{ $isExpired ? '' : 'editBatch(' . $batch->id . ')' }}"
+                                                title="{{ $isExpired ? 'Cannot edit expired batch' : 'Edit Batch' }}"
+                                                {{ $isExpired ? 'disabled' : '' }}>
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger"
@@ -188,7 +222,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
+                            <td colspan="10" class="text-center py-5 text-muted">
                                 <i class="fa-solid fa-inbox fs-1 d-block mb-2"></i>
                                 {{ $showArchived ? 'No archived batches.' : 'No batches yet. Add the first batch above.' }}
                             </td>
@@ -213,24 +247,31 @@
                 </div>
                 <form wire:submit.prevent="updateBatch">
                     <div class="modal-body">
+                        {{-- Reserved qty info banner --}}
+                        @if($editBatchId)
+                            @php $editingBatch = $batches->firstWhere('id', $editBatchId); @endphp
+                            @if($editingBatch && $editingBatch->reserved_quantity > 0)
+                                <div class="alert alert-warning py-2 mb-3">
+                                    <i class="fa-solid fa-lock me-1"></i>
+                                    <strong>{{ $editingBatch->reserved_quantity }} units</strong> are currently reserved
+                                    for approved requests. You cannot set quantity below this number.
+                                </div>
+                            @endif
+                        @endif
+
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label">Batch Number</label>
                                 <input type="text" class="form-control" wire:model="editBatchNumber">
                                 @error('editBatchNumber') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" wire:model="editBatchQty" min="0">
-                                @error('editBatchQty') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Price / Unit (₱) <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₱</span>
-                                    <input type="number" class="form-control" wire:model="editBatchPrice" min="0" step="0.01">
-                                </div>
-                                @error('editBatchPrice') <small class="text-danger">{{ $message }}</small> @enderror
+                                <input type="number" class="form-control @error('editBatchQty') is-invalid @enderror"
+                                       wire:model="editBatchQty" min="0">
+                                @error('editBatchQty')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Manufactured Date</label>
@@ -264,7 +305,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to archive this batch? Its remaining stock will be deducted from the medicine total.</p>
+                    <p>Are you sure you want to archive this batch?</p>
                     <p class="text-muted small">You can restore it later from the <strong>Archived Batches</strong> view.</p>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">

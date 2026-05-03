@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 class MedicineBatch extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'medicine_id',
         'batch_number',
         'quantity',
         'initial_quantity',
         'dispensed_quantity',
-        'reserved_quantity',
+        'reserved_quantity',   // ← units locked by approved requests
         'price',
         'manufactured_date',
         'expiry_date',
@@ -22,8 +23,8 @@ class MedicineBatch extends Model
     ];
 
     protected $casts = [
-        'expiry_date'      => 'date',
-        'manufactured_date'=> 'date',
+        'expiry_date'       => 'date',
+        'manufactured_date' => 'date',
     ];
 
     // ─── Relationships ───────────────────────────────────────────
@@ -31,6 +32,17 @@ class MedicineBatch extends Model
     public function medicine()
     {
         return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id');
+    }
+
+    // ─── Computed helpers ─────────────────────────────────────────
+
+    /**
+     * Units physically available to reserve or dispense.
+     * = quantity - reserved_quantity
+     */
+    public function getAvailableQuantityAttribute(): int
+    {
+        return max(0, $this->quantity - $this->reserved_quantity);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────
@@ -42,7 +54,7 @@ class MedicineBatch extends Model
     {
         $days = now()->diffInDays($this->expiry_date, false);
 
-        if ($days < 0) {
+        if ($days <= 0) {
             $status = 'Expired';
         } elseif ($days <= 30) {
             $status = 'Expiring Soon';

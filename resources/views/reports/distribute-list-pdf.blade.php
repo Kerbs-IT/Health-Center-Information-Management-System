@@ -103,7 +103,7 @@
     </table>
 
     <div class="total-box">
-        Total Distributed: {{ $total }}
+        Total Records: {{ $total }} &nbsp;|&nbsp; Total Quantity Distributed: {{ $totalQuantity }}
     </div>
 
     <script type="text/php">

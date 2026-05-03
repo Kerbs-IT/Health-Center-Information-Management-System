@@ -13,25 +13,28 @@ use App\Exports\RequestListExport;
 use App\Exports\DistributedListExport;
 use App\Exports\LowStockExport;
 use App\Exports\ExpiringSoonExport;
-
+use App\Models\MedicineBatch;
 class InventoryController extends Controller
 {
     // ─── PDF Downloads ─────────────────────────────────────────────────
 
     public function downloadMedicineReport()
     {
-        $medicines = Medicine::with('category')
-            ->select('medicine_name', 'category_id', 'dosage', 'stock', 'stock_status', 'expiry_date')
-            ->orderBy('medicine_name')
-            ->get()
-            ->map(function ($medicine) {
-                $medicine->category_name = $medicine->category ? $medicine->category->category_name : 'N/A';
-                return $medicine;
-            });
+        $medicines = Medicine::with([
+            'category',
+            'batches'    => fn($q) => $q->orderBy('expiry_date', 'asc'),
+            'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])
+        ->orderBy('medicine_name')
+        ->get()
+        ->map(function ($medicine) {
+            $medicine->category_name = $medicine->category?->category_name ?? 'N/A';
+            return $medicine;
+        });
 
         $data = [
             'medicines'     => $medicines,
-            'total'         => Medicine::count(),
+            'total'         => $medicines->count(),
             'generatedDate' => now()->format('F d, Y h:i A'),
         ];
 
@@ -102,10 +105,8 @@ class InventoryController extends Controller
 
     public function downloadLowStockReport()
     {
-        $medicines = Medicine::where('stock_status', 'Low Stock')
-            ->select('medicine_name', 'dosage', 'stock', 'expiry_date', 'expiry_status')
-            ->orderBy('stock', 'asc')
-            ->get();
+        $report = new \App\Livewire\InventoryReport();
+        $medicines = $report->getLowStockCollection();
 
         $data = [
             'medicines'     => $medicines,
@@ -126,14 +127,30 @@ class InventoryController extends Controller
 
     public function downloadExpiringSoonReport()
     {
-        $medicines = Medicine::where('expiry_status', 'Expiring Soon')
-            ->select('medicine_name', 'dosage', 'stock', 'stock_status', 'expiry_date')
-            ->orderBy('expiry_date', 'asc')
-            ->get();
+        $batches = MedicineBatch::with([
+            'medicine' => fn($q) => $q->with([
+                'batches' => fn($q2) => $q2->where('expiry_date', '>', now()),
+            ]),
+        ])
+        ->where('expiry_status', 'Expiring Soon')
+        ->orderBy('expiry_date', 'asc')
+        ->get()
+        ->map(function ($batch) {
+            $available = $batch->medicine?->batches
+                ->sum(fn($b) => max(0, $b->quantity - $b->reserved_quantity)) ?? 0;
+
+            $batch->available_stock = $available;
+
+            $batch->computed_stock_status = $available <= 0
+                ? 'Out of Stock'
+                : ($available <= 10 ? 'Low Stock' : 'In Stock');
+
+            return $batch;
+        });
 
         $data = [
-            'medicines'     => $medicines,
-            'total'         => $medicines->count(),
+            'batches'       => $batches,
+            'total'         => $batches->count(),
             'generatedDate' => now()->format('F d, Y h:i A'),
         ];
 

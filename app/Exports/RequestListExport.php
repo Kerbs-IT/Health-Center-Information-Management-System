@@ -56,7 +56,7 @@ class RequestListExport implements
 
     public function columnWidths(): array
     {
-        return ['A' => 6, 'B' => 25, 'C' => 25, 'D' => 15, 'E' => 12, 'F' => 14, 'G' => 22];
+        return ['A' => 6, 'B' => 25, 'C' => 25, 'D' => 15, 'E' => 12, 'F' => 18, 'G' => 22];
     }
 
     public function styles(Worksheet $sheet)

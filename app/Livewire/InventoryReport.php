@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-
+use App\Models\MedicineBatch;
 class InventoryReport extends Component
 {
     public $startDate;
@@ -19,6 +19,17 @@ class InventoryReport extends Component
     public $barChartEndDate;
     public $pieChartStartDate;
     public $pieChartEndDate;
+
+    public $distributedPage = 1;
+    public $distributedPerPage = 15;
+    public $medicinesPage = 1;
+    public $medicinesPerPage = 15;
+    public $requestsPage = 1;
+    public $requestsPerPage = 15;
+    public $lowStockPage = 1;
+    public $lowStockPerPage = 15;
+    public $expiringSoonPage = 1;
+    public $expiringSoonPerPage = 15;
 
     public function mount()
     {
@@ -70,16 +81,18 @@ class InventoryReport extends Component
         return MedicineRequest::count();
     }
 
-    public function totalMedicineDispense(){
-        return MedicineRequestLog::where('action', 'approved')->sum('quantity');
-    }
 
+    public function totalMedicineDispense()
+    {
+        return MedicineRequestLog::where('action', 'dispensed')->sum('quantity');
+    }
     public function totalLowStock(){
         return Medicine::where('stock_status', 'Low Stock')->count();
     }
 
-    public function totalExpSoon(){
-        return Medicine::where('expiry_status', 'Expiring Soon')->count();
+    public function totalExpSoon()
+    {
+        return MedicineBatch::where('expiry_status', 'Expiring Soon')->count();
     }
 
     public function getMedicineCategoriesData(){
@@ -93,7 +106,7 @@ class InventoryReport extends Component
             $hourlyData = DB::table('medicine_request_logs')
                 ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
                 ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
-                ->where('medicine_request_logs.action', 'approved')
+                ->where('medicine_request_logs.action', 'dispensed')
                 ->whereDate('medicine_request_logs.performed_at', $start)
                 ->selectRaw('categories.category_name, HOUR(medicine_request_logs.performed_at) as hour, SUM(medicine_request_logs.quantity) as count')
                 ->groupBy('categories.category_id', 'categories.category_name', 'hour')
@@ -114,7 +127,7 @@ class InventoryReport extends Component
         $categories = DB::table('medicine_request_logs')
             ->join('medicines', 'medicine_request_logs.medicine_name', '=', 'medicines.medicine_name')
             ->join('categories', 'medicines.category_id', '=', 'categories.category_id')
-            ->where('medicine_request_logs.action', 'approved')
+            ->where('medicine_request_logs.action', 'dispensed')
             ->whereBetween('medicine_request_logs.performed_at', [$start, $end])
             ->select('categories.category_name', DB::raw('SUM(medicine_request_logs.quantity) as count'))
             ->groupBy('categories.category_id', 'categories.category_name')
@@ -140,12 +153,12 @@ class InventoryReport extends Component
 
         // Get medicines dispensed in this date range
         if ($daysDiff == 0) {
-            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+            $dispensedMedicines = MedicineRequestLog::where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->distinct()
                 ->pluck('medicine_name');
         } else {
-            $dispensedMedicines = MedicineRequestLog::where('action', 'approved')
+            $dispensedMedicines = MedicineRequestLog::where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->distinct()
                 ->pluck('medicine_name');
@@ -200,7 +213,7 @@ class InventoryReport extends Component
         // Determine grouping based on date range
         if ($daysDiff == 0) {
             $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->groupBy('hour')
                 ->orderBy('hour')
@@ -227,7 +240,7 @@ class InventoryReport extends Component
         }elseif ($daysDiff >= 364) {
             // Group by month for ranges over 1 year
             $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -249,7 +262,7 @@ class InventoryReport extends Component
         } elseif ($daysDiff > 60) {
             // Group by week for ranges 2-12 months
             $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('week')
                 ->orderBy('week')
@@ -271,7 +284,7 @@ class InventoryReport extends Component
         } else {
             // Group by day for ranges under 2 months
             $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -412,7 +425,7 @@ public function getTopMedicinesDateRangeData(){
     if ($isSingleDay) {
         // For single day: use whereDate
         $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
-            ->where('action', 'approved')
+            ->where('action', 'dispensed')
             ->whereDate('performed_at', $start)
             ->groupBy('medicine_name')
             ->orderByDesc('total')
@@ -421,7 +434,7 @@ public function getTopMedicinesDateRangeData(){
     } else {
         // For date range: use whereBetween
         $topMedicines = MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total'))
-            ->where('action', 'approved')
+            ->where('action', 'dispensed')
             ->whereBetween('performed_at', [$start, $end])
             ->groupBy('medicine_name')
             ->orderByDesc('total')
@@ -484,7 +497,7 @@ public function getTopMedicinesDateRangeData(){
         foreach ($topMedicines as $medicine) {
             $records = MedicineRequestLog::selectRaw('HOUR(performed_at) as hour, SUM(quantity) as total')
                 ->where('medicine_name', $medicine->medicine_name)
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereDate('performed_at', $start)
                 ->groupBy('hour')
                 ->orderBy('hour')
@@ -513,7 +526,7 @@ public function getTopMedicinesDateRangeData(){
         foreach ($topMedicines as $medicine) {
             $records = MedicineRequestLog::selectRaw('DATE_FORMAT(performed_at, "%Y-%m") as date, SUM(quantity) as total')
                 ->where('medicine_name', $medicine->medicine_name)
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -545,7 +558,7 @@ public function getTopMedicinesDateRangeData(){
         foreach ($topMedicines as $medicine) {
             $records = MedicineRequestLog::selectRaw('YEARWEEK(performed_at, 1) as week, SUM(quantity) as total')
                 ->where('medicine_name', $medicine->medicine_name)
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('week')
                 ->orderBy('week')
@@ -576,7 +589,7 @@ public function getTopMedicinesDateRangeData(){
         foreach ($topMedicines as $medicine) {
             $records = MedicineRequestLog::selectRaw('DATE(performed_at) as date, SUM(quantity) as total')
                 ->where('medicine_name', $medicine->medicine_name)
-                ->where('action', 'approved')
+                ->where('action', 'dispensed')
                 ->whereBetween('performed_at', [$start, $end])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -603,51 +616,139 @@ public function getTopMedicinesDateRangeData(){
     ];
 }
 
-    public function getAllMedicinesData(){
-        return Medicine::with('category')->select('medicine_name', 'category_id', 'dosage', 'stock', 'stock_status','expiry_date')
+    public function getAllMedicinesData()
+    {
+        return Medicine::with([
+            'category',
+            'batches'    => fn($q) => $q->orderBy('expiry_date', 'asc'),
+            'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])
         ->orderBy('medicine_name')
+        ->paginate($this->medicinesPerPage, ['*'], 'medicinesPage', $this->medicinesPage);
+    }
+
+    public function getAllRequestsData()
+    {
+        return MedicineRequest::with(['medicine', 'patients', 'user'])
+            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
+            ->orderByDesc('created_at')
+            ->paginate($this->requestsPerPage, ['*'], 'requestsPage', $this->requestsPage);
+    }
+
+    public function getLowStockData()
+    {
+        return Medicine::with([
+            // valid batches (not expired, not soft-deleted) ordered earliest first
+            'batches'    => fn($q) => $q->where('expiry_date', '>', now())->orderBy('expiry_date', 'asc'),
+            // ALL non-archived batches for last-expiry & batch count
+            'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])
+        ->where('stock_status', 'Low Stock')
+        ->orderBy('stock', 'asc')
+        ->paginate($this->lowStockPerPage, ['*'], 'lowStockPage', $this->lowStockPage)
+        ->through(function ($medicine) {
+            // Available stock = sum of free units across valid (non-expired) batches
+            $medicine->available_stock = $medicine->batches
+                ->sum(fn($b) => max(0, $b->quantity - $b->reserved_quantity));
+
+            // Current-use batch = earliest valid batch (FIFO)
+            $fifoBatch = $medicine->batches->first();
+            $medicine->fifo_expiry_date = $fifoBatch?->expiry_date;
+
+            // Expiry status driven by the LAST batch's expiry date
+            $lastBatch = $medicine->allBatches->last();
+            if ($lastBatch) {
+                $daysUntilExpiry = now()->diffInDays($lastBatch->expiry_date, false);
+                $medicine->expiry_status = $daysUntilExpiry < 0
+                    ? 'Expired'
+                    : ($daysUntilExpiry <= 30 ? 'Expiring Soon' : 'Valid');
+            } else {
+                $medicine->expiry_status = 'N/A';
+            }
+
+            // Total number of non-archived batches
+            $medicine->batch_count = $medicine->allBatches->count();
+
+            return $medicine;
+        });
+}
+
+    public function getLowStockCollection()
+    {
+        return Medicine::with([
+            'batches' => fn($q) => $q->where('expiry_date', '>', now())->orderBy('expiry_date', 'asc'),
+            'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])
+        ->where('stock_status', 'Low Stock')
+        ->orderBy('stock', 'asc')
         ->get()
-        ->map(function($medicine){
-            $medicine->category_name = $medicine->category ? $medicine->category->category_name : 'N/A';
+        ->map(function ($medicine) {
+            $medicine->available_stock_count = $medicine->batches->sum(fn($b) => $b->quantity - $b->reserved_quantity);
+            $fifoBatch = $medicine->batches->first();
+            $medicine->fifo_expiry_date = $fifoBatch?->expiry_date;
+            $lastBatch = $medicine->allBatches->last();
+            if ($lastBatch) {
+                $daysUntilExpiry = now()->diffInDays($lastBatch->expiry_date, false);
+                $medicine->last_batch_expiry_status = $daysUntilExpiry < 0
+                    ? 'Expired'
+                    : ($daysUntilExpiry <= 30 ? 'Expiring Soon' : 'Valid');
+            } else {
+                $medicine->last_batch_expiry_status = 'N/A';
+            }
+            $medicine->batch_count = $medicine->allBatches->count();
             return $medicine;
         });
     }
 
-    public function getAllRequestsData(){
-        return MedicineRequest::with(['medicine', 'patients', 'user'])
-            ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function($request) {
-                $request->requester_name = $request->requester_name;
-                $request->medicine_name = $request->medicine
-                    ? $request->medicine->medicine_name
-                    : 'N/A';
-                $request->dosage = $request->medicine ? $request->medicine->dosage : 'N/A';
-                return $request;
-            });
-    }
-
-    public function getAllDistributedData(){
-        return MedicineRequestLog::where('action', 'approved')
-            ->select('medicine_request_id', 'patient_name', 'medicine_name', 'quantity', 'performed_at')
-            ->orderByDesc('performed_at')
-            ->get();
-    }
-
-    public function getLowStockData(){
-        return Medicine::where('stock_status', 'Low Stock')
-            ->select('medicine_name', 'dosage', 'stock', 'expiry_date', 'expiry_status')
-            ->orderBy('stock', 'asc')
-            ->get();
-    }
-
-    public function getExpiringSoonData(){
-        return Medicine::where('expiry_status', 'Expiring Soon')
-        ->select('medicine_name', 'dosage', 'stock', 'stock_status', 'expiry_date')
+    public function getExpiringSoonCollection()
+    {
+        return Medicine::with([
+            'batches' => fn($q) => $q->where('expiry_date', '>', now())->orderBy('expiry_date', 'asc'),
+            'allBatches' => fn($q) => $q->where('expiry_status', 'Expiring Soon')->orderBy('expiry_date', 'asc'),
+        ])
+        ->where('expiry_status', 'Expiring Soon')
         ->orderBy('expiry_date', 'asc')
-        ->get();
+        ->get()
+        ->map(function ($medicine) {
+            $medicine->available_stock_count = $medicine->batches->sum(fn($b) => $b->quantity - $b->reserved_quantity);
+            $avail = $medicine->available_stock_count;
+            $medicine->computed_stock_status = $avail <= 0 ? 'Out of Stock'
+                : ($avail <= 10 ? 'Low Stock' : 'In Stock');
+            $fifoBatch = $medicine->batches->first();
+            $medicine->fifo_expiry_date = $fifoBatch?->expiry_date;
+            $medicine->expiring_batch_count = $medicine->allBatches->count();
+            return $medicine;
+        });
     }
+
+    public function getExpiringSoonData()
+    {
+        return MedicineBatch::with([
+            'medicine' => fn($q) => $q->with([
+                // All valid batches of that medicine — for available stock
+                'batches' => fn($q2) => $q2->where('expiry_date', '>', now()),
+            ]),
+        ])
+        ->where('expiry_status', 'Expiring Soon')
+        ->orderBy('expiry_date', 'asc')
+        ->paginate($this->expiringSoonPerPage, ['*'], 'expiringSoonPage', $this->expiringSoonPage)
+        ->through(function ($batch) {
+            // Available stock = free units across ALL valid batches of this medicine
+            $available = $batch->medicine?->batches
+                ->sum(fn($b) => max(0, $b->quantity - $b->reserved_quantity)) ?? 0;
+
+            $batch->available_stock = $available;
+
+            $batch->computed_stock_status = $available <= 0
+                ? 'Out of Stock'
+                : ($available <= 10 ? 'Low Stock' : 'In Stock');
+
+            return $batch;
+        });
+    }
+
+
+
 
     public function getInventoryTableData(){
         return Medicine::with('category')
@@ -665,7 +766,7 @@ public function getTopMedicinesDateRangeData(){
         $end = Carbon::parse($this->endDate);
 
         return MedicineRequestLog::select('medicine_name', DB::raw('SUM(quantity) as total_dispensed'))
-            ->where('action', 'approved')
+            ->where('action', 'dispensed')
             ->whereBetween('performed_at', [$start, $end])
             ->groupBy('medicine_name')
             ->orderByDesc('total_dispensed')
@@ -712,14 +813,34 @@ public function getTopMedicinesDateRangeData(){
         }
     }
 
+
+    public function updatedDistributedPage()
+{
+    // reset to top when page changes — nothing needed, render() handles it
+}
+
+public function updatedDistributedPerPage()
+{
+    $this->distributedPage = 1; // reset to page 1 when per page changes
+}
     public function render()
     {
+        $distributed = MedicineRequestLog::where('action', 'dispensed')
+            ->select('patient_name', 'medicine_name', 'dosage', 'quantity', 'performed_at')
+            ->orderByDesc('performed_at')
+            ->paginate($this->distributedPerPage, ['*'], 'distributedPage', $this->distributedPage);
+
         return view('livewire.inventory-report', [
-            'categoriesData' => $this->getMedicineCategoriesData(),
-            'pieChartData' => $this->getPieChartData(),
-            'dateRangeGivenData' => $this->getDateRangeGivenData(),
+            'categoriesData'       => $this->getMedicineCategoriesData(),
+            'pieChartData'         => $this->getPieChartData(),
+            'dateRangeGivenData'   => $this->getDateRangeGivenData(),
             'dateRangeRequestData' => $this->getDateRangeRequestData(),
-            'topMedicinesData' => $this->getTopMedicinesDateRangeData(),
+            'topMedicinesData'     => $this->getTopMedicinesDateRangeData(),
+            'distributed'          => $distributed,
+            'allMedicines'         => $this->getAllMedicinesData(),
+            'allRequests'          => $this->getAllRequestsData(),
+            'lowStockData'         => $this->getLowStockData(),
+            'expiringSoonData'     => $this->getExpiringSoonData(),
         ])->layout('livewire.layouts.base', ['page' => 'INVENTORY REPORT']);
     }
 }

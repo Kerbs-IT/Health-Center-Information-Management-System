@@ -72,22 +72,11 @@
                             <td class="text-center">
                                 @php $batches = is_array($log->batches_used) ? $log->batches_used : []; @endphp
                                 @if(count($batches) > 0)
-                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                            type="button"
+                                            tabindex="0"
                                             data-bs-toggle="popover"
-                                            data-bs-trigger="focus"
-                                            data-bs-html="true"
-                                            title="Batches Used (FIFO)"
-                                            data-bs-content="
-                                                @foreach($batches as $b)
-                                                    <div class='mb-1'>
-                                                        <small>
-                                                            <strong>{{ $b['batch_number'] ?? 'N/A' }}</strong><br>
-                                                            Expiry: {{ $b['expiry_date'] ?? 'N/A' }}<br>
-                                                            Qty taken: {{ $b['qty_taken'] ?? 0 }}
-                                                        </small>
-                                                    </div>
-                                                @endforeach
-                                            ">
+                                            data-batches="{{ json_encode($batches) }}">
                                         <i class="fa-solid fa-layer-group"></i>
                                         {{ count($batches) }} batch(es)
                                     </button>
@@ -117,20 +106,37 @@
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Bootstrap popovers for batch detail buttons
-            document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
-                new bootstrap.Popover(el);
-            });
-        });
-        // Re-init popovers after Livewire re-renders
-        document.addEventListener('livewire:update', () => {
+        function initPopovers() {
             document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
                 const existing = bootstrap.Popover.getInstance(el);
                 if (existing) existing.dispose();
-                new bootstrap.Popover(el);
+
+                // Build content from the data-batches JSON attribute
+                const batches = JSON.parse(el.dataset.batches || '[]');
+                const content = batches.map(b => `
+                    <div class="mb-1">
+                        <small>
+                            <strong>${b.batch_number ?? 'N/A'}</strong><br>
+                            Expiry: ${b.expiry_date ?? 'N/A'}<br>
+                            Qty taken: ${b.qty_taken ?? 0}
+                        </small>
+                    </div>
+                `).join('');
+
+                new bootstrap.Popover(el, {
+                    html: true,
+                    trigger: 'focus',
+                    title: 'Batches Used (FIFO)',
+                    content: content || '—',
+                });
             });
-        });
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', initPopovers);
+
+        // Livewire v3 re-render hook
+        document.addEventListener('livewire:updated', initPopovers);
     </script>
     @endpush
 </div>

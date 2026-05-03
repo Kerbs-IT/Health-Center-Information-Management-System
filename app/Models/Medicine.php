@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -24,12 +25,8 @@ class Medicine extends Model
 
     protected $dates = ['deleted_at', 'expiry_date'];
 
-
     // ─── Relationships ───────────────────────────────────────────
 
-    /**
-     * Category — includes trashed so archived categories still resolve.
-     */
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'category_id')
@@ -42,17 +39,18 @@ class Medicine extends Model
     }
 
     /**
-     * Active batches sorted oldest-expiry-first (FIFO order).
+     * Active, non-expired batches with remaining quantity — FIFO order.
      */
     public function batches()
     {
         return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
+                    ->where('expiry_date', '>', now())
                     ->where('quantity', '>', 0)
                     ->orderBy('expiry_date', 'asc');
     }
 
     /**
-     * All batches regardless of remaining quantity.
+     * All batches regardless of quantity (for management views).
      */
     public function allBatches()
     {
@@ -74,9 +72,53 @@ class Medicine extends Model
                   ->where('category_name', 'like', "%{$value}%");
             });
     }
+
+    // ─── Accessors ───────────────────────────────────────────────
+
+    /**
+     * First valid batch in FIFO order (used for expiry status display).
+     */
     public function getFifoBatchAttribute(): ?MedicineBatch
     {
-    return $this->batches()->first(); // already ordered by expiry_date asc, qty > 0
+        return $this->batches()->first();
     }
 
+    /**
+     * Total units physically in stock from non-expired batches.
+     */
+    public function getValidStockAttribute(): int
+    {
+        return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
+            ->where('expiry_date', '>', now())
+            ->where('quantity', '>', 0)
+            ->sum('quantity');
+    }
+
+    /**
+     * Total units currently reserved (approved but not yet dispensed).
+     * Sums reserved_quantity across all non-expired, non-trashed batches.
+     */
+    public function getTotalReservedAttribute(): int
+    {
+        return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
+            ->where('expiry_date', '>', now())
+            ->sum('reserved_quantity');
+    }
+
+    /**
+     * Units free to be requested or reserved right now.
+     * = stock − total_reserved
+     */
+    public function getAvailableStockAttribute(): int
+    {
+        return max(0, $this->stock - $this->total_reserved);
+    }
+
+    public function getLastBatchAttribute(): ?MedicineBatch
+    {
+        return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
+            ->where('quantity', '>', 0)
+            ->orderBy('expiry_date', 'desc')
+            ->first();
+    }
 }

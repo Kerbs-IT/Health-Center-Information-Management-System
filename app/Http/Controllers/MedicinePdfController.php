@@ -11,20 +11,21 @@ class MedicinePdfController extends Controller
 {
     public function downloadPdf()
     {
-        $medicines = Medicine::with('category')
-            ->orderBy('medicine_name', 'asc')
-            ->get();
+        $medicines = Medicine::with([
+            'category',
+            'batches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+            'allBatches',
+        ])
+        ->orderBy('medicine_name', 'asc')
+        ->get();
 
-        $pdf = Pdf::loadView('reports.medicines-pdf', [
-            'medicines' => $medicines
-        ]);
-
+        $pdf = Pdf::loadView('reports.medicines-pdf', ['medicines' => $medicines]);
         $pdf->setPaper('A4', 'landscape');
         $pdf->setOptions([
-            'defaultFont'         => 'Arial',
+            'defaultFont'          => 'Arial',
             'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled'     => false,
-            'chroot'              => public_path(),
+            'isRemoteEnabled'      => false,
+            'chroot'               => public_path(),
         ]);
 
         return $pdf->download('Medicine_Inventory_' . date('Y-m-d_His') . '.pdf');
