@@ -326,7 +326,7 @@ class HealthCenterDashboard extends Controller
             'vaccination'     => 'vaccination',
             'prenatal'        => 'prenatal',
             'senior'          => 'senior-citizen',
-            'tb'              => 'tb-dots',
+            'tb'              => 'tb-dots', 
             'family_planning' => 'family-planning',
             'general_consultation' => 'general-consultation'
         ];
@@ -1049,7 +1049,7 @@ class HealthCenterDashboard extends Controller
                         ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
                     // Add this 👇
                     'general_consultation' => (clone $baseQuery)
-                        ->join('general_consultation_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
+                        ->join('gc_medical_records as g', 'g.medical_record_case_id', '=', 'medical_record_cases.id')
                         ->where('g.health_worker_id', $staffId)
                         ->count(DB::raw('DISTINCT patient_addresses.patient_id')),
                 ];

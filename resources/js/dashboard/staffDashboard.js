@@ -34,9 +34,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
         const data = await response.json();
 
-        // initialize the data
         const overallPatientElement = document.getElementById(
-            "overall-patient-counts"
+            "overall-patient-counts",
         );
         const vaccinationPatientElement =
             document.getElementById("vaccination-count");
@@ -44,20 +43,23 @@ document.addEventListener("DOMContentLoaded", async (e) => {
             document.getElementById("prenatal-count");
         const tbDotsPatientElement = document.getElementById("tb-dots-count");
         const seniorCitizenElement = document.getElementById(
-            "senior-citizen-count"
+            "senior-citizen-count",
         );
         const familyPlanningElement = document.getElementById(
-            "family-planning-count"
+            "family-planning-count",
         );
-        // provide the values
+        const generalConsultationElement = document.getElementById(
+            "general-consultation-count",
+        ); // ADD THIS
+
         overallPatientElement.innerHTML = data.overallPatients ?? 0;
         vaccinationPatientElement.innerHTML = data.vaccinationCount ?? 0;
         prenatalPatientElement.innerHTML = data.prenatalCount ?? 0;
         tbDotsPatientElement.innerHTML = data.tbDotsCount ?? 0;
         seniorCitizenElement.innerHTML = data.seniorCitizenCount ?? 0;
         familyPlanningElement.innerHTML = data.familyPlanningCount ?? 0;
-
-        // console.log(data.baseData);
+        generalConsultationElement.innerHTML =
+            data.generalConsultationCount ?? 0; // ADD THIS
     } catch (error) {
         console.error("Error");
     }
@@ -147,6 +149,32 @@ function initDateRangePicker() {
     }
 
 }
+
+// Patients Per Service Today
+async function loadTodayPatients() {
+    try {
+        const response = await fetch("/dashboard/patient-added-today", {
+            headers: { accept: "application/json" },
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        document.getElementById("vaccination-patient-today").innerHTML = data.vaccinationCount ?? 0;
+        document.getElementById("prenatal-patient-today").innerHTML = data.prenatalCount ?? 0;
+        document.getElementById("senior-citizen-patient-today").innerHTML = data.seniorCitizenCount ?? 0;
+        document.getElementById("tb-dots-patient-today").innerHTML = data.tbDotsCount ?? 0;
+        document.getElementById("family-planning-patient-today").innerHTML = data.familyPlanningCount ?? 0;
+        document.getElementById("general-consultation-patient-today").innerHTML = data.generalConsultationCount ?? 0;
+
+    } catch (error) {
+        console.error("Error loading today patients:", error);
+    }
+}
+
+// Call it on load
+loadTodayPatients();
 
 async function reloadDistribution() {
     
