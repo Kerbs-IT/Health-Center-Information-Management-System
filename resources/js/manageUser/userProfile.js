@@ -331,6 +331,8 @@ const errorFieldMap = {
     provinceKey: "province-error",
     cityKey: "city-error",
     barangayKey: "brgy-error",
+    blk_n_street: "blk_n_street-error",
+    patient_purok_dropdown: "patient_purok_dropdown-error",
 };
 
 function displayErrors(errors) {
