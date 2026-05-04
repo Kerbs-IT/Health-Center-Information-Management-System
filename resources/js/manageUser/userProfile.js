@@ -6,6 +6,7 @@ const submitBtn = document.getElementById("submit-btn");
 
 editIcon.addEventListener("click", (e) => {
     e.preventDefault();
+    clearAllErrors();
     const id = editIcon.dataset.id;
 
     fetch(`/patient-profile-edit/${id}`, {

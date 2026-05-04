@@ -274,17 +274,17 @@
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="first_name" class="w-100">First Name<span class="text-danger">*</span></label>
                                         <input type="text" id="first_name" placeholder="First Name" class="form-control" name="first_name" value="">
-                                        <small class="text-danger" id="fname-error"></small>
+                                        <small class="text-danger error-text" id="fname-error"></small>
                                     </div>
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="middle_initial" class="w-100">Middle Name</label>
                                         <input type="text" id="middle_initial" placeholder="Middle Name" class="form-control" name="middle_initial" value="">
-                                        <small class="text-danger" id="middle-initial-error"></small>
+                                        <small class="text-danger error-text" id="middle-initial-error"></small>
                                     </div>
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="last_name" class="w-100">Last Name<span class="text-danger">*</span></label>
                                         <input type="text" id="last_name" placeholder="Last Name" class="form-control" name="last_name" value="">
-                                        <small class="text-danger" id="lname-error"></small>
+                                        <small class="text-danger error-text" id="lname-error"></small>
                                     </div>
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="edit_suffix" class="">Suffix</label>
@@ -297,7 +297,7 @@
                                             <option value="IV.">IV</option>
                                             <option value="V.">V</option>
                                         </select>
-                                        <small class="text-danger" id="edit-suffix-error"></small>
+                                        <small class="text-danger error-text" id="edit-suffix-error"></small>
                                     </div>
                                 </div>
                                 <!-- age -->
@@ -306,13 +306,13 @@
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="age">Age <span class="text-danger">*</span></label>
                                         <input type="text" id="age" placeholder="Enter the age" class="form-control" name="age" value="">
-                                        <small class="text-danger" id="age-error"></small>
+                                        <small class="text-danger error-text" id="age-error"></small>
                                     </div>
                                     @endif
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="birthdate">Date of Birth <span class="text-danger">*</span></label>
                                         <input type="date" id="birthdate" placeholder="20" class="form-control w-100 px-5" name="date_of_birth" value="">
-                                        <small class="text-danger" id="birthdate-error"></small>
+                                        <small class="text-danger error-text" id="birthdate-error"></small>
                                     </div>
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
@@ -327,7 +327,7 @@
                                                 <input type="radio" id="female" class="mb-0" name="sex" value="Female" {{ $selectedSex === 'female'? 'checked' : '' }}>
                                                 <label for="female" class="mb-0">Female</label>
                                             </div>
-                                            <small class="text-danger" id="sex-error"></small>
+                                            <small class="text-danger error-text" id="sex-error"></small>
                                         </div>
                                     </div>
                                     @endif
@@ -344,20 +344,20 @@
                                             <option value="married">Married</option>
                                             <option value="divorce">Divorce</option>
                                         </select>
-                                        <small class="text-danger" id="civil-status-error"></small>
+                                        <small class="text-danger error-text" id="civil-status-error"></small>
                                     </div>
                                     @endif
                                     <!-- contact -->
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
                                         <input type="number" placeholder="Enter the contact number" class="form-control" id="contact_num" name="contact_number" value="">
-                                        <small class="text-danger" id="contact-error"></small>
+                                        <small class="text-danger error-text" id="contact-error"></small>
                                     </div>
                                     @if($typeOfPatient)
                                     <div class="input-field flex-1 flex-fill xl:w-[50%]">
                                         <label for="nationality" class="">Nationality</label>
                                         <input type="text" placeholder="eg. Filipino" class="form-control" id="nationality" name="nationality" value="">
-                                        <small class="text-danger" id="nationality-error"></small>
+                                        <small class="text-danger error-text" id="nationality-error"></small>
                                     </div>
                                     @endif
                                 </div>
@@ -368,7 +368,7 @@
                                     <div class="input-field flex-fill xl: w-[50%]">
                                         <label for="email" class="">Email Address<span class="text-danger">*</span></label>
                                         <input type="email" placeholder="Enter the Email Address" id="email" class="form-control" name="email" value="">
-                                        <small class="text-danger" id="email-error"></small>
+                                        <small class="text-danger error-text" id="email-error"></small>
                                     </div>
 
                                 </div>
@@ -380,18 +380,14 @@
                                         <div class="items w-[100%] xl:[50%]">
                                             <label for="patient_street" class="w-100 text-muted">House No., Street,<span class="text-danger">*</span></label>
                                             <input type="text" id="update_blk_n_street" name="blk_n_street" placeholder="e.g., Blk 1 Lot 2, Mabini St." class="w-100 form-control">
-                                            @error('blk_n_street')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="blk_n_street-error"></small>
                                         </div>
                                         <div class="items w-[100%] xl:[50%]">
                                             <label for="patient_purok_dropdown">Puroks <span class="text-danger">*</span></label>
                                             <select id="update_patient_purok_dropdown" class="form-select w-100" name="patient_purok_dropdown" required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
-                                            @error('patient_purok_dropdown')
-                                            <small class="text-danger">{{$message}}</small>
-                                            @enderror
+                                            <small class="text-danger error-text" id="patient_purok_dropdown-error"></small>
                                         </div>
 
                                     </div>
@@ -406,7 +402,7 @@
                                             <option value="family-planning">Family Planning</option>
                                             <option value="general-consultation">General Consultation</option>
                                         </select>
-                                        <small class="text-danger error-element patient-type-error"></small>
+                                        <small class="text-danger error-text error-element patient-type-error"></small>
                                     </div>
                                 </div>
                                 <!-- ADDITIONAL INFORMATION -->
@@ -500,7 +496,7 @@
                                             <div class="input-field w-100">
                                                 <label for="religion">Religion</label>
                                                 <input type="text" id="religion" placeholder="Enter the Religion" class="form-control" name="religion">
-                                                <small class=" text-danger" id="religion_error"></small>
+                                                <small class=" text-danger error-text" id="religion_error"></small>
                                             </div>
                                         </div>
                                     </div>
