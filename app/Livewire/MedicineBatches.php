@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
 use Illuminate\Support\Facades\DB;
-
+use \Illuminate\Validation\Rule;
 class MedicineBatches extends Component
 {
     public Medicine $medicine;
@@ -39,9 +39,11 @@ class MedicineBatches extends Component
 
     private function determineExpiryStatus($expiry_date): string
     {
-        $days = now()->diffInDays($expiry_date, false);
-        if ($days <= 0)  return 'Expired';
-        if ($days <= 30) return 'Expiring Soon';
+        $expiry = \Carbon\Carbon::parse($expiry_date)->startOfDay();
+        $today  = now('Asia/Manila')->startOfDay();
+
+        if ($expiry->lte($today)) return 'Expired';
+        if ($expiry->lte($today->copy()->addDays(30))) return 'Expiring Soon';
         return 'Valid';
     }
 
@@ -91,12 +93,19 @@ class MedicineBatches extends Component
         $this->validate([
             'newBatchQty'         => 'required|integer|min:1',
             'newBatchExpiry'      => 'required|date|after:today',
-            'newBatchNumber'      => 'nullable|string|max:100',
+            'newBatchNumber'      => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id),
+            ],
             'newBatchManufactured'=> 'nullable|date',
         ], [
             'newBatchQty.required'    => 'Quantity is required.',
             'newBatchExpiry.required' => 'Expiry date is required.',
             'newBatchExpiry.after'    => 'Expiry date must be in the future.',
+            'newBatchNumber.required' => 'Batch number is required.',
+            'newBatchNumber.unique'   => 'This batch number already exists.',
         ]);
 
         $expiryStatus = $this->determineExpiryStatus($this->newBatchExpiry);
@@ -104,7 +113,7 @@ class MedicineBatches extends Component
         DB::transaction(function () use ($expiryStatus) {
             MedicineBatch::create([
                 'medicine_id'       => $this->medicine->medicine_id,
-                'batch_number'      => $this->newBatchNumber ?: 'BATCH-' . strtoupper(uniqid()),
+                'batch_number'      => $this->newBatchNumber,
                 'quantity'          => (int) $this->newBatchQty,
                 'initial_quantity'  => (int) $this->newBatchQty,
                 'reserved_quantity' => 0,
@@ -143,13 +152,20 @@ class MedicineBatches extends Component
         $batch = MedicineBatch::findOrFail($this->editBatchId);
 
         $this->validate([
-            'editBatchNumber'       => 'nullable|string|max:100',
+            'editBatchNumber'       => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->ignore($this->editBatchId),
+            ],
             'editBatchQty'          => ['required', 'integer', 'min:0'],
             'editBatchExpiry'       => 'required|date',
             'editBatchManufactured' => 'nullable|date',
         ], [
             'editBatchQty.required'    => 'Quantity is required.',
             'editBatchExpiry.required' => 'Expiry date is required.',
+            'editBatchNumber.required' => 'Batch number is required.',
+            'editBatchNumber.unique'   => 'This batch number already exists.',
         ]);
 
         $newQty = (int) $this->editBatchQty;
@@ -170,7 +186,7 @@ class MedicineBatches extends Component
 
         DB::transaction(function () use ($batch, $oldQty, $expiryStatus, $newQty) {
             $batch->update([
-                'batch_number'      => $this->editBatchNumber ?: $batch->batch_number,
+                'batch_number'      => $this->editBatchNumber,
                 'quantity'          => $newQty,
                 'manufactured_date' => $this->editBatchManufactured ?: null,
                 'expiry_date'       => $this->editBatchExpiry,

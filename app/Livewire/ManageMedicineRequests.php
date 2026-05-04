@@ -238,7 +238,7 @@ class ManageMedicineRequests extends Component
                 'medicine_name'       => $medicine->medicine_name,
                 'dosage'              => $medicine->dosage,
                 'quantity'            => $qtyNeeded,
-                'action'              => 'approved_reserved',
+                'action'              => 'approved',
                 'performed_by_id'     => auth()->id(),
                 'performed_by_name'   => auth()->user()->username ?? auth()->user()->full_name,
                 'performed_at'        => now(),

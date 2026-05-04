@@ -27,7 +27,7 @@ Schedule::command('appointments:send-reminders')
     ->timezone('Asia/Manila') // Adjust to your timezone
     ->emailOutputOnFailure('admin@yourhealthcenter.com'); // Optional: get email if it fails
 
-  
+Schedule::command('batches:recalculate-expiry')->dailyAt('00:01');
 
 // Alternative schedule options you can use:
 // ->dailyAt('19:00')                    // At 7:00 PM

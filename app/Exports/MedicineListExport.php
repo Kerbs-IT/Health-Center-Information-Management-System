@@ -21,16 +21,23 @@ class MedicineListExport implements
 {
     protected $medicines;
 
-    public function __construct()
+    public function __construct(string $startDate, string $endDate)
     {
         $this->medicines = Medicine::with([
             'category',
             'batches'    => fn($q) => $q->orderBy('expiry_date', 'asc'),
             'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
         ])
+        ->whereBetween('created_at', [
+            \Carbon\Carbon::parse($startDate)->startOfDay(),
+            \Carbon\Carbon::parse($endDate)->endOfDay(),
+        ])
         ->orderBy('medicine_name')
         ->get()
-        ->map(fn($m) => tap($m, fn($m) => $m->category_name = $m->category?->category_name ?? 'N/A'));
+        ->map(function ($medicine) {
+            $medicine->category_name = $medicine->category?->category_name ?? 'N/A';
+            return $medicine;
+        });
     }
 
     public function collection() { return $this->medicines; }

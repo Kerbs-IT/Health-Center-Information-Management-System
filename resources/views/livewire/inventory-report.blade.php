@@ -137,6 +137,14 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap w-100">
+                        <label class="form-label mb-0 text-muted small fw-semibold">Date Range:</label>
+                        <input type="text" id="medicinesDatePicker"
+                            class="form-control form-control-lg"
+                            style="width: auto; min-width: 380px; cursor: pointer; background: white;"
+                            readonly>
+                    </div>
+
                     <center>
                     <div wire:loading wire:target="medicinesPage, medicinesPerPage"
                         class="text-center py-5"
@@ -147,7 +155,6 @@
                         <p class="text-muted mt-2 mb-0">Loading medicines...</p>
                     </div>
                     </center>
-
                     <div wire:loading.class="d-none" wire:target="medicinesPage, medicinesPerPage">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <div class="d-flex align-items-center gap-2">
@@ -237,10 +244,12 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.medicine.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                        <a href="{{ route('download.medicine.report', ['start' => $medicinesStartDate, 'end' => $medicinesEndDate]) }}"
+                        class="btn btn-success btn-sm me-2 ms-5">
                             <i class="bi bi-download"></i> Download PDF
                         </a>
-                        <a href="{{ route('download.medicine.report.excel') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('download.medicine.report.excel', ['start' => $medicinesStartDate, 'end' => $medicinesEndDate]) }}"
+                        class="btn btn-success btn-sm">
                             <i class="fa-solid fa-file-csv"></i> Download CSV
                         </a>
                     </div>
@@ -259,6 +268,13 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <label class="form-label mb-0 text-muted small fw-semibold">Date Range:</label>
+                        <input type="text" id="requestsDatePicker"
+                            class="form-control form-control-sm"
+                            style="width: auto; min-width: 380px; cursor: pointer; background: white;"
+                            readonly>
+                    </div>
                     <center>
                     <div wire:loading wire:target="requestsPage, requestsPerPage"
                         class="text-center py-5"
@@ -348,12 +364,12 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.request.report') }}" class="btn btn-success btn-sm me-2 ms-5">
-                            <i class="bi bi-download"></i> Download PDF
-                        </a>
-                        <a href="{{ route('download.request.report.excel') }}" class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-csv"></i> Download CSV
-                        </a>
+                    <a href="{{ route('download.request.report', ['start' => $requestsStartDate, 'end' => $requestsEndDate]) }}"  class="btn btn-success btn-sm me-2 ms-5">
+                        <i class="bi bi-download"></i> Download PDF
+                    </a>
+                    <a href="{{ route('download.request.report.excel', ['start' => $requestsStartDate, 'end' => $requestsEndDate]) }}" class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-file-csv"></i> Download CSV
+                    </a>
                     </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 </div>
@@ -372,7 +388,13 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <label class="form-label mb-0 text-muted small fw-semibold">Date Range:</label>
+                        <input type="text" id="distributedDatePicker"
+                            class="form-control form-control-sm"
+                            style="width: auto; min-width: 380px; cursor: pointer; background: white;"
+                            readonly>
+                    </div>
                     {{-- Loading Spinner — triggers on property changes --}}
                     <center>
                     <div wire:loading wire:target="distributedPage, distributedPerPage"
@@ -482,10 +504,10 @@
 
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.distributed.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                        <a href="{{ route('download.distributed.report', ['start' => $distributedStartDate, 'end' => $distributedEndDate]) }}" class="btn btn-success btn-sm me-2 ms-5">
                             <i class="bi bi-download"></i> Download PDF
                         </a>
-                        <a href="{{ route('download.distributed.report.excel') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('download.distributed.report.excel', ['start' => $distributedStartDate, 'end' => $distributedEndDate]) }}" class="btn btn-success btn-sm">
                             <i class="fa-solid fa-file-csv"></i> Download CSV
                         </a>
                     </div>
@@ -504,6 +526,13 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <label class="form-label mb-0 text-muted small fw-semibold">Date Range:</label>
+                        <input type="text" id="lowStockDatePicker"
+                            class="form-control form-control-sm"
+                            style="width: auto; min-width: 380px; cursor: pointer; background: white;"
+                            readonly>
+                    </div>
                     <center>
                     <div wire:loading wire:target="lowStockPage, lowStockPerPage"
                         class="text-center py-5"
@@ -604,10 +633,10 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.lowstock.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                        <a href="{{ route('download.lowstock.report', ['start' => $lowStockStartDate, 'end' => $lowStockEndDate]) }}" class="btn btn-success btn-sm me-2 ms-5">
                             <i class="bi bi-download"></i> Download PDF
                         </a>
-                        <a href="{{ route('download.lowstock.report.excel') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('download.lowstock.report.excel', ['start' => $lowStockStartDate, 'end' => $lowStockEndDate]) }}" class="btn btn-success btn-sm">
                             <i class="fa-solid fa-file-csv"></i> Download CSV
                         </a>
                     </div>
@@ -628,6 +657,13 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <label class="form-label mb-0 text-muted small fw-semibold">Date Range:</label>
+                        <input type="text" id="expiringSoonDatePicker"
+                            class="form-control form-control-sm"
+                            style="width: auto; min-width: 380px; cursor: pointer; background: white;"
+                            readonly>
+                    </div>
                     <center>
                     <div wire:loading wire:target="expiringSoonPage, expiringSoonPerPage"
                         class="text-center py-5"
@@ -730,10 +766,10 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <a href="{{ route('download.expSoon.report') }}" class="btn btn-success btn-sm me-2 ms-5">
+                        <a href="{{ route('download.expSoon.report', ['start' => $expiringSoonStartDate, 'end' => $expiringSoonEndDate]) }}" class="btn btn-success btn-sm me-2 ms-5">
                             <i class="bi bi-download"></i> Download PDF
                         </a>
-                        <a href="{{ route('download.expSoon.report.excel') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('download.expSoon.report.excel', ['start' => $expiringSoonStartDate, 'end' => $expiringSoonEndDate]) }}" class="btn btn-success btn-sm">
                             <i class="fa-solid fa-file-csv"></i> Download CSV
                         </a>
                     </div>

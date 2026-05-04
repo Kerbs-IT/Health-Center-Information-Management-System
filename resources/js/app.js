@@ -33,6 +33,7 @@ import Inputmask from "inputmask";
 
 import "./inventory-report.js";
 
+
 const root = document.querySelector(":root");
 const logoutBtn = document.getElementById("logout-btn");
 const logoutUrl = "{{ route('logout') }}";

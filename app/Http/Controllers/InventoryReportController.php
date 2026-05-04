@@ -31,13 +31,11 @@ class InventoryReportController extends Controller
             'totalDispensed' => MedicineRequestLog::where('action', 'dispensed')->sum('quantity'),
             'lowStock' => Medicine::where('stock_status', 'Low Stock')->count(),
             'expiringSoon' => MedicineBatch::where('expiry_status', 'Expiring Soon')->count(),
-P
             'categoriesData' => $this->getMedicineCategoriesData($barChartStartDate, $barChartEndDate),
             'pieChartData' => $this->getPieChartData($pieChartStartDate, $pieChartEndDate),
             'dateRangeGivenData' => $this->getDateRangeGivenData($startDate, $endDate),
             'requestTrendData' => $this->getDateRangeRequestData($startDate, $endDate),
             'topMedicinesData' => $this->getTopMedicinesDateRangeData($startDate, $endDate),
-
             'generatedDate' => now()->format('F d, Y h:i A'),
             'startDate' => Carbon::parse($startDate)->format('F d, Y'),
             'endDate' => Carbon::parse($endDate)->format('F d, Y'),

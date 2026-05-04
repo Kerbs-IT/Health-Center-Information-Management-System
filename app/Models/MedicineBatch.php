@@ -52,11 +52,12 @@ class MedicineBatch extends Model
      */
     public function recalculateExpiryStatus(): void
     {
-        $days = now()->diffInDays($this->expiry_date, false);
+        $expiry = $this->expiry_date->copy()->startOfDay();
+        $today  = now('Asia/Manila')->startOfDay();
 
-        if ($days <= 0) {
+        if ($expiry->lte($today)) {
             $status = 'Expired';
-        } elseif ($days <= 30) {
+        } elseif ($expiry->lte($today->copy()->addDays(30))) {
             $status = 'Expiring Soon';
         } else {
             $status = 'Valid';

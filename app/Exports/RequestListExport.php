@@ -20,10 +20,19 @@ class RequestListExport implements
     WithMapping
 {
     protected $requests;
+    protected string $startDate;
+    protected string $endDate;
 
-    public function __construct()
+    public function __construct(string $startDate, string $endDate)
     {
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
+
         $this->requests = MedicineRequest::with(['medicine', 'patients'])
+            ->whereBetween('created_at', [
+                \Carbon\Carbon::parse($startDate)->startOfDay(),
+                \Carbon\Carbon::parse($endDate)->endOfDay(),
+            ])
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($r) {

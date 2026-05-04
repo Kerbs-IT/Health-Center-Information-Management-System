@@ -18,7 +18,18 @@
     --active-menu-text: #ffffff;
     --primary-bg-text:#ffffff;
 }
+.daterangepicker {
+    z-index: 9999 !important;
+}
+#requestModal .modal-content,
+#distributedModal .modal-content {
+    overflow: visible !important;
+}
 
+#requestModal .modal-body,
+#distributedModal .modal-body {
+    overflow: visible !important;
+}
 @font-face {
     font-family: 'Poppins';
     src: url('../../public/Poppins/Poppins-ExtraBold.ttf') format('truetype');
