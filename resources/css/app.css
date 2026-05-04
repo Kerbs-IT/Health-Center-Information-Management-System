@@ -29,6 +29,7 @@
 #requestModal .modal-body,
 #distributedModal .modal-body {
     overflow: visible !important;
+}
 /* Prevent sidebar flicker on page load */
 html.sidebar-pre-collapsed .menu-bar {
     width: 80px !important;
