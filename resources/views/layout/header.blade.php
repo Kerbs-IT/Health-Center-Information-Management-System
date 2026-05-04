@@ -68,15 +68,16 @@
         <div class="username-n-role">
           <h5 class="mb-0">
             {{
-              optional(Auth::user()->nurses)->full_name
-              ?? optional(Auth::user()->staff)->full_name
-              ?? optional(Auth::user()->patient)->full_name 
-              ?? (function() {
-                  $user = Auth::user();
-                  $middle = $user->middle_initial ? strtoupper(substr($user->middle_initial, 0, 1)) . '.' : '';
-                  return ucwords(trim(implode(' ', array_filter([$user->first_name, $middle, $user->last_name]))));
-              })()
-              ?? 'none'
+                optional(Auth::user()->nurses)->full_name
+                ?? optional(Auth::user()->staff)->full_name
+                ?? optional(Auth::user()->patient)->full_name 
+                ?? (function() {
+                    $user = Auth::user();
+                    $middle = $user->middle_initial ? strtoupper(substr($user->middle_initial, 0, 1)) . '.' : '';
+                    $suffix = $user->suffix ?? '';
+                    return ucwords(trim(implode(' ', array_filter([$user->first_name, $middle, $user->last_name, $suffix]))));
+                })()
+                ?? 'none'
             }}
           </h5>
           <h6 class="mb-0 text-muted fw-light text-capitalize">{{Auth::user()->role ?? 'none'}}</h6>
