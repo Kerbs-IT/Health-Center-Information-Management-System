@@ -168,7 +168,7 @@
                                                     </div>
                                                 </div>
                                                 {{-- Selected Guardian Indicator --}}
-                                                <div id="selectedGuardianIndicator" class="alert alert-info border-start border-info border-4 mt-2 mb-0" style="display: none;">
+                                                <div id="selectedGuardianIndicator" class="alert alert-success border-start border-success border-4 mt-2 mb-0" style="display: none;">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <div>
                                                             <strong class="d-block">Guardian linked</strong>
@@ -177,7 +177,7 @@
                                                                 <span id="displayGuardianEmail"></span>
                                                             </small>
                                                         </div>
-                                                        <button type="button" class="btn btn-sm btn-outline-info" id="clearGuardianBtn">
+                                                        <button type="button" class="btn btn-sm btn-outline-success" id="clearGuardianBtn">
                                                             Clear
                                                         </button>
                                                     </div>
@@ -607,7 +607,6 @@
                                                 <label for="brgy">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                                 @php
                                                 $brgy = \App\Models\brgy_unit::where('status','Active')
-                                                ->whereHas('staff') // only areas with assigned health worker
                                                 ->orderBy('brgy_unit')
                                                 ->get();
                                                 $user = auth()->user();

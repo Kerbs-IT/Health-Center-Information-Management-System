@@ -136,7 +136,7 @@ class PrenatalController extends Controller
             // DETERMINE handled_by
             // ============================================================================
             if ($request->filled('patient_id')) {
-                $handledBy = $patientData['handled_by_backup'] ?? null;
+                $handledBy = $patientData['handled_by'] ?? null;
                 if (!$handledBy) {
                     return response()->json([
                         'message' => 'Validation failed.',

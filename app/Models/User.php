@@ -128,4 +128,10 @@ class User extends Authenticatable implements CanResetPassword
     {
         return $this->hasMany(patients::class, 'guardian_user_id', 'id');
     }
+
+    // Add this
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\CustomResetPasswordNotification($token));
+    }
 }

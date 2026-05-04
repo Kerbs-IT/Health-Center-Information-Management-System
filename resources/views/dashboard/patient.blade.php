@@ -44,7 +44,7 @@
 }}"
                                 alt="profile_img" class="mb-3 profile-section-image" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.src='{{ asset('images/default_profile.png') }}'; this.onerror=null;">
 
-                            <h5 class="fw-light">{{ Auth::user()->email ?? 'none' }}</h5>
+                            <h5 class="fw-light text-break">{{ Auth::user()->email ?? 'none' }}</h5>
                             <button type="button" class="btn btn-success mt-2" id="patient_profile_edit" data-bs-toggle="modal" data-bs-target="#profile_modal" data-id="{{Auth::user()->id}}">Edit Profile</button>
                         </div>
 

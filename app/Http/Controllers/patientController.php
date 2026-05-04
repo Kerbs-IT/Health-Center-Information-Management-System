@@ -267,7 +267,12 @@ class patientController extends Controller
                 'first_name'             => 'required|string',
                 'last_name'              => 'required|string',
                 'middle_initial'         => 'sometimes|nullable|string',
-                'date_of_birth'          => 'required|date|before_or_equal:today',
+                'date_of_birth' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->subYears(10)->format('Y-m-d'), // at least 10
+                    'after_or_equal:' . now()->subYears(120)->format('Y-m-d'), // sanity cap
+                ],
                 'sex'                    => 'sometimes|nullable|string',
                 'civil_status'           => 'sometimes|nullable|string',
                 'contact_number'         => 'required|digits_between:7,12',
@@ -292,7 +297,8 @@ class patientController extends Controller
                 'last_name.string'                => 'The last name must be a string.',
                 'date_of_birth.required'          => 'The date of birth field is required.',
                 'date_of_birth.date'              => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal'   => 'The date of birth must be today or earlier.',
+                'date_of_birth.before_or_equal' => 'You must be at least 10 years old to register.',
+                'date_of_birth.after_or_equal'  => 'Please enter a valid date of birth.',
                 'contact_number.digits_between'   => 'The contact number must be between :min and :max digits.',
                 'blk_n_street.required'           => 'The block and street field is required.',
                 'patient_purok_dropdown.required' => 'The purok field is required.',

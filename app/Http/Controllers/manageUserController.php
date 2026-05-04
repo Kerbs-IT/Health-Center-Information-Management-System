@@ -38,7 +38,12 @@ class manageUserController extends Controller
                 'middle_initial' => 'sometimes|nullable|string',
                 'last_name' => ['required', 'string'],
                 'contact_number' => 'required|digits_between:7,12',
-                'date_of_birth' => 'required|date|before_or_equal:today',
+                'date_of_birth' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->subYears(10)->format('Y-m-d'), // at least 10
+                    'after_or_equal:' . now()->subYears(120)->format('Y-m-d'), // sanity cap
+                ],
                 'patient_type' => 'required|string',
                 'blk_n_street' => 'required|string',
                 'patient_purok_dropdown' => 'required',
@@ -59,7 +64,8 @@ class manageUserController extends Controller
 
                 'date_of_birth.required' => 'The date of birth field is required.',
                 'date_of_birth.date' => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+                'date_of_birth.before_or_equal' => 'You must be at least 10 years old to register.',
+                'date_of_birth.after_or_equal'  => 'Please enter a valid date of birth.',
 
                 'patient_type.required' => 'The patient type field is required.',
                 'patient_type.string' => 'The patient type must be a string.',
@@ -159,7 +165,12 @@ class manageUserController extends Controller
                 'last_name' => 'required|string',
                 'middle_initial' => 'sometimes|nullable|string|max:2',
                 'age' => 'sometimes|nullable|numeric',
-                'date_of_birth' => 'required|date|before_or_equal:today',
+                'date_of_birth' => [
+                    'required',
+                    'date',
+                    'before_or_equal:' . now()->subYears(10)->format('Y-m-d'), // at least 10
+                    'after_or_equal:' . now()->subYears(120)->format('Y-m-d'), // sanity cap
+                ],
                 'sex' => 'sometimes|nullable|string',
                 'civil_status' => 'sometimes|nullable|string',
                 'contact_number' => 'required|digits_between:7,12',
@@ -189,7 +200,8 @@ class manageUserController extends Controller
 
                 'date_of_birth.required' => 'The date of birth field is required.',
                 'date_of_birth.date' => 'The date of birth must be a valid date.',
-                'date_of_birth.before_or_equal' => 'The date of birth must be today or earlier.',
+                'date_of_birth.before_or_equal' => 'You must be at least 10 years old to register.',
+                'date_of_birth.after_or_equal'  => 'Please enter a valid date of birth.',
 
                 'contact_number.required' => 'The contact number field is required.',
                 'contact_number.digits_between' => 'The contact number must be between :min and :max digits.',

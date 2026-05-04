@@ -48,6 +48,33 @@ class PurokManagement extends Component
     {
         $this->validateOnly('addName');
 
+        $input = strtolower(trim($this->addName));
+
+        $similar = brgy_unit::where('status', 'Active')
+            ->get()
+            ->filter(function ($purok) use ($input) {
+                similar_text($input, strtolower(trim($purok->brgy_unit)), $percent);
+                return $percent >= 80;
+            })
+            ->pluck('brgy_unit')
+            ->values();
+
+        if ($similar->isNotEmpty()) {
+            $this->dispatch('similarPurokFound', names: $similar);
+            return;
+        }
+
+        $this->doSaveAdd();
+    }
+
+    public function confirmSaveAdd(): void
+    {
+        $this->validateOnly('addName');
+        $this->doSaveAdd();
+    }
+
+    private function doSaveAdd(): void
+    {
         brgy_unit::create([
             'brgy_unit' => trim($this->addName),
             'status'    => 'Active',
@@ -74,6 +101,34 @@ class PurokManagement extends Component
     {
         $this->validateOnly('editName');
 
+        $input = strtolower(trim($this->editName));
+
+        $similar = brgy_unit::where('status', 'Active')
+            ->where('id', '!=', $this->editId)
+            ->get()
+            ->filter(function ($purok) use ($input) {
+                similar_text($input, strtolower(trim($purok->brgy_unit)), $percent);
+                return $percent >= 80;
+            })
+            ->pluck('brgy_unit')
+            ->values();
+
+        if ($similar->isNotEmpty()) {
+            $this->dispatch('similarPurokFoundEdit', names: $similar);
+            return;
+        }
+
+        $this->doSaveEdit();
+    }
+
+    public function confirmSaveEdit(): void
+    {
+        $this->validateOnly('editName');
+        $this->doSaveEdit();
+    }
+
+    private function doSaveEdit(): void
+    {
         brgy_unit::findOrFail($this->editId)->update([
             'brgy_unit' => trim($this->editName),
         ]);
@@ -82,7 +137,6 @@ class PurokManagement extends Component
         $this->dispatch('purokUpdated');
         $this->reset(['editId', 'editName']);
     }
-
     // ─── Archive ─────────────────────────────────────────────────────────────
 
     public function archivePurok(int $id): void

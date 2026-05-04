@@ -123,65 +123,83 @@ document.addEventListener("click", async (e) => {
 
         const result = await response.json();
 
-        if (!response.ok) {
-            // set the errors
-            fname_error.innerHTML = result.errors?.first_name?.[0] ?? "";
-            middle_initial_error.innerHTML =
-                result.errors?.middle_initial?.[0] ?? "";
-            lname_error.innerHTML = result.errors?.last_name?.[0] ?? "";
-            email_error.innerHTML = result.errors?.email?.[0] ?? "";
-            password_error.innerHTML = result.errors?.password?.[0] ?? "";
-            blk_n_street_error.innerHTML =
-                result.errors?.blk_n_street?.[0] ?? "";
-            purok_dropdown_error.innerHTML =
-                result.errors?.patient_purok_dropdown?.[0] ?? "";
-            contact_number_error.innerHTML =
-                result.errors?.contact_number?.[0] ?? "";
-            date_of_birth_error.innerHTML =
-                result.errors?.date_of_birth?.[0] ?? "";
-            patient_type_error.innerHTML =
-                result.errors?.patient_type?.[0] ?? "";
+       if (!response.ok) {
+           // set the errors
+           fname_error.innerHTML = result.errors?.first_name?.[0] ?? "";
+           middle_initial_error.innerHTML =
+               result.errors?.middle_initial?.[0] ?? "";
+           lname_error.innerHTML = result.errors?.last_name?.[0] ?? "";
+           email_error.innerHTML = result.errors?.email?.[0] ?? "";
+           password_error.innerHTML = result.errors?.password?.[0] ?? "";
+           blk_n_street_error.innerHTML =
+               result.errors?.blk_n_street?.[0] ?? "";
+           purok_dropdown_error.innerHTML =
+               result.errors?.patient_purok_dropdown?.[0] ?? "";
+           contact_number_error.innerHTML =
+               result.errors?.contact_number?.[0] ?? "";
+           date_of_birth_error.innerHTML =
+               result.errors?.date_of_birth?.[0] ?? "";
+           patient_type_error.innerHTML =
+               result.errors?.patient_type?.[0] ?? "";
 
-            Swal.fire({
-                title: "Update",
-                text: "Invalid input value",
-                icon: "error",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then(() => {
-                // Re-enable button AFTER SweetAlert is dismissed
-                addPatientSubmitBtn.disabled = false;
-                addPatientSubmitBtn.innerHTML = originalText;
-            });
-        } else {
-            formDataElement.reset();
-            // make the errors gone
-            fname_error.innerHTML = "";
-            middle_initial_error.innerHTML = "";
-            lname_error.innerHTML = "";
-            email_error.innerHTML = "";
-            password_error.innerHTML = "";
-            blk_n_street_error.innerHTML = "";
-            purok_dropdown_error.innerHTML = "";
+           // validation errors
+           if (result.errors) {
+               const errorMessages = formatErrorMessages(result.errors);
 
-            Swal.fire({
-                title: "Creation",
-                text: "Patient Account is successfully created",
-                icon: "success",
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
-            }).then(() => {
-                // Re-enable button AFTER SweetAlert is dismissed
-                addPatientSubmitBtn.disabled = false;
-                addPatientSubmitBtn.innerHTML = originalText;
+               Swal.fire({
+                   title: "Validation Error",
+                   html: errorMessages,
+                   icon: "error",
+                   confirmButtonColor: "#3085d6",
+                   confirmButtonText: "OK",
+               }).then(() => {
+                   addPatientSubmitBtn.disabled = false;
+                   addPatientSubmitBtn.innerHTML = originalText;
+               });
+           }
 
-                // Dispatch Livewire AFTER SweetAlert so it doesn't
-                // re-render and replace the button mid-flight
-                if (typeof Livewire !== "undefined") {
-                    Livewire.dispatch("manageUserRefreshTable");
-                }
-            });
-        }
+           // handle custom single error
+           if (result.error) {
+               Swal.fire({
+                   title: "Error",
+                   text: result.error,
+                   icon: "error",
+                   confirmButtonColor: "#d33",
+                   confirmButtonText: "OK",
+               }).then(() => {
+                   addPatientSubmitBtn.disabled = false;
+                   addPatientSubmitBtn.innerHTML = originalText;
+               });
+           }
+       } else {
+           formDataElement.reset();
+           // make the errors gone
+           fname_error.innerHTML = "";
+           middle_initial_error.innerHTML = "";
+           lname_error.innerHTML = "";
+           email_error.innerHTML = "";
+           password_error.innerHTML = "";
+           blk_n_street_error.innerHTML = "";
+           purok_dropdown_error.innerHTML = "";
+
+           Swal.fire({
+               title: "Creation",
+               text: "Patient Account is successfully created",
+               icon: "success",
+               confirmButtonColor: "#3085d6",
+               confirmButtonText: "OK",
+           }).then(() => {
+               // Re-enable button AFTER SweetAlert is dismissed
+               addPatientSubmitBtn.disabled = false;
+               addPatientSubmitBtn.innerHTML = originalText;
+
+               // Dispatch Livewire AFTER SweetAlert so it doesn't
+               // re-render and replace the button mid-flight
+               if (typeof Livewire !== "undefined") {
+                   Livewire.dispatch("manageUserRefreshTable");
+               }
+           });
+       }
     } catch (error) {
         console.log(error);
         // Re-enable button on error

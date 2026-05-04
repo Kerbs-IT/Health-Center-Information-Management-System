@@ -113,72 +113,108 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     window.nextStep = function () {
-        // get important values
+        const typeOfPatient = typeSelect.value;
+
+        // Required fields
+        const email = document.getElementById("email");
         const fname = document.getElementById("first_name");
         const lname = document.getElementById("last_name");
+        const birthdate = document.getElementById("birthdate");
+        const contactNumber = document.getElementById("contact_number");
+        const dateOfRegistration =
+            document.getElementById("dateOfRegistration");
+        const handled_by = document.getElementById("handled_by");
         const street = document.getElementById("street");
         const brgy = document.getElementById("brgy");
-        const handled_by = document.getElementById("handled_by");
-        const errors = { fname, lname, street, brgy, handled_by };
-        const suffix = document.getElementById("add_suffix");
+        const sexInputs = document.querySelectorAll('input[name="sex"]');
+        const sexSelected = Array.from(sexInputs).some(
+            (input) => input.checked,
+        );
 
-        Object.values(errors).forEach((element) => {
-            element.style.border = "";
+        // Reset borders
+        [
+            email,
+            fname,
+            lname,
+            birthdate,
+            contactNumber,
+            dateOfRegistration,
+            handled_by,
+            street,
+        ].forEach((el) => {
+            if (el) el.style.border = "";
         });
+        brgy.style.border = "";
 
         if (typeSelect.value === "") {
             Swal.fire({
-                // title: 'Type of Patient',
                 text: "Select the Type of Patient",
                 icon: "warning",
                 confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
                 confirmButtonText: "Ok",
             });
             typeSelect.focus();
-
-            return; // stop the function here
+            return;
         }
-        if (
-            fname.value == "" ||
-            lname.value == "" ||
-            street.value == "" ||
-            brgy.value == "" ||
-            handled_by.value == ""
-        ) {
+
+        // Build list of invalid fields
+        const invalidFields = [];
+
+        if (!email?.value.trim()) invalidFields.push(email);
+        if (!fname?.value.trim()) invalidFields.push(fname);
+        if (!lname?.value.trim()) invalidFields.push(lname);
+        if (!birthdate?.value.trim()) invalidFields.push(birthdate);
+        if (!contactNumber?.value.trim()) invalidFields.push(contactNumber);
+        if (!dateOfRegistration?.value.trim())
+            invalidFields.push(dateOfRegistration);
+        if (!handled_by?.value.trim()) invalidFields.push(handled_by);
+        if (!street?.value.trim()) invalidFields.push(street);
+        if (!brgy?.value.trim()) invalidFields.push(brgy);
+
+        // Sex only required for non-prenatal and non-family-planning
+        const sexRequired =
+            typeOfPatient !== "prenatal" && typeOfPatient !== "family-planning";
+        if (sexRequired && !sexSelected) {
+            document.querySelector(".sex-container").style.border =
+                "2px solid red";
+        } else {
+            document.querySelector(".sex-container").style.border = "";
+        }
+
+        if (invalidFields.length > 0 || (sexRequired && !sexSelected)) {
             Swal.fire({
-                // title: 'Type of Patient',
                 text: "Important information is empty",
                 icon: "warning",
                 confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
                 confirmButtonText: "Ok",
             });
-            fname.style.border = fname.value ? "" : "2px solid red";
-            lname.style.border = lname.value ? "" : "2px solid red";
-            street.style.border = street.value ? "" : "2px solid red";
-            brgy.style.border = brgy.value ? "" : "2px solid red";
-            handled_by.style.border = handled_by.value ? "" : "2px solid red";
-            return; // stop the function here
+
+            invalidFields.forEach((el) => {
+                if (el) el.style.border = "2px solid red";
+            });
+
+            return;
         }
 
+        // --- rest of your existing nextStep code below ---
+        const suffix = document.getElementById("add_suffix");
         const patient_name_view = document.getElementById(
             "vaccination_patient_name_view",
         );
         const MI = document.getElementById("middle_initial");
+
         if (patient_name_view) {
             insertNameValue(fname, MI, lname, patient_name_view, suffix);
         }
-        // give all the patient name id
+
         const senior_patient_name = document.getElementById(
             "senior_patient_name",
         );
-
         if (senior_patient_name) {
             insertNameValue(fname, MI, lname, senior_patient_name, suffix);
         }
-        const tb_dots_patient_name = document.getElementById("tb_patient_name");
 
+        const tb_dots_patient_name = document.getElementById("tb_patient_name");
         if (tb_dots_patient_name) {
             insertNameValue(fname, MI, lname, tb_dots_patient_name, suffix);
         }
@@ -190,24 +226,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             const vaccination_birth_weight = document.getElementById(
                 "vaccination_birth_weight",
             );
-
             const current_height = document.getElementById("current_height");
             const current_weight = document.getElementById("current_weight");
-            if (vaccination_birth_height.value !== 0) {
+
+            if (vaccination_birth_height.value !== 0)
                 current_height.value = vaccination_birth_height.value;
-            }
-
-            if (vaccination_birth_weight.value !== 0) {
+            if (vaccination_birth_weight.value !== 0)
                 current_weight.value = vaccination_birth_weight.value;
-            }
         }
 
-        if (typeSelect.value === "prenatal") {
-            displayVitalSign();
-        }
-        if (typeSelect.value === "family-planning") {
-            familyPlanVitalSign();
-        }
+        if (typeSelect.value === "prenatal") displayVitalSign();
+        if (typeSelect.value === "family-planning") familyPlanVitalSign();
 
         window.currentStep++;
         window.showStep(window.currentStep);
@@ -866,14 +895,17 @@ function showInfoPerTypeOfPatient() {
     const sexInputs = document.querySelectorAll('input[name="sex"]');
     const birthdate = document.getElementById("birthdate");
 
+    // 👇 check if a patient is already linked
+    const hasSelectedPatient =
+        !!document.getElementById("selectedPatientId")?.value ||
+        !!document.getElementById("user_account")?.value;
+
     const today = new Date();
 
-    // Reset birthdate constraints
     birthdate.min = "1950-01-01";
     birthdate.max = today.toISOString().split("T")[0];
 
     if (patientType === "senior-citizen") {
-        // Minimum age is 60 — so max birthdate is today minus 60 years
         const maxBirthdate = new Date(
             today.getFullYear() - 60,
             today.getMonth(),
@@ -882,45 +914,47 @@ function showInfoPerTypeOfPatient() {
         birthdate.max = maxBirthdate.toISOString().split("T")[0];
         birthdate.min = "1900-01-01";
 
-        // Clear birthdate if it no longer falls within the valid range
-        if (birthdate.value && new Date(birthdate.value) > maxBirthdate) {
+        // 👇 only wipe if no patient already selected
+        if (
+            !hasSelectedPatient &&
+            birthdate.value &&
+            new Date(birthdate.value) > maxBirthdate
+        ) {
             birthdate.value = "";
         }
 
-        // Show sex container
         sexContainer.style.display = "";
         sexInputs.forEach((input) => (input.required = true));
     } else if (
         patientType === "prenatal" ||
         patientType === "family-planning"
     ) {
-        // Hide sex container — assumed female
         sexContainer.style.display = "none";
 
-        // Auto-select female and make it not required (since it's implicit)
-        // sexInputs.forEach((input) => {
-        //     input.required = false;
-        //     if (input.value === "female") input.checked = true;
-        // });
-
-        // Reset birthdate to normal range
-        birthdate.min = "1950-01-01";
-        birthdate.max = today.toISOString().split("T")[0];
-
-        // Clear birthdate if it was set outside normal range
-        if (birthdate.value && new Date(birthdate.value) > today) {
+        if (
+            !hasSelectedPatient &&
+            birthdate.value &&
+            new Date(birthdate.value) > today
+        ) {
             birthdate.value = "";
         }
     } else {
-        // Default — show sex container, reset constraints
         sexContainer.style.display = "";
         sexInputs.forEach((input) => {
             input.required = true;
-            input.checked = false;
+            // 👇 only reset sex if no patient already selected
+            if (!hasSelectedPatient) {
+                input.checked = false;
+            }
         });
 
-        birthdate.min = "1950-01-01";
-        birthdate.max = today.toISOString().split("T")[0];
+        if (
+            !hasSelectedPatient &&
+            birthdate.value &&
+            new Date(birthdate.value) > today
+        ) {
+            birthdate.value = "";
+        }
     }
 }
 window.syncHandledByView = function () {

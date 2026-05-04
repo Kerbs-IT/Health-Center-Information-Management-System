@@ -52,13 +52,17 @@ class vaccineController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('vaccines', 'type_of_vaccine'),
+                    Rule::unique('vaccines', 'type_of_vaccine')->where(function ($query) use ($request) {
+                        return $query->whereRaw('LOWER(TRIM(type_of_vaccine)) = ?', [strtolower(trim($request->type_of_vaccine))]);
+                    }),
                 ],
                 'vaccine_acronym' => [
                     'required',
                     'string',
                     'max:100',
-                    Rule::unique('vaccines', 'vaccine_acronym'),
+                    Rule::unique('vaccines', 'vaccine_acronym')->where(function ($query) use ($request) {
+                        return $query->whereRaw('UPPER(TRIM(vaccine_acronym)) = ?', [strtoupper(trim($request->vaccine_acronym))]);
+                    }),
                 ],
                 'max_doses' => [
                     'required',
@@ -114,13 +118,17 @@ class vaccineController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('vaccines', 'type_of_vaccine')->ignore($id),
+                    Rule::unique('vaccines', 'type_of_vaccine')->ignore($id)->where(function ($query) use ($request) {
+                        return $query->whereRaw('LOWER(TRIM(type_of_vaccine)) = ?', [strtolower(trim($request->type_of_vaccine))]);
+                    }),
                 ],
                 'vaccine_acronym' => [
                     'required',
                     'string',
                     'max:100',
-                    Rule::unique('vaccines', 'vaccine_acronym')->ignore($id),
+                    Rule::unique('vaccines', 'vaccine_acronym')->ignore($id)->where(function ($query) use ($request) {
+                        return $query->whereRaw('UPPER(TRIM(vaccine_acronym)) = ?', [strtoupper(trim($request->vaccine_acronym))]);
+                    }),
                 ],
                 'max_doses' => [
                     'required',

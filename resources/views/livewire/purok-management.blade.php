@@ -226,5 +226,41 @@
                 showConfirmButton: false
             });
         });
+
+        window.addEventListener('similarPurokFound', (e) => {
+            const names = e.detail.names.join(', ');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Similar Purok Found!',
+                html: `A similar purok already exists: <strong>${names}</strong>.<br><br>Are you sure you want to add this anyway?`,
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, add anyway',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.confirmSaveAdd();
+                }
+            });
+        });
+
+        window.addEventListener('similarPurokFoundEdit', (e) => {
+            const names = e.detail.names.join(', ');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Similar Purok Found!',
+                html: `A similar purok already exists: <strong>${names}</strong>.<br><br>Are you sure you want to save this anyway?`,
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, save anyway',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.confirmSaveEdit();
+                }
+            });
+        });
     </script>
 </div>

@@ -35,53 +35,61 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-5 col-lg-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <h2 class="text-center mb-4">Forgot Password</h2>
-                            <p class="text-muted text-center mb-4 small">
-                                Enter your email address and we'll send you a link to reset your password.
-                            </p>
+                    <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                        <div class="card-body p-5">
+
+                            <div class="text-center mb-4">
+                                <h2 class="fw-bold mb-1" style="color:#1b5e20;">Forgot Password</h2>
+                                <p class="text-muted small mb-0">
+                                    Enter your email and we'll send you a reset link.
+                                </p>
+                            </div>
 
                             @if (session('status'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="bi bi-check-circle-fill me-2"></i>
                                 {{ session('status') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                             @endif
 
                             <form method="POST" action="{{ route('password.email') }}">
                                 @csrf
 
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input
-                                        type="email"
+                                <div class="mb-4">
+                                    <label for="email" class="form-label fw-semibold small text-uppercase"
+                                        style="letter-spacing:1px; color:#2e7d32;">
+                                        Email Address
+                                    </label>
+                                    <input type="email"
                                         class="form-control @error('email') is-invalid @enderror"
-                                        id="email"
-                                        name="email"
+                                        id="email" name="email"
                                         value="{{ old('email') }}"
                                         placeholder="Enter your email"
+                                        style="border-radius:10px; padding: 12px 16px; border-color:#ced4da;"
                                         required>
                                     @error('email')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="d-grid mb-3">
-                                    <button type="submit" class="btn btn-primary py-2">
-                                        Send Password Reset Link
+                                    <button type="submit" class="btn py-2 fw-semibold text-white"
+                                        style="border-radius:10px; background-color:#2e7d32; border:none; font-size:15px;">
+                                        Send Reset Link
                                     </button>
                                 </div>
 
+                                <hr class="my-3">
+
                                 <div class="text-center">
-                                    <a href="{{ route('login') }}" class="text-decoration-none">
-                                        <i class="bi bi-arrow-left me-1"></i>Back to Login
+                                    <a href="{{ route('login') }}"
+                                        class="text-decoration-none small fw-semibold text-center"
+                                        style="color:#2e7d32;">
+                                         Back to Login
                                     </a>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>
