@@ -39,15 +39,70 @@
             <small class="text-danger error-text" id="edit_side_b_medical_findings_error"></small>
         </div>
         <div class="input-field">
-            <label for="edit_side_b_method_accepted" class="fs-5">Method Accepted<span class="text-danger">*</span></label>
-            <input type="text" class="form-control w-100" name="edit_side_b_method_accepted" id="edit_method_accepted">
+            <label class="fs-5">Method Accepted <span class="text-danger">*</span></label>
+            <div class="methods d-flex gap-3 flex-wrap">
+                <div class="method-row">
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="Implant" id="edit_implant">
+                        <label for="edit_implant">Implant</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="Injectable" id="edit_injectable">
+                        <label for="edit_injectable">Injectable</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="LAM" id="edit_lam">
+                        <label for="edit_lam">LAM</label>
+                    </div>
+                </div>
+                <div class="method-row">
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="IUD" id="edit_uid">
+                        <label for="edit_uid">IUD</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="COC" id="edit_coc">
+                        <label for="edit_coc">COC</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="SDM" id="edit_sdm">
+                        <label for="edit_sdm">SDM</label>
+                    </div>
+                </div>
+                <div class="method-row">
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="BTL" id="edit_btl">
+                        <label for="edit_btl">BTL</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="POP" id="edit_pop">
+                        <label for="edit_pop">POP</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="BBT" id="edit_bbt">
+                        <label for="edit_bbt">BBT</label>
+                    </div>
+                </div>
+                <div class="method-row">
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="NSV" id="edit_nsv">
+                        <label for="edit_nsv">NSV</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="Condom" id="edit_condom">
+                        <label for="edit_condom">Condom</label>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <input type="checkbox" name="edit_side_b_method_accepted[]" value="BOM/CMM/STM" id="edit_bom">
+                        <label for="edit_bom">BOM/CMM/STM</label>
+                    </div>
+                </div>
+            </div>
             <small class="text-danger error-text" id="edit_side_b_method_accepted_error"></small>
         </div>
         <div class="input-field">
             <label for="edit_side_b_name_n_signature" class="w-100 form-label fs-5">Name & Signature of service provider:</label>
-            <!-- signature -->
             <div class="mb-1 w-100 d-flex flex-column border-bottom">
-                <!-- Two Action Buttons -->
                 <div class="d-flex gap-2 mb-2">
                     <button type="button" class="btn btn-outline-primary flex-fill" id="edit_side_b_drawSignatureBtn">
                         <i class="bi bi-pencil"></i> Draw Signature
@@ -56,8 +111,6 @@
                         <i class="bi bi-upload"></i> Upload Signature Photo
                     </button>
                 </div>
-
-                <!-- Drawing Canvas (hidden by default) -->
                 <div id="edit_side_b_signatureCanvas" class="d-none mb-2">
                     <canvas id="edit_side_b_signaturePad" class="border w-100" style="height: 200px;"></canvas>
                     <div class="d-flex gap-2 mt-2">
@@ -65,23 +118,17 @@
                         <button type="button" class="btn btn-sm btn-success" id="edit_side_b_saveSignature">Save Signature</button>
                     </div>
                 </div>
-
-                <!-- File Upload (hidden by default) -->
                 <div id="edit_side_b_signatureUpload" class="d-none mb-2">
                     <input type="file" name="edit_side_b_signature_image" id="edit_side_b_signature_image" class="form-control" accept="image/*">
                     <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
                 </div>
-
-                <!-- Preview Area -->
                 <div id="edit_side_b_signaturePreview" class="d-none">
                     <img id="edit_side_b_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
                     <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_side_b_removeSignature">Remove</button>
                 </div>
-
                 <small class="text-danger error-text" id="edit_side_b_signature_error"></small>
             </div>
         </div>
-        <!-- date of follow up visit -->
         <div class="input-field mb-3">
             <label for="edit_side_b_date_of_follow_up_visit" class="w-100 fs-5">Date of Follow-Up Visit <span class="text-danger">*</span></label>
             <input type="date" class="form-control w-100 py-2" name="edit_side_b_date_of_follow_up_visit" id="edit_date_of_follow_up_visit" max="{{date('Y-m-d',strtotime('+5 years'))}}">
@@ -107,7 +154,6 @@
         <!-- q2 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
-
                 <p class="mb-0 fs-5 fw-light">2. Have you abstained from sexual intercourse since your last menstrual period or delivery?</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
@@ -121,7 +167,6 @@
         <!-- q3 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
-
                 <p class="mb-0 fs-5 fw-light">3. Have you had a baby in the last four (4) weeks</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
@@ -135,7 +180,6 @@
         <!-- q4 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
-
                 <p class="mb-0 fs-5 fw-light">4. Did your last menstrual period start within the past seven (7) days</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
@@ -149,7 +193,6 @@
         <!-- q5 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
-
                 <p class="mb-0 fs-5 fw-light">5. Have you had a miscarriage or abortion in the last seven (7) days? </p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
@@ -163,7 +206,6 @@
         <!-- q6 -->
         <div class="mb-2 d-flex align-items-center justify-content-between">
             <div class="question d-flex align-items-center gap-3">
-
                 <p class="mb-0 fs-5 fw-light">6. Have you been using reliable contraceptive method consistenly and correctly?</p>
             </div>
             <div class="answers d-flex align-items-center justify-content-center gap-2">
@@ -178,6 +220,5 @@
             <p>- If the client answered YES to at least one of the questions and she is free of signs or sign or symptoma of pregnancy, provide client with desired method</p>
             <p>- If the client answered NO to all the question, pregnancy cannot be ruled out. the client should await menses or use a pregnancy test</p>
         </div>
-
     </div>
 </div>

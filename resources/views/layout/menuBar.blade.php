@@ -1,3 +1,10 @@
+<script>
+    (function () {
+        if (localStorage.getItem('sidebarState') === 'collapsed' && window.innerWidth > 992) {
+            document.documentElement.classList.add('sidebar-pre-collapsed');
+        }
+    })();
+</script>
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>

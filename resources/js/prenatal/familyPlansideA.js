@@ -193,7 +193,7 @@ if (editIcon) {
         const caseId = editIcon.dataset.caseId;
 
         const editModal = document.getElementById(
-            "editfamilyPlanningCaseModal"
+            "editfamilyPlanningCaseModal",
         );
 
         // reset errors
@@ -206,173 +206,212 @@ if (editIcon) {
 
         const response = await fetch(
             `/patient-case/family-planning/viewCaseInfo/${caseId}`,
-            {
-                headers: {
-                    Accept: "application/json",
-                },
-            }
+            { headers: { Accept: "application/json" } },
         );
 
         if (response.ok) {
             const data = await response.json();
 
-            // provide the info for case
             Object.entries(data.caseInfo).forEach(([key, value]) => {
-                if (key == "plan_to_have_more_children") {
+                if (key === "plan_to_have_more_children") {
                     const plan = document.querySelectorAll(
-                        'input[name="edit_plan_to_have_more_children"]'
+                        'input[name="edit_plan_to_have_more_children"]',
                     );
                     if (plan) {
                         plan.forEach((element) => {
                             element.checked = element.value == value;
                         });
                     }
-                } else if (key == "client_age") {
+                } else if (key === "client_age") {
                     const hiddenAge = document.getElementById("hiddenEditAge");
-                    const clientAage =
+                    const clientAge =
                         document.getElementById("edit_client_age");
                     if (hiddenAge) {
                         hiddenAge.value = value;
-                        clientAage.value = value;
+                        clientAge.value = value;
                     }
-                } else if (key == "type_of_patient") {
-                    const plan = document.querySelectorAll(
-                        'input[name="edit_type_of_patient"]'
+                } else if (key === "type_of_patient") {
+                    // ----------------------------------------------------------------
+                    // 1. Select the correct top-level radio (new acceptor / current user)
+                    // ----------------------------------------------------------------
+                    const typeRadios = document.querySelectorAll(
+                        'input[name="edit_type_of_patient"]',
                     );
-                    if (plan) {
-                        plan.forEach((element) => {
-                            element.checked = element.value == value;
-                        });
-                    }
-                    // this condition is for the radio buttons if the 'other' radio is selected
-                    if (value == "new acceptor") {
-                        const elements = document.querySelectorAll(
-                            'input[name="edit_new_acceptor_reason_for_FP"]'
-                        );
-                        if (
-                            data.caseInfo.new_acceptor_reason_for_FP !=
-                                "spacing" ||
-                            data.caseInfo.new_acceptor_reason_for_FP !=
-                                "spacing"
-                        ) {
-                            document.getElementById(
-                                "edit_new_acceptor_reason_for_FP_others"
-                            ).checked = true;
-                            document.getElementById(
-                                "edit_new_acceptor_reason_text"
-                            ).value = data.caseInfo.new_acceptor_reason_for_FP;
-                        } else {
-                            elements.forEach((element) => {
-                                element.checked =
-                                    element.value ==
-                                    data.caseInfo.new_acceptor_reason_for_FP;
-                            });
-                        }
-                    } else if (value == "current user") {
-                        const elements = document.querySelectorAll(
-                            'input[name="edit_current_user_reason_for_FP"]'
-                        );
+                    typeRadios.forEach((el) => {
+                        el.checked = el.value === value;
+                    });
 
-                        if (
-                            data.caseInfo.current_user_reason_for_FP !=
-                                "spacing" ||
-                            data.caseInfo.current_user_reason_for_FP !=
-                                "spacing"
-                        ) {
-                            document.getElementById(
-                                "edit_current_user_reason_for_FP_others"
-                            ).checked = true;
-                            document.getElementById(
-                                "edit_current_user_reason_text"
-                            ).value = data.caseInfo.current_user_reason_for_FP;
-                        } else {
-                            elements.forEach((element) => {
-                                element.checked =
-                                    element.value ==
-                                    data.caseInfo.current_user_reason_for_FP;
+                    // ----------------------------------------------------------------
+                    // 2. Populate new acceptor reason
+                    // ----------------------------------------------------------------
+                    if (value === "new acceptor") {
+                        const stored =
+                            data.caseInfo.new_acceptor_reason_for_FP ?? "";
+
+                        if (stored === "spacing" || stored === "limiting") {
+                            // FIX Bug 1 & 2: check both valid plain values with &&
+                            const elements = document.querySelectorAll(
+                                'input[name="edit_new_acceptor_reason_for_FP"]',
+                            );
+                            elements.forEach((el) => {
+                                el.checked = el.value === stored;
                             });
+                            // clear the text field
+                            const textEl = document.getElementById(
+                                "edit_new_acceptor_reason_text",
+                            );
+                            if (textEl) textEl.value = "";
+                        } else if (stored !== "") {
+                            // "others: some text" or any custom value
+                            const othersRadio = document.getElementById(
+                                "edit_new_acceptor_reason_for_FP_others",
+                            );
+                            if (othersRadio) othersRadio.checked = true;
+
+                            const textEl = document.getElementById(
+                                "edit_new_acceptor_reason_text",
+                            );
+                            if (textEl) {
+                                // strip the "others: " prefix if present
+                                textEl.value = stored.startsWith("others: ")
+                                    ? stored.slice("others: ".length)
+                                    : stored;
+                            }
                         }
 
-                        // types of current user
-                        const current_user_type = document.querySelectorAll(
-                            "edit_current_user_type"
-                        );
+                        // ----------------------------------------------------------------
+                        // 3. Populate current user reason + current user sub-type
+                        // ----------------------------------------------------------------
+                    } else if (value === "current user") {
+                        const stored =
+                            data.caseInfo.current_user_reason_for_FP ?? "";
 
-                        if (current_user_type == "current method") {
-                            const current_method_reason =
-                                document.querySelectorAll(
-                                    "edit_current_method_reason"
+                        if (stored === "spacing" || stored === "limiting") {
+                            // FIX Bug 1 & 2: plain value — select matching radio
+                            const elements = document.querySelectorAll(
+                                'input[name="edit_current_user_reason_for_FP"]',
+                            );
+                            elements.forEach((el) => {
+                                el.checked = el.value === stored;
+                            });
+                            const textEl = document.getElementById(
+                                "edit_current_user_reason_text",
+                            );
+                            if (textEl) textEl.value = "";
+                        } else if (stored !== "") {
+                            // "others: some text"
+                            const othersRadio = document.getElementById(
+                                "edit_current_user_reason_for_FP_others",
+                            );
+                            if (othersRadio) othersRadio.checked = true;
+
+                            const textEl = document.getElementById(
+                                "edit_current_user_reason_text",
+                            );
+                            if (textEl) {
+                                textEl.value = stored.startsWith("others: ")
+                                    ? stored.slice("others: ".length)
+                                    : stored;
+                            }
+                        }
+
+                        // FIX Bug 3: correct selector syntax for current_user_type radios
+                        const currentUserTypeRadios = document.querySelectorAll(
+                            'input[name="edit_current_user_type"]',
+                        );
+                        const storedType =
+                            data.caseInfo.current_user_type ?? "";
+
+                        if (storedType === "current method") {
+                            // select the "current method" sub-radio
+                            currentUserTypeRadios.forEach((el) => {
+                                el.checked = el.value === "current method";
+                            });
+
+                            // now populate current_method_reason
+                            const storedMethodReason =
+                                data.caseInfo.current_method_reason ?? "";
+
+                            if (storedMethodReason === "medical condition") {
+                                const medEl = document.getElementById(
+                                    "edit_current_method_reason_medical_condition",
                                 );
-
-                            if (
-                                data.caseInfo.current_method_reason !=
-                                "medical condition"
+                                if (medEl) medEl.checked = true;
+                                const textEl = document.getElementById(
+                                    "edit_side_effects_text",
+                                );
+                                if (textEl) textEl.value = "";
+                            } else if (
+                                storedMethodReason.startsWith("side effects")
                             ) {
-                                document.getElementById(
-                                    "edit_current_method_reason_side_effect"
-                                ).checked = true;
-                                document.getElementById(
-                                    "edit_side_effects_text"
-                                ).value == data.caseInfo.current_method_reason;
+                                // FIX Bug 4: = not ==
+                                // FIX Bug 5: strip "side effects: " prefix for the text field
+                                const sideEl = document.getElementById(
+                                    "edit_current_method_reason_side_effect",
+                                );
+                                if (sideEl) sideEl.checked = true;
+
+                                const textEl = document.getElementById(
+                                    "edit_side_effects_text",
+                                );
+                                if (textEl) {
+                                    textEl.value =
+                                        storedMethodReason.startsWith(
+                                            "side effects: ",
+                                        )
+                                            ? storedMethodReason.slice(
+                                                  "side effects: ".length,
+                                              )
+                                            : "";
+                                }
                             }
                         } else {
-                            current_user_type.forEach((element) => {
-                                element.checked =
-                                    element.value ==
-                                    data.caseInfo.current_user_type;
+                            // "changing clinic" or "dropout/restart"
+                            currentUserTypeRadios.forEach((el) => {
+                                el.checked = el.value === storedType;
                             });
                         }
                     }
-                } else if (key == "previously_used_method") {
-                    // this condition is for spliting the selected used method then populate the checkbox
+                } else if (key === "previously_used_method") {
                     const methods = document.querySelectorAll(
-                        "input[name='edit_previously_used_method[]']"
+                        "input[name='edit_previously_used_method[]']",
                     );
-                    let used_method = "";
-
+                    let used_method = [];
                     if (value) {
-                        used_method = value.split(",");
+                        used_method = value.split(",").map((m) => m.trim());
                     }
-
-                    if (used_method) {
-                        methods.forEach((method) => {
-                            if (used_method.includes(method.value)) {
-                                method.checked = true;
-                            }
-                        });
-                    }
-                } else if (key == "client_name") {
+                    methods.forEach((method) => {
+                        method.checked = used_method.includes(method.value);
+                    });
+                } else if (key === "client_name") {
                     const fname = document.getElementById("edit_client_fname");
                     const MI = document.getElementById("edit_client_MI");
                     const lname = document.getElementById("edit_client_lname");
-                    // split the data
-                    let full_name = value.split(" ");
-
                     if (fname && MI && lname) {
-                       fname.value = data.caseInfo.client_first_name;
-                       MI.value = data.caseInfo.client_middle_name ?? "";
-                       lname.value = data.caseInfo.client_last_name;
+                        fname.value = data.caseInfo.client_first_name;
+                        MI.value = data.caseInfo.client_middle_name ?? "";
+                        lname.value = data.caseInfo.client_last_name;
                     }
-                } else if (key == "NHTS") {
+                } else if (key === "NHTS") {
                     inputPicker(key, value);
-                } else if (key == "client_address") {
+                } else if (key === "client_address") {
                     const addressText = `${data.address.house_number},${
                         data.address.street || ""
                     }`.trim();
-                    // console.log(addressText);
                     document.getElementById("edit_street").value = addressText;
                     puroks(
                         document.getElementById("edit_brgy"),
-                        data.address.purok
+                        data.address.purok,
                     );
                 } else if (
-                    key == "signature_image" ||
-                    key == "acknowledgement_consent_signature_image"
+                    key === "signature_image" ||
+                    key === "acknowledgement_consent_signature_image"
                 ) {
+                    // handled separately by signature module
                 } else {
                     if (document.getElementById(`edit_${key}`)) {
-                        // console.log("gumagana boy", key, "value: ", value);
-                        document.getElementById(`edit_${key}`).value = value;
+                        document.getElementById(`edit_${key}`).value =
+                            value ?? "";
                     }
                 }
             });
@@ -381,106 +420,96 @@ if (editIcon) {
             Object.entries(data.caseInfo.medical_history).forEach(
                 ([key, value]) => {
                     inputPicker(key, value);
-                }
+                },
             );
-            // obsterical histories
+
+            // obstetrical histories
             Object.entries(data.caseInfo.obsterical_history).forEach(
                 ([key, value]) => {
-                    //  this condition is for the element with 2 or more same name
                     if (
-                        key == "type_of_last_delivery" ||
-                        key == "type_of_menstrual"
+                        key === "type_of_last_delivery" ||
+                        key === "type_of_menstrual"
                     ) {
                         inputPicker(key, value);
                     } else {
                         if (
                             document.querySelector(`input[name="edit_${key}"]`)
                         ) {
-                            //  console.log("gumagana boy", key, "value: ", value);
                             const element = document.querySelector(
-                                `input[name="edit_${key}"]`
+                                `input[name="edit_${key}"]`,
                             );
-                            //  handles both checkbox and text type of input
-                            if (element.type != "checkbox") {
-                                element.value = value;
+                            if (element.type !== "checkbox") {
+                                element.value = value ?? "";
                             } else {
                                 element.checked = element.value == value;
                             }
                         }
                     }
-                }
+                },
             );
 
             // risk for sexually transmitted
             Object.entries(
-                data.caseInfo.risk_for_sexually_transmitted_infection
+                data.caseInfo.risk_for_sexually_transmitted_infection,
             ).forEach(([key, value]) => {
-                //  this condition is for the element with 2 or more same name
-                if (key == "reffered_to_others") {
-                    document.querySelector(
-                        'input[name="edit_reffered_to_others"]'
-                    ).value = value;
+                if (key === "reffered_to_others") {
+                    const el = document.querySelector(
+                        'input[name="edit_reffered_to_others"]',
+                    );
+                    if (el) el.value = value ?? "";
                 }
-
                 inputPicker(key, value);
             });
+
             // physical examination
             Object.entries(data.caseInfo.physical_examinations).forEach(
                 ([key, value]) => {
-                    //  this condition is for the element with 2 or more same name
                     const element = document.querySelector(
-                        `input[name='edit_${key}']`
+                        `input[name='edit_${key}']`,
                     );
-
-                    // skip if no matching element found
                     if (!element) return;
 
                     if (element.type === "text" || element.type === "number") {
                         element.value = value ?? "";
-                    } else if (key == "cervical_abnormalities_type") {
-                        const physical_types = document.querySelectorAll(
-                            `input[name="edit_cervical_abnormalities_type"]`
+                    } else if (key === "cervical_abnormalities_type") {
+                        const types = document.querySelectorAll(
+                            'input[name="edit_cervical_abnormalities_type"]',
                         );
-                        radioValuePopulator(physical_types, value);
-                    } else if (key == "cervical_consistency_type") {
-                        const physical_types = document.querySelectorAll(
-                            `input[name="edit_cervical_consistency_type"]`
+                        radioValuePopulator(types, value);
+                    } else if (key === "cervical_consistency_type") {
+                        const types = document.querySelectorAll(
+                            'input[name="edit_cervical_consistency_type"]',
                         );
-                        radioValuePopulator(physical_types, value);
-                    } else if (key == "uterine_position_type") {
-                        const physical_types = document.querySelectorAll(
-                            `input[name="edit_uterine_position_type"]`
+                        radioValuePopulator(types, value);
+                    } else if (key === "uterine_position_type") {
+                        const types = document.querySelectorAll(
+                            'input[name="edit_uterine_position_type"]',
                         );
-                        radioValuePopulator(physical_types, value);
-                    } else if (key == "uterine_depth_text") {
+                        radioValuePopulator(types, value);
+                    } else if (key === "uterine_depth_text") {
                         if (value != "") {
-                            const text_element = document.getElementById(
-                                "edit_uterine_depth_text"
+                            const textEl = document.getElementById(
+                                "edit_uterine_depth_text",
                             );
-                            if (text_element) {
-                                text_element.value = value;
-                            }
+                            if (textEl) textEl.value = value ?? "";
                         }
                     } else {
                         inputPicker(key, value);
                     }
-                }
+                },
             );
-
-            // assign the case id
         }
 
+        // FIX Bug 6: increase timeout to ensure all radio states are set before toggle runs
         setTimeout(() => {
             refreshToggleStates();
-        }, 100);
+        }, 200);
 
+        // ... rest of modal shown / signature initialization unchanged
         let editFamilyPlanningSignature = null;
         let editFamilyPlanningConsentSignature = null;
-        // signature functionality
         if (editModal) {
             editModal.addEventListener("shown.bs.modal", function () {
-                // console.log("Modal is NOW visible!");
-
                 if (
                     !editFamilyPlanningSignature &&
                     !editFamilyPlanningConsentSignature
@@ -514,8 +543,6 @@ if (editIcon) {
                             "edit_family_planning_acknowledgement_signature_data",
                         maxFileSizeMB: 2,
                     });
-
-                    // consent
                     editFamilyPlanningConsentSignature = initSignatureCapture({
                         drawBtnId:
                             "edit_family_planning_consent_drawSignatureBtn",
@@ -543,7 +570,6 @@ if (editIcon) {
                             "edit_family_planning_consent_signature_data",
                         maxFileSizeMB: 2,
                     });
-                    // console.log("✅ SIGNATURE INITIALIZED!");
                 } else {
                     editFamilyPlanningSignature.clear();
                     editFamilyPlanningConsentSignature.clear();

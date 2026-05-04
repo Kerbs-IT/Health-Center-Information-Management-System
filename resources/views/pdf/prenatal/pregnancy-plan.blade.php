@@ -187,7 +187,7 @@
     </div>
 
     <div class="form-line" style="margin:0 0;">
-        Ito ay pisilidad na otortado ng Philhealth Oo <span style="display: inline-block; border-bottom: 1px solid #000; width: 80px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth == 'yes')✓@else &nbsp; @endif</span> Hindi <span style="display: inline-block; border-bottom: 1px solid #000; width: 120px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth != 'yes')✓@else &nbsp; @endif</span>
+        Ito ay pisilidad na otortado ng Philhealth Oo <span style="display: inline-block; border-bottom: 1px solid #000; width: 80px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth == 'yes') /@else &nbsp; @endif</span> Hindi <span style="display: inline-block; border-bottom: 1px solid #000; width: 120px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth != 'yes') /@else &nbsp; @endif</span>
         <span class="small-text">(lagyan ng tsek)</span>
     </div>
 
@@ -299,14 +299,21 @@
                 </tr>
             </table>
         </div>
-        <div class="form-line">
-            Lagda:
-            @if($pregnancyPlan->signature != null)
-            <img src="{{ storage_path('app/public/' . $pregnancyPlan->signature) }}" alt="Signature" style="max-width:400px; height:40px;">
-            <div style="width: 100%;border-bottom:1px solid black; margin-top: 1px;"></div>
-            @else
-            <div style="width: 100%;border-bottom:1px solid black; min-height: 40px;">&nbsp;</div>
-            @endif
+        <div style="margin: 0; font-size: 11pt;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="white-space: nowrap; vertical-align: bottom;">Lagda:</td>
+                    <td style="width: 100%; border-bottom: 1px solid black; vertical-align: bottom; padding-left: 5px;">
+                        @if($pregnancyPlan->signature != null)
+                        <img src="{{ storage_path('app/public/' . $pregnancyPlan->signature) }}"
+                            alt="Signature"
+                            style="max-width: 400px; height: 40px; vertical-align: bottom; display: block;">
+                        @else
+                        &nbsp;
+                        @endif
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>

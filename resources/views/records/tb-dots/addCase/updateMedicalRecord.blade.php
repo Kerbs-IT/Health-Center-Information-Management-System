@@ -97,7 +97,7 @@
             </div>
             <div class="mb-2 flex-fill xl:w-[50%]">
                 <label for="duration">Start Date</label>
-                <input type="date" class="form-control" id="edit_tb_start_date" min="{{date('Y-m-d')}}" max="{{date('Y-m-d',strtotime('+2 months'))}}">
+                <input type="date" class="form-control" id="edit_tb_start_date" max="{{ date('Y-m-d') }}">
             </div>
             <div class="mb-2 flex-fill xl:w-[50%]">
                 <label for="duration">End Date</label>

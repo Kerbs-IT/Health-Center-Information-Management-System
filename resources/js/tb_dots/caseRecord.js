@@ -141,82 +141,150 @@ if (editTable) {
 }
 
 // add new item to the container
-const addBTN = document.getElementById("edit_tb_medicine_add_btn");
+// add new item to the container — EDIT modal
+const editBTN = document.getElementById("edit_tb_medicine_add_btn");
 
-if (addBTN) {
-    addBTN.addEventListener("click", (e) => {
+if (editBTN) {
+    editBTN.addEventListener("click", (e) => {
         const medicine = document.getElementById("edit_tb_medicine");
-        const dosage_n_frequency = document.getElementById(
-            "edit_tb_dosage_n_frequency",
-        );
+        const dosage_n_frequency = document.getElementById("edit_tb_dosage_n_frequency");
         const quantity = document.getElementById("edit_tb_quantity");
         const start_date = document.getElementById("edit_tb_start_date");
         const end_date = document.getElementById("edit_tb_end_date");
 
-        const errors = document.querySelectorAll(".error-text");
-        if (errors) {
-            errors.forEach((error) => (error.innerHTML = ""));
+        // Reset borders
+        [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
+            (el) => (el.style.border = "")
+        );
+
+        const errors = [];
+        const today = new Date().toISOString().split("T")[0];
+
+        // Medicine validation
+        if (medicine.value === "") {
+            errors.push("Please select a medicine.");
+            medicine.style.border = "1px solid red";
         }
 
-        if (
-            medicine.value == "" ||
-            dosage_n_frequency.value == "" ||
-            quantity.value == "" ||
-            start_date.value == "" ||
-            end_date.value == ""
-        ) {
+        // Dosage validation
+        if (dosage_n_frequency.value.trim() === "") {
+            errors.push("Please enter the dosage and frequency.");
+            dosage_n_frequency.style.border = "1px solid red";
+        }
+
+        // Quantity validation
+        const quantityVal = parseInt(quantity.value);
+        if (quantity.value === "") {
+            errors.push("Please enter the quantity.");
+            quantity.style.border = "1px solid red";
+        } else if (isNaN(quantityVal) || quantityVal < 1) {
+            errors.push("Quantity must be at least 1.");
+            quantity.style.border = "1px solid red";
+        }
+
+        // Start date validation
+        if (start_date.value === "") {
+            errors.push("Please select a start date.");
+            start_date.style.border = "1px solid red";
+        } else if (start_date.value > today) {
+            errors.push("Start date cannot be a future date.");
+            start_date.style.border = "1px solid red";
+        }
+
+        // End date validation
+        if (end_date.value === "") {
+            errors.push("Please select an end date.");
+            end_date.style.border = "1px solid red";
+        } else if (start_date.value !== "" && end_date.value < start_date.value) {
+            errors.push("End date cannot be earlier than the start date.");
+            end_date.style.border = "1px solid red";
+        }
+
+        if (errors.length > 0) {
             Swal.fire({
-                title: "Missing Information",
-                text: "Information provided is incomplete or invalid.",
+                title: "Missing or Invalid Information",
+                html: errors.map((e) => `<div>• ${e}</div>`).join(""),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-        } else {
-            editTable.innerHTML += `
-                <tr class="senior-citizen-maintenance-record" >
-                    <td>${medicine.value}</td>
-                    <td>${dosage_n_frequency.value}</td>
-                    <td>${quantity.value}</td>
-                    <td>${start_date.value}</td>
-                    <td>${end_date.value}</td>
-                    <td>
-                        <button type=button class="btn btn-danger btn-sm medicine-remove">Remove</button>
-                    </td>
-                    <input type="hidden" name="medicines[]" value="${medicine.value}">
-                    <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
-                    <input type="hidden" name="medicine_quantity[]" value="${quantity.value}">
-                    <input type="hidden" name="start_date[]" value="${start_date.value}">
-                    <input type="hidden" name="end_date[]" value="${end_date.value}">
-                </tr>
-            `;
-
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-            medicine.value = "";
-            dosage_n_frequency.value = "";
-            quantity.value = "";
-            start_date.value = "";
-            end_date.value = "";
+            return;
         }
+
+        const formatDate = (dateStr) => {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+        };
+
+        const medicineLabel = medicine.options[medicine.selectedIndex].text;
+
+        editTable.innerHTML += `
+            <tr class="senior-citizen-maintenance-record">
+                <td>${medicineLabel}</td>
+                <td>${dosage_n_frequency.value}</td>
+                <td>${quantityVal}</td>
+                <td>${formatDate(start_date.value)}</td>
+                <td>${formatDate(end_date.value)}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm medicine-remove">Remove</button>
+                </td>
+                <input type="hidden" name="medicines[]" value="${medicine.value}">
+                <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
+                <input type="hidden" name="medicine_quantity[]" value="${quantityVal}">
+                <input type="hidden" name="start_date[]" value="${start_date.value}">
+                <input type="hidden" name="end_date[]" value="${end_date.value}">
+            </tr>
+        `;
+
+        // Reset fields and borders
+        [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
+            (el) => {
+                el.style.border = "";
+                el.value = "";
+            }
+        );
+
+        end_date.min = "";
+    });
+}
+
+// Dynamic end date min — edit modal
+const editStartDate = document.getElementById("edit_tb_start_date");
+const editEndDate = document.getElementById("edit_tb_end_date");
+
+if (editStartDate && editEndDate) {
+    editStartDate.addEventListener("change", function () {
+        if (this.value) {
+            editEndDate.min = this.value;
+            if (editEndDate.value && editEndDate.value < this.value) {
+                editEndDate.value = "";
+                editEndDate.style.border = "1px solid red";
+                Swal.fire({
+                    title: "Date Conflict",
+                    text: "The previously selected end date was before the new start date and has been cleared. Please select a new end date.",
+                    icon: "warning",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+            } else {
+                editEndDate.style.border = "";
+            }
+        } else {
+            editEndDate.min = "";
+        }
+    });
+}
+
+// Block negative quantity — edit modal
+const editQuantity = document.getElementById("edit_tb_quantity");
+if (editQuantity) {
+    editQuantity.setAttribute("min", "1");
+    editQuantity.addEventListener("input", function () {
+        if (this.value < 1) this.value = 1;
     });
 }
 

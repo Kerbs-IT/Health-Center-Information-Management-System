@@ -29,6 +29,16 @@
 #requestModal .modal-body,
 #distributedModal .modal-body {
     overflow: visible !important;
+/* Prevent sidebar flicker on page load */
+html.sidebar-pre-collapsed .menu-bar {
+    width: 80px !important;
+    transition: none !important; /* Disable transition on initial load */
+}
+
+html.sidebar-pre-collapsed .menu-bar h4,
+html.sidebar-pre-collapsed .menu-bar h5 {
+    display: none !important;
+    opacity: 0 !important;
 }
 @font-face {
     font-family: 'Poppins';

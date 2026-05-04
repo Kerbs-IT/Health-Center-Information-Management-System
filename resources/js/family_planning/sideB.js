@@ -64,6 +64,27 @@ function applyEditFinalToggleState(isFinal, lockToggle = false) {
     }
 }
 
+// ============================================================================
+// HELPERS — METHOD ACCEPTED CHECKBOXES
+// ============================================================================
+
+function setMethodAcceptedCheckboxes(selector, savedValue) {
+    const methods = (savedValue || "")
+        .split(",")
+        .map((m) => m.trim())
+        .filter(Boolean);
+
+    document.querySelectorAll(selector).forEach((checkbox) => {
+        checkbox.checked = methods.includes(checkbox.value);
+    });
+}
+
+function clearMethodAcceptedCheckboxes(selector) {
+    document.querySelectorAll(selector).forEach((checkbox) => {
+        checkbox.checked = false;
+    });
+}
+
 // Reset EDIT modal when it closes
 document
     .getElementById("editSideBcaseModal")
@@ -82,6 +103,9 @@ document
         }
 
         applyEditFinalToggleState(false, false);
+        clearMethodAcceptedCheckboxes(
+            'input[name="edit_side_b_method_accepted[]"]',
+        );
 
         const isFinalError = document.getElementById("edit_is_final_error");
         if (isFinalError) isFinalError.textContent = "";
@@ -100,6 +124,8 @@ document
         if (addHidden) addHidden.value = "0";
         if (addWarning) addWarning.classList.add("d-none");
         if (addError) addError.textContent = "";
+
+        clearMethodAcceptedCheckboxes('input[name="side_b_method_accepted[]"]');
     });
 
 // ============================================================================
@@ -211,6 +237,11 @@ document.addEventListener("click", async (e) => {
         if (response.ok) {
             const data = await response.json();
 
+            // Clear all method checkboxes first before populating
+            clearMethodAcceptedCheckboxes(
+                'input[name="edit_side_b_method_accepted[]"]',
+            );
+
             Object.entries(data.sideBrecord).forEach(([key, value]) => {
                 if (key == "medical_record_case_id") {
                     document.getElementById(`edit_side_b_${key}`).value = value;
@@ -218,6 +249,15 @@ document.addEventListener("click", async (e) => {
                 }
                 if (key == "health_worker_id") {
                     document.getElementById(`edit_side_b_${key}`).value = value;
+                    return;
+                }
+
+                // Method accepted — explode the stored string and tick matching checkboxes
+                if (key == "method_accepted") {
+                    setMethodAcceptedCheckboxes(
+                        'input[name="edit_side_b_method_accepted[]"]',
+                        value,
+                    );
                     return;
                 }
 
@@ -334,7 +374,6 @@ if (sideBupdateBTN) {
                                 : value;
                     });
 
-                    // is_final specific error
                     if (data.errors?.is_final) {
                         const isFinalError = document.getElementById(
                             "edit_is_final_error",
