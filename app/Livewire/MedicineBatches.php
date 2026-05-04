@@ -103,7 +103,7 @@ class MedicineBatches extends Component
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id),
+                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->whereNull('deleted_at'),
             ],
             'newBatchManufactured'=> 'nullable|date|before_or_equal:today',
         ], [
@@ -276,6 +276,17 @@ class MedicineBatches extends Component
     public function restoreBatch($batchId): void
     {
         $batch = MedicineBatch::withTrashed()->findOrFail($batchId);
+
+        // ── DUPLICATE GUARD ──────────────────────────────────────────
+        $conflict = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
+            ->where('batch_number', $batch->batch_number)
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if ($conflict) {
+            session()->flash('batch_error', "Cannot restore: an active batch with number \"{$batch->batch_number}\" already exists.");
+            return;
+        }
 
         DB::transaction(function () use ($batch) {
             $batch->restore();
