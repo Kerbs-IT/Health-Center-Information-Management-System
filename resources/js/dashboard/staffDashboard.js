@@ -153,7 +153,7 @@ function initDateRangePicker() {
 // Patients Per Service Today
 async function loadTodayPatients() {
     try {
-        const response = await fetch("/dashboard/patient-added-today", {
+        const response = await fetch("/dashboard/today/added-patient", {
             headers: { accept: "application/json" },
         });
 
