@@ -27,7 +27,13 @@ class MedicineBatches extends Component
     // ─── Archive state ────────────────────────────────────────────
     public $archiveBatchId = null;
     public $showArchived   = false;
+    public $batchErrorMessage = '';
 
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
     // ─── Mount ───────────────────────────────────────────────────
 
     public function mount(Medicine $medicine): void
@@ -99,13 +105,14 @@ class MedicineBatches extends Component
                 'max:100',
                 Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id),
             ],
-            'newBatchManufactured'=> 'nullable|date',
+            'newBatchManufactured'=> 'nullable|date|before_or_equal:today',
         ], [
             'newBatchQty.required'    => 'Quantity is required.',
             'newBatchExpiry.required' => 'Expiry date is required.',
             'newBatchExpiry.after'    => 'Expiry date must be in the future.',
             'newBatchNumber.required' => 'Batch number is required.',
             'newBatchNumber.unique'   => 'This batch number already exists.',
+            'newBatchManufactured.before_or_equal' => 'Manufactured date cannot be in the future.',
         ]);
 
         $expiryStatus = $this->determineExpiryStatus($this->newBatchExpiry);
@@ -136,6 +143,11 @@ class MedicineBatches extends Component
     {
         $batch = MedicineBatch::findOrFail($batchId);
 
+        if ($batch->expiry_date->startOfDay()->lte(now('Asia/Manila')->startOfDay())) {
+            $this->dispatch('notify-error', message: 'Expired batches cannot be edited.');
+            return;
+        }
+
         $this->editBatchId           = $batchId;
         $this->editBatchNumber       = $batch->batch_number;
         $this->editBatchQty          = $batch->quantity;
@@ -151,6 +163,13 @@ class MedicineBatches extends Component
     {
         $batch = MedicineBatch::findOrFail($this->editBatchId);
 
+        if ($batch->expiry_date->startOfDay()->lte(now('Asia/Manila')->startOfDay())) {
+            $this->dispatch('notify-error', message: 'Expired batches cannot be edited.');
+            $this->resetEditFields();
+            $this->dispatch('close-edit-batch-modal');
+            return;
+        }
+
         $this->validate([
             'editBatchNumber'       => [
                 'required',
@@ -158,14 +177,17 @@ class MedicineBatches extends Component
                 'max:100',
                 Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->ignore($this->editBatchId),
             ],
-            'editBatchQty'          => ['required', 'integer', 'min:0'],
-            'editBatchExpiry'       => 'required|date',
-            'editBatchManufactured' => 'nullable|date',
+            'editBatchQty'          => ['required', 'integer', 'min:1'],
+            'editBatchExpiry'       => 'required|date|after:today',
+            'editBatchManufactured' => 'nullable|date|before_or_equal:today',
         ], [
             'editBatchQty.required'    => 'Quantity is required.',
             'editBatchExpiry.required' => 'Expiry date is required.',
             'editBatchNumber.required' => 'Batch number is required.',
             'editBatchNumber.unique'   => 'This batch number already exists.',
+            'editBatchExpiry.after' => 'Expiry date must be in the future.',
+            'editBatchManufactured.before_or_equal' => 'Manufactured date cannot be in the future.',
+
         ]);
 
         $newQty = (int) $this->editBatchQty;

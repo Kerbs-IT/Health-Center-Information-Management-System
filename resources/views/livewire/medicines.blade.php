@@ -160,7 +160,17 @@
                             <td>
                                 <div class="d-flex gap-1 justify-content-center">
                                     @if($showArchived)
-                                        <button class="btn btn-info text-white" wire:click="restoreMedicine({{ $medicine->medicine_id }})">
+                                        @php
+                                            $categoryStillArchived = $medicine->category && $medicine->category->trashed();
+                                        @endphp
+                                        <button
+                                            class="btn btn-info text-white {{ $categoryStillArchived ? 'disabled opacity-50' : '' }}"
+                                            wire:click="{{ $categoryStillArchived ? '' : 'restoreMedicine(' . $medicine->medicine_id . ')' }}"
+                                            @if($categoryStillArchived)
+                                                title="Restore the category first"
+                                                disabled
+                                            @endif
+                                        >
                                             <i class="fa-solid fa-rotate-left fa-lg"></i>
                                         </button>
                                     @else
@@ -184,7 +194,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <i class="fa-solid fa-inbox fs-1 text-muted mb-3 d-block"></i>
                                 <p class="text-muted">No medicine found</p>
                             </td>
