@@ -287,8 +287,13 @@ class Medicines extends Component
 
     public function restoreMedicine($id): void
     {
-        Medicine::withTrashed()->findOrFail($id)->restore();
-        $this->dispatch('medicine-restore-success');
+        try {
+            Medicine::withTrashed()->findOrFail($id)->restore();
+            $this->dispatch('medicine-restore-success');
+        } catch (\RuntimeException $e) {
+            $this->dispatch('medicine-restore-blocked', message: $e->getMessage());
+        }
+
         $this->resetPage();
     }
 

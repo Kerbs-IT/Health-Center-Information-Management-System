@@ -21,9 +21,24 @@ class Medicine extends Model
         'expiry_status',
         'min_age_months',
         'max_age_months',
+        'auto_archived',
     ];
 
     protected $dates = ['deleted_at', 'expiry_date'];
+
+
+    protected static function booted(): void
+    {
+        static::restoring(function (Medicine $medicine) {  // ← must be Medicine, not Category
+            $category = Category::withTrashed()->find($medicine->category_id);
+
+            if ($category && $category->trashed()) {
+                throw new \RuntimeException(
+                    "Cannot restore this medicine — its category \"{$category->category_name}\" is still archived. Restore the category first."
+                );
+            }
+        });
+    }
 
     // ─── Relationships ───────────────────────────────────────────
 

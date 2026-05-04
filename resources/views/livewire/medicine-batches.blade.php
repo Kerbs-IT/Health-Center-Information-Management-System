@@ -86,26 +86,30 @@
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label">Batch Number <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" wire:model="newBatchNumber"
+                            <input type="text" class="form-control @error('newBatchNumber') is-invalid @enderror"
+                                wire:model.live="newBatchNumber"
                                 placeholder="e.g., BATCH-2025-001">
-                            @error('newBatchNumber') <small class="text-danger">{{ $message }}</small> @enderror
+                            @error('newBatchNumber') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Quantity <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" wire:model="newBatchQty"
-                                   min="1" placeholder="0">
-                            @error('newBatchQty') <small class="text-danger">{{ $message }}</small> @enderror
+                            <input type="number" class="form-control @error('newBatchQty') is-invalid @enderror"
+                                wire:model.live="newBatchQty" min="1" placeholder="0">
+                            @error('newBatchQty') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Manufactured Date</label>
-                            <input type="date" class="form-control" wire:model="newBatchManufactured">
-                            @error('newBatchManufactured') <small class="text-danger">{{ $message }}</small> @enderror
+                            <input type="date" class="form-control @error('newBatchManufactured') is-invalid @enderror"
+                                wire:model.live="newBatchManufactured"  max="{{ now()->toDateString() }}">
+                            @error('newBatchManufactured') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" wire:model="newBatchExpiry"
-                                   min="{{ now()->addDay()->toDateString() }}">
-                            @error('newBatchExpiry') <small class="text-danger">{{ $message }}</small> @enderror
+                            <input type="date" class="form-control @error('newBatchExpiry') is-invalid @enderror"
+                                wire:model.live="newBatchExpiry"
+                                min="{{ now()->addDay()->toDateString() }}">
+                            @error('newBatchExpiry') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
                     <div class="mt-3">
@@ -151,7 +155,8 @@
                             $available = max(0, $batch->quantity - $batch->reserved_quantity);
                             $firstValidIndex = null;
                             foreach ($batches as $i => $b) {
-                                if (!$b->expiry_date->isPast() && $b->quantity > 0) {
+                                $bAvailable = max(0, $b->quantity - $b->reserved_quantity);
+                                if (!$b->expiry_date->isPast() && $bAvailable > 0) {
                                     $firstValidIndex = $i;
                                     break;
                                 }
@@ -262,26 +267,26 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Batch Number <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" wire:model="editBatchNumber">
-                                @error('editBatchNumber') <small class="text-danger">{{ $message }}</small> @enderror
+                                <input type="text" class="form-control @error('editBatchNumber') is-invalid @enderror"
+                                    wire:model.live="editBatchNumber">
+                                @error('editBatchNumber') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Quantity <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('editBatchQty') is-invalid @enderror"
-                                       wire:model="editBatchQty" min="0">
-                                @error('editBatchQty')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                    wire:model.live="editBatchQty" min="0">
+                                @error('editBatchQty') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Manufactured Date</label>
-                                <input type="date" class="form-control" wire:model="editBatchManufactured">
-                                @error('editBatchManufactured') <small class="text-danger">{{ $message }}</small> @enderror
+                                <input type="date" class="form-control @error('editBatchManufactured') is-invalid @enderror"
+                                    wire:model.live="editBatchManufactured"  max="{{ now()->toDateString() }}">
+                                @error('editBatchManufactured') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" wire:model="editBatchExpiry">
-                                @error('editBatchExpiry') <small class="text-danger">{{ $message }}</small> @enderror
+                                <input type="date" class="form-control @error('editBatchExpiry') is-invalid @enderror"
+                                    wire:model.live="editBatchExpiry" min="{{ now()->addDay()->toDateString() }}">
                             </div>
                         </div>
                     </div>
@@ -290,6 +295,15 @@
                         <button type="submit" class="btn btn-primary">Update Batch</button>
                     </div>
                 </form>
+            </div>
+        </div>
+            {{-- ── Error Toast ─────────────────────────────────────────── --}}
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive">
+                <div class="d-flex">
+                    <div class="toast-body fw-semibold" id="errorToastMsg"></div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
             </div>
         </div>
     </div>
@@ -335,6 +349,26 @@
                 new bootstrap.Modal(document.getElementById('archiveBatchModal')).show();
             });
         });
+            document.addEventListener('livewire:init', () => {
+        Livewire.on('show-edit-batch-modal', () => {
+            new bootstrap.Modal(document.getElementById('editBatchModal')).show();
+        });
+        Livewire.on('close-edit-batch-modal', () => {
+            const el  = document.getElementById('editBatchModal');
+            const mod = bootstrap.Modal.getInstance(el);
+            if (mod) mod.hide();
+        });
+        Livewire.on('show-archive-batch-confirmation', () => {
+            new bootstrap.Modal(document.getElementById('archiveBatchModal')).show();
+        });
+
+        // ── Error toast handler ──
+        Livewire.on('notify-error', ({ message }) => {
+            document.getElementById('errorToastMsg').textContent = message;
+            const toastEl = document.getElementById('errorToast');
+            bootstrap.Toast.getOrCreateInstance(toastEl).show();
+        });
+    });
     </script>
     @endpush
 </div>

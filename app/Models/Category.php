@@ -26,26 +26,25 @@ class Category extends Model
     protected static function booted(): void
     {
         static::deleting(function (Category $category) {
-            $now = now();
-
+            // Mark auto-archived so we can distinguish from manual archives
             $category->medicines()
                 ->whereNull('deleted_at')
-                ->each(function (Medicine $medicine) use ($now) {
-                    $medicine->deleted_at = $now;
+                ->each(function (Medicine $medicine) {
+                    $medicine->auto_archived = true;
+                    $medicine->deleted_at    = now();
                     $medicine->saveQuietly();
                 });
         });
 
         static::restoring(function (Category $category) {
-            $archivedAt = $category->deleted_at;
-
             Medicine::onlyTrashed()
                 ->where('category_id', $category->category_id)
-                ->whereBetween('deleted_at', [
-                    $archivedAt->copy()->subSeconds(5),
-                    $archivedAt->copy()->addSeconds(5),
-                ])
-                ->each(fn(Medicine $medicine) => $medicine->restore());
+                ->where('auto_archived', true)
+                ->each(function (Medicine $medicine) {
+                    $medicine->auto_archived = false;
+                    $medicine->deleted_at    = null;
+                    $medicine->saveQuietly();
+                });
         });
     }
 }

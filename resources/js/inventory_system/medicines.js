@@ -104,3 +104,10 @@ window.addEventListener('medicine-restore-success', () => {
         showConfirmButton: false
     });
 });
+
+Livewire.on('medicine-restore-blocked', ({ message }) => {
+    // If you use SweetAlert2:
+    Swal.fire({ icon: 'warning', title: 'Cannot Restore', text: message });
+
+    // Or just alert(message); if you don't have Swal
+});
