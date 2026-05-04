@@ -36,3 +36,15 @@ li{
     background-color: var(--tertiaryColor);
 }
 /*  */
+.req-item {
+    transition: color 0.2s ease;
+    color: #adb5bd;
+}
+.req-item.passed {
+    color: #198754;
+}
+.req-icon {
+    display: inline-block;
+    width: 14px;
+    font-weight: 600;
+}
