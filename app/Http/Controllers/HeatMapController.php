@@ -41,7 +41,8 @@ class HeatMapController extends Controller
             'prenatal',
             'senior-citizen',
             'tb-dots',
-            'family-planning'
+            'family-planning',
+            'general-consultation'
         ];
 
         return view(

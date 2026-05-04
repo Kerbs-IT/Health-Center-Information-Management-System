@@ -67,8 +67,8 @@
                             </select>
                         </div>
 
-                        <button id="refresh-btn" class="btn-refresh">
-                            <span class="refresh-icon">🔄</span> Refresh
+                        <button id="refresh-btn" class="btn-refresh text-center">
+                            Refresh
                         </button>
                     </div>
 
@@ -109,15 +109,19 @@
                         </div>
                         <div class="legend-item">
                             <span class="legend-color" style="background: #FF9800;"></span>
-                            <span>Senior-citizen</span>
+                            <span>Senior Citizen</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color" style="background: #D32F2F;"></span>
-                            <span>tb-dots</span>
+                            <span>Tb Dots</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color" style="background: #1976D2;"></span>
-                            <span>family-planning</span>
+                            <span>Family Planning</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #8E24AA;"></span>
+                            <span>General Consultation</span>
                         </div>
                     </div>
                     <div class="map-legend cursor-pointer bg-success d-flex align-items-center justify-content-center" style="width:20px;height:20px;border-radius:50%;">

@@ -351,126 +351,134 @@
             </tr>
         </thead>
         <tbody>
+            @php
+            $planning = $caseInfo->planning ?? null;
+            $planningWords = $planning ? explode(' ', $planning) : [];
+            $planningLines = array_map(
+            fn($chunk) => implode(' ', $chunk),
+            array_chunk($planningWords, 5)
+            );
+            @endphp
             <tr>
-                <td rowspan="20" style="vertical-align: top;" class="date"> {{$caseInfo->created_at ??''}}</td>
+                <td rowspan="20" style="vertical-align: top;" class="date">{{$caseInfo->created_at ?? ''}}</td>
                 <td>PNCU-1<sup>st</sup> time</td>
-                <td>BP: {{$caseInfo -> blood_pressure?? '' }}</td>
+                <td>BP: {{$caseInfo->blood_pressure ?? ''}}</td>
                 <td>AOG</td>
-                <td></td>
+                <td>{{ $planningLines[0] ?? '' }}</td>
             </tr>
             <tr>
                 <td>G P (T P A L)</td>
-                <td>WT: {{$caseInfo -> weight?$caseInfo -> weight. ' kg': '' }}</td>
+                <td>WT: {{$caseInfo->weight ? $caseInfo->weight . ' kg' : ''}}</td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[1] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
-                <td>HT: {{$caseInfo -> height?$caseInfo -> height. ' cm': '' }}</td>
+                <td>HT: {{$caseInfo->height ? $caseInfo->height . ' cm' : ''}}</td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[2] ?? '' }}</td>
             </tr>
             <tr>
                 <td>LMP: {{ $caseInfo->LMP ?? '' }}</td>
-                <td>Temp:{{ $caseInfo->temperature?$caseInfo->temperature. '°C' :'' }}</td>
+                <td>Temp: {{$caseInfo->temperature ? $caseInfo->temperature . '°C' : ''}}</td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[3] ?? '' }}</td>
             </tr>
             <tr>
                 <td>EDC: {{ $caseInfo->expected_delivery ?? '' }}</td>
-                <td>RR: {{$caseInfo -> respiratory_rate? $caseInfo -> respiratory_rate: '' }}</td>
-                <td>({{$caseInfo->prenatal_assessment->spotting == 'yes'?'/':''}}) spotting</td>
-                <td></td>
+                <td>RR: {{$caseInfo->respiratory_rate ?? ''}}</td>
+                <td>({{$caseInfo->prenatal_assessment->spotting == 'yes' ? '/' : ''}}) spotting</td>
+                <td>{{ $planningLines[4] ?? '' }}</td>
             </tr>
             <tr>
-                <td>Menarche: {{ $caseInfo->menarche ?? ' ' }}</td>
-                <td>PR: {{$caseInfo -> pulse_rate?$caseInfo -> pulse_rate : '' }}</td>
-                <td>({{$caseInfo->prenatal_assessment->edema == 'yes'?'/':' '}}) edema</td>
-                <td></td>
+                <td>Menarche: {{ $caseInfo->menarche ?? '' }}</td>
+                <td>PR: {{$caseInfo->pulse_rate ?? ''}}</td>
+                <td>({{$caseInfo->prenatal_assessment->edema == 'yes' ? '/' : ' '}}) edema</td>
+                <td>{{ $planningLines[5] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT status:</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->severe_headache == 'yes'?'/':' '}}) severe headache</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->severe_headache == 'yes' ? '/' : ' '}}) severe headache</td>
+                <td>{{ $planningLines[6] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT1: {{ $caseInfo->tetanus_toxoid_1 ?? '' }}</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->blumming_vission == 'yes'?'/':' '}}) blurring of vision</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->blumming_vission == 'yes' ? '/' : ' '}}) blurring of vision</td>
+                <td>{{ $planningLines[7] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT2: {{ $caseInfo->tetanus_toxoid_2 ?? '' }}</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->water_discharge == 'yes'?'/':' '}}) watery discharge</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->water_discharge == 'yes' ? '/' : ' '}}) watery discharge</td>
+                <td>{{ $planningLines[8] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT3: {{ $caseInfo->tetanus_toxoid_3 ?? '' }}</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->severe_vomitting == 'yes'?'/':' '}}) severe vomiting</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->severe_vomitting == 'yes' ? '/' : ' '}}) severe vomiting</td>
+                <td>{{ $planningLines[9] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT4: {{ $caseInfo->tetanus_toxoid_4 ?? '' }}</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->hx_smoking == 'yes'?'/':' '}}) Hx of smoking</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->hx_smoking == 'yes' ? '/' : ' '}}) Hx of smoking</td>
+                <td>{{ $planningLines[10] ?? '' }}</td>
             </tr>
             <tr>
                 <td>TT5: {{ $caseInfo->tetanus_toxoid_5 ?? '' }}</td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->alchohol_drinker == 'yes'?'/':' '}}) Alcoholic drinker</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->alchohol_drinker == 'yes' ? '/' : ' '}}) Alcoholic drinker</td>
+                <td>{{ $planningLines[11] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td>({{$caseInfo->prenatal_assessment->drug_intake == 'yes'?'/':' '}}) Drug Intake</td>
-                <td></td>
+                <td>({{$caseInfo->prenatal_assessment->drug_intake == 'yes' ? '/' : ' '}}) Drug Intake</td>
+                <td>{{ $planningLines[12] ?? '' }}</td>
             </tr>
             <tr>
                 <td>Check up to other health<br>facility</td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[13] ?? '' }}</td>
             </tr>
             <tr>
                 <td>Date:</td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[14] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[15] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[16] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[17] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[18] ?? '' }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>{{ $planningLines[19] ?? '' }}</td>
             </tr>
         </tbody>
     </table>

@@ -90,8 +90,10 @@ class RecordsTable extends Component
             }, function ($query) {
                 $query->orderBy($this->sortField, $this->sortDirection);
             })
-            ->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
-            ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date)
+            ->when(empty($this->patient_id), function ($query) {
+                $query->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
+                    ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date);
+            })
             ->when(Auth::user()->role == 'staff', function ($query) {
                 $query->join('vaccination_medical_records', 'vaccination_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('vaccination_medical_records.health_worker_id', Auth::id());
