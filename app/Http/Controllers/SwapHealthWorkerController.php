@@ -265,6 +265,23 @@ class SwapHealthWorkerController extends Controller
                 ->whereIn('medical_record_case_id', $medicalRecordCaseIds)
                 ->update(['health_worker_id' => $healthWorkerId]);
         }
+
+        // Also update brgy_name in masterlists
+        if ($healthWorkerId) {
+            $newArea = Staff::where('user_id', $healthWorkerId)->first();
+            $brgyUnits = $this->getBrgyUnits();
+            $newBrgyName = $brgyUnits[$newArea->assigned_area_id] ?? null;
+
+            if ($newBrgyName) {
+                DB::table('wra_masterlists')
+                    ->whereIn('medical_record_case_id', $medicalRecordCaseIds)
+                    ->update(['brgy_name' => $newBrgyName]);
+
+                DB::table('vaccination_masterlists')
+                    ->whereIn('medical_record_case_id', $medicalRecordCaseIds)
+                    ->update(['brgy_name' => $newBrgyName]); // if this column exists
+            }
+        }
     }
 
     /**

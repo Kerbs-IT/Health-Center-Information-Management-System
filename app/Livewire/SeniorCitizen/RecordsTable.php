@@ -141,6 +141,10 @@ class RecordsTable extends Component
     {
         $rows = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
+            ->when(Auth::user()->role == 'staff', function ($query) {
+                $query->join('senior_citizen_medical_records', 'senior_citizen_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('senior_citizen_medical_records.health_worker_id', Auth::id());
+            })
             ->where('type_of_case', 'senior-citizen')
             ->where('patients.status', '!=', 'Archived')
             ->where('medical_record_cases.status', 'Active')
