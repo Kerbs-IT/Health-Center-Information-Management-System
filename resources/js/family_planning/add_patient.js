@@ -274,11 +274,17 @@ saveBTN.addEventListener("click", async (e) => {
                         window.clearPatientRecordSelection();
                     }
                     form.reset();
+                    // Explicitly uncheck method_accepted checkboxes since form.reset()
+                    // does not always reliably reset dynamically rendered checkboxes
+                    document
+                        .querySelectorAll(
+                            'input[name="side_b_method_accepted[]"]',
+                        )
+                        .forEach((cb) => (cb.checked = false));
                     window.currentStep = 1;
                     window.showStep(window.currentStep);
                 }
             });
-
             if (typeof Livewire !== "undefined") {
                 Livewire.dispatch("wraMasterlistRefreshTable");
             } else {

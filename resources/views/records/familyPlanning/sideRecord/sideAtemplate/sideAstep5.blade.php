@@ -275,7 +275,7 @@
     <h4 class="border-bottom px-1"> ACKNOWLEDGEMENT</h4>
     <div class="mb-3">This is to certify that the Physician/Nurse/Midwife of the clinic has fully
         explained to me the different methods available in the family planning
-        and i freely choose the <input type="text" id="side_A_add_choosen_method" name="side_A_add_choosen_method" class="rounded text-center"> method.
+        and i freely choose the <input type="text" id="side_A_add_choosen_method" name="side_A_add_choosen_method" class="rounded text-center" placeholder="e.g. Condom, IUD, Implant"> method.
     </div>
     <div class="signature d-flex justify-content-even w-100 gap-2">
         <div class="mb-1 w-100 d-flex flex-column border-bottom">

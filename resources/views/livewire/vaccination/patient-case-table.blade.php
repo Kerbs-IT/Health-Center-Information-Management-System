@@ -47,7 +47,7 @@
 
                     <td>{{ $vaccination_case_record->firstItem() + $loop->index }}</td>
                     <td>{{$record->vaccine_type}}</td>
-                    <td>{{$record->dose_number}}{{$record->dose_number == 1 ? 'st':'th'}} Dose</td>
+                    <td>{{$record->dose_number}}{{ $record->dose_number == 1 ? 'st' : ($record->dose_number == 2 ? 'nd' : 'rd') }} Dose</td>
 
                     <td>{{ \Carbon\Carbon::parse($record->date_of_vaccination)->format('M j, Y') }}</td>
                     <td>Done</td>

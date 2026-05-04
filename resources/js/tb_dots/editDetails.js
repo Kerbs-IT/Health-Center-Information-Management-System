@@ -14,9 +14,12 @@ if (currentLoginhealthWorkerId) {
 
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
+         if (disablerOption && currentLoginhealthWorkerId != element.id) {
+             return;
+         }
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
-        } ${healthWorkerId != element.id && disablerOption ? "disabled" : ""}>${
+        }>${
             element.staff.full_name
         }</option>`;
     });

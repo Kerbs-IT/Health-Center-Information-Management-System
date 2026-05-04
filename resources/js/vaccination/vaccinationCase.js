@@ -144,7 +144,7 @@ async function init() {
 
             if (selectedId) {
                 vaccineContainer.innerHTML += `
-                    <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${selectedId}>
+                    <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 rounded" style="width: fit-content; min-width: 120px; max-width: 180px;" data-bs-id=${selectedId}>
                         <p class="mb-0">${selectedText}</p>
                         <div class="delete-icon d-flex align-items-center justify-content-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
@@ -232,10 +232,9 @@ document.addEventListener("click", async (e) => {
         typeOfVaccine.innerHTML = data.vaccinationCase.vaccine_type ?? "none";
         doseNumber.innerHTML = data.vaccinationCase.dose_number ?? "none";
         remarks.innerHTML = data.vaccinationCase.remarks ?? "none";
-        height.innerHTML = `${data.vaccinationCase.height} cm` ?? "none";
-        weight.innerHTML = `${data.vaccinationCase.weight} kg` ?? "none";
-        temperature.innerHTML =
-            `${data.vaccinationCase.temperature} °C` ?? "none";
+       height.innerHTML = `${data.vaccinationCase.height ?? "0.00"} cm`;
+       weight.innerHTML = `${data.vaccinationCase.weight ?? "0.00"} kg`;
+       temperature.innerHTML = `${data.vaccinationCase.temperature ?? "0.00"} °C`;
     } catch (error) {
         console.error("Error viewing case:", error);
         Swal.fire({
@@ -561,7 +560,7 @@ document.addEventListener("click", async (e) => {
         // Load current selected vaccines
         data.vaccineAdministered.forEach((vaccine) => {
             editvaccinesContainer.innerHTML += `
-                <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${vaccine.vaccine_id}>
+                <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 rounded" style="width: fit-content; min-width: 120px; max-width: 180px;" data-bs-id=${vaccine.vaccine_id}>
                     <p class="mb-0">${vaccine.vaccine_type}</p>
                     <div class="delete-icon d-flex align-items-center justify-content-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">

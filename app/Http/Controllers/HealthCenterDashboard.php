@@ -57,6 +57,8 @@ class HealthCenterDashboard extends Controller
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 
+                    
+
                 $generalConsultation = (clone $baseQuery)
                     ->where('medical_record_cases.type_of_case', 'general-consultation')
                     ->distinct('medical_record_cases.id')
@@ -123,6 +125,12 @@ class HealthCenterDashboard extends Controller
                     ->join('family_planning_medical_records as f', 'f.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('f.health_worker_id', $staffId)
                     ->where('medical_record_cases.type_of_case', 'family-planning')
+                    ->distinct('medical_record_cases.id')
+                    ->count('medical_record_cases.id');
+                $seniorCitizen = (clone $baseQuery)
+                    ->join('senior_citizen_medical_records as s', 's.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('s.health_worker_id', $staffId)
+                    ->where('medical_record_cases.type_of_case', 'senior-citizen')
                     ->distinct('medical_record_cases.id')
                     ->count('medical_record_cases.id');
 

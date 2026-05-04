@@ -606,7 +606,10 @@
                                             <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                                 @php
-                                                $brgy = \App\Models\brgy_unit::where('status','Active')->orderBy('brgy_unit')->get();
+                                                $brgy = \App\Models\brgy_unit::where('status','Active')
+                                                ->whereHas('staff') // only areas with assigned health worker
+                                                ->orderBy('brgy_unit')
+                                                ->get();
                                                 $user = auth()->user();
                                                 $isStaff = $user->role === 'staff'; // or however you check if user is staff
                                                 $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID
@@ -754,7 +757,7 @@
                                         <button type="button" class="btn btn-success" id="vaccine-add-btn"> Add</button>
                                     </div>
                                 </div>
-                                <div class="mb-2 bg-secondary w-100 p-3 d-flex flex-wrap justify-content-center rounded vaccines-container gap-1 ">
+                                <div class="mb-2 bg-secondary w-100 p-3 d-flex flex-wrap justify-content-center rounded vaccines-container gap-1 " style="min-height: 60px;">
                                     <!-- <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
                                         <p class="mb-0">Penta 1</p>
                                         <div class="delete-icon d-flex align-items-center justify-content-center">
@@ -796,10 +799,8 @@
                             </div>
                         </div>
                         <!-- general consultation -->
-                        <div class="general-consultation d-none patient-type overflow-x-auto h-100" id="general-consultation-con">
+                        <div class="general-consultation d-none patient-type overflow-x-auto" style="height: 100%; display: flex; flex-direction: column;" id="general-consultation-con">
                             @include('add_patient.generalConsultation.general-consultation')
-
-
                         </div>
 
                         <!-- PRENATAL -->

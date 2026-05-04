@@ -54,7 +54,7 @@
                             <div class="input-form flex-fill lg:w-[50%]">
                                 <label for="edit_client_suffix" class="">Suffix</label>
                                 <select name="edit_client_suffix" id="edit_client_suffix" class="form-select py-2 ">
-                                    <option value="" >Select Suffix</option>
+                                    <option value="">Select Suffix</option>
                                     <option value="Jr.">Jr</option>
                                     <option value="Sr.">Sr</option>
                                     <option value="II.">II</option>
@@ -110,7 +110,7 @@
                             <small class="text-danger error-text" id="edit_client_religion_error"></small>
                         </div>
                         <div class="input-field flex-fill lg:w-[50%]">
-                            <label for="contact_number" class="">Contact Number</label>
+                            <label for="contact_number" class="">Contact Number<span class="text-danger">*</span></label>
                             <input type="number" placeholder="Enter the phone number" class="form-control bg-light" id="edit_client_contact_number" name="edit_client_contact_number">
 
                             <small class="text-danger error-text" id="edit_client_contact_number_error"></small>
@@ -242,12 +242,10 @@
                         <input type="radio" name="edit_current_user_type" id="edit_current_method" value="current method">
                         <label for="edit_current_method" class="edit_current_user_type_label">Current Method</label>
                     </div>
-                    <!-- new clinic -->
                     <div class="mb-3 d-flex align-items-center gap-md-2 gap-1">
                         <input type="radio" name="edit_current_user_type" id="edit_changing_clinic" value="changing clinic">
                         <label for="edit_changing_clinic" class="edit_current_user_type_label">Changing Clinic</label>
                     </div>
-                    <!-- dropout -->
                     <div class="mb-3 d-flex align-items-center gap-md-2 gap-1">
                         <input type="radio" name="edit_current_user_type" id="edit_dropout_restart" value="dropout restart">
                         <label for="edit_dropout_restart" class="edit_current_user_type_label">Dropout/Restart</label>
@@ -256,24 +254,31 @@
                 <small class="text-danger error-text" id="edit_type_of_patient_error"></small>
                 <small class="text-danger error-text" id="edit_current_user_type_error"></small>
             </div>
+
             <!-- reasons -->
             <div class="client-reasons">
                 <h4 class="text-nowrap">Client Reason</h4>
-                <!-- fp of new user -->
+
+                <!-- fp of new acceptor -->
                 <div class="reason-con">
                     <div class="mb-3 d-flex gap-2 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap edit_new_acceptor_label">Reason for FP:</label>
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="edit_new_acceptor_reason_for_FP" value="spacing" id="edit_new_acceptor_reason_for_FP_spacing">
                             <label for="edit_new_acceptor_reason_for_FP_spacing" class="edit_new_acceptor_label">spacing</label>
+
                             <input type="radio" name="edit_new_acceptor_reason_for_FP" value="limiting" id="edit_new_acceptor_reason_for_FP_limiting">
                             <label for="edit_new_acceptor_reason_for_FP_limiting" class="edit_new_acceptor_label">limiting</label>
-                            <input type="radio" name="edit_new_acceptor_reason_for_FP" id="edit_new_acceptor_reason_for_FP_others" value="others">
+
+                            <input type="radio" name="edit_new_acceptor_reason_for_FP" value="others" id="edit_new_acceptor_reason_for_FP_others">
                             <label for="edit_new_acceptor_reason_for_FP_others" class="edit_new_acceptor_label">others</label>
+
+                            {{-- FIXED: unique name, NOT part of the radio group --}}
                             <input type="text" name="edit_new_acceptor_reason_text" id="edit_new_acceptor_reason_text" class="flex-grow-1">
                         </div>
                     </div>
                 </div>
+
                 <!-- FP of current user -->
                 <div class="reason-con">
                     <div class="mb-3 d-flex gap-2 flex-wrap">
@@ -281,27 +286,37 @@
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="edit_current_user_reason_for_FP" value="spacing" id="edit_current_user_reason_for_FP_spacing">
                             <label for="edit_current_user_reason_for_FP_spacing" class="edit_current_user_label">spacing</label>
+
                             <input type="radio" name="edit_current_user_reason_for_FP" value="limiting" id="edit_current_user_reason_for_FP_limiting">
-                            <label for="edit_current_user_reason_for_FP_limiting" class=" edit_current_user_label">limiting</label>
-                            <input type="radio" name="edit_current_user_reason_for_FP" id="edit_current_user_reason_for_FP_others" value="others">
-                            <label for="edit_current_user_reason_for_FP_limiting" class=" edit_current_user_label">others</label>
+                            <label for="edit_current_user_reason_for_FP_limiting" class="edit_current_user_label">limiting</label>
+
+                            <input type="radio" name="edit_current_user_reason_for_FP" value="others" id="edit_current_user_reason_for_FP_others">
+                            <label for="edit_current_user_reason_for_FP_others" class="edit_current_user_label">others</label>
+
+                            {{-- FIXED: unique name so it never collides with the radio group --}}
                             <input type="text" name="edit_current_user_reason_for_FP_other" id="edit_current_user_reason_text" class="flex-grow-1">
                         </div>
                     </div>
                 </div>
-                <!-- current method -->
+
+                <!-- current method reason -->
                 <div class="reason-con">
                     <div class="mb-3 d-flex gap-4 flex-wrap">
                         <label for="FP" class="text-decoration-underline text-nowrap edit_current_method_reason_label">Reason:</label>
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="edit_current_method_reason" value="medical condition" id="edit_current_method_reason_medical_condition">
                             <label for="edit_current_method_reason_medical_condition" class="edit_current_method_reason_label">medical condition</label>
-                            <input type="radio" name="edit_current_method_reason" id="edit_current_method_reason_side_effect" value="side effects">
+
+                            <input type="radio" name="edit_current_method_reason" value="side effects" id="edit_current_method_reason_side_effect">
                             <label for="edit_current_method_reason_side_effect" class="edit_current_method_reason_label">side effects</label>
-                            <input type="text" id="edit_side_effects_text" name="edit_current_method_reason" class="flex-grow-1">
+
+                            {{-- FIXED: renamed from edit_current_method_reason → edit_side_effects_text_value
+                         so it never overwrites the radio on submit --}}
+                            <input type="text" id="edit_side_effects_text" name="edit_side_effects_text_value" class="flex-grow-1">
                         </div>
                     </div>
                 </div>
+
                 <small class="text-danger error-text" id="edit_new_acceptor_reason_for_FP_error"></small>
                 <small class="text-danger error-text" id="edit_current_user_reason_for_FP_error"></small>
                 <small class="text-danger error-text" id="edit_current_method_reason_error"></small>
@@ -310,77 +325,71 @@
 
         <!-- current method -->
         <div class="mb-3 border-bottom w-100">
-
             <div class="current-method-user">
                 <h4>Previously used Method (for Current User)</h4>
                 <div class="methods d-flex gap-3 flex-wrap">
+
                     <div class="method-row">
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="Implant">
-                            <label for="implant">Implant</label>
+                            <input type="checkbox" id="edit_implant" name="edit_previously_used_method[]" value="Implant">
+                            <label for="edit_implant">Implant</label>
                         </div>
-                        <!-- injectable -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="Injectable">
-                            <label for="Injectable">Injectable</label>
+                            <input type="checkbox" id="edit_injectable" name="edit_previously_used_method[]" value="Injectable">
+                            <label for="edit_injectable">Injectable</label>
                         </div>
-                        <!-- LAM -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="LAM">
-                            <label for="LAM">LAM</label>
+                            <input type="checkbox" id="edit_lam" name="edit_previously_used_method[]" value="LAM">
+                            <label for="edit_lam">LAM</label>
                         </div>
                     </div>
-                    <!-- 2nd column -->
+
                     <div class="method-row">
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="UID">
-                            <label for="UID">UID</label>
+                            <!-- FIX: label text was "UID" — corrected to "IUD" -->
+                            <input type="checkbox" id="edit_iud" name="edit_previously_used_method[]" value="IUD">
+                            <label for="edit_iud">IUD</label>
                         </div>
-                        <!-- COC -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="COC">
-                            <label for="COC">COC</label>
+                            <input type="checkbox" id="edit_coc" name="edit_previously_used_method[]" value="COC">
+                            <label for="edit_coc">COC</label>
                         </div>
-                        <!-- SDM -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="SDM">
-                            <label for="SDM">SDM</label>
+                            <input type="checkbox" id="edit_sdm" name="edit_previously_used_method[]" value="SDM">
+                            <label for="edit_sdm">SDM</label>
                         </div>
                     </div>
-                    <!-- 3rd -->
+
                     <div class="method-row">
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="BTL">
-                            <label for="BTL">BTL</label>
+                            <input type="checkbox" id="edit_btl" name="edit_previously_used_method[]" value="BTL">
+                            <label for="edit_btl">BTL</label>
                         </div>
-                        <!-- POP -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="POP">
-                            <label for="POP">POP</label>
+                            <input type="checkbox" id="edit_pop" name="edit_previously_used_method[]" value="POP">
+                            <label for="edit_pop">POP</label>
                         </div>
-                        <!-- BBT -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="BBT">
-                            <label for="BBT">BBT</label>
+                            <input type="checkbox" id="edit_bbt" name="edit_previously_used_method[]" value="BBT">
+                            <label for="edit_bbt">BBT</label>
                         </div>
                     </div>
-                    <!-- 4TH -->
+
                     <div class="method-row">
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="NSV">
-                            <label for="NSV">NSV</label>
+                            <input type="checkbox" id="edit_nsv" name="edit_previously_used_method[]" value="NSV">
+                            <label for="edit_nsv">NSV</label>
                         </div>
-                        <!-- Condom -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="Condom">
-                            <label for="Condom">Condom</label>
+                            <input type="checkbox" id="edit_condom" name="edit_previously_used_method[]" value="Condom">
+                            <label for="edit_condom">Condom</label>
                         </div>
-                        <!-- BOM/CMM/STM -->
                         <div class="mb-3 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="edit_previously_used_method[]" value="BOM/CMM/STM">
-                            <label for="BOM/CMM/STM">BOM/CMM/STM</label>
+                            <input type="checkbox" id="edit_bom_cmm_stm" name="edit_previously_used_method[]" value="BOM/CMM/STM">
+                            <label for="edit_bom_cmm_stm">BOM/CMM/STM</label>
                         </div>
                     </div>
+
                 </div>
                 <small class="text-danger error-text" id="edit_previously_used_method_error"></small>
             </div>

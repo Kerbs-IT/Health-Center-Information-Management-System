@@ -47,16 +47,16 @@
             <!-- Address and Personal Details -->
             <tr>
                 <td class="fw-bold text-start  border">Address:</td>
-                <td colspan="6" id="view_client_address">Blk 2 Lot 1 Inodoro Vill</td>
+                <td colspan="6" id="view_client_address"></td>
 
                 <td colspan="3" class="fw-bold">Contact Number:</td>
-                <td colspan="2" id="view_client_contact_number">+63-10-231-231</td>
+                <td colspan="2" id="view_client_contact_number"></td>
 
                 <td class="fw-bold">Civil Status:</td>
-                <td id="view_client_civil_status">Single</td>
+                <td id="view_client_civil_status"></td>
 
                 <td class="fw-bold">Religion:</td>
-                <td id="view_client_religion">Catholic</td>
+                <td id="view_client_religion"></td>
             </tr>
 
             <!-- Spouse Information -->
@@ -71,19 +71,19 @@
                 <td id="view_spouse_age"></td>
 
                 <td class="fw-bold">Occupation:</td>
-                <td colspan="2" id="view_spouse_occupation">Chef</td>
+                <td colspan="2" id="view_spouse_occupation"></td>
             </tr>
 
             <!-- Family & Financial Information -->
             <tr class="border-b-4 border-black">
                 <td colspan="3" class="fw-bold">No. of Living Children:</td>
-                <td id="view_number_of_living_children">2</td>
+                <td id="view_number_of_living_children"></td>
 
                 <td colspan="6" class="fw-bold">Plan to Have More Children?</td>
-                <td id="view_plan_to_have_more_children">Yes</td>
+                <td id="view_plan_to_have_more_children"></td>
 
                 <td colspan="4" class="fw-bold">Average Monthly Income:</td>
-                <td id="view_average_montly_income">15,000</td>
+                <td id="view_average_montly_income"></td>
             </tr>
 
             <!-- Category Headers -->
@@ -95,9 +95,9 @@
 
             <!-- Category Data -->
             <tr class="text-center border-b-3 border-dark">
-                <td colspan="4" id="view_type_of_patient">Current User</td>
-                <td colspan="8" id="view_reason">Spacing</td>
-                <td colspan="4" id="view_previously_used_method">Injectable, Condom</td>
+                <td colspan="4" id="view_type_of_patient"></td>
+                <td colspan="8" id="view_reason"></td>
+                <td colspan="4" id="view_previously_used_method"></td>
             </tr>
         </tbody>
     </table>

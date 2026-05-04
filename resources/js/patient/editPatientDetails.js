@@ -18,16 +18,16 @@ if (currentLoginhealthWorkerId) {
 }
 fetchHealthworkers().then((result) => {
     result.healthWorkers.forEach((element) => {
-        // console.log(element);
+        // If staff is logged in, only render THEIR option — skip everyone else
+        if (disablerOption && currentLoginhealthWorkerId != element.id) {
+            return; // skip
+        }
+
         healthWorkerDropDown.innerHTML += `<option value="${element.id}" ${
             healthWorkerId == element.id ? "selected" : ""
-        } 
-        ${healthWorkerId != element.id && disablerOption ? "disabled" : ""}>${
-            element.staff.full_name
-        }</option>`;
+        }>${element.staff.full_name}</option>`;
     });
 });
-
 // load the current selected address of the patient
 const selected = dropdown.dataset.bsPurok;
 // console.log(selected);

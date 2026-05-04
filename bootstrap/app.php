@@ -7,6 +7,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -33,5 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
      
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+    $exceptions->renderable(function (PostTooLargeException $e, $request) {
+        return back()->withErrors([
+            'profile_image' => 'The uploaded file is too large. Maximum allowed size is 2MB.'
+        ])->withInput();
+    });
     })->create();

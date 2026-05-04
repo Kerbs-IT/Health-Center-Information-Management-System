@@ -64,7 +64,8 @@
              </div>
          </div>
          <!-- type of patient info -->
-         <div class="box d-flex justify-content-between type-of-client  gap-3 gap-md-5  flex-wrap w-100">
+         <div class="box d-flex justify-content-between type-of-client gap-3 gap-md-5 flex-wrap w-100">
+
              <div class="type-of-client flex-fill">
                  <h4 class="text-nowrap">Type of Client</h4>
                  <div class="type-of-user-inputs">
@@ -81,12 +82,10 @@
                              <input type="radio" name="current_user_type" id="family_planning_current-method" value="current method">
                              <label for="family_planning_current-method" class="current_user_type_label">Current Method</label>
                          </div>
-                         <!-- new clinic -->
                          <div class="mb-3 d-flex align-items-center gap-2">
                              <input type="radio" name="current_user_type" id="changing-clinic" value="changing clinic">
                              <label for="changing-clinic" class="current_user_type_label">Changing Clinic</label>
                          </div>
-                         <!-- dropout -->
                          <div class="mb-3 d-flex align-items-center gap-2">
                              <input type="radio" name="current_user_type" id="dropout-restart" value="dropout/restart">
                              <label for="dropout-restart" class="current_user_type_label">Dropout/Restart</label>
@@ -96,134 +95,154 @@
                  <small class="text-danger error-text" id="family_planning_type_of_patient_error"></small>
                  <small class="text-danger error-text" id="current_user_type_error"></small>
              </div>
-             <!-- reasons -->
+
              <div class="client-reasons flex-fill flex-wrap min-w-0">
                  <h4 class="text-nowrap">Client Reason</h4>
-                 <!-- fp of new user -->
+
+                 <!-- FP reason for new acceptor -->
                  <div class="reason-con">
                      <div class="mb-3 d-flex gap-2">
-                         <label for="FP" class="text-decoration-underline text-nowrap new_acceptor_label">Reason for FP:</label>
-                         <div class="answers d-flex gap-2 flex-wrap flex-fill ">
+                         <label class="text-decoration-underline text-nowrap new_acceptor_label">Reason for FP:</label>
+                         <div class="answers d-flex gap-2 flex-wrap flex-fill">
                              <input type="radio" name="new_acceptor_reason_for_FP" value="spacing" id="new_acceptor_reason_for_FP_spacing">
                              <label for="new_acceptor_reason_for_FP_spacing" class="new_acceptor_label">spacing</label>
-                             <input type="radio" name="new_acceptor_reason_for_FP" value="limiting" id="new_acceptor_reason_for_FP_lmiting">
+
+                             <input type="radio" name="new_acceptor_reason_for_FP" value="limiting" id="new_acceptor_reason_for_FP_limiting">
                              <label for="new_acceptor_reason_for_FP_limiting" class="new_acceptor_label">limiting</label>
-                             <input type="radio" name="new_acceptor_reason_for_FP" id="new_acceptor_reason_for_FP_others">
+
+                             <!-- FIX: added value="others" -->
+                             <input type="radio" name="new_acceptor_reason_for_FP" value="others" id="new_acceptor_reason_for_FP_others">
                              <label for="new_acceptor_reason_for_FP_others" class="new_acceptor_label">others</label>
-                             <input type="text" class="flex-grow-1" name="new_acceptor_reason_for_FP">
+
+                             <!-- FIX: unique name so it never collides with the radio group -->
+                             <input type="text"
+                                 class="flex-grow-1"
+                                 name="new_acceptor_reason_text"
+                                 id="new_acceptor_reason_text"
+                                 placeholder="Specify if others">
                          </div>
                      </div>
                      <small class="text-danger error-text" id="new_acceptor_reason_for_FP_error"></small>
                  </div>
-                 <!-- FP of current user -->
+
+                 <!-- FP reason for current user -->
                  <div class="reason-con">
                      <div class="mb-3 d-flex gap-2">
-                         <label for="FP" class="text-decoration-underline text-nowrap current_user_label">Reason for FP:</label>
+                         <label class="text-decoration-underline text-nowrap current_user_label">Reason for FP:</label>
                          <div class="answers d-flex gap-2 flex-wrap flex-fill">
-                             <input type="radio" name="current_user_reason_for_FP" id="current_user_reason_for_FP_spacing" value="spacing">
-                             <label for="" class="current_user_label">spacing</label>
-                             <input type="radio" name="current_user_reason_for_FP" id="current_user_reason_for_FP_limiting" value="limiting">
+                             <input type="radio" name="current_user_reason_for_FP" value="spacing" id="current_user_reason_for_FP_spacing">
+                             <!-- FIX: for attribute was empty -->
+                             <label for="current_user_reason_for_FP_spacing" class="current_user_label">spacing</label>
+
+                             <input type="radio" name="current_user_reason_for_FP" value="limiting" id="current_user_reason_for_FP_limiting">
                              <label for="current_user_reason_for_FP_limiting" class="current_user_label">limiting</label>
-                             <input type="radio" name="current_user_reason_for_FP" id="current_user_reason_for_FP_others">
+
+                             <!-- FIX: added value="others" -->
+                             <input type="radio" name="current_user_reason_for_FP" value="others" id="current_user_reason_for_FP_others">
                              <label for="current_user_reason_for_FP_others" class="current_user_label">others</label>
-                             <input type="text" class="flex-grow-1" name="current_user_reason_for_FP">
+
+                             <!-- FIX: unique name so it never collides with the radio group -->
+                             <input type="text"
+                                 class="flex-grow-1"
+                                 name="current_user_reason_text"
+                                 id="current_user_reason_text"
+                                 placeholder="Specify if others">
                          </div>
                          <small class="text-danger error-text" id="current_user_reason_for_FP_error"></small>
                      </div>
                  </div>
-                 <!-- current method -->
+
+                 <!-- Current method reason -->
                  <div class="reason-con">
                      <div class="mb-3 d-flex gap-4">
-                         <label for="FP" class="text-decoration-underline text-nowrap">Reason:</label>
+                         <label class="text-decoration-underline text-nowrap">Reason:</label>
                          <div class="answers d-flex gap-2 flex-wrap flex-fill">
-                             <input type="radio" name="current_method_reason" id="current_method_reason_medical_condition" value="medical condition">
+                             <input type="radio" name="current_method_reason" value="medical condition" id="current_method_reason_medical_condition">
                              <label for="current_method_reason_medical_condition" class="current_method_reason_label">medical condition</label>
-                             <input type="radio" name="current_method_reason" id="current_method_reason_side_effects" value="side effects">
+
+                             <input type="radio" name="current_method_reason" value="side effects" id="current_method_reason_side_effects">
                              <label for="current_method_reason_side_effects" class="current_method_reason_label">side effects</label>
-                             <input type="text" class="flex-grow-1" name="current_method_reason">
+
+                             <!-- FIX: unique name so it never collides with the radio group -->
+                             <input type="text"
+                                 class="flex-grow-1"
+                                 name="current_method_reason_text"
+                                 id="current_method_reason_text"
+                                 placeholder="Specify side effects">
                          </div>
                          <small class="text-danger error-text" id="current_method_reason_error"></small>
                      </div>
                  </div>
              </div>
-             <!-- current method -->
+
+             <!-- Previously used method -->
              <div class="current-method-user">
                  <h4>Previously used Method (for Current User)</h4>
                  <div class="methods d-flex gap-3 flex-wrap">
                      <div class="method-row">
                          <div class="mb-3 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="implant">
+                             <input type="checkbox" name="previously_used_method[]" id="implant" value="Implant">
                              <label for="implant">Implant</label>
                          </div>
-                         <!-- injectable -->
                          <div class="mb-3 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="Injectable">
-                             <label for="Injectable">Injectable</label>
+                             <input type="checkbox" name="previously_used_method[]" id="injectable" value="Injectable">
+                             <label for="injectable">Injectable</label>
                          </div>
-                         <!-- LAM -->
                          <div class="mb-3 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="LAM">
-                             <label for="LAM">LAM</label>
+                             <input type="checkbox" name="previously_used_method[]" id="lam" value="LAM">
+                             <label for="lam">LAM</label>
                          </div>
                      </div>
-                     <!-- 2nd column -->
                      <div class="method-row">
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="UID">
-                             <label for="UID">UID</label>
+                             <input type="checkbox" name="previously_used_method[]" id="iud" value="IUD">
+                             <label for="iud">IUD</label>
                          </div>
-                         <!-- COC -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="COC">
-                             <label for="COC">COC</label>
+                             <input type="checkbox" name="previously_used_method[]" id="coc" value="COC">
+                             <label for="coc">COC</label>
                          </div>
-                         <!-- SDM -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="SDM">
-                             <label for="SDM">SDM</label>
+                             <input type="checkbox" name="previously_used_method[]" id="sdm" value="SDM">
+                             <label for="sdm">SDM</label>
                          </div>
                      </div>
-                     <!-- 3rd -->
                      <div class="method-row">
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="BTL">
-                             <label for="BTL">BTL</label>
+                             <input type="checkbox" name="previously_used_method[]" id="btl" value="BTL">
+                             <label for="btl">BTL</label>
                          </div>
-                         <!-- POP -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="POP">
-                             <label for="POP">POP</label>
+                             <input type="checkbox" name="previously_used_method[]" id="pop" value="POP">
+                             <label for="pop">POP</label>
                          </div>
-                         <!-- BBT -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="BBT">
-                             <label for="BBT">BBT</label>
+                             <input type="checkbox" name="previously_used_method[]" id="bbt" value="BBT">
+                             <label for="bbt">BBT</label>
                          </div>
                      </div>
-                     <!-- 4TH -->
                      <div class="method-row">
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="NSV">
-                             <label for="NSV">NSV</label>
+                             <input type="checkbox" name="previously_used_method[]" id="nsv" value="NSV">
+                             <label for="nsv">NSV</label>
                          </div>
-                         <!-- Condom -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="Condom">
-                             <label for="Condom">Condom</label>
+                             <input type="checkbox" name="previously_used_method[]" id="condom" value="Condom">
+                             <label for="condom">Condom</label>
                          </div>
-                         <!-- BOM/CMM/STM -->
                          <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                             <input type="checkbox" name="previously_used_method[]" value="BOM/CMM/STM">
-                             <label for="BOM/CMM/STM">BOM/CMM/STM</label>
+                             <input type="checkbox" name="previously_used_method[]" id="bom-cmm-stm" value="BOM/CMM/STM">
+                             <label for="bom-cmm-stm">BOM/CMM/STM</label>
                          </div>
                      </div>
                  </div>
                  <small class="text-danger error-text" id="previously_used_method_error"></small>
              </div>
+
          </div>
      </div>
      <div class="buttons w-100 align-self-center d-flex justify-content-end gap-2 mt-auto flex-column flex-sm-row">
          <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
          <button type="button" class="btn btn-success px-5 py-2 fs-5" onclick="nextStep()">Next</button>
      </div>
-</div>
+ </div>

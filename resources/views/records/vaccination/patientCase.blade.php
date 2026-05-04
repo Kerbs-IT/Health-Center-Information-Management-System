@@ -159,7 +159,7 @@
                                                 <!-- hidden input -->
                                                 <input type="text" name="selected_vaccine_type" id="add-selected-vaccines" hidden>
                                                 <!-- vaccine container -->
-                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded gap-2" id="add-vaccine-container">
+                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap justify-content-center rounded gap-2" id="add-vaccine-container">
 
                                                 </div>
                                                 <small class="text-danger w-100 add_vaccination_case_record_errors" id="selected-vaccine-error"></small>
@@ -283,7 +283,7 @@
                                                     <small class="text-danger error-text" id="vaccine_type_error"></small>
                                                 </div>
                                                 <!-- container of the vaccines -->
-                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded gap-2 update-vaccine-container justify-content-center">
+                                                <div class="mb-2 bg-secondary p-3 d-flex flex-wrap rounded gap-2 update-vaccine-container justify-content-center" style="min-height: 60px;">
 
 
                                                 </div>

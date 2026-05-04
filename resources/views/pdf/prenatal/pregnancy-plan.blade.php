@@ -299,14 +299,21 @@
                 </tr>
             </table>
         </div>
-        <div class="form-line">
-            Lagda:
-            @if($pregnancyPlan->signature != null)
-            <img src="{{ storage_path('app/public/' . $pregnancyPlan->signature) }}" alt="Signature" style="max-width:400px; height:40px;">
-            <div style="width: 100%;border-bottom:1px solid black; margin-top: 1px;"></div>
-            @else
-            <div style="width: 100%;border-bottom:1px solid black; min-height: 40px;">&nbsp;</div>
-            @endif
+        <div style="margin: 0; font-size: 11pt;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="white-space: nowrap; vertical-align: bottom;">Lagda:</td>
+                    <td style="width: 100%; border-bottom: 1px solid black; vertical-align: bottom; padding-left: 5px;">
+                        @if($pregnancyPlan->signature != null)
+                        <img src="{{ storage_path('app/public/' . $pregnancyPlan->signature) }}"
+                            alt="Signature"
+                            style="max-width: 400px; height: 40px; vertical-align: bottom; display: block;">
+                        @else
+                        &nbsp;
+                        @endif
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>

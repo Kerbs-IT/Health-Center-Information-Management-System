@@ -89,9 +89,11 @@ export function addVaccineInteraction(
 
         if (!selectedVaccines.includes(selectedId) && selectedId != "") {
             vaccinesContainer.innerHTML += `
-                <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 w-25 rounded" data-bs-id=${selectedId}>
+                <div class="vaccine d-flex justify-content-between bg-white align-items-center p-1 rounded gap-2" 
+                    style="width: fit-content; min-width: 120px; max-width: 180px;" 
+                    data-bs-id=${selectedId}>
                     <p class="mb-0">${selectedText}</p>
-                    <div class="delete-icon d-flex align-items-center justify-content-center">
+                    <div class="delete-icon d-flex align-items-center justify-content-center flex-shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
                             <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/>
                         </svg>
@@ -100,12 +102,11 @@ export function addVaccineInteraction(
 
             selectedVaccines.push(selectedId);
             selectedVaccinesCon.value = selectedVaccines.join(",");
-            
+
             // ✅ CALL CALLBACK IMMEDIATELY AFTER UPDATING THE ARRAY
             if (typeof onVaccineChange === "function") {
                 onVaccineChange(selectedVaccines);
             }
-            
         } else {
             if (selectedVaccines.includes(selectedId)) {
                 Swal.fire({
@@ -141,5 +142,3 @@ export function removeVaccine(allContainers, selectedVaccines) {
         });
     });
 }
-
-

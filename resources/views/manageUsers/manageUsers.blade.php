@@ -404,6 +404,22 @@
         })
 
         function showFileName(input) {
+            const maxSize = 2 * 1024 * 1024; // 2MB
+
+            if (input.files && input.files[0] && input.files[0].size > maxSize) {
+                input.value = '';
+                document.getElementById("fileName").textContent = "No file chosen";
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Too Large',
+                    text: 'Maximum allowed file size is 2MB. Please choose a smaller image.',
+                    confirmButtonColor: '#198754',
+                });
+
+                return; // stop here, don't preview
+            }
+
             const fileName = input.files.length ? input.files[0].name : "No file chosen";
             document.getElementById("fileName").textContent = fileName;
 

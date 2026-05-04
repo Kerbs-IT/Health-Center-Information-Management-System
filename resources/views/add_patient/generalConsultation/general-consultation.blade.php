@@ -1,4 +1,4 @@
-<div class="card shadow p-md-4 p-1 mx-1 d-flex flex-column" style="height: 100%;">
+<div class="card shadow p-md-4 p-1 mx-1 d-flex flex-column" style="min-height: calc(100vh - 180px);">
 
     <h4>GENERAL CONSULTATION</h4>
 
@@ -10,28 +10,28 @@
     </div>
 
     <!-- S - Symptoms / Chief Complaint -->
-    <div class="mb-2">
+    <div class="mb-2 d-flex flex-column flex-grow-1">
         <label for="gc_symptoms">S(Symptoms / Chief Complaint)<span class="text-danger">*</span></label>
-        <textarea class="form-control" id="gc_symptoms" name="gc_symptoms" rows="3" placeholder="Describe the patient's symptoms or chief complaint..."></textarea>
+        <textarea class="form-control flex-grow-1" id="gc_symptoms" name="gc_symptoms" placeholder="Describe the patient's symptoms or chief complaint..."></textarea>
         <small class="text-danger error-text" id="gc_symptoms_error"></small>
     </div>
 
     <!-- A - Diagnosis / Assessment -->
-    <div class="mb-2">
+    <div class="mb-2 d-flex flex-column flex-grow-1">
         <label for="gc_diagnosis">A(Diagnosis / Assessment)<span class="text-danger">*</span></label>
-        <textarea class="form-control" id="gc_diagnosis" name="gc_diagnosis" rows="3" placeholder="Enter the diagnosis or clinical assessment..."></textarea>
+        <textarea class="form-control flex-grow-1" id="gc_diagnosis" name="gc_diagnosis" placeholder="Enter the diagnosis or clinical assessment..."></textarea>
         <small class="text-danger error-text" id="gc_diagnosis_error"></small>
     </div>
 
     <!-- P - Treatment / Plan -->
-    <div class="mb-2">
+    <div class="mb-2 d-flex flex-column flex-grow-1">
         <label for="gc_treatment">P(Treatment / Plan)<span class="text-danger">*</span></label>
-        <textarea class="form-control" id="gc_treatment" name="gc_treatment" rows="3" placeholder="Describe the treatment plan, medications, or instructions..."></textarea>
+        <textarea class="form-control flex-grow-1" id="gc_treatment" name="gc_treatment" placeholder="Describe the treatment plan, medications, or instructions..."></textarea>
         <small class="text-danger error-text" id="gc_treatment_error"></small>
     </div>
 
     <!-- Action Buttons -->
-    <div class="buttons w-100 align-self-center d-flex flex-column flex-sm-row justify-content-end gap-2 mt-auto">
+    <div class="buttons w-100 d-flex flex-column flex-sm-row justify-content-end gap-2 mt-auto">
         <button type="button" class="btn btn-danger px-5 py-2 fs-5" onclick="prevStep()">Back</button>
         <button type="button" class="btn btn-success px-5 py-2 fs-5" id="gc_save_record_btn">Save Record</button>
     </div>

@@ -55,7 +55,7 @@
                                 <div class="input-form flex-fill lg:w-[50%]">
                                     <label for="side_A_add_client_suffix" class="">Suffix<span class="text-danger">*</span></label>
                                     <select name="side_A_add_client_suffix" id="side_A_add_client_suffix" class="form-select py-2 ">
-                                        <option value="" >Select Suffix</option>
+                                        <option value="">Select Suffix</option>
                                         <option value="Jr.">Jr</option>
                                         <option value="Sr.">Sr</option>
                                         <option value="II.">II</option>
@@ -105,14 +105,18 @@
                                 <option value="Married">Married</option>
                                 <option value="Divorce">Divorce</option>
                             </select>
-
                             <small class="text-danger error-text" id="side_A_add_client_civil_status_error"></small>
-
                         </div>
                         <div class="input-field flex-fill lg:w-[50%]">
                             <label for="side_A_add_family_plan_religion">Religion</label>
                             <input type="text" id="side_A_add_client_religion" placeholder="Enter the Religion" class="form-control" name="side_A_add_client_religion">
                             <small class="text-danger error-text" id="side_A_add_client_religion_error"></small>
+                        </div>
+                        <!-- ADD THIS -->
+                        <div class="input-field flex-fill lg:w-[50%]">
+                            <label for="side_A_add_client_contact_number" class="">Contact Number<span class="text-danger">*</span></label>
+                            <input type="number" placeholder="Enter the phone number" class="form-control" id="side_A_add_client_contact_number" name="side_A_add_client_contact_number">
+                            <small class="text-danger error-text" id="side_A_add_client_contact_number_error"></small>
                         </div>
                     </div>
                     <div class="input-group mb-md-2 mb-1">
@@ -161,7 +165,7 @@
                             <div class="input-form flex-fill">
                                 <label for="side_A_add_spouse_lname" class="">Suffix</label>
                                 <select name="side_A_add_spouse_suffix" id="side_A_add_spouse_suffix" class="form-select py-2 ">
-                                    <option value="" >Select Suffix</option>
+                                    <option value="">Select Suffix</option>
                                     <option value="Jr.">Jr</option>
                                     <option value="Sr.">Sr</option>
                                     <option value="II.">II</option>
@@ -248,12 +252,10 @@
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_current_method" value="current method">
                         <label for="side_A_add_current_method" class="side_a_current_user_type_label">Current Method</label>
                     </div>
-                    <!-- new clinic -->
                     <div class="mb-md-3 mb-0 d-flex align-items-center gap-2">
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_changing_clinic" value="changing clinic">
                         <label for="side_A_add_changing_clinic" class="side_a_current_user_type_label">Changing Clinic</label>
                     </div>
-                    <!-- dropout -->
                     <div class="mb-md-3 mb-0 d-flex align-items-center gap-2">
                         <input type="radio" name="side_A_add_current_user_type" id="side_A_add_dropout_restart" value="dropout restart">
                         <label for="side_A_add_dropout_restart" class="side_a_current_user_type_label">Dropout/Restart</label>
@@ -262,131 +264,147 @@
                 </div>
                 <small class="text-danger error-text" id="side_A_add_type_of_patient_error"></small>
             </div>
-            <!-- reasons -->
+
             <div class="client-reasons">
                 <h4 class="text-nowrap">Client Reason</h4>
-                <!-- fp of new user -->
+
+                <!-- FP reason for new acceptor -->
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
-                        <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
+                        <label class="text-decoration-underline text-nowrap">Reason for FP:</label>
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="spacing" id="side_a_new_acceptor_spacing">
                             <label for="side_a_new_acceptor_spacing" class="side_a_new_acceptor_label">spacing</label>
+
                             <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="limiting" id="side_a_new_acceptor_limiting">
                             <label for="side_a_new_acceptor_limiting" class="side_a_new_acceptor_label">limiting</label>
-                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" id="side_A_add_new_acceptor_reason_for_FP_others" value="others">
+
+                            <input type="radio" name="side_A_add_new_acceptor_reason_for_FP" value="others" id="side_A_add_new_acceptor_reason_for_FP_others">
                             <label for="side_A_add_new_acceptor_reason_for_FP_others" class="side_a_new_acceptor_label">others</label>
-                            <input type="text" name="side_A_add_new_acceptor_reason_text" id="side_A_add_new_acceptor_reason_text" class="flex-grow-1">
+
+                            <input type="text"
+                                name="side_A_add_new_acceptor_reason_text"
+                                id="side_A_add_new_acceptor_reason_text"
+                                class="flex-grow-1"
+                                placeholder="Specify if others">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_new_acceptor_reason_for_FP_error"></small>
                     </div>
                 </div>
-                <!-- FP of current user -->
+
+                <!-- FP reason for current user -->
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-2 flex-wrap">
-                        <label for="FP" class="text-decoration-underline text-nowrap">Reason for FP:</label>
+                        <label class="text-decoration-underline text-nowrap">Reason for FP:</label>
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" value="spacing" id="current_user_reason_for_fp_spacing">
                             <label for="current_user_reason_for_fp_spacing" class="side_a_current_user_label">spacing</label>
+
                             <input type="radio" name="side_A_add_current_user_reason_for_FP" value="limiting" id="current_user_reason_for_fp_limiting">
                             <label for="current_user_reason_for_fp_limiting" class="side_a_current_user_label">limiting</label>
-                            <input type="radio" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_for_FP_others" value="others">
+
+                            <input type="radio" name="side_A_add_current_user_reason_for_FP" value="others" id="side_A_add_current_user_reason_for_FP_others">
                             <label for="side_A_add_current_user_reason_for_FP_others" class="side_a_current_user_label">others</label>
-                            <input type="text" name="side_A_add_current_user_reason_for_FP" id="side_A_add_current_user_reason_text" class="flex-grow-1">
+
+                            <input type="text"
+                                name="side_A_add_current_user_reason_text"
+                                id="side_A_add_current_user_reason_text"
+                                class="flex-grow-1"
+                                placeholder="Specify if others">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_user_reason_for_FP_error"></small>
                     </div>
                 </div>
-                <!-- current method -->
+
+                <!-- Current method reason -->
                 <div class="reason-con">
                     <div class="mb-md-3 mb-0 d-flex gap-4 flex-wrap">
-                        <label for="FP" class="text-decoration-underline text-nowrap">Reason:</label>
+                        <label class="text-decoration-underline text-nowrap">Reason:</label>
                         <div class="answers d-flex gap-2 flex-wrap">
                             <input type="radio" name="side_A_add_current_method_reason" value="medical condition" id="side_a_current_method_medical_condition">
                             <label for="side_a_current_method_medical_condition" class="side_a_current_method_label">medical condition</label>
-                            <input type="radio" name="side_A_add_current_method_reason" id="side_A_add_current_method_reason_side_effect" value="side effects">
+
+                            <input type="radio" name="side_A_add_current_method_reason" value="side effects" id="side_A_add_current_method_reason_side_effect">
                             <label for="side_A_add_current_method_reason_side_effect" class="side_a_current_method_label">side effects</label>
-                            <input type="text" id="side_A_add_side_effects_text" name="side_A_add_current_method_reason" class="flex-grow-1">
+
+                            <input type="text"
+                                name="side_A_add_side_effects_text_value"
+                                id="side_A_add_side_effects_text"
+                                class="flex-grow-1"
+                                placeholder="Specify side effects">
                         </div>
                         <small class="text-danger error-text" id="side_A_add_current_method_reason_error"></small>
                     </div>
                 </div>
+
             </div>
         </div>
-
         <!-- current method -->
         <div class="mb-md-3 mb-0 border-bottom w-100">
-
             <div class="current-method-user">
                 <h4>Previously used Method (for Current User)</h4>
                 <div class="methods d-flex gap-3 flex-wrap">
+
                     <div class="method-row">
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="Implant">
-                            <label for="implant">Implant</label>
+                            <input type="checkbox" id="side_A_add_implant" name="side_A_add_previously_used_method[]" value="Implant">
+                            <label for="side_A_add_implant">Implant</label>
                         </div>
-                        <!-- injectable -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="Injectable">
-                            <label for="Injectable">Injectable</label>
+                            <input type="checkbox" id="side_A_add_injectable" name="side_A_add_previously_used_method[]" value="Injectable">
+                            <label for="side_A_add_injectable">Injectable</label>
                         </div>
-                        <!-- LAM -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="LAM">
-                            <label for="LAM">LAM</label>
+                            <input type="checkbox" id="side_A_add_lam" name="side_A_add_previously_used_method[]" value="LAM">
+                            <label for="side_A_add_lam">LAM</label>
                         </div>
                     </div>
-                    <!-- 2nd column -->
+
                     <div class="method-row">
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="UID">
-                            <label for="UID">UID</label>
+                            <input type="checkbox" id="side_A_add_iud" name="side_A_add_previously_used_method[]" value="IUD">
+                            <label for="side_A_add_iud">IUD</label>
                         </div>
-                        <!-- COC -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="COC">
-                            <label for="COC">COC</label>
+                            <input type="checkbox" id="side_A_add_coc" name="side_A_add_previously_used_method[]" value="COC">
+                            <label for="side_A_add_coc">COC</label>
                         </div>
-                        <!-- SDM -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="SDM">
-                            <label for="SDM">SDM</label>
+                            <input type="checkbox" id="side_A_add_sdm" name="side_A_add_previously_used_method[]" value="SDM">
+                            <label for="side_A_add_sdm">SDM</label>
                         </div>
                     </div>
-                    <!-- 3rd -->
+
                     <div class="method-row">
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="BTL">
-                            <label for="BTL">BTL</label>
+                            <input type="checkbox" id="side_A_add_btl" name="side_A_add_previously_used_method[]" value="BTL">
+                            <label for="side_A_add_btl">BTL</label>
                         </div>
-                        <!-- POP -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="POP">
-                            <label for="POP">POP</label>
+                            <input type="checkbox" id="side_A_add_pop" name="side_A_add_previously_used_method[]" value="POP">
+                            <label for="side_A_add_pop">POP</label>
                         </div>
-                        <!-- BBT -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="BBT">
-                            <label for="BBT">BBT</label>
+                            <input type="checkbox" id="side_A_add_bbt" name="side_A_add_previously_used_method[]" value="BBT">
+                            <label for="side_A_add_bbt">BBT</label>
                         </div>
                     </div>
-                    <!-- 4TH -->
+
                     <div class="method-row">
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="NSV">
-                            <label for="NSV">NSV</label>
+                            <input type="checkbox" id="side_A_add_nsv" name="side_A_add_previously_used_method[]" value="NSV">
+                            <label for="side_A_add_nsv">NSV</label>
                         </div>
-                        <!-- Condom -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="Condom">
-                            <label for="Condom">Condom</label>
+                            <input type="checkbox" id="side_A_add_condom" name="side_A_add_previously_used_method[]" value="Condom">
+                            <label for="side_A_add_condom">Condom</label>
                         </div>
-                        <!-- BOM/CMM/STM -->
                         <div class="mb-md-3 mb-1 d-flex align-items-center gap-2">
-                            <input type="checkbox" name="side_A_add_previously_used_method[]" value="BOM/CMM/STM">
-                            <label for="BOM/CMM/STM">BOM/CMM/STM</label>
+                            <input type="checkbox" id="side_A_add_bom_cmm_stm" name="side_A_add_previously_used_method[]" value="BOM/CMM/STM">
+                            <label for="side_A_add_bom_cmm_stm">BOM/CMM/STM</label>
                         </div>
                     </div>
+
                 </div>
                 <small class="text-danger error-text" id="side_A_add_previously_used_method_error"></small>
             </div>
