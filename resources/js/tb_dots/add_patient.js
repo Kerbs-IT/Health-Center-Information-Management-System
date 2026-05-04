@@ -1,90 +1,168 @@
 import Swal from "sweetalert2";
 
-// add medicine to the container
-const addRecordBtn = document.getElementById("add_record_btn");
-
 const addBTN = document.getElementById("tb_medicine_add_btn");
 const addTableBody = document.getElementById("add_patient_tb_table_body");
+
 if (addBTN) {
     addBTN.addEventListener("click", (e) => {
         const medicine = document.getElementById("tb_medicine");
         const dosage_n_frequency = document.getElementById(
-            "tb_dosage_n_frequency"
+            "tb_dosage_n_frequency",
         );
         const quantity = document.getElementById("tb_quantity");
         const start_date = document.getElementById("tb_start_date");
         const end_date = document.getElementById("tb_end_date");
 
-        if (
-            medicine.value == "" ||
-            dosage_n_frequency.value == "" ||
-            quantity.value == "" ||
-            start_date.value == "" ||
-            end_date.value == ""
+        // Reset borders
+        [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
+            (el) => (el.style.border = ""),
+        );
+
+        const errors = [];
+
+        // Medicine validation
+        if (medicine.value === "") {
+            errors.push("Please select a medicine.");
+            medicine.style.border = "1px solid red";
+        }
+
+        // Dosage validation
+        if (dosage_n_frequency.value.trim() === "") {
+            errors.push("Please enter the dosage and frequency.");
+            dosage_n_frequency.style.border = "1px solid red";
+        }
+
+        // Quantity validation
+        const quantityVal = parseInt(quantity.value);
+        if (quantity.value === "") {
+            errors.push("Please enter the quantity.");
+            quantity.style.border = "1px solid red";
+        } else if (isNaN(quantityVal) || quantityVal < 1) {
+            // FIX: block negative and zero quantity
+            errors.push("Quantity must be at least 1.");
+            quantity.style.border = "1px solid red";
+        }
+
+        // Start date validation
+       if (start_date.value === "") {
+           errors.push("Please select a start date.");
+           start_date.style.border = "1px solid red";
+       } else if (start_date.value > new Date().toISOString().split("T")[0]) {
+           errors.push("Start date cannot be a future date.");
+           start_date.style.border = "1px solid red";
+       }
+
+        // End date validation
+        if (end_date.value === "") {
+            errors.push("Please select an end date.");
+            end_date.style.border = "1px solid red";
+        } else if (
+            start_date.value !== "" &&
+            end_date.value < start_date.value
         ) {
+            // FIX: end date cannot be before start date
+            errors.push("End date cannot be earlier than the start date.");
+            end_date.style.border = "1px solid red";
+        }
+
+        if (errors.length > 0) {
             Swal.fire({
-                title: "Missing Information",
-                text: "Information provided is incomplete or invalid.", // this will make the text capitalize each word
+                title: "Missing or Invalid Information",
+                html: errors.map((e) => `<div>• ${e}</div>`).join(""),
                 icon: "error",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
             });
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-        } else {
-            addTableBody.innerHTML += `
-                <tr class="senior-citizen-maintenance-record" >
-                    <td>${medicine.value}</td>
-                    <td>${dosage_n_frequency.value}</td>
-                    <td>${quantity.value}</td>
-                    <td>${start_date.value}</td>
-                    <td>${end_date.value}</td>
-                    <td>
-                        <button type=button class="btn btn-danger btn-sm medicine-remove">Remove</button>
-                    </td>
-                    <input type="hidden" name="medicines[]" value="${medicine.value}">
-                    <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
-                    <input type="hidden" name="medicine_quantity[]" value="${quantity.value}">
-                    <input type="hidden" name="start_date[]" value="${start_date.value}">
-                    <input type="hidden" name="end_date[]" value="${end_date.value}">
-                </tr>
-            `;
-
-            // reset the borders
-            medicine.style.border =
-                medicine.value === "" ? "1px solid red" : "";
-            dosage_n_frequency.style.border =
-                dosage_n_frequency.value === "" ? "1px solid red" : "";
-            quantity.style.border =
-                quantity.value === "" ? "1px solid red" : "";
-            start_date.style.border =
-                start_date.value === "" ? "1px solid red" : "";
-            end_date.style.border =
-                end_date.value === "" ? "1px solid red" : "";
-            // reset the value
-            medicine.value = "";
-            dosage_n_frequency.value = "";
-            quantity.value = "";
-            start_date.value = "";
-            end_date.value = "";
+            return;
         }
+
+        // Format dates for display
+        const formatDate = (dateStr) => {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+        };
+
+        // Get the selected medicine label text, not just the value
+        const medicineLabel = medicine.options[medicine.selectedIndex].text;
+
+        addTableBody.innerHTML += `
+            <tr class="senior-citizen-maintenance-record">
+                <td>${medicineLabel}</td>
+                <td>${dosage_n_frequency.value}</td>
+                <td>${quantityVal}</td>
+                <td>${formatDate(start_date.value)}</td>
+                <td>${formatDate(end_date.value)}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm medicine-remove">Remove</button>
+                </td>
+                <input type="hidden" name="medicines[]" value="${medicine.value}">
+                <input type="hidden" name="dosage_n_frequencies[]" value="${dosage_n_frequency.value}">
+                <input type="hidden" name="medicine_quantity[]" value="${quantityVal}">
+                <input type="hidden" name="start_date[]" value="${start_date.value}">
+                <input type="hidden" name="end_date[]" value="${end_date.value}">
+            </tr>
+        `;
+
+        // Reset fields and borders
+        [medicine, dosage_n_frequency, quantity, start_date, end_date].forEach(
+            (el) => {
+                el.style.border = "";
+                el.value = "";
+            },
+        );
+
+        // FIX: reset end date min after clearing
+        end_date.min = "";
     });
 }
 
-// console.log(addTableBody);
-// remove element
+// FIX: dynamic end date min — when start date changes, set end date min to start date
+const tbStartDate = document.getElementById("tb_start_date");
+const tbEndDate = document.getElementById("tb_end_date");
+
+if (tbStartDate && tbEndDate) {
+    tbStartDate.addEventListener("change", function () {
+        if (this.value) {
+            // Set end date minimum to selected start date
+            tbEndDate.min = this.value;
+
+            // If end date already has a value that is now before start date, clear it
+            if (tbEndDate.value && tbEndDate.value < this.value) {
+                tbEndDate.value = "";
+                tbEndDate.style.border = "1px solid red";
+                Swal.fire({
+                    title: "Date Conflict",
+                    text: "The previously selected end date was before the new start date and has been cleared. Please select a new end date.",
+                    icon: "warning",
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                });
+            } else {
+                tbEndDate.style.border = "";
+            }
+        } else {
+            // Start date cleared — remove end date restriction
+            tbEndDate.min = "";
+        }
+    });
+
+    // FIX: also block negative quantity via oninput
+    const tbQuantity = document.getElementById("tb_quantity");
+    if (tbQuantity) {
+        tbQuantity.setAttribute("min", "1");
+        tbQuantity.addEventListener("input", function () {
+            if (this.value < 1) this.value = 1;
+        });
+    }
+}
+
+// Remove medicine row
 if (addTableBody) {
-    // remove maintenance
     addTableBody.addEventListener("click", (e) => {
-        // console.log("working delete");
         if (e.target.closest(".medicine-remove")) {
             e.target.closest("tr").remove();
         }
@@ -96,7 +174,6 @@ const tbDotsBtn = document.getElementById("tb_dots_save_record_btn");
 tbDotsBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    // --- Disable button and show Bootstrap spinner ---
     const originalHTML = tbDotsBtn.innerHTML;
     tbDotsBtn.disabled = true;
     tbDotsBtn.innerHTML = `
@@ -139,7 +216,7 @@ tbDotsBtn.addEventListener("click", async (e) => {
 
             await Swal.fire({
                 title: "Add",
-                text: "Tb Dots Patient Information is successfully Added",
+                text: "TB Dots Patient Information is successfully Added",
                 icon: "success",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "OK",
@@ -151,6 +228,8 @@ tbDotsBtn.addEventListener("click", async (e) => {
                         window.clearPatientRecordSelection();
                     }
                     form.reset();
+                    // FIX: reset end date min after form reset
+                    if (tbEndDate) tbEndDate.min = "";
                     window.currentStep = 1;
                     window.showStep(window.currentStep);
                 }
@@ -187,6 +266,9 @@ tbDotsBtn.addEventListener("click", async (e) => {
         restoreBtn();
     }
 });
+
+
+
 function capitalizeEachWord(str) {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }

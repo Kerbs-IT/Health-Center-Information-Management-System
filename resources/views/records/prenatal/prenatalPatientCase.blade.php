@@ -704,86 +704,93 @@
                                                         <div class="mb-3">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
                                                                 <label for="place_of_birth" class="fs-5 fw-medium w-100 whitespace-normal lg:whitespace-nowrap ">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="cost_of_pregnancy" id="cost_of_pregnancy" placeholder="Ilagay and tinatayang gagastusin sa pasilidad">
+                                                                <input type="number"
+                                                                    class="flex-grow-1 form-control"
+                                                                    name="cost_of_pregnancy"
+                                                                    id="cost_of_pregnancy"
+                                                                    min="0"
+                                                                    max="500000"
+                                                                    step="1"
+                                                                    placeholder="Ilagay and tinatayang gagastusin sa pasilidad"
+                                                                    oninput="if(this.value < 0) this.value = 0; if(this.value > 500000) this.value = 500000;">
+                                                                <small id="cost_of_pregnancy_error" class="text-danger error-text"></small>
                                                             </div>
-                                                            <small id="cost_of_pregnancy_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- payment method -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Ang Paraan ng pagbabayad ay:</label>
-                                                                <select name="payment_method" id="payment_method" class="form-select flex-grow-1">
-                                                                    <option value="" disabled selected>Select Payment Method</option>
-                                                                    <option value="PhilHealth">PhilHealth</option>
-                                                                    <option value="Cash">Cash / Out-of-Pocket</option>
-                                                                    <option value="private insurance">Private Insurance</option>
-                                                                    <option value="HMO">HMO</option>
-                                                                    <option value="NGO">NGO / Charity Assistance</option>
-                                                                    <option value="Government Health Program">Government Health Program</option>
-                                                                    <option value="installment">Installment Plan</option>
-                                                                    <option value="Employer / Company Benefit">Employer / Company Benefit</option>
-                                                                </select>
-                                                            </div>
-                                                            <small id="payment_method_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- mode of transportation -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Paraan ng pagbiyahe patungo sa pasilidad ay:</label>
-                                                                <select name="transportation_mode" id="transportation_mode" class="form-select flex-grow-1" required>
-                                                                    <option value="" disabled selected>Select Mode of Transportation</option>
-                                                                    <option value="Walking">Walking</option>
-                                                                    <option value="Tricycle">Tricycle</option>
-                                                                    <option value="Jeepney">Jeepney</option>
-                                                                    <option value="Motorcycle">Motorcycle</option>
-                                                                    <option value="Private Vehicle">Private Vehicle</option>
-                                                                    <option value="Ambulance">Ambulance</option>
-                                                                    <option value="Taxi / Grab">Taxi / Grab</option>
-                                                                    <option value="Others">Others</option>
-                                                                </select>
-
-                                                            </div>
-                                                            <div class="low-box w-100 d-flex justify-content-center">
-                                                                <small>(mode of transportation)</small>
-                                                            </div>
-                                                            <small id="transportation_mode_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- person who will bring me to hospital -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Taong magdadala sakin sa hospital: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="accompany_person_to_hospital" placeholder="Ilagay ang pangalan" id="accompany_person_to_hospital">
-                                                            </div>
-                                                            <small id="accompany_person_to_hospital_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- guardian -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Pangalan ng taong sasamahan ako sa panganganak: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="accompany_through_pregnancy" placeholder="Ilagay ang pangalan" id="accompany_through_pregnancy">
-                                                            </div>
-                                                            <small id="accompany_through_pregnancy_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- mag-alalaga -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Pangalan ng taong mag-aalaga sa akin sa panganganak: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="care_person" placeholder="Ilagay ang pangalan" id="care_person">
-                                                            </div>
-                                                            <small id="care_person_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- magbibigay ng dugo -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap mb-2">
-                                                                <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
-                                                                <div class="blood-donation d-flex w-100">
-                                                                    <input type="text" class="w-50 px-2 form-control flex-grow-1" name="name_of_donor" id="name_of_donor" placeholder="Ilagay ang pangalan">
-                                                                    <button type="button" class="btn btn-success" id="donor_name_add_btn">Add</button>
+                                                            <!-- payment method -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Ang Paraan ng pagbabayad ay:</label>
+                                                                    <select name="payment_method" id="payment_method" class="form-select flex-grow-1">
+                                                                        <option value="" disabled selected>Select Payment Method</option>
+                                                                        <option value="PhilHealth">PhilHealth</option>
+                                                                        <option value="Cash">Cash / Out-of-Pocket</option>
+                                                                        <option value="private insurance">Private Insurance</option>
+                                                                        <option value="HMO">HMO</option>
+                                                                        <option value="NGO">NGO / Charity Assistance</option>
+                                                                        <option value="Government Health Program">Government Health Program</option>
+                                                                        <option value="installment">Installment Plan</option>
+                                                                        <option value="Employer / Company Benefit">Employer / Company Benefit</option>
+                                                                    </select>
                                                                 </div>
-                                                                <!-- hidden input since madami to -->
+                                                                <small id="payment_method_error" class="text-danger error-text"></small>
                                                             </div>
-                                                            <div class="lower-box p-3 bg-secondary w-100 justify-self-center d-flex gap-2" id="donor_names_con">
-                                                                <!-- <div class="box vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
+                                                            <!-- mode of transportation -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Paraan ng pagbiyahe patungo sa pasilidad ay:</label>
+                                                                    <select name="transportation_mode" id="transportation_mode" class="form-select flex-grow-1" required>
+                                                                        <option value="" disabled selected>Select Mode of Transportation</option>
+                                                                        <option value="Walking">Walking</option>
+                                                                        <option value="Tricycle">Tricycle</option>
+                                                                        <option value="Jeepney">Jeepney</option>
+                                                                        <option value="Motorcycle">Motorcycle</option>
+                                                                        <option value="Private Vehicle">Private Vehicle</option>
+                                                                        <option value="Ambulance">Ambulance</option>
+                                                                        <option value="Taxi / Grab">Taxi / Grab</option>
+                                                                        <option value="Others">Others</option>
+                                                                    </select>
+
+                                                                </div>
+                                                                <div class="low-box w-100 d-flex justify-content-center">
+                                                                    <small>(mode of transportation)</small>
+                                                                </div>
+                                                                <small id="transportation_mode_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- person who will bring me to hospital -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Taong magdadala sakin sa hospital: </label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="accompany_person_to_hospital" placeholder="Ilagay ang pangalan" id="accompany_person_to_hospital">
+                                                                </div>
+                                                                <small id="accompany_person_to_hospital_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- guardian -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Pangalan ng taong sasamahan ako sa panganganak: </label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="accompany_through_pregnancy" placeholder="Ilagay ang pangalan" id="accompany_through_pregnancy">
+                                                                </div>
+                                                                <small id="accompany_through_pregnancy_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- mag-alalaga -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Pangalan ng taong mag-aalaga sa akin sa panganganak: </label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="care_person" placeholder="Ilagay ang pangalan" id="care_person">
+                                                                </div>
+                                                                <small id="care_person_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- magbibigay ng dugo -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap mb-2">
+                                                                    <label for="place_of_birth" class="fs-5 fw-medium whitespace-normal lg:whitespace-nowrap">Maaring magbigay ng dugo, kung sakaling mangailangan: </label>
+                                                                    <div class="blood-donation d-flex w-100">
+                                                                        <input type="text" class="w-50 px-2 form-control flex-grow-1" name="name_of_donor" id="name_of_donor" placeholder="Ilagay ang pangalan">
+                                                                        <button type="button" class="btn btn-success" id="donor_name_add_btn">Add</button>
+                                                                    </div>
+                                                                    <!-- hidden input since madami to -->
+                                                                </div>
+                                                                <div class="lower-box p-3 bg-secondary w-100 justify-self-center d-flex gap-2" id="donor_names_con">
+                                                                    <!-- <div class="box vaccine d-flex justify-content-between bg-white align-items-center p-1 w-50 rounded">
                                                                 <h5 class="mb-0">Jan Loiue Salimbago</h5>
                                                                 <div class="delete-icon d-flex align-items-center justify-content-center">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" viewBox="0 0 448 512">
@@ -792,87 +799,87 @@
                                                                 </div>
                                                                 <input type="text" name="donor_names[]" value="">
                                                             </div> -->
-                                                            </div>
-                                                        </div>
-                                                        <h5 class="mb-3">Kung magkaroon ng komplikasyon, kailangan sabihan kaagad si:</h5>
-                                                        <!-- persons info -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="emergency_person_name" placeholder="Ilagay ang pangalan" id="emergency_person_name">
-                                                            </div>
-                                                            <small id="emergency_person_name_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- contact info -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="place_of_birth" class="fs-5">Tirahan: </label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="Ilagay and address ng tirahan" id="emergency_person_residency">
-                                                            </div>
-                                                            <small id="emergency_person_residency_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- contact -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="place_of_birth" class="fs-5"> Telepono: </label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="Ilagay and numero ng telepono" id="emergency_person_contact_number">
-                                                            </div>
-                                                            <small id="emergency_person_contact_number_error" class="text-danger error-text"></small>
-                                                        </div>
-                                                        <!-- patient name -->
-                                                        <div class="mb-3">
-                                                            <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
-                                                                <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan ng pasyente <span class="text-danger">*</span></label>
-                                                                <input type="text" class="flex-grow-1 form-control" name="patient_name" id="patient_name" placeholder="Ilagay ang pangalan" disabled>
-                                                            </div>
-
-                                                        </div>
-                                                        <!-- signature -->
-                                                        <div class="mb-3 w-100 d-flex flex-column border-bottom">
-                                                            <label>Signature</label>
-
-                                                            <!-- Two Action Buttons -->
-                                                            <div class="d-flex gap-2 mb-2">
-                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_drawSignatureBtn">
-                                                                    <i class="bi bi-pencil"></i> Draw Signature
-                                                                </button>
-                                                                <button type="button" class="btn btn-outline-primary flex-fill" id="edit_uploadSignatureBtn">
-                                                                    <i class="bi bi-upload"></i> Upload Signature Photo
-                                                                </button>
-                                                            </div>
-
-                                                            <!-- Drawing Canvas (hidden by default) -->
-                                                            <div id="edit_signatureCanvas" class="d-none mb-2">
-                                                                <canvas id="edit_signaturePad" class="border w-100" style="height: 200px;"></canvas>
-                                                                <div class="d-flex gap-2 mt-2">
-                                                                    <button type="button" class="btn btn-sm btn-secondary" id="edit_clearSignature">Clear</button>
-                                                                    <button type="button" class="btn btn-sm btn-success" id="edit_saveSignature">Save Signature</button>
                                                                 </div>
                                                             </div>
+                                                            <h5 class="mb-3">Kung magkaroon ng komplikasyon, kailangan sabihan kaagad si:</h5>
+                                                            <!-- persons info -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
+                                                                    <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan: </label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="emergency_person_name" placeholder="Ilagay ang pangalan" id="emergency_person_name">
+                                                                </div>
+                                                                <small id="emergency_person_name_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- contact info -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
+                                                                    <label for="place_of_birth" class="fs-5">Tirahan: </label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="emergency_person_residency" placeholder="Ilagay and address ng tirahan" id="emergency_person_residency">
+                                                                </div>
+                                                                <small id="emergency_person_residency_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- contact -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
+                                                                    <label for="place_of_birth" class="fs-5"> Telepono: </label>
+                                                                    <input type="number" class="flex-grow-1 form-control" name="emergency_person_contact_number" placeholder="Ilagay and numero ng telepono" id="emergency_person_contact_number">
+                                                                </div>
+                                                                <small id="emergency_person_contact_number_error" class="text-danger error-text"></small>
+                                                            </div>
+                                                            <!-- patient name -->
+                                                            <div class="mb-3">
+                                                                <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap align-items-center">
+                                                                    <label for="place_of_birth" class="fs-5 whitespace-normal lg:whitespace-nowrap">Pangalan ng pasyente <span class="text-danger">*</span></label>
+                                                                    <input type="text" class="flex-grow-1 form-control" name="patient_name" id="patient_name" placeholder="Ilagay ang pangalan" disabled>
+                                                                </div>
 
-                                                            <!-- File Upload (hidden by default) -->
-                                                            <div id="edit_signatureUpload" class="d-none mb-2">
-                                                                <input type="file" name="edit_signature_image" id="edit_signature_image" class="form-control" accept="image/*">
-                                                                <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                                                            </div>
+                                                            <!-- signature -->
+                                                            <div class="mb-3 w-100 d-flex flex-column border-bottom">
+                                                                <label>Signature</label>
+
+                                                                <!-- Two Action Buttons -->
+                                                                <div class="d-flex gap-2 mb-2">
+                                                                    <button type="button" class="btn btn-outline-primary flex-fill" id="edit_drawSignatureBtn">
+                                                                        <i class="bi bi-pencil"></i> Draw Signature
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-outline-primary flex-fill" id="edit_uploadSignatureBtn">
+                                                                        <i class="bi bi-upload"></i> Upload Signature Photo
+                                                                    </button>
+                                                                </div>
+
+                                                                <!-- Drawing Canvas (hidden by default) -->
+                                                                <div id="edit_signatureCanvas" class="d-none mb-2">
+                                                                    <canvas id="edit_signaturePad" class="border w-100" style="height: 200px;"></canvas>
+                                                                    <div class="d-flex gap-2 mt-2">
+                                                                        <button type="button" class="btn btn-sm btn-secondary" id="edit_clearSignature">Clear</button>
+                                                                        <button type="button" class="btn btn-sm btn-success" id="edit_saveSignature">Save Signature</button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- File Upload (hidden by default) -->
+                                                                <div id="edit_signatureUpload" class="d-none mb-2">
+                                                                    <input type="file" name="edit_signature_image" id="edit_signature_image" class="form-control" accept="image/*">
+                                                                    <small class="text-muted">Upload a clear photo or scanned image of the signature.</small>
+                                                                </div>
+
+                                                                <!-- Preview Area -->
+                                                                <div id="edit_signaturePreview" class="d-none">
+                                                                    <img id="edit_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
+                                                                    <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_removeSignature">Remove</button>
+                                                                </div>
+
+                                                                <small class="text-danger error-text" id="edit_signature_error"></small>
                                                             </div>
 
-                                                            <!-- Preview Area -->
-                                                            <div id="edit_signaturePreview" class="d-none">
-                                                                <img id="edit_previewImage" class="border" style="max-width: 300px; max-height: 150px;">
-                                                                <button type="button" class="btn btn-sm btn-danger mt-2" id="edit_removeSignature">Remove</button>
-                                                            </div>
-
-                                                            <small class="text-danger error-text" id="edit_signature_error"></small>
                                                         </div>
-
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="modal-footer d-flex justify-content-between">
-                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-success" id="pregnancy_plan_update_btn">Save Record</button>
-                                            </div>
+                                                <div class="modal-footer d-flex justify-content-between">
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-success" id="pregnancy_plan_update_btn">Save Record</button>
+                                                </div>
                                         </form>
                                     </div>
                                 </div>
@@ -896,7 +903,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- EDIT CHECK UP modal -->
+
                             <!-- EDIT CHECK UP modal -->
                             <div class="modal fade" id="checkUpModal" tabindex="-1" aria-labelledby="checkUpModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -1394,7 +1401,9 @@
                                                         <div class="mb-md-3 mb-1">
                                                             <div class="upper-box d-flex gap-1 flex-wrap flex-xl-nowrap">
                                                                 <label for="add_cost_of_pregnancy" class="fs-5 fw-medium w-100 whitespace-normal xl:whitespace-nowrap ">Ang tinatayang gagastusin ng panganganak sa pasilidad ay (P):</label>
-                                                                <input type="number" class="flex-grow-1 form-control" name="add_cost_of_pregnancy" id="add_cost_of_pregnancy">
+                                                                <input type="number" class="flex-grow-1 form-control" name="add_cost_of_pregnancy" id="add_cost_of_pregnancy" min="0"
+                                                                    max="500000"
+                                                                    step="1">
                                                             </div>
                                                             <small id="add_cost_of_pregnancy_error" class="text-danger error-text"></small>
                                                         </div>

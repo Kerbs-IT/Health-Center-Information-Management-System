@@ -187,7 +187,7 @@
     </div>
 
     <div class="form-line" style="margin:0 0;">
-        Ito ay pisilidad na otortado ng Philhealth Oo <span style="display: inline-block; border-bottom: 1px solid #000; width: 80px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth == 'yes')✓@else &nbsp; @endif</span> Hindi <span style="display: inline-block; border-bottom: 1px solid #000; width: 120px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth != 'yes')✓@else &nbsp; @endif</span>
+        Ito ay pisilidad na otortado ng Philhealth Oo <span style="display: inline-block; border-bottom: 1px solid #000; width: 80px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth == 'yes') /@else &nbsp; @endif</span> Hindi <span style="display: inline-block; border-bottom: 1px solid #000; width: 120px; text-align: center; font-weight: bold;">@if($pregnancyPlan->authorized_by_philhealth != 'yes') /@else &nbsp; @endif</span>
         <span class="small-text">(lagyan ng tsek)</span>
     </div>
 

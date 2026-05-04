@@ -264,7 +264,7 @@ class PrenatalController extends Controller
                 'midwife_name'                    => 'sometimes|nullable|string',
                 'place_of_pregnancy'              => 'sometimes|nullable|string',
                 'authorized_by_philhealth'        => 'sometimes|nullable|string',
-                'cost_of_pregnancy'               => 'sometimes|nullable|number',
+                'cost_of_pregnancy' => 'sometimes|nullable|numeric|min:0|max:500000',
                 'payment_method'                  => 'sometimes|nullable|string',
                 'transportation_mode'             => 'sometimes|nullable|string',
                 'accompany_person_to_hospital'    => 'sometimes|nullable|string',
@@ -279,7 +279,10 @@ class PrenatalController extends Controller
             ], [
                 'place_of_pregnancy.string'              => 'The place of pregnancy must be a string.',
                 'authorized_by_philhealth.string'        => 'The authorized by PhilHealth field must be a string.',
-                'cost_of_pregnancy.number'               => 'The cost of pregnancy must be a number.',
+                'cost_of_pregnancy.numeric' => 'The cost of pregnancy must be a valid number.',
+                'cost_of_pregnancy.min'     => 'The cost of pregnancy cannot be negative.',
+                'cost_of_pregnancy.max'     => 'The cost of pregnancy cannot exceed ₱500,000.',
+                
                 'accompany_person_to_hospital.string'    => 'The accompany person to hospital field must be a string.',
                 'accompany_through_pregnancy.string'     => 'The accompany through pregnancy field must be a string.',
                 'emergency_person_name.string'           => 'The emergency person name must be a string.',
@@ -1868,7 +1871,7 @@ class PrenatalController extends Controller
                 'midwife_name' => 'sometimes|nullable|string',
                 'place_of_pregnancy' => 'sometimes|nullable|string',
                 'authorized_by_philhealth' => 'sometimes|nullable|string',
-                'cost_of_pregnancy' => 'sometimes|nullable|numeric',
+                'cost_of_pregnancy' => 'sometimes|nullable|numeric|min:0|max:500000',
                 'payment_method' => 'sometimes|nullable|string',
                 'transportation_mode' => 'sometimes|nullable|string',
                 'accompany_person_to_hospital' => 'sometimes|nullable|string',
@@ -1886,7 +1889,9 @@ class PrenatalController extends Controller
 
                 'authorized_by_philhealth.string' => 'The authorized by PhilHealth field must be a string.',
 
-                'cost_of_pregnancy.numeric' => 'The cost of pregnancy must be a number.',
+                'cost_of_pregnancy.numeric' => 'The cost of pregnancy must be a valid number.',
+                'cost_of_pregnancy.min'     => 'The cost of pregnancy cannot be negative.',
+                'cost_of_pregnancy.max'     => 'The cost of pregnancy cannot exceed ₱500,000.',
 
                 'accompany_person_to_hospital.string' => 'The accompany person to hospital field must be a string.',
 
@@ -1957,8 +1962,8 @@ class PrenatalController extends Controller
             return response()->json(['message' => 'Updating Patient Pregnancy Plan Successfully'], 200);
         } catch (ValidationException $e) {
             return response()->json([
-                'error' => $e->getMessage()
-            ], 404);
+                'errors' => $e->errors()
+            ], 422);
         }
     }
     public function viewPrenatalDetail($id)
@@ -2588,7 +2593,7 @@ class PrenatalController extends Controller
                 'add_midwife_name' => 'sometimes|nullable|string',
                 'add_place_of_pregnancy' => 'sometimes|nullable|string',
                 'add_authorized_by_philhealth' => 'sometimes|nullable|string',
-                'add_cost_of_pregnancy' => 'sometimes|nullable|numeric',
+                'add_cost_of_pregnancy' => 'sometimes|nullable|numeric|min:0|max:500000',
                 'add_payment_method' => 'sometimes|nullable|string',
                 'add_transportation_mode' => 'sometimes|nullable|string',
                 'add_accompany_person_to_hospital' => 'sometimes|nullable|string',
@@ -2602,15 +2607,7 @@ class PrenatalController extends Controller
                 'add_donor_names' => 'sometimes|nullable|array'
             ]);
             $signaturePath = null;
-            // dd([
-            //     'hasFile' => $request->hasFile('add_signature_image'),
-            //     'hasDraw' => $request->filled('add_signature_data'),
-            //     'fileValue' => $request->file('add_signature_image'),
-            //     'drawValue' => $request->add_signature_data ? substr($request->add_signature_data, 0, 50) . '...' : null,
-            //     'signaturePath' => $signaturePath
-            // ]);
-
-            // pregnancy plan
+           
 
 
             // If user uploaded an image file
@@ -2658,8 +2655,8 @@ class PrenatalController extends Controller
             return response()->json(['message' => 'Add Patient Pregnancy Plan Successfully'], 200);
         } catch (ValidationException $e) {
             return response()->json([
-                'error' => $e->errors()
-            ], 404);
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()

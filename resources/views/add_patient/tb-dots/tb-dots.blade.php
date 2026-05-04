@@ -97,7 +97,7 @@
             </div>
             <div class="mb-0 mb-md-2 flex-fill">
                 <label for="duration">Start Date</label>
-                <input type="date" class="form-control" id="tb_start_date">
+                <input type="date" class="form-control" id="tb_start_date" max="{{ date('Y-m-d') }}">
             </div>
             <div class="mb-0 mb-md-2 flex-fill">
                 <label for="duration">End Date</label>
@@ -127,20 +127,7 @@
                 </tr>
             </thead>
             <tbody id="add_patient_tb_table_body">
-                <!-- <tr>
-                    <td>Izoniazid</td>
-                    <td>1 tablet/day</td>
-                    <td>6 months</td>
-                    <td>2025-01-01</td>
-                    <td>2025-02-01</td>
-                    <td class=" align-middle text-center">
-                        <div class="delete-icon d-flex align-items-center justify-self-center w-100 h-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon-svg" width="20" height="20" viewBox="0 0 448 512">
-                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                            </svg>
-                        </div>
-                    </td>
-                </tr> -->
+
             </tbody>
         </table>
     </div>

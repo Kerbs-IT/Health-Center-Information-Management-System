@@ -158,7 +158,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- EDIT CASE INFO -->
+                            <!-- EDIT Checkup INFO -->
                             <div class="modal fade" id="edit_tb_dots_checkup_Modal" tabindex="-1" aria-labelledby="editVaccinationModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                     <div class="modal-content">
