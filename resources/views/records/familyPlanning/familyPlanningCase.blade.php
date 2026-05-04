@@ -35,15 +35,15 @@
                     <div class="top-part d-flex justify-content-between px-2 align-items-center">
                         <h2>View Patient Details</h2>
                         <div class="sequence-links d-md-flex d-none justify-content-center align-items-center">
-                            <h5 class="mb-0 text-muted cursor-pointer fw-normal">Records</h5>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <span class="fs-6 text-black">Records</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512">
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
-                            <a href="{{ route('record.family.planning') }}" class="text-decoration-none fs-5 text-muted">Family Planning</a>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <span class="fs-6 text-black">Family Planning</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="arrow-right" viewBox="0 0 320 512">
                                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                             </svg>
-                            <a href="" class="text-decoration-none fs-5 text-black">Patient Case</a>
+                            <span class="fs-6 text-black">Patient Case</span>
                         </div>
                     </div>
                     <!-- main content -->
