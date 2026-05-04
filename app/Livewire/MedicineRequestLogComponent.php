@@ -12,19 +12,45 @@ class MedicineRequestLogComponent extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public $search  = '';
-    public $perPage = 10;
-    public $filterAction = ''; // '', 'approved', 'dispensed', 'rejected'
+    public $search       = '';
+    public $perPage      = 10;
+    public $filterAction = '';
+    public $startDate    = '';
+    public $endDate      = '';
+
+    public function updatedStartDate(): void { $this->resetPage(); }
+    public function updatedEndDate(): void   { $this->resetPage(); }
+    public function updatedSearch(): void    { $this->resetPage(); }
+    public function updatedFilterAction(): void { $this->resetPage(); }
+
+    public function updateLogsDateRange(string $start, string $end): void
+    {
+        $this->startDate = $start;
+        $this->endDate   = $end;
+        $this->resetPage();
+    }
+
+    public function clearLogsDateRange(): void
+    {
+        $this->startDate = '';
+        $this->endDate   = '';
+        $this->resetPage();
+    }
 
     public function render()
     {
         $logs = MedicineRequestLog::query()
+            ->with(['medicineRequest:id,batches_snapshot'])
             ->when($this->search, fn($q) =>
-                $q->where('patient_name',     'like', "%{$this->search}%")
-                  ->orWhere('medicine_name',  'like', "%{$this->search}%")
-                  ->orWhere('performed_by_name', 'like', "%{$this->search}%")
+                $q->where(fn($sub) =>
+                    $sub->where('patient_name',      'like', "%{$this->search}%")
+                        ->orWhere('medicine_name',    'like', "%{$this->search}%")
+                        ->orWhere('performed_by_name','like', "%{$this->search}%")
+                )
             )
             ->when($this->filterAction, fn($q) => $q->where('action', $this->filterAction))
+            ->when($this->startDate,   fn($q) => $q->whereDate('performed_at', '>=', $this->startDate))
+            ->when($this->endDate,     fn($q) => $q->whereDate('performed_at', '<=', $this->endDate))
             ->latest('performed_at')
             ->paginate($this->perPage);
 

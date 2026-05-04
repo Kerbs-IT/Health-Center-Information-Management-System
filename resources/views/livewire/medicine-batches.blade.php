@@ -85,9 +85,9 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label">Batch Number</label>
+                            <label class="form-label">Batch Number <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" wire:model="newBatchNumber"
-                                   placeholder="e.g., LOT-2025-001">
+                                placeholder="e.g., BATCH-2025-001">
                             @error('newBatchNumber') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-md-2">
@@ -120,7 +120,7 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h5 class="fw-bold mb-0">
                     <i class="fa-solid fa-arrow-down-short-wide me-1 text-warning"></i>
-                    FIFO Queue — oldest expiry consumed first
+                    FEFO Queue — earliest expiry consumed first
                 </h5>
                 <button class="btn btn-sm btn-outline-secondary" wire:click="toggleArchived">
                     <i class="fa-solid fa-{{ $showArchived ? 'list' : 'archive' }} me-1"></i>
@@ -147,7 +147,7 @@
                     <tbody>
                         @forelse($batches as $index => $batch)
                         @php
-                            $isExpired = $batch->expiry_date->isToday() || $batch->expiry_date->isPast();
+                            $isExpired = $batch->expiry_date->startOfDay()->lte(now()->startOfDay());
                             $available = max(0, $batch->quantity - $batch->reserved_quantity);
                             $firstValidIndex = null;
                             foreach ($batches as $i => $b) {
@@ -261,7 +261,7 @@
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Batch Number</label>
+                                <label class="form-label">Batch Number <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" wire:model="editBatchNumber">
                                 @error('editBatchNumber') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>

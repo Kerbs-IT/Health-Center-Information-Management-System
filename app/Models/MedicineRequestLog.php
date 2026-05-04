@@ -24,7 +24,7 @@ class MedicineRequestLog extends Model
         'batches_used' => 'array',
     ];
 
-    public function request()
+    public function medicineRequest()
     {
         return $this->belongsTo(MedicineRequest::class, 'medicine_request_id');
     }

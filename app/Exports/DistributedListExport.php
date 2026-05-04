@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Carbon\Carbon;
 
 class DistributedListExport implements
     FromQuery,
@@ -26,16 +27,26 @@ class DistributedListExport implements
 {
     protected $totalQuantity;
     protected $totalRecords;
-
-
-    public function __construct()
+    protected $startDate;
+    protected $endDate;
+    public function __construct(string $startDate = null, string $endDate = null)
     {
-        $this->totalQuantity = MedicineRequestLog::where('action', 'dispensed')->sum('quantity');
-        $this->totalRecords  = MedicineRequestLog::where('action', 'dispensed')->count();
+        $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfYear();
+        $end   = $endDate   ? Carbon::parse($endDate)->endOfDay()     : Carbon::now()->endOfYear();
+
+        $this->totalQuantity = MedicineRequestLog::where('action', 'dispensed')
+            ->whereBetween('performed_at', [$start, $end])->sum('quantity');
+        $this->totalRecords  = MedicineRequestLog::where('action', 'dispensed')
+            ->whereBetween('performed_at', [$start, $end])->count();
+
+        $this->startDate = $start;
+        $this->endDate   = $end;
     }
+
     public function query()
     {
-        return MedicineRequestLog::whereIn('action', ['dispensed'])
+        return MedicineRequestLog::where('action', 'dispensed')
+            ->whereBetween('performed_at', [$this->startDate, $this->endDate])
             ->select('patient_name', 'medicine_name', 'dosage', 'quantity', 'action', 'performed_at')
             ->orderByDesc('performed_at');
     }

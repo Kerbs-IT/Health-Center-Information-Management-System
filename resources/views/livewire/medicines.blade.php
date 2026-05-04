@@ -58,7 +58,7 @@
 
                 {{-- NEW CSV button --}}
                 <a href="{{ route('medicines.download-csv') }}" target="_blank" class="btn btn-success" style="background-color: #217346; border-color: #217346;">
-                    <i class="fa-solid fa-file-csv pe-1"></i>Download CSV
+                    <i class="fa-solid fa-file-csv pe-1"></i>Download Excel
                 </a>
                 <button class="btn btn-success" id="openAddMedicineBtn">
                     <i class="fa-solid fa-plus pe-1"></i>Add Medicine
@@ -243,9 +243,9 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="form-label">Batch Number</label>
+                                <label class="form-label">Batch Number <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" wire:model="batch_number"
-                                    placeholder="e.g., LOT-2025-001 (auto-generated if blank)">
+                                    placeholder="e.g., BATCH-2025-001">
                                 @error('batch_number') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                         </div>

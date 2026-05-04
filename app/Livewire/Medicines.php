@@ -10,7 +10,7 @@ use App\Models\MedicineBatch;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use \Illuminate\Validation\Rule;
 class Medicines extends Component
 {
     use WithPagination;
@@ -165,6 +165,10 @@ class Medicines extends Component
             'expiry_date'   => 'required|date',
             'min_age_value' => 'nullable|integer|min:0',
             'max_age_value' => 'nullable|integer|min:0',
+            'batch_number'  => 'required|string|max:100',
+        ], [
+            'batch_number.required' => 'Batch number is required.',
+            'batch_number.unique'   => 'This batch number already exists.',
         ]);
 
 
@@ -193,7 +197,7 @@ class Medicines extends Component
             // Create the initial batch for FIFO tracking
             MedicineBatch::create([
                 'medicine_id'      => $medicine->medicine_id,
-                'batch_number' => $this->batch_number ?: 'BATCH-' . strtoupper(uniqid()),
+                'batch_number'     => $this->batch_number,
                 'quantity'         => (int)$this->stock,
                 'initial_quantity' => (int)$this->stock,
                 // 'price'            => $this->price,

@@ -31,6 +31,16 @@ class InventoryReport extends Component
     public $expiringSoonPage = 1;
     public $expiringSoonPerPage = 15;
 
+    public $medicinesStartDate;
+    public $medicinesEndDate;
+    public $requestsStartDate;
+    public $requestsEndDate;
+    public $distributedStartDate;
+    public $distributedEndDate;
+    public $lowStockStartDate;
+    public $lowStockEndDate;
+    public $expiringSoonStartDate;
+    public $expiringSoonEndDate;
     public function mount()
     {
         // Default to current year
@@ -41,8 +51,50 @@ class InventoryReport extends Component
 
         $this->pieChartStartDate = Carbon::now()->startOfYear()->format('Y-m-d');
         $this->pieChartEndDate = Carbon::now()->endOfYear()->format('Y-m-d');
+        $this->medicinesStartDate = Carbon::now()->startOfYear()->format('Y-m-d');
+        $this->medicinesEndDate   = Carbon::now()->endOfYear()->format('Y-m-d');
+        $this->requestsStartDate  = Carbon::now()->startOfYear()->format('Y-m-d');
+        $this->requestsEndDate    = Carbon::now()->endOfYear()->format('Y-m-d');
+        $this->distributedStartDate  = Carbon::now()->startOfYear()->format('Y-m-d');
+        $this->distributedEndDate    = Carbon::now()->endOfYear()->format('Y-m-d');
+        $this->lowStockStartDate     = Carbon::now()->startOfYear()->format('Y-m-d');
+        $this->lowStockEndDate       = Carbon::now()->endOfYear()->format('Y-m-d');
+        $this->expiringSoonStartDate = Carbon::now()->startOfYear()->format('Y-m-d');
+        $this->expiringSoonEndDate   = Carbon::now()->endOfYear()->format('Y-m-d');
+    }
+    public function updateMedicinesDateRange($start, $end)
+    {
+        $this->medicinesStartDate = $start;
+        $this->medicinesEndDate   = $end;
+        $this->medicinesPage      = 1;
     }
 
+    public function updateRequestsDateRange($start, $end)
+    {
+        $this->requestsStartDate = $start;
+        $this->requestsEndDate   = $end;
+        $this->requestsPage      = 1;
+    }
+    public function updateDistributedDateRange($start, $end)
+    {
+        $this->distributedStartDate = $start;
+        $this->distributedEndDate   = $end;
+        $this->distributedPage      = 1;
+    }
+
+    public function updateLowStockDateRange($start, $end)
+    {
+        $this->lowStockStartDate = $start;
+        $this->lowStockEndDate   = $end;
+        $this->lowStockPage      = 1;
+    }
+
+    public function updateExpiringSoonDateRange($start, $end)
+    {
+        $this->expiringSoonStartDate = $start;
+        $this->expiringSoonEndDate   = $end;
+        $this->expiringSoonPage      = 1;
+    }
     public function updateDateRange($startDate, $endDate){
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -623,6 +675,10 @@ public function getTopMedicinesDateRangeData(){
             'batches'    => fn($q) => $q->orderBy('expiry_date', 'asc'),
             'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
         ])
+        ->whereBetween('created_at', [
+            Carbon::parse($this->medicinesStartDate)->startOfDay(),
+            Carbon::parse($this->medicinesEndDate)->endOfDay(),
+        ])
         ->orderBy('medicine_name')
         ->paginate($this->medicinesPerPage, ['*'], 'medicinesPage', $this->medicinesPage);
     }
@@ -631,6 +687,10 @@ public function getTopMedicinesDateRangeData(){
     {
         return MedicineRequest::with(['medicine', 'patients', 'user'])
             ->select('id', 'patients_id', 'user_id', 'medicine_id', 'quantity_requested', 'status', 'created_at')
+            ->whereBetween('created_at', [
+                Carbon::parse($this->requestsStartDate)->startOfDay(),
+                Carbon::parse($this->requestsEndDate)->endOfDay(),
+            ])
             ->orderByDesc('created_at')
             ->paginate($this->requestsPerPage, ['*'], 'requestsPage', $this->requestsPage);
     }
@@ -644,6 +704,10 @@ public function getTopMedicinesDateRangeData(){
             'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
         ])
         ->where('stock_status', 'Low Stock')
+        ->whereBetween('updated_at', [
+            Carbon::parse($this->lowStockStartDate)->startOfDay(),
+            Carbon::parse($this->lowStockEndDate)->endOfDay(),
+        ])
         ->orderBy('stock', 'asc')
         ->paginate($this->lowStockPerPage, ['*'], 'lowStockPage', $this->lowStockPage)
         ->through(function ($medicine) {
@@ -699,7 +763,34 @@ public function getTopMedicinesDateRangeData(){
             return $medicine;
         });
     }
-
+    public function getLowStockCollectionByDate($start, $end)
+    {
+        return Medicine::with([
+            'batches'    => fn($q) => $q->where('expiry_date', '>', now())->orderBy('expiry_date', 'asc'),
+            'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])
+        ->where('stock_status', 'Low Stock')
+        ->whereBetween('updated_at', [
+            Carbon::parse($start)->startOfDay(),
+            Carbon::parse($end)->endOfDay(),
+        ])
+        ->orderBy('stock', 'asc')
+        ->get()
+        ->map(function ($medicine) {
+            $medicine->available_stock_count = $medicine->batches->sum(fn($b) => $b->quantity - $b->reserved_quantity);
+            $fifo = $medicine->batches->first();
+            $medicine->fifo_expiry_date = $fifo?->expiry_date;
+            $last = $medicine->allBatches->last();
+            if ($last) {
+                $days = now()->diffInDays($last->expiry_date, false);
+                $medicine->expiry_status = $days < 0 ? 'Expired' : ($days <= 30 ? 'Expiring Soon' : 'Valid');
+            } else {
+                $medicine->expiry_status = 'N/A';
+            }
+            $medicine->available_stock = $medicine->available_stock_count;
+            return $medicine;
+        });
+    }
     public function getExpiringSoonCollection()
     {
         return Medicine::with([
@@ -731,6 +822,10 @@ public function getTopMedicinesDateRangeData(){
         ])
         ->where('expiry_status', 'Expiring Soon')
         ->orderBy('expiry_date', 'asc')
+        ->whereBetween('expiry_date', [
+            Carbon::parse($this->expiringSoonStartDate)->startOfDay(),
+            Carbon::parse($this->expiringSoonEndDate)->endOfDay(),
+        ])
         ->paginate($this->expiringSoonPerPage, ['*'], 'expiringSoonPage', $this->expiringSoonPage)
         ->through(function ($batch) {
             // Available stock = free units across ALL valid batches of this medicine
@@ -826,9 +921,13 @@ public function updatedDistributedPerPage()
     public function render()
     {
         $distributed = MedicineRequestLog::where('action', 'dispensed')
-            ->select('patient_name', 'medicine_name', 'dosage', 'quantity', 'performed_at')
-            ->orderByDesc('performed_at')
-            ->paginate($this->distributedPerPage, ['*'], 'distributedPage', $this->distributedPage);
+        ->whereBetween('performed_at', [
+            Carbon::parse($this->distributedStartDate)->startOfDay(),
+            Carbon::parse($this->distributedEndDate)->endOfDay(),
+        ])
+        ->select('patient_name', 'medicine_name', 'dosage', 'quantity', 'performed_at')
+        ->orderByDesc('performed_at')
+        ->paginate($this->distributedPerPage, ['*'], 'distributedPage', $this->distributedPage);
 
         return view('livewire.inventory-report', [
             'categoriesData'       => $this->getMedicineCategoriesData(),
@@ -841,6 +940,12 @@ public function updatedDistributedPerPage()
             'allRequests'          => $this->getAllRequestsData(),
             'lowStockData'         => $this->getLowStockData(),
             'expiringSoonData'     => $this->getExpiringSoonData(),
+            'distributedStartDate'  => $this->distributedStartDate,
+            'distributedEndDate'    => $this->distributedEndDate,
+            'lowStockStartDate'     => $this->lowStockStartDate,
+            'lowStockEndDate'       => $this->lowStockEndDate,
+            'expiringSoonStartDate' => $this->expiringSoonStartDate,
+            'expiringSoonEndDate'   => $this->expiringSoonEndDate,
         ])->layout('livewire.layouts.base', ['page' => 'INVENTORY REPORT']);
     }
 }

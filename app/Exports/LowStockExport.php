@@ -23,41 +23,33 @@ class LowStockExport implements
 {
     protected $medicines;
 
-    public function __construct()
+    public function __construct(string $startDate = null, string $endDate = null)
     {
-        // Load low-stock medicines with their batches so we can compute
-        // available stock, FIFO expiry, last-batch expiry status, and batch count.
+        $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfYear();
+        $end   = $endDate   ? Carbon::parse($endDate)->endOfDay()     : Carbon::now()->endOfYear();
+
         $this->medicines = Medicine::with([
-            // valid batches (non-expired) ordered earliest first
             'batches'    => fn($q) => $q->where('expiry_date', '>', now())->orderBy('expiry_date', 'asc'),
-            // ALL non-archived batches for last-expiry & count
             'allBatches' => fn($q) => $q->orderBy('expiry_date', 'asc'),
         ])
         ->where('stock_status', 'Low Stock')
+        ->whereBetween('updated_at', [$start, $end])
         ->orderBy('stock', 'asc')
         ->get()
         ->map(function ($medicine) {
-            // Available stock = sum of free units in valid batches
             $medicine->available_stock = $medicine->batches
                 ->sum(fn($b) => max(0, $b->quantity - $b->reserved_quantity));
-
-            // FIFO expiry date = earliest valid batch
             $fifo = $medicine->batches->first();
             $medicine->fifo_expiry_date = $fifo?->expiry_date;
-
-            // Expiry status based on the LAST (latest) batch
             $last = $medicine->allBatches->last();
             if ($last) {
                 $days = now()->diffInDays($last->expiry_date, false);
-                $medicine->computed_expiry_status = $days < 0
-                    ? 'Expired'
-                    : ($days <= 30 ? 'Expiring Soon' : 'Valid');
+                $medicine->computed_expiry_status = $days < 0 ? 'Expired' : ($days <= 30 ? 'Expiring Soon' : 'Valid');
             } else {
                 $medicine->computed_expiry_status = 'N/A';
+
             }
-
             $medicine->batch_count = $medicine->allBatches->count();
-
             return $medicine;
         });
     }
