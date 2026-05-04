@@ -44,17 +44,16 @@ class SwapHealthWorkerController extends Controller
             'new_area_id'      => 'required|integer|min:1|max:14'
         ]);
 
-        $healthWorkerId = $request->health_worker_id;
-        $newAreaId      = $request->new_area_id;
-
         try {
             DB::beginTransaction();
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-            $currentWorker = staff::where('user_id', $healthWorkerId)->firstOrFail();
+            $currentWorker = staff::where('user_id', $request->health_worker_id)->firstOrFail();
             $currentAreaId = $currentWorker->assigned_area_id;
+            $newAreaId     = (int) $request->new_area_id;
 
             if ($currentAreaId == $newAreaId) {
+                DB::rollBack();
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
                 return response()->json([
                     'success' => false,
@@ -63,14 +62,14 @@ class SwapHealthWorkerController extends Controller
             }
 
             $targetWorker = staff::where('assigned_area_id', $newAreaId)
-                ->where('user_id', '!=', $healthWorkerId)
+                ->where('user_id', '!=', $currentWorker->user_id)
                 ->first();
 
             if ($targetWorker) {
                 $this->performSwap($currentWorker, $targetWorker, $currentAreaId, $newAreaId);
                 $message = "Successfully swapped areas between {$currentWorker->full_name} and {$targetWorker->full_name}";
             } else {
-                $this->performReassignment($currentWorker, $currentAreaId, $newAreaId);
+                $this->performReassignment($currentWorker, $newAreaId);
                 $message = "Successfully reassigned {$currentWorker->full_name} to new area";
             }
 
@@ -81,7 +80,7 @@ class SwapHealthWorkerController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            Log::error('Area swap failed: ' . $e->getMessage());
+            Log::error('Area swap failed: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
 
             return response()->json([
                 'success' => false,
@@ -90,102 +89,123 @@ class SwapHealthWorkerController extends Controller
         }
     }
 
+    /**
+     * THE KEY FIX: Use patient ADDRESS as source of truth, not health_worker_id.
+     * Get all medical_record_case_ids for patients whose address matches the area name.
+     */
+    private function getCaseIdsByAddress(string $areaName): array
+    {
+        return DB::table('wra_masterlists')
+            ->where('status', '!=', 'Archived')
+            ->where(function ($q) use ($areaName) {
+                $q->where('address', 'LIKE', '%' . $areaName . '%')
+                    ->orWhere('brgy_name', $areaName);
+            })
+            ->whereNotNull('medical_record_case_id')
+            ->pluck('medical_record_case_id')
+            ->unique()
+            ->toArray();
+    }
+
     private function performSwap($worker1, $worker2, $area1Id, $area2Id)
     {
-        // Snapshot BOTH sets of case IDs before ANY updates
-        $worker1CaseIds = DB::table('wra_masterlists')
-            ->where('health_worker_id', $worker1->user_id)
-            ->pluck('medical_record_case_id')
-            ->toArray();
+        $brgyUnits = $this->getBrgyUnits();
+        $area1Name = $brgyUnits[$area1Id]; // e.g. "Purok 5"
+        $area2Name = $brgyUnits[$area2Id]; // e.g. "Gawad Kalinga"
 
-        $worker2CaseIds = DB::table('wra_masterlists')
-            ->where('health_worker_id', $worker2->user_id)
-            ->pluck('medical_record_case_id')
-            ->toArray();
+        // Source of truth: patient ADDRESS, not current health_worker_id
+        // This is immune to previous corruptions
+        $area1CaseIds = $this->getCaseIdsByAddress($area1Name); // Purok 5 case IDs
+        $area2CaseIds = $this->getCaseIdsByAddress($area2Name); // Gawad Kalinga case IDs
 
-        $w1 = collect($worker1CaseIds);
-        $w2 = collect($worker2CaseIds);
+        Log::info("Swap: {$area1Name} has " . count($area1CaseIds) . " cases, {$area2Name} has " . count($area2CaseIds) . " cases");
 
-        // wra_masterlists: 3-step swap using NULL as temp
-        if ($w1->isNotEmpty()) {
-            DB::table('wra_masterlists')
-                ->whereIn('medical_record_case_id', $worker1CaseIds)
-                ->update(['health_worker_id' => null]);          // Step 1: w1 → NULL
+        $allTables = [
+            'wra_masterlists',
+            'vaccination_masterlists',
+            'family_planning_case_records',
+            'family_planning_medical_records',
+            'family_planning_side_b_records',
+            'pregnancy_checkups',
+            'prenatal_case_records',
+            'prenatal_medical_records',
+            'senior_citizen_case_records',
+            'senior_citizen_medical_records',
+            'tb_dots_case_records',
+            'tb_dots_medical_records',
+            'tb_dots_check_ups',
+            'vaccination_case_records',
+            'vaccination_medical_records',
+        ];
+
+        foreach ($allTables as $table) {
+            // Step 1: area1 patients → NULL (temp)
+            if (!empty($area1CaseIds)) {
+                DB::table($table)
+                    ->whereIn('medical_record_case_id', $area1CaseIds)
+                    ->whereNotNull('health_worker_id')
+                    ->update(['health_worker_id' => null]);
+            }
+
+            // Step 2: area2 patients → worker1 (they move to worker1's area)
+            if (!empty($area2CaseIds)) {
+                DB::table($table)
+                    ->whereIn('medical_record_case_id', $area2CaseIds)
+                    ->update(['health_worker_id' => $worker1->user_id]);
+            }
+
+            // Step 3: NULL (area1 patients) → worker2
+            if (!empty($area1CaseIds)) {
+                DB::table($table)
+                    ->whereIn('medical_record_case_id', $area1CaseIds)
+                    ->whereNull('health_worker_id')
+                    ->update(['health_worker_id' => $worker2->user_id]);
+            }
         }
-        if ($w2->isNotEmpty()) {
+
+        // Also fix brgy_name in masterlists to match correctly
+        if (!empty($area1CaseIds)) {
             DB::table('wra_masterlists')
-                ->whereIn('medical_record_case_id', $worker2CaseIds)
-                ->update(['health_worker_id' => $worker1->user_id]); // Step 2: w2 → w1
-        }
-        if ($w1->isNotEmpty()) {
-            DB::table('wra_masterlists')
-                ->whereIn('medical_record_case_id', $worker1CaseIds)
-                ->whereNull('health_worker_id')
-                ->update(['health_worker_id' => $worker2->user_id]); // Step 3: NULL → w2
+                ->whereIn('medical_record_case_id', $area1CaseIds)
+                ->update(['brgy_name' => $area1Name]);
+
+            DB::table('vaccination_masterlists')
+                ->whereIn('medical_record_case_id', $area1CaseIds)
+                ->update(['brgy_name' => $area1Name]);
         }
 
-        // All other tables: same 3-step pattern
-        $this->swapWorkerOnTablesWithTemp($w1, $w2, $worker1->user_id, $worker2->user_id);
+        if (!empty($area2CaseIds)) {
+            DB::table('wra_masterlists')
+                ->whereIn('medical_record_case_id', $area2CaseIds)
+                ->update(['brgy_name' => $area2Name]);
 
-        // Swap assigned areas on staff
+            DB::table('vaccination_masterlists')
+                ->whereIn('medical_record_case_id', $area2CaseIds)
+                ->update(['brgy_name' => $area2Name]);
+        }
+
+        // Swap staff assigned areas
         $worker1->assigned_area_id = $area2Id;
         $worker2->assigned_area_id = $area1Id;
         $worker1->save();
         $worker2->save();
     }
 
-    private function swapWorkerOnTablesWithTemp($w1CaseIds, $w2CaseIds, $worker1Id, $worker2Id)
+    private function performReassignment($worker, $newAreaId)
     {
-        $tables = [
-            'family_planning_case_records',
-            'family_planning_medical_records',
-            'family_planning_side_b_records',
-            'pregnancy_checkups',
-            'prenatal_case_records',
-            'prenatal_medical_records',
-            'senior_citizen_case_records',
-            'senior_citizen_medical_records',
-            'tb_dots_case_records',
-            'tb_dots_medical_records',
-            'tb_dots_check_ups',
-            'vaccination_case_records',
-            'vaccination_medical_records',
-            'vaccination_masterlists',
-        ];
+        $brgyUnits   = $this->getBrgyUnits();
+        $newAreaName = $brgyUnits[$newAreaId];
 
-        foreach ($tables as $table) {
-            // Step 1: worker1's records → NULL
-            if ($w1CaseIds->isNotEmpty()) {
-                DB::table($table)
-                    ->whereIn('medical_record_case_id', $w1CaseIds->toArray())
-                    ->update(['health_worker_id' => null]);
-            }
-
-            // Step 2: worker2's records → worker1
-            if ($w2CaseIds->isNotEmpty()) {
-                DB::table($table)
-                    ->whereIn('medical_record_case_id', $w2CaseIds->toArray())
-                    ->update(['health_worker_id' => $worker1Id]);
-            }
-
-            // Step 3: NULL records (worker1's old) → worker2
-            if ($w1CaseIds->isNotEmpty()) {
-                DB::table($table)
-                    ->whereIn('medical_record_case_id', $w1CaseIds->toArray())
-                    ->whereNull('health_worker_id')
-                    ->update(['health_worker_id' => $worker2Id]);
-            }
-        }
-    }
-
-    private function performReassignment($worker, $oldAreaId, $newAreaId)
-    {
-        $workerCaseIds = DB::table('wra_masterlists')
+        // Unassign ALL current patients of this worker
+        $currentCaseIds = DB::table('wra_masterlists')
             ->where('health_worker_id', $worker->user_id)
+            ->where('status', '!=', 'Archived')
             ->pluck('medical_record_case_id')
             ->toArray();
 
         $allTables = [
+            'wra_masterlists',
+            'vaccination_masterlists',
             'family_planning_case_records',
             'family_planning_medical_records',
             'family_planning_side_b_records',
@@ -201,48 +221,22 @@ class SwapHealthWorkerController extends Controller
             'vaccination_medical_records',
         ];
 
-        // Unassign current patients
-        if (!empty($workerCaseIds)) {
-            DB::table('wra_masterlists')
-                ->whereIn('medical_record_case_id', $workerCaseIds)
-                ->update(['health_worker_id' => null]);
-
-            DB::table('vaccination_masterlists')
-                ->whereIn('medical_record_case_id', $workerCaseIds)
-                ->update(['health_worker_id' => null]);
-
+        if (!empty($currentCaseIds)) {
             foreach ($allTables as $table) {
                 DB::table($table)
-                    ->whereIn('medical_record_case_id', $workerCaseIds)
+                    ->whereIn('medical_record_case_id', $currentCaseIds)
                     ->update(['health_worker_id' => null]);
             }
         }
 
-        // Take over new area's patients if any
-        $newAreaWorker = staff::where('assigned_area_id', $newAreaId)
-            ->where('user_id', '!=', $worker->user_id)
-            ->first();
+        // Assign new area's patients (by address) to this worker
+        $newAreaCaseIds = $this->getCaseIdsByAddress($newAreaName);
 
-        if ($newAreaWorker) {
-            $newAreaCaseIds = DB::table('wra_masterlists')
-                ->where('health_worker_id', $newAreaWorker->user_id)
-                ->pluck('medical_record_case_id')
-                ->toArray();
-
-            if (!empty($newAreaCaseIds)) {
-                DB::table('wra_masterlists')
+        if (!empty($newAreaCaseIds)) {
+            foreach ($allTables as $table) {
+                DB::table($table)
                     ->whereIn('medical_record_case_id', $newAreaCaseIds)
                     ->update(['health_worker_id' => $worker->user_id]);
-
-                DB::table('vaccination_masterlists')
-                    ->whereIn('medical_record_case_id', $newAreaCaseIds)
-                    ->update(['health_worker_id' => $worker->user_id]);
-
-                foreach ($allTables as $table) {
-                    DB::table($table)
-                        ->whereIn('medical_record_case_id', $newAreaCaseIds)
-                        ->update(['health_worker_id' => $worker->user_id]);
-                }
             }
         }
 
@@ -321,8 +315,8 @@ class SwapHealthWorkerController extends Controller
                         'name'          => $brgyUnits[$newAreaId] ?? 'Unknown',
                         'patient_count' => $newAreaPatients->count()
                     ],
-                    'is_swap' => $targetWorker !== null,
-                    'message' => $targetWorker
+                    'is_swap'  => $targetWorker !== null,
+                    'message'  => $targetWorker
                         ? "This will swap areas between {$currentWorker->full_name} and {$targetWorker->full_name}"
                         : "This will reassign {$currentWorker->full_name} to {$brgyUnits[$newAreaId]}"
                 ]
