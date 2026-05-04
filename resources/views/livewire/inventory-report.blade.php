@@ -368,7 +368,7 @@
                         <i class="bi bi-download"></i> Download PDF
                     </a>
                     <a href="{{ route('download.request.report.excel', ['start' => $requestsStartDate, 'end' => $requestsEndDate]) }}" class="btn btn-success btn-sm">
-                        <i class="fa-solid fa-file-csv"></i> Download CSV
+                        <i class="fa-solid fa-file-csv"></i> Download Excel
                     </a>
                     </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
@@ -508,7 +508,7 @@
                             <i class="bi bi-download"></i> Download PDF
                         </a>
                         <a href="{{ route('download.distributed.report.excel', ['start' => $distributedStartDate, 'end' => $distributedEndDate]) }}" class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                            <i class="fa-solid fa-file-csv"></i> Download Excel
                         </a>
                     </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
@@ -637,7 +637,7 @@
                             <i class="bi bi-download"></i> Download PDF
                         </a>
                         <a href="{{ route('download.lowstock.report.excel', ['start' => $lowStockStartDate, 'end' => $lowStockEndDate]) }}" class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                            <i class="fa-solid fa-file-csv"></i> Download Excel
                         </a>
                     </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
@@ -770,7 +770,7 @@
                             <i class="bi bi-download"></i> Download PDF
                         </a>
                         <a href="{{ route('download.expSoon.report.excel', ['start' => $expiringSoonStartDate, 'end' => $expiringSoonEndDate]) }}" class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-csv"></i> Download CSV
+                            <i class="fa-solid fa-file-csv"></i> Download Excel
                         </a>
                     </div>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>

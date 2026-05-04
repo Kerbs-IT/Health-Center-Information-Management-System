@@ -58,7 +58,7 @@
 
                 {{-- NEW CSV button --}}
                 <a href="{{ route('medicines.download-csv') }}" target="_blank" class="btn btn-success" style="background-color: #217346; border-color: #217346;">
-                    <i class="fa-solid fa-file-csv pe-1"></i>Download CSV
+                    <i class="fa-solid fa-file-csv pe-1"></i>Download Excel
                 </a>
                 <button class="btn btn-success" id="openAddMedicineBtn">
                     <i class="fa-solid fa-plus pe-1"></i>Add Medicine
