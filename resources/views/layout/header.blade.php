@@ -289,6 +289,8 @@
             '<span class="badge bg-primary notification-badge-new ms-2">New</span>' :
             '';
 
+          const cleanMessage = notification.message.replace(/⚠️/g, '').trim();
+
           html += `
           <div class="notification-item ${unreadClass}" onclick="handleNotificationClick(${notification.id}, '${notification.link_url || ''}')">
             <div class="d-flex align-items-start">
@@ -300,7 +302,7 @@
                   ${notification.title}
                   ${badgeHtml}
                 </div>
-                <div class="notification-message">${notification.message}</div>
+                <div class="notification-message">${cleanMessage}</div>
                 <div class="notification-time">
                   <i class="far fa-clock"></i> ${timeAgo}
                 </div>

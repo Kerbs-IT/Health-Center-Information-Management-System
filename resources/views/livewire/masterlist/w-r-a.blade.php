@@ -107,26 +107,26 @@
 
                 {{-- Download Button --}}
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 d-flex align-items-end gap-2">
-                    
-                        <button wire:click="exportPdf" type="button"
-                            class="btn btn-danger d-flex align-items-center gap-1">
-                            <i class="fas fa-file-pdf"></i>
-                            <span style="font-size: 0.875rem;">PDF</span>
-                        </button>
 
-                        {{-- Excel --}}
-                        <button wire:click="exportExcel" type="button"
-                            wire:loading.attr="disabled"
-                            class="btn btn-success d-flex align-items-center gap-1">
-                            <span wire:loading.remove wire:target="exportExcel">
-                                <i class="fas fa-file-excel"></i>
-                            </span>
-                            <span wire:loading wire:target="exportExcel">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </span>
-                            <span style="font-size: 0.875rem;">Excel</span>
-                        </button>
-                    
+                    <button wire:click="exportPdf" type="button"
+                        class="btn btn-danger d-flex align-items-center gap-1">
+                        <i class="fas fa-file-pdf"></i>
+                        <span style="font-size: 0.875rem;">PDF</span>
+                    </button>
+
+                    {{-- Excel --}}
+                    <button wire:click="exportExcel" type="button"
+                        wire:loading.attr="disabled"
+                        class="btn btn-success d-flex align-items-center gap-1">
+                        <span wire:loading.remove wire:target="exportExcel">
+                            <i class="fas fa-file-excel"></i>
+                        </span>
+                        <span wire:loading wire:target="exportExcel">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                        <span style="font-size: 0.875rem;">Excel</span>
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
                                 <h6 class="mb-0">For the Quarter/Year: <span class="text-decoration-underline">{{$this->monthName($this->selectedMonth)}} - {{$this->selectedYear??'2025'}}</span> </h6>
                             </div>
                             <div class="mb-3 d-flex w-100 gap-5">
-                                <h6 class="mb-0 ">Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h6>
+                                <h6 class="mb-0 ">Barangay: <span class="fw-light text-decoration-underline">Hugo Perez,Proper</span></h6>
                                 @php
                                 $nurse = App\Models\User::where('role','nurse')->first();
                                 $nurseName = $nurse -> full_name??'Gladys';

@@ -125,7 +125,7 @@
         <h2>MASTER LIST OF {{ $this->selectedRange }}</h2>
     </div>
     <div class="mb-3 d-flex justify-content-between flex-wrap">
-        <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">{{$this->selectedBrgy == ''?'All Barangays':$this->selectedBrgy }}</span></h4>
+        <h4 class="flex-fill text-center">Name of Barangay: <span class="fw-light text-decoration-underline">Hugo Perez,Proper</span></h4>
         @php
         $nurse = App\Models\User::where('role','nurse')->first();
         $nurseName = $nurse->full_name ?? 'Gladys';

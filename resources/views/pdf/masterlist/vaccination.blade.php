@@ -72,11 +72,7 @@
             <tr>
                 <td style="width: 50%; text-align: center; border: none;">
                     <h4 style="margin: 0;font-size:20px">Name of Barangay: <span style="font-weight: 300; text-decoration: underline;">
-                            @if(Auth::user()->role == 'staff')
-                            {{$assignedArea}}
-                            @else
-                            {{$selectedBrgy == ''?'All Barangays':$selectedBrgy }}
-                            @endif
+                            Hugo Perez,Proper
                         </span></h4>
                 </td>
                 <td style="width: 50%; text-align: center; border: none;">

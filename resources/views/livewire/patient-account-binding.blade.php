@@ -33,21 +33,21 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-3">
+                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-3' : 'col-md-4' }}">
                     <input
                         type="text"
                         class="form-control"
                         placeholder="Search by name, email, or username..."
                         wire:model.live.debounce.300ms="search">
                 </div>
-                <div class="col-md-2">
+                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-4' }}">
                     <select class="form-select" wire:model.live="filterStatus">
                         <option value="all">All Statuses</option>
                         <option value="active">Active</option>
                         <option value="archived">Archived</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-4' }}">
                     <select class="form-select" wire:model.live="filterPatientType">
                         <option value="all">All Patient Types</option>
                         <option value="vaccination">Vaccination</option>
@@ -58,6 +58,9 @@
                         <option value="general-consultation">General Consultation</option>
                     </select>
                 </div>
+
+                {{-- Only show purok filter for nurse --}}
+                @if(Auth::user()->role === 'nurse')
                 <div class="col-md-3">
                     <select class="form-select" wire:model.live="filterPurok">
                         <option value="all">All Puroks</option>
@@ -66,9 +69,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                @endif
+
+                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-12' }}">
                     <button class="btn btn-success w-100" wire:click="$refresh">
-                        <i class="bi bi-arrow-clockwise"></i> Search
+                        <i class="fa-solid fa-arrows-rotate"></i> Search
                     </button>
                 </div>
             </div>

@@ -33,80 +33,81 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-5 col-lg-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <h2 class="text-center mb-4">Reset Password</h2>
-                            <p class="text-muted text-center mb-4 small">
-                                Enter your new password below.
-                            </p>
+                    <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                        <div class="card-body p-5">
+
+                            <div class="text-center mb-4">
+                                <h2 class="fw-bold mb-1" style="color:#1b5e20;">Reset Password</h2>
+                                <p class="text-muted small mb-0">
+                                    Enter your new password below.
+                                </p>
+                            </div>
 
                             <form method="POST" action="{{ route('password.update') }}">
                                 @csrf
-
                                 <input type="hidden" name="token" value="{{ $token }}">
 
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input
-                                        type="email"
+                                    <label for="email" class="form-label fw-semibold small text-uppercase"
+                                        style="letter-spacing:1px; color:#2e7d32;">
+                                        Email Address
+                                    </label>
+                                    <input type="email"
                                         class="form-control @error('email') is-invalid @enderror"
-                                        id="email"
-                                        name="email"
+                                        id="email" name="email"
                                         value="{{ $email }}"
                                         readonly
-                                        style="background-color: #f8f9fa;">
+                                        style="border-radius:10px; padding:12px 16px; background-color:#f1f8f1;
+                              border-color:#ced4da; color:#6c757d;">
                                     @error('email')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">New Password</label>
-                                    <input
-                                        type="password"
+                                    <label for="password" class="form-label fw-semibold small text-uppercase"
+                                        style="letter-spacing:1px; color:#2e7d32;">
+                                        New Password
+                                    </label>
+                                    <input type="password"
                                         class="form-control @error('password') is-invalid @enderror"
-                                        id="password"
-                                        name="password"
+                                        id="password" name="password"
                                         placeholder="Enter new password"
+                                        style="border-radius:10px; padding:12px 16px; border-color:#ced4da;"
                                         required>
                                     @error('password')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">Must be at least 8 characters long.</small>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                    <input
-                                        type="password"
+                                <div class="mb-4">
+                                    <label for="password_confirmation" class="form-label fw-semibold small text-uppercase"
+                                        style="letter-spacing:1px; color:#2e7d32;">
+                                        Confirm Password
+                                    </label>
+                                    <input type="password"
                                         class="form-control"
                                         id="password_confirmation"
                                         name="password_confirmation"
                                         placeholder="Confirm new password"
+                                        style="border-radius:10px; padding:12px 16px; border-color:#ced4da;"
                                         required>
                                 </div>
 
                                 <div class="d-grid mb-3">
-                                    <button type="submit" class="btn btn-primary py-2">
+                                    <button type="submit" class="btn py-2 fw-semibold text-white"
+                                        style="border-radius:10px; background-color:#2e7d32; border:none; font-size:15px;">
                                         Reset Password
                                     </button>
                                 </div>
 
-                                <div class="text-center">
-                                    <a href="{{ route('login') }}" class="text-decoration-none">
-                                        <i class="bi bi-arrow-left me-1"></i>Back to Login
-                                    </a>
-                                </div>
-                            </form>
+                                <hr class="my-3">
+
+                                <d
+                                    </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
     </main>
 </body>
 <footer class="bg-light text-center  mt-auto">
