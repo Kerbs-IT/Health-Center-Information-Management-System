@@ -239,6 +239,10 @@ submitBtn.addEventListener("click", async (e) => {
     const formData = new FormData(form);
     formData.append("_method", "PUT");
 
+    // 👇 disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.value = "Saving...";
+
     try {
         const response = await fetch(`/patient-profile/update/${userId}`, {
             method: "POST",
@@ -309,6 +313,10 @@ submitBtn.addEventListener("click", async (e) => {
             confirmButtonText: "OK",
         });
         console.error("Fetch error:", err);
+    } finally {
+        // 👇 always restore button regardless of success or error
+        submitBtn.disabled = false;
+        submitBtn.value = "Save";
     }
 });
 
