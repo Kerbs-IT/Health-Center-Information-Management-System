@@ -170,8 +170,6 @@ class SwapHealthWorkerController extends Controller
             ->pluck('patient_id')
             ->unique();
     }
-
-    // UPDATED: Now accepts brgy_name as parameter
     
 
     /**
