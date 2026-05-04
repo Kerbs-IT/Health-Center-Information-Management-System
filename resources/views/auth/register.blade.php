@@ -125,6 +125,21 @@
                             @error('password')
                             <small class="text-danger">{{$message}}</small>
                             @enderror
+                            <div class="mt-2" id="password-strength-wrapper">
+
+                                {{-- Strength bar track --}}
+                                <div style="height: 5px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                                    <div id="strength-bar" style="height: 100%; width: 0%; transition: width 0.3s ease, background-color 0.3s ease; border-radius: 4px;"></div>
+                                </div>
+
+                                {{-- Strength label --}}
+                               <small id="strength-label" class="fw-semibold d-block" style="font-size: 12px; min-height: 18px;"></small>
+
+                                {{-- Requirements checklist --}}
+                                <ul id="password-requirements" class="list-unstyled mt-2 mb-0" style="font-size: 12px; color: #6c757d;">
+                                    {{-- Items are injected by password-strength.js --}}
+                                </ul>
+                            </div>
                         </div>
                         <!-- retype pass -->
                         <div class="mb-3">
