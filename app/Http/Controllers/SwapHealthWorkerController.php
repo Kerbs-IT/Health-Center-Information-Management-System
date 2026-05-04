@@ -105,30 +105,53 @@ class SwapHealthWorkerController extends Controller
      */
     private function performSwap($worker1, $worker2, $area1Id, $area2Id)
     {
-        // Get case IDs directly from wra_masterlists by health_worker_id
+        // Use 0 as a safe temporary placeholder (no real user has ID 0)
+        $tempId = 0;
+
+        // Get case IDs BEFORE any updates
         $worker1CaseIds = DB::table('wra_masterlists')
             ->where('health_worker_id', $worker1->user_id)
-            ->pluck('medical_record_case_id');
+            ->pluck('medical_record_case_id')
+            ->toArray();
 
         $worker2CaseIds = DB::table('wra_masterlists')
             ->where('health_worker_id', $worker2->user_id)
-            ->pluck('medical_record_case_id');
+            ->pluck('medical_record_case_id')
+            ->toArray();
 
-        // Swap health_worker_id on wra_masterlists — do NOT touch brgy_name
-        if ($worker1CaseIds->isNotEmpty()) {
+        $worker1Collection = collect($worker1CaseIds);
+        $worker2Collection = collect($worker2CaseIds);
+
+        // Step 1: Move worker1's records to temp (0)
+        if ($worker1Collection->isNotEmpty()) {
             DB::table('wra_masterlists')
                 ->whereIn('medical_record_case_id', $worker1CaseIds)
-                ->update(['health_worker_id' => $worker2->user_id]);
+                ->update(['health_worker_id' => $tempId]);
         }
 
-        if ($worker2CaseIds->isNotEmpty()) {
+        // Step 2: Move worker2's records to worker1
+        if ($worker2Collection->isNotEmpty()) {
             DB::table('wra_masterlists')
                 ->whereIn('medical_record_case_id', $worker2CaseIds)
                 ->update(['health_worker_id' => $worker1->user_id]);
         }
 
-        // Swap health_worker_id on all other record tables
-        $this->swapWorkerOnTables($worker1CaseIds, $worker2CaseIds, $worker1->user_id, $worker2->user_id);
+        // Step 3: Move temp (worker1's old records) to worker2
+        if ($worker1Collection->isNotEmpty()) {
+            DB::table('wra_masterlists')
+                ->whereIn('medical_record_case_id', $worker1CaseIds)
+                ->where('health_worker_id', $tempId)
+                ->update(['health_worker_id' => $worker2->user_id]);
+        }
+
+        // Same 3-step pattern for all other tables
+        $this->swapWorkerOnTablesWithTemp(
+            $worker1Collection,
+            $worker2Collection,
+            $worker1->user_id,
+            $worker2->user_id,
+            $tempId
+        );
 
         // Swap assigned_area_id on staff records
         $worker1->assigned_area_id = $area2Id;
@@ -137,11 +160,7 @@ class SwapHealthWorkerController extends Controller
         $worker2->save();
     }
 
-    /**
-     * Swap health_worker_id on all related record tables (excluding masterlists
-     * which are handled separately to avoid touching brgy_name).
-     */
-    private function swapWorkerOnTables($worker1CaseIds, $worker2CaseIds, $worker1Id, $worker2Id)
+    private function swapWorkerOnTablesWithTemp($worker1CaseIds, $worker2CaseIds, $worker1Id, $worker2Id, $tempId)
     {
         $tables = [
             'family_planning_case_records',
@@ -161,16 +180,26 @@ class SwapHealthWorkerController extends Controller
         ];
 
         foreach ($tables as $table) {
+            // Step 1: worker1 → temp
             if ($worker1CaseIds->isNotEmpty()) {
                 DB::table($table)
-                    ->whereIn('medical_record_case_id', $worker1CaseIds)
-                    ->update(['health_worker_id' => $worker2Id]);
+                    ->whereIn('medical_record_case_id', $worker1CaseIds->toArray())
+                    ->update(['health_worker_id' => $tempId]);
             }
 
+            // Step 2: worker2 → worker1
             if ($worker2CaseIds->isNotEmpty()) {
                 DB::table($table)
-                    ->whereIn('medical_record_case_id', $worker2CaseIds)
+                    ->whereIn('medical_record_case_id', $worker2CaseIds->toArray())
                     ->update(['health_worker_id' => $worker1Id]);
+            }
+
+            // Step 3: temp → worker2
+            if ($worker1CaseIds->isNotEmpty()) {
+                DB::table($table)
+                    ->whereIn('medical_record_case_id', $worker1CaseIds->toArray())
+                    ->where('health_worker_id', $tempId)
+                    ->update(['health_worker_id' => $worker2Id]);
             }
         }
     }
