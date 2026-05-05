@@ -160,7 +160,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Build list of invalid fields
         const invalidFields = [];
 
-        if (!email?.value.trim()) invalidFields.push(email);
+        const hasGuardian = !!document.getElementById("guardian_account_id")
+            ?.value;
+        const existingPatientLinked =
+            !!document.getElementById("selectedPatientId")?.value;
+
+        if (!hasGuardian && !existingPatientLinked && !email?.value.trim()) {
+            invalidFields.push(email); // nullable when guardian linked OR existing dependent selected
+        }
         if (!fname?.value.trim()) invalidFields.push(fname);
         if (!lname?.value.trim()) invalidFields.push(lname);
         if (!birthdate?.value.trim()) invalidFields.push(birthdate);
@@ -240,7 +247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         window.currentStep++;
         window.showStep(window.currentStep);
-    };
+    };;
 
     function insertNameValue(fname, MI, lname, element, suffix) {
         const fullname =

@@ -129,10 +129,11 @@ class addPatientController extends Controller
 
                 // Email: required only if NOT using guardian and NOT existing patient
                 'email' => array_filter([
-                    !$request->filled('guardian_account_id') && !$request->filled('patient_id')
-                        ? 'required_without:patient_id'
-                        : 'nullable',
-                    'email',
+                    ($request->filled('guardian_account_id') || $request->filled('patient_id'))
+                        ? 'nullable'
+                        : 'required',
+                    // Only validate format if email is actually provided
+                    $request->filled('email') ? 'email' : null,
                     !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
                         ? Rule::unique('users', 'email')
                         : null,

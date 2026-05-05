@@ -298,6 +298,13 @@
            }
        }
 
+        const emailWrapper = email?.closest(".mb-2");
+        if (emailWrapper) {
+            emailWrapper.style.display = patient.guardian_user_id
+                ? "none"
+                : "block";
+        }
+
         // First Name
         const firstName = document.getElementById("first_name");
         if (firstName && patient.first_name) {
@@ -436,6 +443,9 @@
 
         // Clear form
         clearForm();
+
+        const emailWrapper = document.getElementById("email")?.closest(".mb-2");
+        if (emailWrapper) emailWrapper.style.display = "block";
 
         // Reset state
         isPatientSelected = false;

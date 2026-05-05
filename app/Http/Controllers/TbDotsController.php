@@ -81,9 +81,14 @@ class TbDotsController extends Controller
                 'civil_status' => 'sometimes|nullable|string',
                 'suffix' => 'sometimes|nullable|string',
                 'email' => array_filter([
-                    'required_without:patient_id',
-                    'email',
-                    !$request->user_account && !$request->patient_id ? Rule::unique('users', 'email') : null,
+                    ($request->filled('guardian_account_id') || $request->filled('patient_id'))
+                        ? 'nullable'
+                        : 'required',
+                    // Only validate format if email is actually provided
+                    $request->filled('email') ? 'email' : null,
+                    !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
+                        ? Rule::unique('users', 'email')
+                        : null,
                 ]),
                 'user_account' => 'sometimes|nullable|numeric'
             ], [

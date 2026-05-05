@@ -80,10 +80,11 @@ class SeniorCitizenController extends Controller
                 'suffix'               => 'sometimes|nullable|string',
                 'guardian_account_id'  => 'nullable|exists:users,id',
                 'email' => array_filter([
-                    !$request->filled('guardian_account_id') && !$request->filled('patient_id')
-                        ? 'required_without:patient_id'
-                        : 'nullable',
-                    'email',
+                    ($request->filled('guardian_account_id') || $request->filled('patient_id'))
+                        ? 'nullable'
+                        : 'required',
+                    // Only validate format if email is actually provided
+                    $request->filled('email') ? 'email' : null,
                     !$request->user_account && !$request->patient_id && !$request->filled('guardian_account_id')
                         ? Rule::unique('users', 'email')
                         : null,
