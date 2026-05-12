@@ -848,3 +848,34 @@
 .mi-toast--error {
     border-left: 3px solid #dc2626;
 }
+
+.mi-worker-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid #e5e7eb;
+}
+
+.mi-worker-preview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mi-worker-preview__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    gap: 4px;
+}
+
+.mi-worker-preview__placeholder span {
+    font-size: 10px;
+    color: #c4c8d0;
+}

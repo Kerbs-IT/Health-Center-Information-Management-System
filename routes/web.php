@@ -173,6 +173,14 @@ Route::middleware(['auth', 'role:nurse'])->group(function () {
     Route::post('/manage-interface/carousel',         [manageInterfaceController::class, 'uploadCarouselImage']);
     Route::delete('/manage-interface/carousel/{id}',  [manageInterfaceController::class, 'deleteCarouselImage']);
     Route::post('/manage-interface/carousel/reorder', [manageInterfaceController::class, 'reorderCarousel']);
+
+    // health worker homepage profile
+    Route::post('/manage-interface/worker-photo/{id}',   [manageInterfaceController::class, 'uploadWorkerPhoto']);
+    Route::delete('/manage-interface/worker-photo/{id}', [manageInterfaceController::class, 'removeWorkerPhoto']);
+
+    // about us
+    Route::post('/manage-interface/about-image',   [manageInterfaceController::class, 'uploadAboutImage']);
+    Route::delete('/manage-interface/about-image', [manageInterfaceController::class, 'removeAboutImage']);
    
 });
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CarouselImage;
+use App\Models\staff;
 use Illuminate\Http\Request;
 
 class manageInterfaceController extends Controller
@@ -10,11 +11,13 @@ class manageInterfaceController extends Controller
     public function manageInterface()
     {
         $carouselImages = CarouselImage::orderBy('order')->get();
+        $healthWorkers = staff::where("status",'Active')->get();
 
         return view('manage_interface.manageInterface', [
             'isActive'       => true,
             'page'           => 'MANAGE INTERFACE',
             'carouselImages' => $carouselImages,
+            'healthWorkers' => $healthWorkers
         ]);
     }
 
@@ -166,5 +169,127 @@ class manageInterfaceController extends Controller
         }
 
         return response()->json(['message' => 'Order saved.']);
+    }
+
+
+    public function uploadWorkerPhoto(Request $request, $id)
+    {
+        $worker = Staff::where('user_id', $id)->firstOrFail();
+
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:10240'],
+        ]);
+
+        $uploadPath = public_path('images/staff_homepage');
+        if (! is_dir($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+
+        // Delete old photo if exists (but not the default)
+        if ($worker->homepage_photo && file_exists(public_path($worker->homepage_photo))) {
+            unlink(public_path($worker->homepage_photo));
+        }
+
+        // Compress and save
+        $file    = $request->file('photo');
+        $filename = 'staff_' . $id . '_' . uniqid() . '.jpg';
+
+        $gdImage = match (true) {
+            str_contains($file->getMimeType(), 'jpeg') => imagecreatefromjpeg($file->getRealPath()),
+            str_contains($file->getMimeType(), 'png')  => imagecreatefrompng($file->getRealPath()),
+            str_contains($file->getMimeType(), 'webp') => imagecreatefromwebp($file->getRealPath()),
+            default                                     => null,
+        };
+
+        if (! $gdImage) {
+            return response()->json(['message' => 'Unsupported image format.'], 422);
+        }
+
+        // Resize to max 600px wide
+        $w = imagesx($gdImage);
+        $h = imagesy($gdImage);
+        if ($w > 600) {
+            $newH    = (int)(($h / $w) * 600);
+            $resized = imagescale($gdImage, 600, $newH);
+            imagejpeg($resized, $uploadPath . '/' . $filename, 85);
+            imagedestroy($resized);
+        } else {
+            imagejpeg($gdImage, $uploadPath . '/' . $filename, 85);
+        }
+        imagedestroy($gdImage);
+
+        $worker->homepage_photo = 'images/staff_homepage/' . $filename;
+        $worker->save();
+
+        return response()->json([
+            'message' => 'Photo updated.',
+            'url'     => asset($worker->homepage_photo) . '?v=' . time(),
+        ]);
+    }
+
+    public function removeWorkerPhoto($id)
+    {
+        $worker = Staff::where('user_id', $id)->firstOrFail();
+
+        if ($worker->homepage_photo && file_exists(public_path($worker->homepage_photo))) {
+            unlink(public_path($worker->homepage_photo));
+        }
+
+        $worker->homepage_photo = null;
+        $worker->save();
+
+        return response()->json(['message' => 'Photo removed.']);
+    }
+    public function uploadAboutImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:10240'],
+        ]);
+
+        $destination = public_path('images/about_us.jpg');
+        $file        = $request->file('image');
+
+        $gdImage = match (true) {
+            str_contains($file->getMimeType(), 'jpeg') => imagecreatefromjpeg($file->getRealPath()),
+            str_contains($file->getMimeType(), 'png')  => imagecreatefrompng($file->getRealPath()),
+            str_contains($file->getMimeType(), 'webp') => imagecreatefromwebp($file->getRealPath()),
+            default                                     => null,
+        };
+
+        if (! $gdImage) {
+            return response()->json(['message' => 'Unsupported image format.'], 422);
+        }
+
+        // Resize to max 1200px wide
+        $w = imagesx($gdImage);
+        $h = imagesy($gdImage);
+        if ($w > 1200) {
+            $newH    = (int)(($h / $w) * 1200);
+            $resized = imagescale($gdImage, 1200, $newH);
+            imagejpeg($resized, $destination, 85);
+            imagedestroy($resized);
+        } else {
+            imagejpeg($gdImage, $destination, 85);
+        }
+        imagedestroy($gdImage);
+
+        return response()->json([
+            'message' => 'About Us image updated.',
+            'url'     => asset('images/about_us.jpg') . '?v=' . time(),
+        ]);
+    }
+
+    public function removeAboutImage()
+    {
+        $destination = public_path('images/about_us.jpg');
+        $default     = public_path('images/about_us_default.jpg');
+
+        if (file_exists($default)) {
+            copy($default, $destination);
+        } elseif (file_exists($destination)) {
+            unlink($destination);
+        }
+
+        return response()->json(['message' => 'About Us image removed.']);
     }
 }

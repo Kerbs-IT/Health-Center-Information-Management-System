@@ -354,7 +354,59 @@ body {
 .hero-btn:hover{
     background-color: var(--main--color);
 }
+.specialist-initials {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 20px auto;
+    flex-shrink: 0;
+}
 
+.specialist-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: center !important;
+    padding: 20px 15px !important;
+}
+
+.specialist-card .img-slider {
+    width: 100%;
+    height: 150px;
+    border-radius: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin: 0 auto 15px auto;
+}
+
+.specialist-card .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    margin: 0;
+    height: 150px;
+    /* override the existing 300px */
+}
+
+.specialist-initials {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 auto 15px auto;
+    flex-shrink: 0;
+}
 /* SWIPER BACKGROUND */
 .mySwiperBackground {
     width: 100%;

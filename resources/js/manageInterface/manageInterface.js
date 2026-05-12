@@ -395,6 +395,14 @@ document.querySelectorAll(".worker-photo-input").forEach((input) => {
                             </svg>
                         </button>`;
                 }
+
+                const previewBox = document.getElementById(
+                    `worker-preview-${workerId}`,
+                );
+                if (previewBox) {
+                    previewBox.innerHTML = `<img src="${result.url}" alt="Preview" class="mi-worker-preview__img">`;
+                }
+                
                 showToast("Homepage photo updated");
             } else {
                 showToast(result.message ?? "Upload failed", "error");

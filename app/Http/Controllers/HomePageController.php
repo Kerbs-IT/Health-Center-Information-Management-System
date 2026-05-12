@@ -12,18 +12,13 @@ class HomePageController extends Controller
 {
     public function index()
     {
-        // Get all active nurses
-        $nurses = nurses::with('user')
-            ->whereHas('user', fn($q) => $q->where('status', 'active'))
-            ->get();
-
-        // Get all active health workers (staff) with their assigned area
-        $healthWorkers = User::with(['staff', 'staff.assigned_area'])
-            ->where('role', 'staff')
-            ->where('status', 'active')
+        $healthWorkers  = staff::with('assigned_area')
+            ->where('status', 'Active')
+            ->orderBy('first_name')
             ->get();
 
         $carouselImages = CarouselImage::orderBy('order')->get();
-        return view('homepage', compact('nurses', 'healthWorkers','carouselImages'));
+
+        return view('homepage', compact('healthWorkers', 'carouselImages'));
     }
 }

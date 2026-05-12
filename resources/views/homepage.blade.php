@@ -92,7 +92,8 @@
 
         </div>
         <div class="flex-1 order-1 order-md-2 hover:scale-105 transition-transform duration-300 object-cover hover:shadow-lg">
-            <img src="{{ asset('images/consult.jpg') }}" class="rounded-md drop-shadow-md w-100 h-auto block" alt="">
+            <img src="{{ asset('images/about_us.jpg') }}?v={{ file_exists(public_path('images/about_us.jpg')) ? filemtime(public_path('images/about_us.jpg')) : '1' }}"
+                class="rounded-md drop-shadow-md w-100 h-auto block" alt="About Us">
         </div>
     </div>
 </section>
@@ -302,7 +303,7 @@
         </div>
     </div>
 </section>
-<section class="slider-content container  px-3 px-md-5" id="specialist">
+<section class="slider-content container px-3 px-md-5" id="specialist">
     <h2 class="mb-2 mb-md-5">Our Specialists</h2>
     <p class="specialist-text mb-1 mb-md-4 text-center">
         Our dedicated team of <strong>healthcare workers</strong> is here to serve the community of
@@ -310,88 +311,28 @@
     </p>
     <div class="swiper specialist-slider">
         <div class="swiper-wrapper py-2 py-md-5">
-
-            <!-- Slide 1 -->
+            @forelse($healthWorkers as $worker)
             <div class="swiper-slide specialist-card">
-                <!-- <div class="img-slider">
-                    <div class="img-overlay"></div>
-                    <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
-                </div> -->
-                <h3 class="slide-title">Kamille</h3>
-                <p class="slide-text">Kaia Homesp</p>
-                <p class="slide-text">Nurse</p>
+                @if($worker->homepage_photo)
+                <div class="img-slider justify-content-center">
+                    <img src="{{ asset($worker->homepage_photo) }}" class="slide-img" alt="{{ $worker->first_name }}">
+                </div>
+                @else
+                <div class="specialist-initials" style="background:#e6f4ec;color:#1a6b3c">
+                    {{ strtoupper(substr($worker->first_name ?? '?', 0, 1) . substr($worker->last_name ?? '', 0, 1)) }}
+                </div>
+                @endif
+                <h3 class="slide-title">{{ $worker->first_name }} {{ $worker->last_name }}</h3>
+                <p class="slide-text fw-bold">{{ $worker->assigned_area?->brgy_unit ?? '—' }}</p>
+                <p class="slide-text">{{ $worker->role ?? 'Health Worker' }}</p>
             </div>
-
-            <!-- Slide 2 -->
+            @empty
             <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Ronalyn D. Anakan</h3>
-                <p class="slide-text">Beverly Homes 1</p>
-                <p class="slide-text">BHW</p>
+                <p class="slide-text">No health workers found.</p>
             </div>
-
-            <!-- Slide 3 -->
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Jovelyn Serato</h3>
-                <p class="slide-text">Purok 5</p>
-                <p class="slide-text">BHW</p>
-            </div>
-
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Ana Maria Ago</h3>
-                <p class="slide-text">Green Forbes City ( BLK 16 - 32 )</p>
-                <p class="slide-text">BHW</p>
-            </div>
-
-
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Dolsora Mercado</h3>
-                <p class="slide-text">Karlaville Park Homes Phase 1</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Rodora Herrera</h3>
-                <p class="slide-text">Green Forbes City (BLK 1 - 15 )</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Noraida Dela Torre</h3>
-                <p class="slide-text">Gawad Kalinga</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Anabel Andres</h3>
-                <p class="slide-text">Heneral DOS</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Kathlyn Kate Siy</h3>
-                <p class="slide-text">Purok 1</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Emily Pornia</h3>
-                <p class="slide-text">Karlaville Park Homes Phase 2</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Shirley Ulitin</h3>
-                <p class="slide-text">Purok 3</p>
-                <p class="slide-text">BHW</p>
-            </div>
+            @endforelse
         </div>
 
-
-        <!-- Navigation + Pagination -->
         <div class="swiper-pagination"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>

@@ -49,17 +49,7 @@
                                 <p class="mi-page-header__sub">Customize your health center portal's appearance</p>
                             </div>
                         </div>
-                        <div class="mi-page-header__actions">
-                            <button class="mi-btn mi-btn--ghost" type="button" id="discard-btn">Discard</button>
-                            <button class="mi-btn mi-btn--primary" type="button" id="save-all-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M5 12l5 5l10 -10" />
-                                </svg>
-                                Save changes
-                            </button>
-                        </div>
+
                     </div>
 
                     <div class="mi-grid">
@@ -277,6 +267,7 @@
                         </p>
                     </div>
 
+
                     {{-- ── 4. HEALTH WORKERS ── --}}
                     <div class="mi-card mi-card--full">
                         <div class="mi-card__header">
@@ -297,11 +288,14 @@
 
                         <div class="mi-workers-list">
                             @forelse(isset($healthWorkers) ? $healthWorkers : [] as $worker)
-                            <div class="mi-worker-row" data-worker-id="{{ $worker->id }}">
+                            <div class="mi-worker-row" data-worker-id="{{ $worker->user_id }}">
+
+                                {{-- Initials avatar --}}
                                 <div class="mi-worker-avatar"
                                     style="background:{{ $worker->avatar_bg ?? '#e6f4ec' }};color:{{ $worker->avatar_color ?? '#1a6b3c' }}">
                                     {{ strtoupper(substr($worker->first_name, 0, 1) . substr($worker->last_name, 0, 1)) }}
                                 </div>
+
                                 <div class="mi-worker-info">
                                     <span class="mi-worker-name">{{ $worker->first_name }} {{ $worker->last_name }}</span>
                                     <span class="mi-worker-role">{{ $worker->role ?? 'Health Worker' }}</span>
@@ -320,9 +314,28 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                {{-- PHOTO PREVIEW --}}
+                                <div class="mi-worker-preview" id="worker-preview-{{ $worker->user_id }}">
+                                    @if($worker->homepage_photo)
+                                    <img src="{{ asset($worker->homepage_photo) }}?v={{ file_exists(public_path($worker->homepage_photo)) ? filemtime(public_path($worker->homepage_photo)) : '1' }}"
+                                        alt="{{ $worker->first_name }}" class="mi-worker-preview__img">
+                                    @else
+                                    <div class="mi-worker-preview__placeholder">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" style="color:#c4c8d0">
+                                            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                                            <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                                        </svg>
+                                        <span>No photo</span>
+                                    </div>
+                                    @endif
+                                </div>
+
                                 <div class="mi-worker-actions">
                                     @if($worker->homepage_photo)
-                                    <label class="mi-btn-sm" for="worker-photo-{{ $worker->id }}" title="Replace">
+                                    <label class="mi-btn-sm" for="worker-photo-{{ $worker->user_id }}" title="Replace">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
@@ -332,7 +345,7 @@
                                         Replace
                                     </label>
                                     <button type="button" class="mi-btn-sm mi-btn-sm--danger worker-photo-remove"
-                                        data-worker-id="{{ $worker->id }}" title="Remove homepage photo">
+                                        data-worker-id="{{ $worker->user_id }}" title="Remove homepage photo">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
@@ -344,7 +357,7 @@
                                         </svg>
                                     </button>
                                     @else
-                                    <label class="mi-btn-sm mi-btn-sm--upload" for="worker-photo-{{ $worker->id }}">
+                                    <label class="mi-btn-sm mi-btn-sm--upload" for="worker-photo-{{ $worker->user_id }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round">
@@ -355,9 +368,9 @@
                                         Upload photo
                                     </label>
                                     @endif
-                                    <input type="file" id="worker-photo-{{ $worker->id }}"
+                                    <input type="file" id="worker-photo-{{ $worker->user_id }}"
                                         class="worker-photo-input" accept="image/*"
-                                        data-worker-id="{{ $worker->id }}" style="display:none">
+                                        data-worker-id="{{ $worker->user_id }}" style="display:none">
                                 </div>
                             </div>
                             @empty
@@ -397,9 +410,9 @@
 
                         <div class="mi-about-layout">
                             <div class="mi-about-preview" id="about-preview-box">
-                                @if(isset($aboutImage) && $aboutImage)
-                                <img src="{{ asset('storage/' . $aboutImage) }}" alt="About Us banner"
-                                    class="mi-about-preview__img" id="about-preview-img">
+                                @if(file_exists(public_path('images/about_us.jpg')))
+                                <img src="{{ asset('images/about_us.jpg') }}?v={{ filemtime(public_path('images/about_us.jpg')) }}"
+                                    alt="About Us banner" class="mi-about-preview__img" id="about-preview-img">
                                 @else
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
