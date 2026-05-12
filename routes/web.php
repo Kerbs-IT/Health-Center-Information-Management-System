@@ -165,6 +165,14 @@ Route::middleware(['auth', 'role:nurse'])->group(function () {
         return view('purokManagement.purok-archive', ['page' => 'Archived Barangay Puroks']);
     })->name('puroks.archived');
 
+    Route::post('/manage-interface/logo',   [manageInterfaceController::class, 'uploadLogo']);
+    Route::delete('/manage-interface/logo', [manageInterfaceController::class, 'removeLogo']);
+
+    // carousel approach
+    // Carousel
+    Route::post('/manage-interface/carousel',         [manageInterfaceController::class, 'uploadCarouselImage']);
+    Route::delete('/manage-interface/carousel/{id}',  [manageInterfaceController::class, 'deleteCarouselImage']);
+    Route::post('/manage-interface/carousel/reorder', [manageInterfaceController::class, 'reorderCarousel']);
    
 });
 

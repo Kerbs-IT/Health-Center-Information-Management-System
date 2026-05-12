@@ -2,22 +2,35 @@
 
 @section('content')
 <section class="hero-section" id="home">
-    <!-- Swiper Background Carousel -->
     <div class="swiper mySwiperBackground">
-        <div class="swiper-wrapper">
+        <div class="swiper-wrapper" id="hero-swiper-wrapper">
+            @forelse($carouselImages as $slide)
+            <div class="swiper-slide"
+                style="background-image: url('{{ asset($slide->path) }}');
+                            background-size: cover;
+                            background-position: center;">
+            </div>
+            @empty
+            {{-- Fallback default slides if DB is empty --}}
             <div class="swiper-slide bg1"></div>
             <div class="swiper-slide bg2"></div>
             <div class="swiper-slide bg3"></div>
+            @endforelse
         </div>
     </div>
 
-    <!-- HERO CONTENT -->
     <div class="hero-content w-100">
-        <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
-        <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
+        <h1 class="fw-bold text-light mb-5 text-wrap">
+            Bringing Better <br>
+            <span style="color: #4CAF50;">Healthcare to the Barangay</span><br>
+            – Digitally
+        </h1>
+        <p class="text-light mt-5 w-4/5 m-auto">
+            Streamline records, monitor vaccinations, and improve decision-making
+            with our Healthcare Information System for Barangay Hugo Perez.
+        </p>
         <a href="{{ route('login') }}" class="hero-btn">Join us Now</a>
     </div>
-
 </section>
 
 {{-- Home Section --}}
@@ -357,19 +370,19 @@
                 <p class="slide-text">Heneral DOS</p>
                 <p class="slide-text">BHW</p>
             </div>
-           <div class="swiper-slide specialist-card">
+            <div class="swiper-slide specialist-card">
                 <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
                 <h3 class="slide-title">Kathlyn Kate Siy</h3>
                 <p class="slide-text">Purok 1</p>
                 <p class="slide-text">BHW</p>
             </div>
-           <div class="swiper-slide specialist-card">
+            <div class="swiper-slide specialist-card">
                 <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
                 <h3 class="slide-title">Emily Pornia</h3>
                 <p class="slide-text">Karlaville Park Homes Phase 2</p>
                 <p class="slide-text">BHW</p>
             </div>
-           <div class="swiper-slide specialist-card">
+            <div class="swiper-slide specialist-card">
                 <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
                 <h3 class="slide-title">Shirley Ulitin</h3>
                 <p class="slide-text">Purok 3</p>
@@ -414,7 +427,7 @@
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
+                                    Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
                                 </div>
                             </div>
                         </div>
@@ -431,7 +444,7 @@
                             </button>
                             <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Ito ang lokasyon ng health center: 7VGQ+VF3, Perez (Lucbanan), Trece Martires City. Katabi lamang ito ng Barangay Hall.
+                                    Ito ang lokasyon ng health center: 7VGQ+VF3, Perez (Lucbanan), Trece Martires City. Katabi lamang ito ng Barangay Hall.
                                 </div>
                             </div>
                         </div>
@@ -467,10 +480,10 @@
                                 <div class="pb-2 px-3 text-sm">
                                     Maaaring makipag-ugnayan sa Health Center ng Barangay Hugo Perez Proper sa pamamagitan ng mga sumusunod:
 
-                                   <li>Barangay Health Center hotline number</li>
-                                   <li>Barangay office contact number</li>
-                                   <li>Assigned Barangay Health Worker (BHW) sa inyong lugar</li>
-                                   <li>Official Facebook page o email ng barangay</li>
+                                    <li>Barangay Health Center hotline number</li>
+                                    <li>Barangay office contact number</li>
+                                    <li>Assigned Barangay Health Worker (BHW) sa inyong lugar</li>
+                                    <li>Official Facebook page o email ng barangay</li>
 
 
                                 </div>
@@ -489,12 +502,12 @@
                             <div id="content-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
                                     Ang Health Center ng Barangay Hugo Perez Proper ay nagbibigay ng iba’t ibang serbisyong pangkalusugan para sa mga residente, kabilang ang:
-                                   <li>Libreng konsultasyon at basic check-up</li>
+                                    <li>Libreng konsultasyon at basic check-up</li>
                                     <li>Immunization o pagbabakuna (para sa bata at matatanda)</li>
                                     <li>Maternal at child care (prenatal at postnatal services)</li>
                                     <li>Family planning services</li>
                                     <li>TB Dots Patients</li>
-                                   <li>Pamimigay ng maintenance medicines (kung available)</li>
+                                    <li>Pamimigay ng maintenance medicines (kung available)</li>
                                 </div>
                             </div>
                         </div>
@@ -509,7 +522,7 @@
                             </button>
                             <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
+                                    Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
 
                                 </div>
                             </div>

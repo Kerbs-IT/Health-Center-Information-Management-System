@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarouselImage;
 use App\Models\nurses;
 use App\Models\staff;
 use App\Models\User;
@@ -22,6 +23,7 @@ class HomePageController extends Controller
             ->where('status', 'active')
             ->get();
 
-        return view('homepage', compact('nurses', 'healthWorkers'));
+        $carouselImages = CarouselImage::orderBy('order')->get();
+        return view('homepage', compact('nurses', 'healthWorkers','carouselImages'));
     }
 }

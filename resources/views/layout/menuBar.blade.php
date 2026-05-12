@@ -1,5 +1,5 @@
 <script>
-    (function () {
+    (function() {
         if (localStorage.getItem('sidebarState') === 'collapsed' && window.innerWidth > 992) {
             document.documentElement.classList.add('sidebar-pre-collapsed');
         }
@@ -14,9 +14,10 @@
         <button id="closeSidebar" class="close-btn d-lg-none text-red-500 font-black  pe-3"><i class="fa-solid fs-5 fa-x" style="font-weight: 900;"></i></button>
     </div>
 
-    <div class="logo-con d-flex justify-content-center mb-1 px-3 ">
-        <a href="{{route('homepage')}}">
-            <img src="{{asset(path: 'images/hugoperez_logo.png')}}" alt="logo" class="logo">
+    <div class="logo-con d-flex justify-content-center mb-1 px-3">
+        <a href="{{ route('homepage') }}">
+            <img src="{{ asset('images/hugoperez_logo.png') }}?v={{ file_exists(public_path('images/hugoperez_logo.png')) ? filemtime(public_path('images/hugoperez_logo.png')) : '1' }}"
+                alt="logo" class="logo">
         </a>
     </div>
     <div id="side-bar" class="menu-bar-content d-flex flex-column align-items-center w-100">
@@ -92,8 +93,8 @@
         </div>
         <div class="wrapper w-100 d-flex justify-content-center flex-column">
             <a href="{{route('patient-list')}}" class="menu-items menu-option d-flex align-items-center gap-3 text-decoration-none   w-100 px-3 py-2" id="patient-list">
-                    <i class="fa-solid fs-5 fa-users"></i>
-                    <h4 class="mb-0 fs-5">Patients List</h4>
+                <i class="fa-solid fs-5 fa-users"></i>
+                <h4 class="mb-0 fs-5">Patients List</h4>
             </a>
 
         </div>
