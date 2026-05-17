@@ -690,10 +690,10 @@
                         </div>
                     </div>
                     <!-- step 2 -->
-                    <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1  " id="step2">
+                    <div class="step d-flex flex-column align-self-center w-100 h-100 rounded gap-1" id="step2">
 
                         <!-- vaccination -->
-                        <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type" id="vaccination-con">
+                        <div class="vaccination d-none  inner max-w-[960px] align-self-center h-100 rounded mb-2 patient-type bg-white" id="vaccination-con">
                             <div class="vaccination-content">
                                 <div class="mb-md-2 mb-1 w-100 ">
                                     <div class="mb-md-2 mb-1 w-100">
