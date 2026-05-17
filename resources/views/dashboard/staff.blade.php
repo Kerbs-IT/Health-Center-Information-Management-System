@@ -109,7 +109,7 @@
                                     <i class="fa-solid fa-clipboard fs-5" style="color: #ffffff;"></i>
                                     <h5 class="mb-0 text-white fs-5 fw-500">Patient List & Totals</h5>
                                 </a>
-                                
+
                                 <a href="" target="_blank" class="btn bg-success d-flex align-items-center gap-3 p-3" id="dashboardCharts">
                                     <i class="fa-solid fa-chart-bar fs-5" style="color: #ffffff;"></i>
                                     <h5 class="mb-0 text-white fs-5 fw-500">Patient Charts & Trends</h5>
@@ -319,6 +319,12 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
             const con = document.getElementById('dashboard');
 
             if (con) {

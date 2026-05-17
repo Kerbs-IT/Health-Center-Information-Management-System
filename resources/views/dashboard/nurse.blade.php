@@ -309,6 +309,12 @@
     <script>
         // load all of the content first
         document.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('activeMenuItem');
+
+            // Remove active from all items first
+            document.querySelectorAll('.menu-items').forEach(el => {
+                el.classList.remove('active');
+            });
             const con = document.getElementById('dashboard');
 
             if (con) {
