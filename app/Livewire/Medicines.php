@@ -3,19 +3,21 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Url;
 use App\Models\Medicine;
-
 use App\Models\Category;
 use App\Models\MedicineBatch;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use \Illuminate\Validation\Rule;
+
 class Medicines extends Component
 {
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
+
     // ─── Form fields ─────────────────────────────────────────────
     public $medicine_name, $category_id, $dosage, $stock;
     public $stock_status, $expiry_status, $expiry_date, $edit_id;
@@ -23,6 +25,7 @@ class Medicines extends Component
     public $max_age_value, $max_age_unit = 'months';
     public $min_age_months, $max_age_months;
     public $batch_number, $manufactured_date;
+
     // ─── Table state ─────────────────────────────────────────────
     public $sortField     = null;
     public $sortDirection = null;
@@ -32,6 +35,19 @@ class Medicines extends Component
     public $categoryFilter= '';
     public $archiveMedicineId;
     public $showArchived  = false;
+    public string $backUrl = '';
+    // ── Bound to ?filter= query string automatically ──────────────
+    public string $filterStatus = '';
+
+    public function mount(): void
+    {
+        $this->filterStatus = request()->query('filter', '');
+    }
+
+    public function clearFilter(): void
+    {
+        $this->filterStatus = '';
+    }
 
     protected $listeners = [
         'resetFormOnModalClose' => 'resetFields',
@@ -55,24 +71,25 @@ class Medicines extends Component
         $this->resetFields();
         $this->dispatch('show-addMedicineModal');
     }
+
     private function normalizeDosage(string $dosage): string
     {
-        // Remove spaces between number and unit: "500 mg" → "500mg", "10 ml" → "10ml"
         return preg_replace('/(\d+)\s+([a-zA-Z]+)/', '$1$2', trim($dosage));
     }
+
     private function medicineExists($name, $dosage, $excludeId = null): bool
     {
-        $name     = trim($name);
-        $singular = Str::singular($name);
-        $plural   = Str::plural($name);
-        $normalizedDosage = $this->normalizeDosage($dosage); // ← ADD
+        $name             = trim($name);
+        $singular         = Str::singular($name);
+        $plural           = Str::plural($name);
+        $normalizedDosage = $this->normalizeDosage($dosage);
 
         $query = Medicine::withTrashed()
-            ->whereRaw("REPLACE(dosage, ' ', '') = ?", [$normalizedDosage]) // ← CHANGE
+            ->whereRaw("REPLACE(dosage, ' ', '') = ?", [$normalizedDosage])
             ->where(function ($q) use ($name, $singular, $plural) {
                 $q->whereRaw('LOWER(medicine_name) = ?', [strtolower($name)])
-                ->orWhereRaw('LOWER(medicine_name) = ?', [strtolower($singular)])
-                ->orWhereRaw('LOWER(medicine_name) = ?', [strtolower($plural)]);
+                  ->orWhereRaw('LOWER(medicine_name) = ?', [strtolower($singular)])
+                  ->orWhereRaw('LOWER(medicine_name) = ?', [strtolower($plural)]);
             });
 
         if ($excludeId) {
@@ -171,9 +188,8 @@ class Medicines extends Component
             'batch_number.unique'   => 'This batch number already exists.',
         ]);
 
-
-        if (!$this->validateAgeRange())           return;
-        if (!$this->validateMedicineUniqueness())  return;
+        if (!$this->validateAgeRange())          return;
+        if (!$this->validateMedicineUniqueness()) return;
 
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
         $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
@@ -186,7 +202,6 @@ class Medicines extends Component
                 'category_id'    => $this->category_id,
                 'dosage'         => $this->dosage,
                 'stock'          => $this->stock,
-                // 'price'          => $this->price,
                 'expiry_date'    => $this->expiry_date,
                 'stock_status'   => $stockStatus,
                 'expiry_status'  => $expiryStatus,
@@ -194,37 +209,34 @@ class Medicines extends Component
                 'max_age_months' => $max_age_months,
             ]);
 
-            // Create the initial batch for FIFO tracking
             MedicineBatch::create([
-                'medicine_id'      => $medicine->medicine_id,
-                'batch_number'     => $this->batch_number,
-                'quantity'         => (int)$this->stock,
-                'initial_quantity' => (int)$this->stock,
-                // 'price'            => $this->price,
-                'manufactured_date'=> $this->manufactured_date ?: null, // ← ADD
-                'expiry_date'      => $this->expiry_date,
-                'expiry_status'    => $expiryStatus,
+                'medicine_id'       => $medicine->medicine_id,
+                'batch_number'      => $this->batch_number,
+                'quantity'          => (int)$this->stock,
+                'initial_quantity'  => (int)$this->stock,
+                'manufactured_date' => $this->manufactured_date ?: null,
+                'expiry_date'       => $this->expiry_date,
+                'expiry_status'     => $expiryStatus,
             ]);
         });
 
         $this->dispatch('medicine-addedModal');
         $this->dispatch('close-addMedicineModal');
         $this->reset();
-        $this->min_age_unit = 'months';
-        $this->max_age_unit = 'months';
+        $this->min_age_unit      = 'months';
+        $this->max_age_unit      = 'months';
         $this->batch_number      = '';
         $this->manufactured_date = '';
     }
 
     public function editMedicineData($id): mixed
     {
-        $medicine = Medicine::findOrFail($id); // no need to eager-load allBatches
+        $medicine = Medicine::findOrFail($id);
 
         $this->edit_id       = $id;
         $this->medicine_name = $medicine->medicine_name;
         $this->category_id   = $medicine->category_id;
         $this->dosage        = $medicine->dosage;
-        // ← removed: stock, expiry_date, batch_number, manufactured_date
 
         $minAge = $this->convertFromMonths($medicine->min_age_months);
         $maxAge = $this->convertFromMonths($medicine->max_age_months);
@@ -248,7 +260,7 @@ class Medicines extends Component
             'max_age_value' => 'nullable|integer|min:0',
         ]);
 
-        if (!$this->validateAgeRange())                        return;
+        if (!$this->validateAgeRange())                         return;
         if (!$this->validateMedicineUniqueness($this->edit_id)) return;
 
         $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
@@ -258,18 +270,15 @@ class Medicines extends Component
             'medicine_name'  => trim($this->medicine_name),
             'category_id'    => $this->category_id,
             'dosage'         => $this->dosage,
-            // ← stock, expiry_date, stock_status, expiry_status removed
             'min_age_months' => $min_age_months,
             'max_age_months' => $max_age_months,
         ]);
 
-        // Remove the firstBatch sync block too — batch fields
-        // are now managed exclusively in MedicineBatches component
-
         $this->resetFields();
         $this->dispatch('hide-editMedicine-modal');
         $this->dispatch('close-editMedicine-modal');
-}
+    }
+
     // ─── Archive / restore ────────────────────────────────────────
 
     public function confirmMedicineArchive($id): void
@@ -335,19 +344,18 @@ class Medicines extends Component
 
     public function resetFields(): void
     {
-        $this->medicine_name       = '';
-        $this->category_id         = '';
-        $this->dosage              = '';
-        $this->stock               = '';
-        // $this->price            = 0;
-        $this->batch_number        = ''; // ← ADD
-        $this->manufactured_date   = ''; // ← ADD
-        $this->expiry_date         = '';
-        $this->min_age_value       = '';
-        $this->min_age_unit        = 'months';
-        $this->max_age_value       = '';
-        $this->max_age_unit        = 'months';
-        $this->edit_id             = '';
+        $this->medicine_name     = '';
+        $this->category_id       = '';
+        $this->dosage            = '';
+        $this->stock             = '';
+        $this->batch_number      = '';
+        $this->manufactured_date = '';
+        $this->expiry_date       = '';
+        $this->min_age_value     = '';
+        $this->min_age_unit      = 'months';
+        $this->max_age_value     = '';
+        $this->max_age_unit      = 'months';
+        $this->edit_id           = '';
         $this->resetErrorBag();
     }
 
@@ -355,32 +363,44 @@ class Medicines extends Component
 
     public function render()
     {
+        $validFilters = ['out_of_stock', 'low_stock', 'expiring_soon', 'expired'];
+
+        // Sanitize — ignore anything not in the allowed list
+        $activeFilter = in_array($this->filterStatus, $validFilters)
+            ? $this->filterStatus
+            : '';
+
         $query = Medicine::query();
 
         if ($this->showArchived) {
             $query->onlyTrashed();
         }
 
+        // ── Search ────────────────────────────────────────────────
         $query->when($this->search, function ($q) {
             $q->where(function ($sub) {
                 $sub->where('medicine_name', 'like', "%{$this->search}%")
                     ->orWhereHas('category', function ($cq) {
                         $cq->withTrashed()
-                        ->where('category_name', 'like', "%{$this->search}%");
+                           ->where('category_name', 'like', "%{$this->search}%");
                     });
             });
         });
 
-        $query->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter));
+        // ── Category filter ───────────────────────────────────────
+        $query->when($this->categoryFilter, fn($q) =>
+            $q->where('category_id', $this->categoryFilter)
+        );
 
-        $query->when($this->ageFilter, function ($query) {
+        // ── Age filter ────────────────────────────────────────────
+        $query->when($this->ageFilter, function ($q) {
             $range = $this->getAgeRangeFilter($this->ageFilter);
             if ($range) {
-                $query->where(function ($q) use ($range) {
+                $q->where(function ($q2) use ($range) {
                     if (!is_null($range['max'])) {
-                        $q->where('min_age_months', '<=', $range['max']);
+                        $q2->where('min_age_months', '<=', $range['max']);
                     }
-                    $q->where(function ($sub) use ($range) {
+                    $q2->where(function ($sub) use ($range) {
                         $sub->whereNull('max_age_months')
                             ->orWhere('max_age_months', '>=', $range['min']);
                     });
@@ -388,6 +408,28 @@ class Medicines extends Component
             }
         });
 
+        // ── Inventory alert filter ────────────────────────────────
+        if ($activeFilter === 'out_of_stock') {
+            $query->where('stock', '<=', 0);
+
+        } elseif ($activeFilter === 'low_stock') {
+            $query->where('stock', '>', 0)
+                  ->where('stock', '<=', 10);
+
+        } elseif ($activeFilter === 'expiring_soon') {
+            $query->whereHas('allBatches', function ($b) {
+                $b->whereNull('deleted_at')
+                ->where('expiry_status', 'Expiring Soon');
+            });
+
+        } elseif ($activeFilter === 'expired') {
+            $query->whereHas('allBatches', function ($b) {
+                $b->whereNull('deleted_at')
+                ->where('expiry_status', 'Expired');
+            });
+        }
+
+        // ── Sort ──────────────────────────────────────────────────
         if ($this->sortField === 'category_name') {
             $query->orderBy(
                 Category::select('category_name')
@@ -400,15 +442,17 @@ class Medicines extends Component
             $query->orderBy($this->sortField, $this->sortDirection);
         }
 
+        // ── Eager load + paginate ─────────────────────────────────
         $medicines = $query->with([
             'category' => fn($q) => $q->withTrashed(),
-            'batches'  => fn($q) => $q->orderBy('expiry_date', 'asc'), // for fifo_batch accessor
-        ])
-        ->paginate($this->perPage);
+            'batches'  => fn($q) => $q->orderBy('expiry_date', 'asc'),
+        ])->paginate($this->perPage);
 
         return view('livewire.medicines', [
-            'categories' => Category::orderBy('category_name')->get(),
-            'medicines'  => $medicines,
+            'categories'   => Category::orderBy('category_name')->get(),
+            'medicines'    => $medicines,
+            'activeFilter' => $activeFilter,
+               'filterStatus' => $activeFilter,
         ])->layout('livewire.layouts.base', ['page' => 'MEDICINE INVENTORY']);
     }
 }

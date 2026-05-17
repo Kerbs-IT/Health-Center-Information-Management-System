@@ -29,6 +29,7 @@ class MedicineBatches extends Component
     public $showArchived   = false;
     public $batchErrorMessage = '';
 
+    public string $backUrl = '';
 
     public function updated($propertyName): void
     {
@@ -39,7 +40,9 @@ class MedicineBatches extends Component
     public function mount(Medicine $medicine): void
     {
         $this->medicine = $medicine;
+        $this->backUrl  = request('back', route('medicines'));
     }
+
 
     // ─── Expiry / stock helpers ───────────────────────────────────
 
@@ -178,7 +181,7 @@ class MedicineBatches extends Component
                 Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->ignore($this->editBatchId),
             ],
             'editBatchQty'          => ['required', 'integer', 'min:1'],
-            'editBatchExpiry'       => 'required|date|after:today',
+            'editBatchExpiry'       => 'required|date',
             'editBatchManufactured' => 'nullable|date|before_or_equal:today',
         ], [
             'editBatchQty.required'    => 'Quantity is required.',

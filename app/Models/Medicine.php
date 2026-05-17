@@ -129,11 +129,21 @@ class Medicine extends Model
         return max(0, $this->stock - $this->total_reserved);
     }
 
+    // public function getLastBatchAttribute(): ?MedicineBatch
+    // {
+    //     return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
+    //         ->where('quantity', '>', 0)
+    //         ->orderBy('expiry_date', 'desc')
+    //         ->first();
+    // }
+
+    // After — includes all batches, shows worst status
     public function getLastBatchAttribute(): ?MedicineBatch
     {
         return $this->hasMany(MedicineBatch::class, 'medicine_id', 'medicine_id')
-            ->where('quantity', '>', 0)
-            ->orderBy('expiry_date', 'desc')
+            ->whereNull('deleted_at')
+            ->orderByRaw("FIELD(expiry_status, 'Expired', 'Expiring Soon', 'Valid') ASC")
+            ->orderBy('expiry_date', 'asc')
             ->first();
     }
 }
