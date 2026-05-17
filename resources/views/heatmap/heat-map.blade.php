@@ -37,23 +37,25 @@
                     <!-- Filters -->
                     <div class="heatmap-filters">
                         <div class="filter-group">
-                            @if(Auth::user()->role == 'nurse')
-                            <!-- Nurse: Can select any purok -->
                             <label for="purok-filter">Purok/Subdivision:</label>
+
+                            @if(Auth::user()->role == 'nurse')
+                            {{-- Nurse: all puroks --}}
                             <select id="purok-filter" class="filter-select">
                                 <option value="all">All Puroks</option>
                                 @foreach($puroks as $purok)
                                 <option value="{{ $purok }}">{{ $purok }}</option>
                                 @endforeach
                             </select>
+
                             @else
-                            <!-- Staff: Only see their assigned purok -->
-                            <label for="purok-filter">Purok/Subdivision:</label>
-                            <!-- <select id="purok-filter" class="filter-select">
-                                <option value="{{ $handledBrgy }}" selected>{{ $handledBrgy }}</option>
-                            </select> -->
-                            <input type="text" class="filter-select" value="{{$handledBrgy}}" disabled>
-                            <input type="hidden" id="purok-filter" class="filter-select" value="{{$handledBrgy}}">
+                            <select id="purok-filter" class="filter-select">
+                                {{-- Use a distinct value so it never matches the nurse "all" cache key --}}
+                                <option value="assigned_all">All Assigned Puroks</option>
+                                @foreach($handledAreas as $area)
+                                <option value="{{ $area }}">{{ $area }}</option>
+                                @endforeach
+                            </select>
                             @endif
                         </div>
 
@@ -71,7 +73,6 @@
                             Refresh
                         </button>
                     </div>
-
                     <!-- Statistics Panel -->
                     <div class="stats-panel">
                         <div class="stat-item">

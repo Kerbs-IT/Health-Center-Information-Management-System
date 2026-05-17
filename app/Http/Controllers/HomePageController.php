@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarouselImage;
 use App\Models\nurses;
 use App\Models\staff;
 use App\Models\User;
@@ -11,17 +12,13 @@ class HomePageController extends Controller
 {
     public function index()
     {
-        // Get all active nurses
-        $nurses = nurses::with('user')
-            ->whereHas('user', fn($q) => $q->where('status', 'active'))
+        $healthWorkers  = staff::with('assigned_areas')
+            ->where('status', 'Active')
+            ->orderBy('first_name')
             ->get();
 
-        // Get all active health workers (staff) with their assigned area
-        $healthWorkers = User::with(['staff', 'staff.assigned_area'])
-            ->where('role', 'staff')
-            ->where('status', 'active')
-            ->get();
+        $carouselImages = CarouselImage::orderBy('order')->get();
 
-        return view('homepage', compact('nurses', 'healthWorkers'));
+        return view('homepage', compact('healthWorkers', 'carouselImages'));
     }
 }

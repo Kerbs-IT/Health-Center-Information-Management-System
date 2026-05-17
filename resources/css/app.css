@@ -201,6 +201,16 @@ body.no-scroll{
     box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.3);
 
 }
+.logo {
+    width: 120px;
+    /* max width in the sidebar */
+    height: 60px;
+    /* fixed height container */
+    object-fit: contain;
+    /* scales down, never crops, preserves aspect ratio */
+    border-radius: 8px;
+    /* subtle rounding, looks fine on both square and wide logos */
+}
 .sub-menu a{
     border-left: 2px solid white;
 }

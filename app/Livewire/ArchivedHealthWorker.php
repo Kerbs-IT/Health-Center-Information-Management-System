@@ -27,6 +27,7 @@ class ArchivedHealthWorker extends Component
                         ->orWhere('contact_number', 'like', '%' . $this->search . '%');
                 });
             })
+            ->with('staff.assigned_areas') // ← updated from assigned_area
             ->orderBy('updated_at', 'DESC')
             ->paginate($this->entries);
 
@@ -34,46 +35,59 @@ class ArchivedHealthWorker extends Component
             'archivedWorkers' => $archivedWorkers,
         ]);
     }
-    /**
-     * Restore archived health worker
-     */
-    /**
-     * Restore archived health worker
-     */
+
     public function restoreHealthWorker($userId)
     {
         DB::beginTransaction();
         try {
             $staff = Staff::where('user_id', $userId)->firstOrFail();
-            $user = User::findOrFail($userId);
+            $user  = User::findOrFail($userId);
 
-            // Check if area is already occupied by active staff
-            $areaOccupied = DB::table('users')
-                ->join('staff', 'users.id', '=', 'staff.user_id')
-                ->where('users.status', 'active')
-                ->where('staff.assigned_area_id', $staff->assigned_area_id)
-                ->exists();
+            // Get this worker's previously assigned areas from pivot
+            $workerAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $userId)
+                ->pluck('area_id')
+                ->toArray();
 
-            if ($areaOccupied) {
-                // ✅ SIMPLE MESSAGE
-                $this->dispatch(
-                    'restorationError',
-                    message: "Cannot restore. There's an active health worker with the same assigned area."
-                );
+            // Check if ANY of their areas are now taken by an active worker
+            if (!empty($workerAreaIds)) {
+                $conflictingAreas = DB::table('staff_area_assignments')
+                    ->join('staff', 'staff_area_assignments.staff_id', '=', 'staff.user_id')
+                    ->join('users', 'users.id', '=', 'staff.user_id')
+                    ->whereIn('staff_area_assignments.area_id', $workerAreaIds)
+                    ->where('users.status', 'active')
+                    ->where('staff.status', 'Active')
+                    ->where('staff_area_assignments.staff_id', '!=', $userId)
+                    ->pluck('staff_area_assignments.area_id')
+                    ->toArray();
 
-                DB::rollBack();
-                return;
+                if (!empty($conflictingAreas)) {
+                    // Get area names for the error message
+                    $areaNames = DB::table('brgy_unit')
+                        ->whereIn('id', $conflictingAreas)
+                        ->pluck('brgy_unit')
+                        ->implode(', ');
+
+                    $this->dispatch(
+                        'restorationError',
+                        message: "Cannot restore. The following areas are already assigned to active health workers: {$areaNames}"
+                    );
+
+                    DB::rollBack();
+                    return;
+                }
             }
 
-            // Restore the staff
-            $user->status = 'active';
-            $user->save();
+            // Restore the user and staff
+            $user->update(['status' => 'active']);
+            $staff->update(['status' => 'Active']);
 
-            $staff->status = 'Active';
-            $staff->save();
-
-            // Transfer records from OTHER archived staff in this area
-            $this->transferFromArchivedStaff($userId, $staff->assigned_area_id);
+            // Transfer records from OTHER archived staff in the same areas
+            if (!empty($workerAreaIds)) {
+                foreach ($workerAreaIds as $areaId) {
+                    $this->transferFromArchivedStaff($userId, $areaId);
+                }
+            }
 
             DB::commit();
 
@@ -81,30 +95,26 @@ class ArchivedHealthWorker extends Component
                 'healthWorkerRestored',
                 message: "Health worker has been restored successfully."
             );
-
             $this->dispatch('archivedHealthWorkerRefresh');
         } catch (\Exception $e) {
             DB::rollBack();
-
             $this->dispatch(
                 'restorationError',
-                message: 'Failed to restore health worker.'
+                message: 'Failed to restore: ' . $e->getMessage()
             );
         }
     }
 
-    /**
-     * Transfer records from other archived staff in the same area
-     */
     private function transferFromArchivedStaff($restoredStaffUserId, $areaId)
     {
         // Find OTHER archived staff who had this area (exclude the one being restored)
-        $archivedStaffIds = DB::table('users')
-            ->join('staff', 'users.id', '=', 'staff.user_id')
+        $archivedStaffIds = DB::table('staff_area_assignments')
+            ->join('staff', 'staff_area_assignments.staff_id', '=', 'staff.user_id')
+            ->join('users', 'users.id', '=', 'staff.user_id')
             ->where('users.status', 'archived')
-            ->where('staff.assigned_area_id', $areaId)
-            ->where('users.id', '!=', $restoredStaffUserId)
-            ->pluck('staff.user_id')
+            ->where('staff_area_assignments.area_id', $areaId)
+            ->where('staff_area_assignments.staff_id', '!=', $restoredStaffUserId)
+            ->pluck('staff_area_assignments.staff_id')
             ->toArray();
 
         if (empty($archivedStaffIds)) {

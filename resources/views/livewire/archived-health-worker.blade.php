@@ -51,7 +51,11 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center w-100 h-100 justify-content-center">
-                            <p class="mb-0">{{ $worker->staff->assigned_area->brgy_unit ?? 'none' }}</p>
+                            @forelse($worker->staff->assigned_areas as $area)
+                            <span class="badge bg-secondary">{{ $area->brgy_unit }}</span>
+                            @empty
+                            <span class="text-muted">none</span>
+                            @endforelse
                         </div>
                     </td>
                     <td class="text-center text-nowrap">

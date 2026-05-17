@@ -4,49 +4,42 @@ import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
 import resetPasswordManually from "../passwordReset";
 
-fetch("/showBrgyUnit")
-    .then((response) => response.json())
-    .then((data) => {
-        let dropdown = document.getElementById("edit_patient_purok_dropdown");
-        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
-        data.forEach((item) => {
-            if (healthWorkerId) {
-                if (item.id == healthWorkerId) {
-                    let option = document.createElement("option");
-                    option.value = item.brgy_unit;
-                    option.text = item.brgy_unit;
-                    dropdown.appendChild(option);
-                }
-            } else {
-                let option = document.createElement("option");
-                option.value = item.brgy_unit;
-                option.text = item.brgy_unit;
-                dropdown.appendChild(option);
-            }
-        });
-    });
+// Helper to populate a purok dropdown
+function populatePurokDropdown(dropdownId) {
+    fetch("/showBrgyUnit")
+        .then((response) => response.json())
+        .then((data) => {
+            let dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
 
-fetch("/showBrgyUnit")
-    .then((response) => response.json())
-    .then((data) => {
-        let dropdown = document.getElementById("patient_purok_dropdown");
-        const healthWorkerId = dropdown.dataset.healthWorkerAssignedAreaId;
-        data.forEach((item) => {
-            if (healthWorkerId) {
-                if (item.id == healthWorkerId) {
+            const rawIds = dropdown.dataset.healthWorkerAreaIds;
+            // Parse into an array of numbers; empty string => []
+            const assignedAreaIds = rawIds
+                ? rawIds.split(',').map(id => parseInt(id)).filter(Boolean)
+                : [];
+
+            data.forEach((item) => {
+                if (assignedAreaIds.length > 0) {
+                    // Staff: only show puroks in their assigned areas
+                    if (assignedAreaIds.includes(item.id)) {
+                        let option = document.createElement("option");
+                        option.value = item.brgy_unit;
+                        option.text = item.brgy_unit;
+                        dropdown.appendChild(option);
+                    }
+                } else {
+                    // Nurse / admin: show all puroks
                     let option = document.createElement("option");
                     option.value = item.brgy_unit;
                     option.text = item.brgy_unit;
                     dropdown.appendChild(option);
                 }
-            } else {
-                let option = document.createElement("option");
-                option.value = item.brgy_unit;
-                option.text = item.brgy_unit;
-                dropdown.appendChild(option);
-            }
+            });
         });
-    });
+}
+
+populatePurokDropdown("edit_patient_purok_dropdown");
+populatePurokDropdown("patient_purok_dropdown");
 
 // add new account btn
 const addModalBtn = document.getElementById("add-patient-account-modal-btn");

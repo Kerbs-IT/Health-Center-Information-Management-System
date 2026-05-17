@@ -171,7 +171,12 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="edit_patient_purok_dropdown" class="form-label text-muted small">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
-                                            <select id="edit_patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
+                                            <select
+                                                id="edit_patient_purok_dropdown"
+                                                class="form-select"
+                                                name="patient_purok_dropdown"
+                                                data-health-worker-area-ids="{{ DB::table('staff_area_assignments')->where('staff_id', Auth::id())->pluck('area_id')->implode(',') }}"
+                                                required>
                                                 <option value="" selected disabled>Select a purok</option>
                                             </select>
 
@@ -347,7 +352,12 @@
                                 </div>
                                 <div class="items w-full lg:w-[50%]">
                                     <label for="patient_purok_dropdown">Puroks<span class="text-danger">*</span></label>
-                                    <select id="patient_purok_dropdown" class="form-select" name="patient_purok_dropdown" data-health-worker-assigned-area-id="{{optional(Auth::user())->staff?->assigned_area_id}}" required>
+                                    <select
+                                        id="patient_purok_dropdown"
+                                        class="form-select"
+                                        name="patient_purok_dropdown"
+                                        data-health-worker-area-ids="{{ DB::table('staff_area_assignments')->where('staff_id', Auth::id())->pluck('area_id')->implode(',') }}"
+                                        required>
                                         <option value="" selected disabled>Select a purok</option>
                                     </select>
 

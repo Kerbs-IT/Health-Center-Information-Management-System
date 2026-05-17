@@ -30,16 +30,20 @@
                     </div>
                 </td>
                 <td>
-                    <div class="d-flex align-items-center w-100 h-100 justify-content-center">
-                        <p class="mb-0 ">{{ optional($worker) -> staff -> assigned_area -> brgy_unit ?? 'none'}}</p>
+                    <div class="d-flex align-items-center flex-wrap gap-1 justify-content-center">
+                        @forelse($worker->staff->assigned_areas as $area)
+                        <span class="badge bg-success">{{ $area->brgy_unit }}</span>
+                        @empty
+                        <span class="text-muted">none</span>
+                        @endforelse
                     </div>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center gap-0 gap-md-1">
                         <!-- Swap Area Icon -->
                         <a href="#" class="swap-icon-con d-flex align-items-center justify-content-center swap-icon"
-                            data-id='{{ $worker -> id}}'
-                            title="Swap Area">
+                            data-id="{{ $worker->staff->user_id }}"
+                            title="Manage Areas">
                             <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" viewBox="0 0 512 512" style="width: 20px; height: 20px;">
                                 <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                                 <path d="M32 96l320 0 0-64c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l96 96c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-96 96c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6l0-64L32 160c-17.7 0-32-14.3-32-32s14.3-32 32-32zM480 352c17.7 0 32 14.3 32 32s-14.3 32-32 32l-320 0 0 64c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-96-96c-6-6-9.4-14.1-9.4-22.6s3.4-16.6 9.4-22.6l96-96c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 64 320 0z" fill="#17a2b8" />

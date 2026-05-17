@@ -2,22 +2,35 @@
 
 @section('content')
 <section class="hero-section" id="home">
-    <!-- Swiper Background Carousel -->
     <div class="swiper mySwiperBackground">
-        <div class="swiper-wrapper">
+        <div class="swiper-wrapper" id="hero-swiper-wrapper">
+            @forelse($carouselImages as $slide)
+            <div class="swiper-slide"
+                style="background-image: url('{{ asset($slide->path) }}');
+                            background-size: cover;
+                            background-position: center;">
+            </div>
+            @empty
+            {{-- Fallback default slides if DB is empty --}}
             <div class="swiper-slide bg1"></div>
             <div class="swiper-slide bg2"></div>
             <div class="swiper-slide bg3"></div>
+            @endforelse
         </div>
     </div>
 
-    <!-- HERO CONTENT -->
     <div class="hero-content w-100">
-        <h1 class="fw-bold text-light mb-5 text-wrap">Bringing Better <br><span class="" style="color: #4CAF50;">Healthcare to the Barangay</span><br> – Digitally</h1>
-        <p class="text-light mt-5  w-4/5 m-auto">Streamline records, monitor vaccinations, and improve decision-making with our Healthcare Information System for Barangay Hugo Perez.</p>
+        <h1 class="fw-bold text-light mb-5 text-wrap">
+            Bringing Better <br>
+            <span style="color: #4CAF50;">Healthcare to the Barangay</span><br>
+            – Digitally
+        </h1>
+        <p class="text-light mt-5 w-4/5 m-auto">
+            Streamline records, monitor vaccinations, and improve decision-making
+            with our Healthcare Information System for Barangay Hugo Perez.
+        </p>
         <a href="{{ route('login') }}" class="hero-btn">Join us Now</a>
     </div>
-
 </section>
 
 {{-- Home Section --}}
@@ -79,7 +92,8 @@
 
         </div>
         <div class="flex-1 order-1 order-md-2 hover:scale-105 transition-transform duration-300 object-cover hover:shadow-lg">
-            <img src="{{ asset('images/consult.jpg') }}" class="rounded-md drop-shadow-md w-100 h-auto block" alt="">
+            <img src="{{ asset('images/about_us.jpg') }}?v={{ file_exists(public_path('images/about_us.jpg')) ? filemtime(public_path('images/about_us.jpg')) : '1' }}"
+                class="rounded-md drop-shadow-md w-100 h-auto block" alt="About Us">
         </div>
     </div>
 </section>
@@ -289,7 +303,7 @@
         </div>
     </div>
 </section>
-<section class="slider-content container  px-3 px-md-5" id="specialist">
+<section class="slider-content container px-3 px-md-5" id="specialist">
     <h2 class="mb-2 mb-md-5">Our Specialists</h2>
     <p class="specialist-text mb-1 mb-md-4 text-center">
         Our dedicated team of <strong>healthcare workers</strong> is here to serve the community of
@@ -297,88 +311,28 @@
     </p>
     <div class="swiper specialist-slider">
         <div class="swiper-wrapper py-2 py-md-5">
-
-            <!-- Slide 1 -->
+            @forelse($healthWorkers as $worker)
             <div class="swiper-slide specialist-card">
-                <!-- <div class="img-slider">
-                    <div class="img-overlay"></div>
-                    <img src="{{ asset('images/bhw1.png') }}" class="slide-img" alt="">
-                </div> -->
-                <h3 class="slide-title">Kamille</h3>
-                <p class="slide-text">Kaia Homesp</p>
-                <p class="slide-text">Nurse</p>
+                @if($worker->homepage_photo)
+                <div class="img-slider justify-content-center">
+                    <img src="{{ asset($worker->homepage_photo) }}" class="slide-img" alt="{{ $worker->first_name }}">
+                </div>
+                @else
+                <div class="specialist-initials" style="background:#e6f4ec;color:#1a6b3c">
+                    {{ strtoupper(substr($worker->first_name ?? '?', 0, 1) . substr($worker->last_name ?? '', 0, 1)) }}
+                </div>
+                @endif
+                <h3 class="slide-title">{{ $worker->first_name }} {{ $worker->last_name }}</h3>
+                <p class="slide-text fw-bold">{{ $worker->assigned_area?->brgy_unit ?? '—' }}</p>
+                <p class="slide-text">{{ $worker->role ?? 'Health Worker' }}</p>
             </div>
-
-            <!-- Slide 2 -->
+            @empty
             <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/nurse.jpg') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Ronalyn D. Anakan</h3>
-                <p class="slide-text">Beverly Homes 1</p>
-                <p class="slide-text">BHW</p>
+                <p class="slide-text">No health workers found.</p>
             </div>
-
-            <!-- Slide 3 -->
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw2.png') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Jovelyn Serato</h3>
-                <p class="slide-text">Purok 5</p>
-                <p class="slide-text">BHW</p>
-            </div>
-
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw4.png') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Ana Maria Ago</h3>
-                <p class="slide-text">Green Forbes City ( BLK 16 - 32 )</p>
-                <p class="slide-text">BHW</p>
-            </div>
-
-
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Dolsora Mercado</h3>
-                <p class="slide-text">Karlaville Park Homes Phase 1</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Rodora Herrera</h3>
-                <p class="slide-text">Green Forbes City (BLK 1 - 15 )</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Noraida Dela Torre</h3>
-                <p class="slide-text">Gawad Kalinga</p>
-                <p class="slide-text">BHW</p>
-            </div>
-            <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Anabel Andres</h3>
-                <p class="slide-text">Heneral DOS</p>
-                <p class="slide-text">BHW</p>
-            </div>
-           <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Kathlyn Kate Siy</h3>
-                <p class="slide-text">Purok 1</p>
-                <p class="slide-text">BHW</p>
-            </div>
-           <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Emily Pornia</h3>
-                <p class="slide-text">Karlaville Park Homes Phase 2</p>
-                <p class="slide-text">BHW</p>
-            </div>
-           <div class="swiper-slide specialist-card">
-                <!-- <img src="{{ asset('images/bhw6.webp') }}" class="slide-img" alt=""> -->
-                <h3 class="slide-title">Shirley Ulitin</h3>
-                <p class="slide-text">Purok 3</p>
-                <p class="slide-text">BHW</p>
-            </div>
+            @endforelse
         </div>
 
-
-        <!-- Navigation + Pagination -->
         <div class="swiper-pagination"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
@@ -414,7 +368,7 @@
                             </button>
                             <div id="content-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
+                                    Bukas ang health center Lunes hanggang Biyernes, 8:00 AM – 5:00 PM.
                                 </div>
                             </div>
                         </div>
@@ -431,7 +385,7 @@
                             </button>
                             <div id="content-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Ito ang lokasyon ng health center: 7VGQ+VF3, Perez (Lucbanan), Trece Martires City. Katabi lamang ito ng Barangay Hall.
+                                    Ito ang lokasyon ng health center: 7VGQ+VF3, Perez (Lucbanan), Trece Martires City. Katabi lamang ito ng Barangay Hall.
                                 </div>
                             </div>
                         </div>
@@ -467,10 +421,10 @@
                                 <div class="pb-2 px-3 text-sm">
                                     Maaaring makipag-ugnayan sa Health Center ng Barangay Hugo Perez Proper sa pamamagitan ng mga sumusunod:
 
-                                   <li>Barangay Health Center hotline number</li>
-                                   <li>Barangay office contact number</li>
-                                   <li>Assigned Barangay Health Worker (BHW) sa inyong lugar</li>
-                                   <li>Official Facebook page o email ng barangay</li>
+                                    <li>Barangay Health Center hotline number</li>
+                                    <li>Barangay office contact number</li>
+                                    <li>Assigned Barangay Health Worker (BHW) sa inyong lugar</li>
+                                    <li>Official Facebook page o email ng barangay</li>
 
 
                                 </div>
@@ -489,12 +443,12 @@
                             <div id="content-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
                                     Ang Health Center ng Barangay Hugo Perez Proper ay nagbibigay ng iba’t ibang serbisyong pangkalusugan para sa mga residente, kabilang ang:
-                                   <li>Libreng konsultasyon at basic check-up</li>
+                                    <li>Libreng konsultasyon at basic check-up</li>
                                     <li>Immunization o pagbabakuna (para sa bata at matatanda)</li>
                                     <li>Maternal at child care (prenatal at postnatal services)</li>
                                     <li>Family planning services</li>
                                     <li>TB Dots Patients</li>
-                                   <li>Pamimigay ng maintenance medicines (kung available)</li>
+                                    <li>Pamimigay ng maintenance medicines (kung available)</li>
                                 </div>
                             </div>
                         </div>
@@ -509,7 +463,7 @@
                             </button>
                             <div id="content-6" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                                 <div class="pb-2 px-3 text-sm">
-                                   Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
+                                    Opo, libre ang karamihan ng serbisyong pangkalusugan para sa mga residente ng barangay.
 
                                 </div>
                             </div>

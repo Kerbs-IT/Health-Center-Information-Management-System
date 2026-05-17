@@ -32,12 +32,23 @@ class PatientAccountBinding extends Component
     {
         $query = User::where('role', 'patient');
 
-        // Staff restriction
+        // Get assigned puroks for staff restriction and dropdown
+        $assignedPuroks = collect();
+
         if (Auth::user()->role == 'staff') {
-            $staffInfo = Staff::where('user_id', Auth::id())->first();
-            if ($staffInfo && $staffInfo->assigned_area_id) {
-                $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-                $query->whereHas('user_address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
+            // staff_id in staff_area_assignments = staff table's user_id (Auth::id())
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
+            if ($assignedPuroks->isNotEmpty()) {
+                $query->whereHas(
+                    'user_address',
+                    fn($q) => $q->whereIn('purok', $assignedPuroks)
+                );
             }
         }
 
@@ -61,15 +72,28 @@ class PatientAccountBinding extends Component
             ->where('status', '!=', 'archived')
             ->whereNull('patient_record_id');
 
-        if (Auth::user()->role == 'staff') {
-            $staffInfo = Staff::where('user_id', Auth::id())->first();
-            if ($staffInfo && $staffInfo->assigned_area_id) {
-                $assignedArea = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-                $unboundQuery->whereHas('user_address', fn($q) => $q->where('purok', $assignedArea->brgy_unit));
-            }
+        if (Auth::user()->role == 'staff' && $assignedPuroks->isNotEmpty()) {
+            $unboundQuery->whereHas(
+                'user_address',
+                fn($q) => $q->whereIn('purok', $assignedPuroks)
+            );
         }
 
-        $puroks = brgy_unit::where('status','Active') -> orderBy('brgy_unit')->get();
+        // Purok dropdown — scoped to assigned areas for staff, all for nurse
+        if (Auth::user()->role == 'staff') {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $puroks = brgy_unit::where('status', 'Active')
+                ->whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->get();
+        } else {
+            $puroks = brgy_unit::where('status', 'Active')
+                ->orderBy('brgy_unit')
+                ->get();
+        }
 
         return view('livewire.patient-account-binding', [
             'users'        => $users,
@@ -143,16 +167,17 @@ class PatientAccountBinding extends Component
             });
 
         if (Auth::user()->role == 'staff') {
-            $staffId = Auth::id();
             $patientIds = collect();
+
             foreach (['vaccination', 'prenatal', 'tb_dots', 'senior_citizen', 'family_planning'] as $type) {
                 $patientIds = $patientIds->merge(
                     DB::table("{$type}_medical_records")
                         ->join('medical_record_cases', "{$type}_medical_records.medical_record_case_id", '=', 'medical_record_cases.id')
-                        ->where("{$type}_medical_records.health_worker_id", $staffId)
+                        ->where("{$type}_medical_records.health_worker_id", Auth::id())
                         ->pluck('medical_record_cases.patient_id')
                 );
             }
+
             $baseQuery->whereIn('id', $patientIds->unique()->values());
         }
 

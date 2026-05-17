@@ -24,18 +24,19 @@ class HeatMapController extends Controller
      */
     public function index()
     {
-        // Check if staff
-        $handled_area = '';
+        $handled_areas = collect();
+
         if (Auth::user()->role == 'staff') {
-            $staffInfo = staff::findOrFail(Auth::user()->id);
-            $brgyHandled = brgy_unit::findOrFail($staffInfo->assigned_area_id);
-            $handled_area = $brgyHandled->brgy_unit;
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $handled_areas = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
         }
 
-        // Get all unique puroks for dropdown
         $puroks = $this->getPuroks();
 
-        // Get all case types for dropdown
         $caseTypes = [
             'vaccination',
             'prenatal',
@@ -49,9 +50,9 @@ class HeatMapController extends Controller
             'heatmap.heat-map',
             compact('puroks', 'caseTypes'),
             [
-                'page' => 'HeatMap - Barangay Hugo Perez',
-                'isActive' => true,
-                'handledBrgy' => $handled_area ?? null
+                'page'          => 'HeatMap - Barangay Hugo Perez',
+                'isActive'      => true,
+                'handledAreas'  => $handled_areas, // now a collection, not a single string
             ]
         );
     }
@@ -61,18 +62,45 @@ class HeatMapController extends Controller
      */
     public function getHeatmapData(Request $request)
     {
-        $purok = $request->input('purok', 'all');
+        $purok    = $request->input('purok', 'all');
         $caseType = $request->input('case_type', 'all');
 
-        // Create cache key based on filters
-        $cacheKey = "heatmap_{$purok}_{$caseType}";
+        if (Auth::user()->role == 'staff') {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
 
-        // Try to get cached data
+            $allowedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
+            if ($purok === 'all' || $purok === 'assigned_all') {
+                $purok = $allowedPuroks->toArray();
+            } elseif (!$allowedPuroks->contains($purok)) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized area.'], 403);
+            }
+        }
+
+        // Build cache key — fix: sort in-place correctly
+        if (is_array($purok)) {
+            $sortedPurok = $purok;
+            sort($sortedPurok);
+            $cacheKey = "heatmap_staff_" . Auth::id() . "_" . md5(implode(',', $sortedPurok)) . "_{$caseType}";
+        } else {
+            $cacheKey = "heatmap_{$purok}_{$caseType}";
+        }
+
         $result = Cache::remember($cacheKey, self::CACHE_DURATION * 60, function () use ($purok, $caseType) {
             return $this->buildHeatmapData($purok, $caseType);
         });
 
         return response()->json($result);
+    }
+
+    // Helper to sort for consistent cache keys regardless of area order
+    private function sorted(array $arr): array
+    {
+        sort($arr);
+        return $arr;
     }
 
     /**
@@ -129,12 +157,13 @@ class HeatMapController extends Controller
             ->whereNotNull('patient_addresses.latitude')
             ->whereNotNull('patient_addresses.longitude');
 
-        // Filter by purok
-        if ($purok !== 'all') {
+        // Supports both a single string and an array of puroks
+        if (is_array($purok)) {
+            $query->whereIn('patient_addresses.purok', $purok);
+        } elseif ($purok !== 'all') {
             $query->where('patient_addresses.purok', $purok);
         }
 
-        // Filter by case type
         if ($caseType !== 'all') {
             $query->where('medical_record_cases.type_of_case', $caseType);
         }
@@ -245,18 +274,38 @@ class HeatMapController extends Controller
      */
     private function calculateCenter($purok, $purokCoordinates)
     {
-        if ($purok !== 'all' && isset($purokCoordinates[$purok])) {
+        // Single purok selected — zoom into it
+        if (!is_array($purok) && $purok !== 'all' && isset($purokCoordinates[$purok])) {
             return [
-                'lat' => $purokCoordinates[$purok]['latitude'],
-                'lng' => $purokCoordinates[$purok]['longitude'],
+                'lat'  => $purokCoordinates[$purok]['latitude'],
+                'lng'  => $purokCoordinates[$purok]['longitude'],
                 'zoom' => 17.3
             ];
         }
 
-        // Default: center on Hugo Perez
+        // Array of puroks (staff "all assigned") — average their coordinates
+        if (is_array($purok) && count($purok) > 0) {
+            $lats = [];
+            $lngs = [];
+            foreach ($purok as $p) {
+                if (isset($purokCoordinates[$p])) {
+                    $lats[] = $purokCoordinates[$p]['latitude'];
+                    $lngs[] = $purokCoordinates[$p]['longitude'];
+                }
+            }
+            if (!empty($lats)) {
+                return [
+                    'lat'  => array_sum($lats) / count($lats),
+                    'lng'  => array_sum($lngs) / count($lngs),
+                    'zoom' => 16
+                ];
+            }
+        }
+
+        // Default fallback — Hugo Perez center
         return [
-            'lat' => $purokCoordinates[$purok]['latitude'] ?? 14.281205011111709,
-            'lng' => $purokCoordinates[$purok]['longitude'] ?? 120.88813802186077,
+            'lat'  => 14.281205011111709,
+            'lng'  => 120.88813802186077,
             'zoom' => 16
         ];
     }

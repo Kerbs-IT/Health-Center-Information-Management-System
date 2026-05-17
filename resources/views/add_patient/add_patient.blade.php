@@ -365,7 +365,7 @@
                                         </div>
 
                                     </div>
-                                    <!-- data of registration -->
+
                                     <div class="mb-2 d-flex gap-1 flex-xl-nowrap flex-md-row flex-column">
                                         <div class="input-field flex-grow-1 flex-fill xl:w-[50%]">
                                             <label for="dateOfRegistration">Date of Registration<span class="text-danger">*</span></label>
@@ -606,28 +606,23 @@
                                             <div class="mb-2 w-100 w-md-50">
                                                 <label for="brgy">Purok / Brgy Subdivision<span class="text-danger">*</span></label>
                                                 @php
-                                                $brgy = \App\Models\brgy_unit::where('status','Active')
-                                                ->orderBy('brgy_unit')
-                                                ->get();
+                                                $brgy = \App\Models\brgy_unit::where('status','Active')->orderBy('brgy_unit')->get();
                                                 $user = auth()->user();
-                                                $isStaff = $user->role === 'staff'; // or however you check if user is staff
-                                                $assignedAreaId = $user->staff?->assigned_area_id??null; // This is the ID
+                                                $isStaff = $user->role === 'staff';
+                                                $assignedAreaIds = $isStaff
+                                                ? DB::table('staff_area_assignments')->where('staff_id', $user->id)->pluck('area_id')
+                                                : collect();
                                                 @endphp
+
                                                 <select name="brgy" id="brgy" class="form-select py-2">
                                                     <option value="" selected>Select a brgy</option>
                                                     @foreach($brgy as $brgy_unit)
                                                     @if($isStaff)
-                                                    {{-- Staff: only show their assigned area --}}
-                                                    @if($brgy_unit->id == $assignedAreaId)
-                                                    <option value="{{ $brgy_unit->brgy_unit }}" selected>
-                                                        {{ $brgy_unit->brgy_unit }}
-                                                    </option>
+                                                    @if($assignedAreaIds->contains($brgy_unit->id))
+                                                    <option value="{{ $brgy_unit->brgy_unit }}">{{ $brgy_unit->brgy_unit }}</option>
                                                     @endif
                                                     @else
-                                                    {{-- Nurse/Admin: show all options --}}
-                                                    <option value="{{ $brgy_unit->brgy_unit }}">
-                                                        {{ $brgy_unit->brgy_unit }}
-                                                    </option>
+                                                    <option value="{{ $brgy_unit->brgy_unit }}">{{ $brgy_unit->brgy_unit }}</option>
                                                     @endif
                                                     @endforeach
                                                 </select>
