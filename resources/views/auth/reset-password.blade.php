@@ -12,7 +12,7 @@
     <title>Barangay Health Center System</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugo_perez_logo.png')}}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png')}}">
 
     <!-- Laravel Vite Assets -->
     @vite([

@@ -107,7 +107,11 @@
             vertical-align: top;
         }
 
-        table tbody tr:nth-child(even) {
+        table tbody tr:nth-chi if ($staff->role ==='staff') {
+            $familyPlanningQuery->join('family_planning_medical_records as fpmr', 'fpmr.medical_record_case_id', '=', 'mrc.id') ->where('fpmr.health_worker_id', $staff->id);
+        }
+
+        ld(even) {
             background-color: #f8f9fa;
         }
 

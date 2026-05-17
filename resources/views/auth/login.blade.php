@@ -12,7 +12,7 @@
     <title>Barangay Health Center System</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugo_perez_logo.png')}}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/hugoperez_logo.png')}}">
 
 
     @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/homepage.css', 'resources/js/homepage.js', 'resources/css/navbar.css', 'resources/js/navbar.js'])

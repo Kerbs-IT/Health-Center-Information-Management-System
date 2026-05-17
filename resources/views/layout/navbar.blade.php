@@ -3,7 +3,7 @@
     <div class="flex flex-wrap align-center justify-between w-100">
       <div class=" flex items-center">
         <a href="{{ route('homepage') }}#home" class="flex items-center space-x-3 rtl:space-x-reverse text-decoration-none order-1 order-md-0">
-          <img src="{{ asset('images/hugo_perez_logo.png') }}" class="h-13" alt="HugoPerez Logo" />
+          <img src="{{ asset('images/hugoperez_logo.png') }}" class="h-13" alt="HugoPerez Logo" />
           <span class="logo-title self-center text-xl text-heading font-semibold whitespace-nowrap lg:block hidden ">Health Center IMS</span>
         </a>
         <button data-collapse-toggle="navbar-default" type="button"
