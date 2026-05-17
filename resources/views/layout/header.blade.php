@@ -292,7 +292,7 @@
           const cleanMessage = notification.message.replace(/⚠️/g, '').trim();
           // Inventory
           const isInventory = notification.appointment_type === 'inventory';
-          const cursorStyle = isInventory ? 'cursor: pointer; text-decoration: underline dotted;' : '';
+          const cursorStyle = isInventory ? 'cursor: pointer;' : '';
 
 
           html += `
