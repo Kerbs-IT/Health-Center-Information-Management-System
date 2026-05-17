@@ -70,7 +70,7 @@
             {{
                 optional(Auth::user()->nurses)->full_name
                 ?? optional(Auth::user()->staff)->full_name
-                ?? optional(Auth::user()->patient)->full_name 
+                ?? optional(Auth::user()->patient)->full_name
                 ?? (function() {
                     $user = Auth::user();
                     $middle = $user->middle_initial ? strtoupper(substr($user->middle_initial, 0, 1)) . '.' : '';
@@ -290,9 +290,15 @@
             '';
 
           const cleanMessage = notification.message.replace(/⚠️/g, '').trim();
+          // Inventory
+          const isInventory = notification.appointment_type === 'inventory';
+          const cursorStyle = isInventory ? 'cursor: pointer; text-decoration: underline dotted;' : '';
+
 
           html += `
-          <div class="notification-item ${unreadClass}" onclick="handleNotificationClick(${notification.id}, '${notification.link_url || ''}')">
+            <div class="notification-item ${unreadClass}"
+                style="${cursorStyle}"
+                onclick="handleNotificationClick(${notification.id}, '${notification.link_url || ''}', '${notification.appointment_type}')">
             <div class="d-flex align-items-start">
               <div class="notification-icon notification-icon-${notification.appointment_type} me-3">
                 ${icon}
@@ -331,26 +337,29 @@
   /**
    * Handle notification click - mark as read
    */
-  function handleNotificationClick(notificationId, linkUrl) {
+// Replace handleNotificationClick with this:
+  function handleNotificationClick(notificationId, linkUrl, appointmentType) {
     fetch(`/notifications/${notificationId}/mark-read`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
-      })
-      .then(() => {
-        loadUnreadCount();
-        loadNotifications();
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      }
+    }).then(() => {
+      loadUnreadCount();
 
-        // Navigate to link if provided
-        if (linkUrl && linkUrl !== 'null' && linkUrl !== '') {
-          // Set localStorage for menu state before redirecting
-          setMenuStateForUrl(linkUrl);
-          window.location.href = linkUrl;
-        }
-      })
-      .catch(error => console.error('Error marking notification as read:', error));
+      if (appointmentType === 'inventory' && linkUrl && linkUrl !== 'null' && linkUrl !== '') {
+        window.location.href = linkUrl; // e.g. /medicines?filter=low_stock
+        return;
+      }
+
+      loadNotifications();
+
+      if (linkUrl && linkUrl !== 'null' && linkUrl !== '') {
+        setMenuStateForUrl(linkUrl);
+        window.location.href = linkUrl;
+      }
+    }).catch(error => console.error('Error marking notification as read:', error));
   }
   /**
    * Set menu state based on URL
@@ -411,7 +420,8 @@
       'prenatal': '🤰',
       'senior_citizen': '👴',
       'tb_dots': '🏥',
-      'family_planning': '👨‍👩‍👧‍👦'
+      'family_planning': '👨‍👩‍👧‍👦',
+      'inventory'       : '💊',
     };
     return icons[type] || '📅';
   }

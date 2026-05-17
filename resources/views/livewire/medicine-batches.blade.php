@@ -4,7 +4,8 @@
 
             {{-- ── Header ─────────────────────────────────────────── --}}
             <div class="d-flex align-items-center gap-3 mb-4">
-                <a href="{{ route('medicines') }}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{{ $backUrl ?: route('medicines') }}"
+                    class="btn btn-outline-secondary btn-sm">
                     <i class="fa-solid fa-arrow-left me-1"></i> Back
                 </a>
                 <div>
@@ -286,7 +287,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control @error('editBatchExpiry') is-invalid @enderror"
-                                    wire:model.live="editBatchExpiry" min="{{ now()->addDay()->toDateString() }}">
+                                    wire:model.live="editBatchExpiry">
                             </div>
                         </div>
                     </div>

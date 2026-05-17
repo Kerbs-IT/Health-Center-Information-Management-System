@@ -8,30 +8,42 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Add your appointment reminder schedule here
-// This will run every day at 8:00 PM (20:00)
-
-// 1. STAFF DAILY SCHEDULE (5:00 AM) - Sent to nurses and health workers
+// ── Staff daily schedule (5:00 AM) ────────────────────────────────────────────
 Schedule::command('staff:send-daily-schedule')
     ->dailyAt('05:00')
     ->timezone('Asia/Manila')
     ->emailOutputOnFailure('admin@yourhealthcenter.com');
 
+// ── Overdue appointment notifications (9:00 AM) ───────────────────────────────
 Schedule::command('staff:send-overdue-notifications')
     ->dailyAt('09:00')
     ->timezone('Asia/Manila')
     ->emailOutputOnFailure('admin@yourhealthcenter.com');
-// for patients
+
+// ── Patient appointment reminders (8:00 PM) ───────────────────────────────────
 Schedule::command('appointments:send-reminders')
     ->dailyAt('20:00')
-    ->timezone('Asia/Manila') // Adjust to your timezone
-    ->emailOutputOnFailure('admin@yourhealthcenter.com'); // Optional: get email if it fails
+    ->timezone('Asia/Manila')
+    ->emailOutputOnFailure('admin@yourhealthcenter.com');
 
-Schedule::command('batches:recalculate-expiry')->dailyAt('00:01');
+// ── Recalculate batch expiry statuses (midnight) ──────────────────────────────
+// Runs first so that expiry_status values are fresh before the 8 AM check.
+Schedule::command('batches:recalculate-expiry')
+    ->dailyAt('00:01')
+    ->timezone('Asia/Manila');
 
-// Alternative schedule options you can use:
-// ->dailyAt('19:00')                    // At 7:00 PM
-// ->dailyAt('21:00')                    // At 9:00 PM
-// ->twiceDaily(8, 20)                   // At 8:00 AM and 8:00 PM
-// ->weekdays()->dailyAt('20:00')        // Only on weekdays at 8:00 PM
-// ->days([1, 2, 3, 4, 5])->dailyAt('20:00') // Monday to Friday at 8:00 PM
+// ── Inventory check + daily digest email (8:00 AM) ───────────────────────────
+//
+//  This single command does TWO things:
+//  1. Sends bell notifications + immediate individual emails for every
+//     Expired / Expiring Soon batch found (skips duplicates for today).
+//  2. Sends one daily digest email to every nurse/staff showing:
+//       • Out of Stock medicines
+//       • Low Stock medicines
+//       • Expiring Soon batches
+//       • Expired batches
+//
+Schedule::command('inventory:check-expiry')
+    ->dailyAt('08:00')
+    ->timezone('Asia/Manila')
+    ->emailOutputOnFailure('admin@yourhealthcenter.com');

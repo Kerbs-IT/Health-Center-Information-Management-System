@@ -5,6 +5,18 @@
         }
     })();
 </script>
+@php
+    $outOfStock   = \App\Models\Medicine::where('stock', '<=', 0)->count();
+    $lowStock     = \App\Models\Medicine::where('stock', '>', 0)->where('stock', '<=', 10)->count();
+    $expiringSoon = \App\Models\Medicine::whereHas('allBatches', fn($b) =>
+                        $b->whereNull('deleted_at')->where('expiry_status', 'Expiring Soon')
+                    )->count();
+    $expired      = \App\Models\Medicine::whereHas('allBatches', fn($b) =>
+                        $b->whereNull('deleted_at')->where('expiry_status', 'Expired')
+                    )->count();
+    $totalAlerts  = $outOfStock + $lowStock + $expiringSoon + $expired;
+@endphp
+
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -199,11 +211,74 @@
                     <i class="fa-solid fa-layer-group"></i>
                     <h5 class="mb-0">Category</h5>
                 </a>
-                <!-- senior citizen -->
-                <a href="{{ route('medicines') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center   w-100 px-3 py-2" id="inventory_medicine">
-                    <i class="fa-solid fa-plus"></i>
-                    <h5 class="mb-0">Medicine</h5>
-                </a>
+                <div class="medicine-item-wrap position-relative">
+                    <a href="{{ route('medicines') }}" class="menu-items medicines d-flex  text-decoration-none align-items-center w-100 px-3 py-2" id="inventory_medicine">
+                        <i class="fa-solid fa-plus"></i>
+                        <h5 class="mb-0 ms-3">Medicine</h5>
+
+                        @php
+                            $outOfStock   = \App\Models\Medicine::where('stock', '<=', 0)->count();
+                            $lowStock     = \App\Models\Medicine::where('stock', '>', 0)->where('stock', '<=', 10)->count();
+                            $expiringSoon = \App\Models\Medicine::whereHas('allBatches', fn($b) =>
+                                                $b->whereNull('deleted_at')->where('expiry_status', 'Expiring Soon')
+                                            )->count();
+                            $expired      = \App\Models\Medicine::whereHas('allBatches', fn($b) =>
+                                                $b->whereNull('deleted_at')->where('expiry_status', 'Expired')
+                                            )->count();
+                            $totalAlerts  = $outOfStock + $lowStock + $expiringSoon + $expired;
+                        @endphp
+
+                        @if($totalAlerts > 0)
+                            <span class="medicine-alert-badge">{{ $totalAlerts }}</span>
+                        @endif
+                    </a>
+
+                    @if($totalAlerts > 0)
+                    <div class="badge-bar">
+                        <div class="badge-bar-header">⚠ Inventory Alerts</div>
+
+                        @if($outOfStock > 0)
+                        <a href="{{ route('medicines') }}?filter=out_of_stock"
+                        class="badge-filter-btn"
+                        style="background: rgba(239,68,68,.12)">
+                            <span class="bdot" style="background:#ef4444; box-shadow:0 0 5px #ef4444"></span>
+                            <span>Out of stock</span>
+                            <span class="bcount" style="background:#ef4444">{{ $outOfStock }}</span>
+                        </a>
+                        @endif
+
+                        @if($lowStock > 0)
+                        <a href="{{ route('medicines') }}?filter=low_stock"
+                        class="badge-filter-btn"
+                        style="background: rgba(234,179,8,.12)">
+                            <span class="bdot" style="background:#eab308; box-shadow:0 0 5px #eab308"></span>
+                            <span>Low stock</span>
+                            <span class="bcount" style="background:#eab308; color:#000">{{ $lowStock }}</span>
+                        </a>
+                        @endif
+
+                        @if($expiringSoon > 0)
+                        <a href="{{ route('medicines') }}?filter=expiring_soon"
+                        class="badge-filter-btn"
+                        style="background: rgba(249,115,22,.12)">
+                            <span class="bdot" style="background:#f97316; box-shadow:0 0 5px #f97316"></span>
+                            <span>Expiring soon</span>
+                            <span class="bcount" style="background:#f97316">{{ $expiringSoon }}</span>
+                        </a>
+                        @endif
+
+                        @if($expired > 0)
+                        <a href="{{ route('medicines') }}?filter=expired"
+                        class="badge-filter-btn"
+                        style="background: rgba(239,68,68,.12)">
+                            <span class="bdot" style="background:#ef4444; box-shadow:0 0 5px #ef4444"></span>
+                            <span>Expired batches</span>
+                            <span class="bcount" style="background:#ef4444">{{ $expired }}</span>
+                        </a>
+                        @endif
+                    </div>
+                    @endif
+                </div>
                 <a href="{{ route('manageMedicineRequests') }}" class="menu-items d-flex gap-3 text-decoration-none align-items-center  w-100 px-3 py-2" id="inventory_requests">
                     <i class="fa-solid fa-file-medical"></i>
                     <h5 class="mb-0">Manage Requests</h5>
@@ -272,6 +347,65 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrap = document.querySelector('.medicine-item-wrap');
+        const bar  = document.querySelector('.badge-bar');
+        if (!wrap || !bar) return;
+
+        document.body.appendChild(bar);
+
+        let hideTimer = null;
+        let holdTimer = null;
+        const FADE_DELAY = 2000;
+        const HOLD_DURATION = 500; // ms to hold before showing
+
+        function updatePosition() {
+            const rect = wrap.getBoundingClientRect();
+            bar.style.top  = (rect.top + rect.height / 2) + 'px';
+            bar.style.left = (rect.right + 6) + 'px';
+        }
+
+        function show() {
+            clearTimeout(hideTimer);
+            updatePosition();
+            bar.classList.add('badge-bar--visible');
+        }
+
+        function hide() {
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => bar.classList.remove('badge-bar--visible'), FADE_DELAY);
+        }
+
+        // Desktop: hover
+        wrap.addEventListener('mouseenter', show);
+        wrap.addEventListener('mouseleave', hide);
+        bar.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+        bar.addEventListener('mouseleave', hide);
+
+        // Mobile/tablet: long press (touchstart → hold → show)
+        wrap.addEventListener('touchstart', function (e) {
+            holdTimer = setTimeout(() => {
+                show();
+                // Vibrate for haptic feedback if supported
+                if (navigator.vibrate) navigator.vibrate(40);
+            }, HOLD_DURATION);
+        }, { passive: true });
+
+        wrap.addEventListener('touchend', function () {
+            clearTimeout(holdTimer); // Cancel if released too early
+            hide();
+        });
+
+        wrap.addEventListener('touchmove', function () {
+            clearTimeout(holdTimer); // Cancel if finger moves (scrolling)
+        });
+
+        bar.addEventListener('touchstart', () => clearTimeout(hideTimer), { passive: true });
+        bar.addEventListener('touchend', hide);
+    });
+</script>
 <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
 
 <!-- test for medicine -->

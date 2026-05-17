@@ -141,3 +141,7 @@ li a {
     color:green;
     cursor: pointer;
 }
+/* Add to your existing notification styles in header.blade.php */
+.notification-icon-inventory {
+    background-color: #fde8e8;
+}

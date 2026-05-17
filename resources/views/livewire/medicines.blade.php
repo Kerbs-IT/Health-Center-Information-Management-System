@@ -89,6 +89,21 @@
             }
             @endphp
 
+            @if($activeFilter)
+            <div class="alert alert-warning d-flex align-items-center justify-content-between mb-3 mt-3">
+                <span>
+                    @switch($activeFilter)
+                        @case('out_of_stock')  🔴 Showing <strong>Out of Stock</strong> medicines @break
+                        @case('low_stock')     🟡 Showing <strong>Low Stock</strong> medicines @break
+                        @case('expiring_soon') 🟠 Showing <strong>Expiring Soon</strong> batches @break
+                        @case('expired')       ⛔ Showing <strong>Expired</strong> batches @break
+                    @endswitch
+                </span>
+            <button class="btn btn-sm btn-outline-secondary" wire:click="clearFilter">
+                ✕ Clear filter
+            </button>
+            </div>
+            @endif
             <div class="table-responsive mt-5">
                 <table class="table table-hover">
                     <thead class="table-header">
@@ -175,9 +190,9 @@
                                         </button>
                                     @else
                                         {{-- Batches: navigate to dedicated batch management page --}}
-                                        <a href="{{ route('medicines.batches', $medicine->medicine_id) }}"
-                                           class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded text-decoration-none"
-                                           title="Manage Batches">
+                                        <a href="{{ route('medicines.batches', $medicine->medicine_id) }}?back={{ urlencode(route('medicines') . ($filterStatus ? '?filter=' . $filterStatus : '')) }}"
+                                        class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded text-decoration-none"
+                                        title="Manage Batches">
                                             <i class="fas fa-boxes fs-4"></i>
                                         </a>
                                         {{-- Edit --}}

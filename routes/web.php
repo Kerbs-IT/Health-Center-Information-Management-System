@@ -165,7 +165,7 @@ Route::middleware(['auth', 'role:nurse'])->group(function () {
         return view('purokManagement.purok-archive', ['page' => 'Archived Barangay Puroks']);
     })->name('puroks.archived');
 
-   
+
 });
 
 // =============== health worker only

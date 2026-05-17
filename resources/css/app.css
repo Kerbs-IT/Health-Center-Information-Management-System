@@ -501,6 +501,11 @@ main h3,
         width: 100%;
         text-align: center;
     }
+
+
+    .menu-bar.menu-bar.collapsed.medicines{
+        gap: 0 !important;
+    }
     .menu-bar.collapsed.logo{
         width: 60px;
     }
@@ -528,3 +533,243 @@ main h3,
 .nav-item a:hover{
     color:rgb(45, 43, 43);
 }
+
+/* ═══════════════════════════════════════════════════
+   MEDICINE SIDEBAR ALERT — dot + floating tooltip
+   ═══════════════════════════════════════════════════ */
+
+/* ── Red pulsing dot on the Medicine menu item ────── */
+.medicine-alert-dot {
+    position:      absolute;
+    top:           5px;
+    right:         8px;
+    width:         10px;
+    height:        10px;
+    background:    #ef4444;
+    border-radius: 50%;
+    border:        2px solid #065A24;
+    box-shadow:    0 0 6px rgba(239, 68, 68, 0.7);
+    flex-shrink:   0;
+    animation:     pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity:    1;
+        transform:  scale(1);
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+    }
+    50% {
+        opacity:    0.8;
+        transform:  scale(1.3);
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.9);
+    }
+}
+
+/* ── Floating tooltip container (appended to body) ── */
+#medicine-floating-tooltip {
+    position:        fixed;
+    background:      #1a1a1a;
+    color:           #fff;
+    border-radius:   10px;
+    padding:         12px 16px;
+    min-width:       210px;
+    z-index:         999999;
+    box-shadow:      0 8px 24px rgba(0, 0, 0, 0.45);
+    pointer-events:  none;
+    display:         none;
+    flex-direction:  column;
+    gap:             8px;
+    font-family:     'Poppins', sans-serif;
+    font-size:       13px;
+    border:          1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Tooltip arrow ───────────────────────────────── */
+#medicine-floating-tooltip .tooltip-arrow {
+    position:     absolute;
+    left:         -7px;
+    top:          50%;
+    transform:    translateY(-50%);
+    border-width: 7px 7px 7px 0;
+    border-style: solid;
+    border-color: transparent #1a1a1a transparent transparent;
+}
+
+/* ── Tooltip header label ────────────────────────── */
+#medicine-floating-tooltip .tooltip-header {
+    font-size:      11px;
+    font-weight:    600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color:          rgba(255, 255, 255, 0.45);
+    padding-bottom: 6px;
+    border-bottom:  1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom:  2px;
+}
+
+/* ── Each alert row ──────────────────────────────── */
+#medicine-floating-tooltip .alert-row {
+    display:       flex;
+    align-items:   center;
+    gap:           9px;
+    padding:       5px 8px;
+    border-radius: 6px;
+}
+
+/* ── Colored dot inside each row ─────────────────── */
+#medicine-floating-tooltip .alert-row .row-dot {
+    width:        8px;
+    height:       8px;
+    border-radius: 50%;
+    flex-shrink:  0;
+}
+
+/* ── Row label text ──────────────────────────────── */
+#medicine-floating-tooltip .alert-row .row-label {
+    flex:     1;
+    color:    rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+}
+
+/* ── Count pill/badge ────────────────────────────── */
+#medicine-floating-tooltip .alert-row .row-badge {
+    font-size:     11px;
+    font-weight:   700;
+    padding:       1px 7px;
+    border-radius: 999px;
+    min-width:     22px;
+    text-align:    center;
+    color:         #fff;
+}
+/* Number badge on Medicine menu item */
+.medicine-alert-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-left: auto;
+    line-height: 1;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+    animation: pulse-badge 1.8s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { box-shadow: 0 0 6px rgba(239,68,68,0.6); }
+    50%       { box-shadow: 0 0 14px rgba(239,68,68,0.9); }
+}
+
+/* Tooltip rows are now clickable */
+.alert-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: filter 0.15s, transform 0.15s;
+}
+
+.alert-row:hover {
+    filter: brightness(0.92);
+    transform: translateX(2px);
+}
+
+/* ═══════════════════════════════════════════════════
+   MEDICINE SIDEBAR BADGE BAR
+   ═══════════════════════════════════════════════════ */
+
+.medicine-item-wrap {
+    position: relative;
+}
+
+.badge-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateY(-50%);   /* only for vertical centering, no scaleX */
+    background: #179244;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 99999;
+    min-width: 205px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.45);
+    border: 1px solid rgba(255,255,255,.1);
+    transition: opacity .3s ease;   /* only opacity transition */
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.badge-bar--visible {
+    opacity: 1 !important;
+    pointer-events: all;
+}
+
+.badge-bar-header {
+    font-size: 10px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-family: 'Poppins', sans-serif;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    margin-bottom: 2px;
+}
+
+.badge-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,.85);
+    transition: filter .15s, transform .15s;
+    border: none;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+}
+
+.badge-filter-btn:hover {
+    filter: brightness(1.15);
+    transform: translateX(2px);
+    color: #fff;
+}
+
+.badge-filter-btn .bdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.badge-filter-btn .bcount {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    color: #fff;
+}
+
+
+@media (max-width: 991px) {
+    .badge-bar {
+        display: none !important;
+    }
+}
+
+
