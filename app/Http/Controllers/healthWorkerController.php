@@ -23,21 +23,25 @@ class healthWorkerController extends Controller
 {
     public function dashboard()
     {
+        $healthWorker = User::where('status', 'active')
+            ->where('role', 'staff')
+            ->orderBy('id', 'ASC')
+            ->paginate(10);
 
-        $healthWorker = user::where('status', 'active')->where('role', 'staff')->orderBy('id', 'ASC')->paginate(10);
-   
-        // get occupied areas
-        $occupiedAreas = \Illuminate\Support\Facades\DB::table('users')
-            ->join('staff', 'users.id', '=', 'staff.user_id')
+        // ← Use pivot table instead of old assigned_area_id
+        $occupiedAreas = DB::table('staff_area_assignments')
+            ->join('staff', 'staff_area_assignments.staff_id', '=', 'staff.user_id')
+            ->join('users', 'users.id', '=', 'staff.user_id')
             ->where('users.status', 'active')
-            ->pluck('staff.assigned_area_id')
+            ->where('staff.status', 'Active')
+            ->pluck('staff_area_assignments.area_id')
             ->toArray();
 
         return view('dashboard.healthWorker', [
-            'isActive' => true,
-            'healthWorker' => $healthWorker,
+            'isActive'                => true,
+            'healthWorker'            => $healthWorker,
             'occupied_assigned_areas' => $occupiedAreas,
-            'page' => 'Health worker'
+            'page'                    => 'Health worker'
         ]);
     }
     public function destroy($id)
@@ -353,39 +357,43 @@ class healthWorkerController extends Controller
         }
     }
 
+    // Worker selected → return their multiple areas
     public function getAssignedArea($staffId)
     {
         try {
-            $staff = staff::where("user_id", $staffId)->first();
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staffId)
+                ->pluck('area_id');
 
-            $assignedArea = brgy_unit::where("id", $staff->assigned_area_id)->first();
+            $assignedAreas = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
 
             return response()->json([
-                'assigned_area' => $assignedArea->brgy_unit
+                'assigned_areas' => $assignedAreas,
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 402);
+            return response()->json(['error' => $e->getMessage()], 422);
         }
     }
-    public function getHealthWorker(Request $request){
-        try{
+
+    // Brgy selected → still returns 1 worker
+    public function getHealthWorker(Request $request)
+    {
+        try {
             $purok = $request->get("assigned_area");
-            $assignedAreaId = brgy_unit::where("brgy_unit", $purok)->pluck("id");
-            $healthWorkerId = staff::where('assigned_area_id', $assignedAreaId)
-                ->where('status', 'Active')
-                ->pluck('user_id')
-                ->first();
+
+            $areaId = brgy_unit::where("brgy_unit", $purok)->value("id");
+
+            $healthWorkerId = DB::table('staff_area_assignments')
+                ->where('area_id', $areaId)
+                ->value('staff_id'); // still just 1 worker per area
+
             return response()->json([
-                'health_worker_id' => $healthWorkerId
+                'health_worker_id' => $healthWorkerId,
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 402);
+            return response()->json(['error' => $e->getMessage()], 422);
         }
-       
     }
 
 
@@ -426,5 +434,105 @@ class healthWorkerController extends Controller
                 ->whereIn('health_worker_id', $archivedStaffIds)
                 ->update(['health_worker_id' => $newStaffId]);
         }
+    }
+
+
+    // GET /health-workers/areas/{staffId}
+    public function getAreas($staffId)
+    {
+        $worker = staff::with('assigned_areas')->where('user_id', $staffId)->firstOrFail();
+
+        // Areas taken by ANY active worker (including current worker's own areas)
+        $takenByActiveWorkers = DB::table('staff_area_assignments')
+            ->join('staff', 'staff_area_assignments.staff_id', '=', 'staff.user_id')
+            ->join('users', 'users.id', '=', 'staff.user_id')
+            ->where('users.status', 'active')
+            ->where('staff.status', 'Active')
+            ->pluck('staff_area_assignments.area_id'); // ← removed the != $staffId exclusion
+
+        $availableAreas = brgy_unit::whereNotIn('id', $takenByActiveWorkers)
+            ->where('status', 'Active')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'worker'          => $worker,
+                'assigned_areas'  => $worker->assigned_areas,
+                'available_areas' => $availableAreas,
+            ]
+        ]);
+    }
+
+    // POST /health-workers/areas/{staffId}/add
+    public function addArea(Request $request, $staffId)
+    {
+        try {
+            $request->validate(['area_id' => 'required|exists:brgy_units,id']);
+
+            // Check if taken by an ACTIVE worker only
+            $takenByActive = DB::table('staff_area_assignments')
+                ->join('staff', 'staff_area_assignments.staff_id', '=', 'staff.user_id')
+                ->join('users', 'users.id', '=', 'staff.user_id')
+                ->where('staff_area_assignments.area_id', $request->area_id)
+                ->where('users.status', 'active')
+                ->where('staff.status', 'Active')
+                ->where('staff_area_assignments.staff_id', '!=', $staffId)
+                ->exists();
+
+            if ($takenByActive) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This area is already assigned to another active health worker.'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            // Remove archived worker's pivot entry for this area if exists
+            DB::table('staff_area_assignments')
+                ->where('area_id', $request->area_id)
+                ->delete();
+
+            // Insert new assignment
+            DB::table('staff_area_assignments')->insert([
+                'staff_id'   => $staffId,
+                'area_id'    => $request->area_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Transfer records from archived staff who had this area
+            $this->transferFromArchivedStaff($staffId, $request->area_id);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Area assigned successfully.'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()  // ← this will show exact error
+            ], 500);
+        }
+    }
+
+    // DELETE /health-workers/areas/{staffId}/remove
+    public function removeArea(Request $request, $staffId)
+    {
+        $request->validate(['area_id' => 'required|exists:brgy_units,id']);
+
+        DB::table('staff_area_assignments')
+            ->where('staff_id', $staffId)
+            ->where('area_id', $request->area_id)
+            ->delete();
+
+        return response()->json(['success' => true, 'message' => 'Area removed successfully.']);
     }
 }

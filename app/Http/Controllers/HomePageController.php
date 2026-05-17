@@ -12,7 +12,7 @@ class HomePageController extends Controller
 {
     public function index()
     {
-        $healthWorkers  = staff::with('assigned_area')
+        $healthWorkers  = staff::with('assigned_areas')
             ->where('status', 'Active')
             ->orderBy('first_name')
             ->get();

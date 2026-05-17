@@ -30,24 +30,25 @@
     @endif
 
     {{-- Search & Filter --}}
+    {{-- Search & Filter --}}
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-3' : 'col-md-4' }}">
+                <div class="{{ (Auth::user()->role === 'nurse' || Auth::user()->role === 'staff') ? 'col-md-3' : 'col-md-4' }}">
                     <input
                         type="text"
                         class="form-control"
                         placeholder="Search by name, email, or username..."
                         wire:model.live.debounce.300ms="search">
                 </div>
-                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-4' }}">
+                <div class="{{ (Auth::user()->role === 'nurse' || Auth::user()->role === 'staff') ? 'col-md-2' : 'col-md-4' }}">
                     <select class="form-select" wire:model.live="filterStatus">
                         <option value="all">All Statuses</option>
                         <option value="active">Active</option>
                         <option value="archived">Archived</option>
                     </select>
                 </div>
-                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-4' }}">
+                <div class="{{ (Auth::user()->role === 'nurse' || Auth::user()->role === 'staff') ? 'col-md-2' : 'col-md-4' }}">
                     <select class="form-select" wire:model.live="filterPatientType">
                         <option value="all">All Patient Types</option>
                         <option value="vaccination">Vaccination</option>
@@ -59,11 +60,11 @@
                     </select>
                 </div>
 
-                {{-- Only show purok filter for nurse --}}
-                @if(Auth::user()->role === 'nurse')
+                {{-- Show purok filter for nurse AND staff --}}
+                @if(Auth::user()->role === 'nurse' || Auth::user()->role === 'staff')
                 <div class="col-md-3">
                     <select class="form-select" wire:model.live="filterPurok">
-                        <option value="all">All Puroks</option>
+                        <option value="all">All Assigned Puroks</option>
                         @foreach($puroks as $purok)
                         <option value="{{ $purok->brgy_unit }}">{{ $purok->brgy_unit }}</option>
                         @endforeach
@@ -71,7 +72,7 @@
                 </div>
                 @endif
 
-                <div class="{{ Auth::user()->role === 'nurse' ? 'col-md-2' : 'col-md-12' }}">
+                <div class="{{ (Auth::user()->role === 'nurse' || Auth::user()->role === 'staff') ? 'col-md-2' : 'col-md-12' }}">
                     <button class="btn btn-success w-100" wire:click="$refresh">
                         <i class="fa-solid fa-arrows-rotate"></i> Search
                     </button>

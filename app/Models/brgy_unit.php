@@ -16,5 +16,10 @@ class brgy_unit extends Model
     public function staff(){
         return $this-> hasMany(staff::class, 'assigned_area_id','id');
     }
+
+    public function getAssignedWorkerAttribute()
+    {
+        return $this->health_worker->first();
+    }
     
 }

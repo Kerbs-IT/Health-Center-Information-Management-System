@@ -12,9 +12,9 @@ class ManageHealthWorker extends Component
 
     public function render()
     {
-        $healthWorker = User::where('status', 'active')
+        $healthWorker = User::with('staff.assigned_areas')  // ← change here
             ->where('role', 'staff')
-            ->orderBy('id', 'ASC')
+            ->where('status', 'active')
             ->paginate(10);
 
         // get occupied areas

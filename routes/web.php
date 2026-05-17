@@ -60,6 +60,9 @@ use Illuminate\Support\Facades\Artisan;
 use Knp\Snappy\Pdf;
 use Termwind\Components\Raw;
 use App\Livewire\MedicineBatches;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('layout.app');
@@ -133,19 +136,19 @@ Route::middleware(['auth', 'role:nurse'])->group(function () {
     // swap areas
     // Health Worker Swap Routes
     Route::prefix('health-workers')->group(function () {
-        // Get swap data for a specific health worker
+        // existing swap routes
         Route::get('/swap/{id}/data', [SwapHealthWorkerController::class, 'getSwapData'])
             ->name('health-workers.swap.data');
-
-        // Preview the swap impact
         Route::post('/swap/preview', [SwapHealthWorkerController::class, 'previewSwap'])
             ->name('health-workers.swap.preview');
-
-        // Perform the actual swap
         Route::post('/swap', [SwapHealthWorkerController::class, 'swapArea'])
             ->name('health-workers.swap');
-    });
 
+        // ← ADD NEW ROUTES HERE INSIDE THE SAME PREFIX GROUP
+        Route::get('/areas/{staffId}', [healthWorkerController::class, 'getAreas']);
+        Route::post('/areas/{staffId}/add', [healthWorkerController::class, 'addArea']);
+        Route::delete('/areas/{staffId}/remove', [healthWorkerController::class, 'removeArea']);
+    });
 
     Route::patch(
         '/notification-schedules/{id}',
@@ -181,6 +184,7 @@ Route::middleware(['auth', 'role:nurse'])->group(function () {
     // about us
     Route::post('/manage-interface/about-image',   [manageInterfaceController::class, 'uploadAboutImage']);
     Route::delete('/manage-interface/about-image', [manageInterfaceController::class, 'removeAboutImage']);
+
    
 });
 
@@ -789,3 +793,41 @@ Route::post('/get-health-worker', [healthWorkerController::class, 'getHealthWork
 
 
 Route::get('/', [HomePageController::class, 'index'])->name('homepage');
+
+
+// Temporary — remove after debugging
+Route::get('/debug-heatmap-query', function () {
+    $assignedAreaIds = DB::table('staff_area_assignments')
+        ->where('staff_id', Auth::id())
+        ->pluck('area_id');
+
+    $allowedPuroks = \App\Models\brgy_unit::whereIn('id', $assignedAreaIds)
+        ->pluck('brgy_unit');
+
+    // What puroks actually exist in patient_addresses
+    $actualPuroks = DB::table('patient_addresses')
+        ->whereIn('purok', $allowedPuroks)
+        ->where('barangay', 'Hugo Perez')
+        ->select('purok', DB::raw('count(*) as count'))
+        ->groupBy('purok')
+        ->get();
+
+    // Total count with the whereIn
+    $total = DB::table('patient_addresses')
+        ->join('medical_record_cases', 'patient_addresses.patient_id', '=', 'medical_record_cases.patient_id')
+        ->join('patients', 'patient_addresses.patient_id', '=', 'patients.id')
+        ->where('patient_addresses.barangay', 'Hugo Perez')
+        ->where('patients.status', '!=', 'Archived')
+        ->where('medical_record_cases.status', '!=', 'Archived')
+        ->whereNotNull('patient_addresses.purok')
+        ->whereNotNull('patient_addresses.latitude')
+        ->whereNotNull('patient_addresses.longitude')
+        ->whereIn('patient_addresses.purok', $allowedPuroks)
+        ->count();
+
+    return response()->json([
+        'allowed_puroks' => $allowedPuroks,
+        'matching_addresses' => $actualPuroks,
+        'total_with_join'   => $total,
+    ]);
+});

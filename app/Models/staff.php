@@ -37,8 +37,25 @@ class staff extends Model
     public function addresses(){
         return $this -> belongsTo(addresses::class,'address_id','address_id');
     }
-    public function assigned_area(){
-        return $this -> belongsTo(brgy_unit::class,'assigned_area_id','id');
+    public function assigned_areas()
+    {
+        return $this->belongsToMany(
+            brgy_unit::class,
+            'staff_area_assignments',
+            'staff_id',
+            'area_id',
+            'user_id',  // local key on staff
+            'id'        // local key on brgy_unit
+        );
+    }
+
+    // Helper: get unassigned areas (for the dropdown when adding areas)
+    public static function getUnassignedAreas()
+    {
+        $assignedAreaIds = \DB::table('staff_area_assignments')
+            ->pluck('area_id');
+
+        return brgy_unit::whereNotIn('id', $assignedAreaIds)->get();
     }
     public function vaccination_case_records(){
         return $this-> hasMany(vaccination_case_records::class,'health_worker_id','user_id');
