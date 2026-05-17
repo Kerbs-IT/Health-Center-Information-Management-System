@@ -30,14 +30,19 @@ fetchHealthworkers().then((result) => {
 });
 // load the current selected address of the patient
 const selected = dropdown.dataset.bsPurok;
-// console.log(selected);
-const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
-if (healthWorkerAssignedArea) {
-    puroks(dropdown, selected, "staff", healthWorkerAssignedArea);
+const rawIds = dropdown.dataset.healthWorkerAreaIds;
+const assignedAreaIds = rawIds
+    ? rawIds
+          .split(",")
+          .map((id) => parseInt(id))
+          .filter(Boolean)
+    : [];
+
+if (assignedAreaIds.length > 0) {
+    puroks(dropdown, selected, "staff", assignedAreaIds);
 } else {
     puroks(dropdown, selected);
 }
-
 // update the record
 const updateBtn = document.getElementById("update-record-btn");
 updateBtn.addEventListener("click", async (e) => {

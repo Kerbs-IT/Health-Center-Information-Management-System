@@ -101,10 +101,18 @@ class SendOverdueNotifications extends Command
             ->where('p.status', '!=', 'Archived');
 
         if ($isStaff) {
-            $vaccinationBaseQuery->join('vaccination_medical_records as vmr', 'vmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('vmr.health_worker_id', $staff->id);
-        }
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
 
+            $vaccinationBaseQuery->join('vaccination_medical_records as vmr', 'vmr.medical_record_case_id', '=', 'mrc.id')
+                ->where('vmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
+        }
         $vaccinationCases = $vaccinationBaseQuery
             ->select('vcr.*', 'mrc.id as medical_record_case_id', 'p.id as patient_id')
             ->get();
@@ -203,8 +211,17 @@ class SendOverdueNotifications extends Command
             ->where('p.status', '!=', 'Archived');
 
         if ($isStaff) {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
             $prenatalBaseQuery->join('prenatal_medical_records as pmr', 'pmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('pmr.health_worker_id', $staff->id);
+                ->where('pmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         $prenatalCases = $prenatalBaseQuery
@@ -260,8 +277,17 @@ class SendOverdueNotifications extends Command
             ->where('sccr.is_final', false); // exclude final records
 
         if ($isStaff) {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
             $seniorCitizenQuery->join('senior_citizen_medical_records as scmr', 'scmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('scmr.health_worker_id', $staff->id);
+                ->where('scmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         $seniorCitizenCount = $seniorCitizenQuery->distinct()->count('p.id');
@@ -296,8 +322,17 @@ class SendOverdueNotifications extends Command
             ->where('tdcu.is_final', false); // exclude final records
 
         if ($isStaff) {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
             $tbDotsQuery->join('tb_dots_medical_records as tdmr', 'tdmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('tdmr.health_worker_id', $staff->id);
+                ->where('tdmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         $tbDotsCount = $tbDotsQuery->distinct()->count('p.id');
@@ -332,8 +367,17 @@ class SendOverdueNotifications extends Command
             ->where('fpsbr.is_final', false); // exclude final records
 
         if ($isStaff) {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
             $familyPlanningQuery->join('family_planning_medical_records as fpmr', 'fpmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('fpmr.health_worker_id', $staff->id);
+                ->where('fpmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         $familyPlanningCount = $familyPlanningQuery->distinct()->count('p.id');

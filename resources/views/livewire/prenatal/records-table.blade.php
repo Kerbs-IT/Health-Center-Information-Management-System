@@ -18,7 +18,7 @@
         </div>
         @endif
         <div class="filters d-flex justify-content-lg-between  justify-content-end  flex-wrap flex-xl-nowrap gap-md-3 gap-1 mb-2 mb-md-0">
-            <div class="mb-md-3 md-1 w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
+            <div class="mb-md-3 md-1 w-[100%] flex-fill md:w-[50%] xl:w-[10%]">
                 <label>Show Entries</label>
                 <select class="form-select" wire:model.live="entries">
                     <option value="10">10</option>
@@ -32,6 +32,18 @@
                 <small>Search</small>
                 <input type="text" class="form-control bg-light" placeholder="Search here..." wire:model.live.debounce.1000ms="search">
             </div>
+            <div class="w-[100%] flex-fill md:w-[50%] xl:w-[25%]">
+                <label>Purok / Barangay</label>
+                <select class="form-select bg-light border-1 border-black" wire:model.live="purok">
+                    <option value="">{{ $isHealthWorker ? 'All My Puroks' : 'All Puroks' }}</option>
+                    @foreach($availablePuroks as $purokValue)
+                    <option value="{{ $purokValue }}">{{ $purokValue }}</option>
+                    @endforeach
+                </select>
+                @if($isHealthWorker)
+                <small class="text-muted">Showing only your assigned areas</small>
+                @endif
+            </div>
             <!-- date range -->
             <div class="date-range-filter  flex-fill xl:w-[25%]">
                 <label class="filter-label fw-bold w-100" for="dateRange">Date Range:</label>
@@ -40,7 +52,7 @@
             </div>
 
             <div class="button-con d-flex align-items-center mt-1 justify-content-end gap-1">
-              
+
                 {{-- Download PDF (red) --}}
                 <button wire:click="exportPdf" type="button"
                     class="btn btn-danger d-flex justify-content-center align-items-center gap-2 px-3 py-2"

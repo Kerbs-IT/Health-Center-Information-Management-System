@@ -180,7 +180,7 @@
                                                 <label for="brgy">Purok<span class="text-danger">*</span></label>
                                                 <select name="brgy" id="brgy" class="form-select py-2"
                                                     data-bs-selected-brgy="{{ $address->purok }}"
-                                                    data-health-worker-assigned-area-id="{{ optional(Auth::user())->staff?->assigned_area_id }}">
+                                                    data-health-worker-area-ids="{{ DB::table('staff_area_assignments')->where('staff_id', Auth::id())->pluck('area_id')->implode(',') }}">
                                                     <option value="" disabled>Select a brgy</option>
                                                 </select>
                                                 <small class="text-danger error-text" id="brgy_error"></small>

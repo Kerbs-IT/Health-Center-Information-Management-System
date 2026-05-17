@@ -7,6 +7,8 @@ const healthWorkerDropDown = document.getElementById("handled_by");
 
 const healthWorkerId = healthWorkerDropDown.dataset.bsHealthWorkerId;
 const currentLoginhealthWorkerId = healthWorkerDropDown.dataset.staffId;
+
+
 let disablerOption = null;
 if (currentLoginhealthWorkerId) {
     disablerOption = true;
@@ -30,15 +32,19 @@ fetchHealthworkers().then((result) => {
 
 
 // load the brgys
+// load the brgys
 const brgy = document.getElementById("brgy");
 const selectedPurok = brgy.dataset.bsSelectedBrgy;
-const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
-if (healthWorkerAssignedArea) {
-    puroks(brgy, selectedPurok, "staff", healthWorkerAssignedArea);
+const rawIds = brgy.dataset.healthWorkerAreaIds; // comma-separated e.g. "2,11"
+const assignedAreaIds = rawIds
+    ? rawIds.split(",").map((id) => parseInt(id)).filter(Boolean)
+    : [];
+
+if (assignedAreaIds.length > 0) {
+    puroks(brgy, selectedPurok, "staff", assignedAreaIds);
 } else {
     puroks(brgy, selectedPurok);
 }
-
 // update the info
 const saveBtn = document.getElementById("edit-save-btn");
 

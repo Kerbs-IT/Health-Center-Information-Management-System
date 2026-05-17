@@ -1,50 +1,56 @@
-//  ===================== HANDLE THE SYNC OF HEALTH WORKER AND BRGY IN ADD PATIENT
 const healthWorkerElement = document.getElementById("handled_by");
 const brgyElement = document.getElementById("brgy");
-const isHealthWorker = healthWorkerElement.dataset.isHealthWorker;
-if (healthWorkerElement) {
+
+if (healthWorkerElement && brgyElement) {
+    // Worker selected → filter brgy to their areas, auto-select first
     healthWorkerElement.addEventListener("change", async (e) => {
         const id = e.target.value;
+        if (!id) return;
 
         try {
-            // get the assigned area
             const response = await fetch(
                 `/add-patient/get-assigned-area/${id}`,
                 {
-                    method: "GET",
-                    headers: {
-                        Accept: "application/json",
-                    },
+                    headers: { Accept: "application/json" },
                 },
             );
 
             const data = await response.json();
-            if (response.ok) {
-                brgyElement.value = data.assigned_area;
+            if (response.ok && data.assigned_areas?.length > 0) {
+                // Show only this worker's areas
+                Array.from(brgyElement.options).forEach((opt) => {
+                    if (opt.value === "" || opt.disabled) return;
+                    opt.hidden = !data.assigned_areas.includes(opt.value);
+                });
+
+                // Auto-select first area if current selection not in their areas
+                if (!data.assigned_areas.includes(brgyElement.value)) {
+                    brgyElement.value = data.assigned_areas[0];
+                }
+            } else {
+                // No areas — show all
+                Array.from(brgyElement.options).forEach(
+                    (opt) => (opt.hidden = false),
+                );
             }
         } catch (error) {
-            console.log("Error happened:", error);
+            console.error("Error fetching assigned areas:", error);
         }
     });
-}
-// sync the change in brgy and health worker
-if (brgyElement) {
+
+    // Brgy selected → auto-select the assigned health worker, re-filter brgy to that worker's areas
     brgyElement.addEventListener("change", async (e) => {
         const purok = e.target.value;
 
-        // Check if purok is empty - don't make API call
         if (!purok || purok.trim() === "") {
-            // console.log("No barangay selected, skipping health worker fetch");
-
-            // ✅ Clear the health worker dropdown when no brgy is selected
-            if (healthWorkerElement) {
-                healthWorkerElement.value = "";
-            }
-            return; // Exit early
+            Array.from(brgyElement.options).forEach(
+                (opt) => (opt.hidden = false),
+            );
+            healthWorkerElement.value = "";
+            return;
         }
 
         try {
-            // get the assigned area
             const response = await fetch(
                 `/get-health-worker?assigned_area=${encodeURIComponent(purok)}`,
                 {
@@ -60,22 +66,32 @@ if (brgyElement) {
             );
 
             const data = await response.json();
-            if (response.ok) {
-                const handledByViewInput = document.getElementById(
-                    "handle_by_view_input",
+            if (response.ok && data.health_worker_id) {
+                healthWorkerElement.value = data.health_worker_id;
+
+                // Re-fetch this worker's areas to keep brgy filter in sync
+                const areaResponse = await fetch(
+                    `/add-patient/get-assigned-area/${data.health_worker_id}`,
+                    { headers: { Accept: "application/json" } },
                 );
-                if (response.ok) {
-                    healthWorkerElement.value = data.health_worker_id;
-                    const handledByViewInput = document.getElementById(
-                        "handle_by_view_input",
-                    );
-                   
+                const areaData = await areaResponse.json();
+
+                if (areaResponse.ok && areaData.assigned_areas?.length > 0) {
+                    Array.from(brgyElement.options).forEach((opt) => {
+                        if (opt.value === "" || opt.disabled) return;
+                        opt.hidden = !areaData.assigned_areas.includes(
+                            opt.value,
+                        );
+                    });
                 }
             } else {
-                console.error("Failed to fetch health worker:", data);
+                healthWorkerElement.value = "";
+                Array.from(brgyElement.options).forEach(
+                    (opt) => (opt.hidden = false),
+                );
             }
         } catch (error) {
-            console.log("Error happened:", error);
+            console.error("Error fetching health worker:", error);
         }
     });
 }

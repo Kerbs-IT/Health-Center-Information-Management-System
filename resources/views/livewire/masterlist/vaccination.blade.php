@@ -68,15 +68,24 @@
         </div>
 
         <!-- Barangay Filter (only for nurses) -->
-        @if((Auth::user()->role) == 'nurse')
+        @if(Auth::user()->role == 'nurse' || Auth::user()->role == 'staff')
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
             <label class="form-label">Purok</label>
             <select wire:model.live="selectedBrgy" class="form-select bg-light rounded">
-                <option value="">All Puroks</option>
+                <option value="">{{ $isHealthWorker ? 'All My Puroks' : 'All Puroks' }}</option>
+                @if($isHealthWorker)
+                @foreach($availablePuroks as $purokValue)
+                <option value="{{ $purokValue }}">{{ $purokValue }}</option>
+                @endforeach
+                @else
                 @foreach($brgys as $brgy)
                 <option value="{{ $brgy->brgy_unit }}">{{ $brgy->brgy_unit }}</option>
                 @endforeach
+                @endif
             </select>
+            @if($isHealthWorker)
+            <small class="text-muted">Showing only your assigned areas</small>
+            @endif
         </div>
         @endif
 

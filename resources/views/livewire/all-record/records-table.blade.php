@@ -32,15 +32,14 @@
         <!-- Purok Filter -->
         <div class="flex-fill xl:w-[20%]">
             <label>Purok / Barangay</label>
-            <select class="form-select bg-light border-1 border-black" wire:model.live="purok"
-                @if($isHealthWorker) disabled @endif>
-                <option value="">All Puroks</option>
+            <select class="form-select bg-light border-1 border-black" wire:model.live="purok">
+                <option value="">{{ $isHealthWorker ? 'All My Puroks' : 'All Puroks' }}</option>
                 @foreach($availablePuroks as $purokValue)
                 <option value="{{ $purokValue }}">{{ $purokValue }}</option>
                 @endforeach
             </select>
             @if($isHealthWorker)
-            <small class="text-muted">Showing only your assigned area</small>
+            <small class="text-muted">Showing only your assigned areas</small>
             @endif
         </div>
 

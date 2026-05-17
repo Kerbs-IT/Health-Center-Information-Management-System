@@ -76,6 +76,16 @@ class SendStaffDailySchedule extends Command
         $scheduleData = [];
         $isNurse = $staff->role === 'nurse';
         $isStaff = $staff->role === 'staff';
+        // ADD this right after:
+        $assignedPuroks = collect();
+        if ($isStaff) {
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', $staff->id)
+                ->pluck('area_id');
+            $assignedPuroks = DB::table('brgy_units')
+                ->whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+        }
         // 1. vaccination appointment
         $vaccinationQuery = DB::table('vaccination_case_records as vcr')
             ->join('medical_record_cases as mrc', 'mrc.id', '=', 'vcr.medical_record_case_id')
@@ -88,7 +98,9 @@ class SendStaffDailySchedule extends Command
         // Health workers only see their assigned patients
         if ($isStaff) {
             $vaccinationQuery->join('vaccination_medical_records as vmr', 'vmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('vmr.health_worker_id', $staff->id);
+                ->where('vmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         // count the schedule patient today
@@ -112,11 +124,12 @@ class SendStaffDailySchedule extends Command
             ->whereDate('pc.date_of_comeback', $today)
             ->where('p.status', '!=', 'Archived');
 
-        if ($staff->role === 'staff') {
+        if ($isStaff) {
             $prenatalQuery->join('prenatal_medical_records as pmr', 'pmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('pmr.health_worker_id', $staff->id);
+                ->where('pmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
-
         $prenatalCount = $prenatalQuery->count();
 
         $scheduleData[] = [
@@ -136,9 +149,11 @@ class SendStaffDailySchedule extends Command
             ->whereDate('sccr.date_of_comeback', $today)
             ->where('p.status', '!=', 'Archived');
 
-        if ($staff->role === 'staff') {
+        if ($isStaff) {
             $seniorCitizenQuery->join('senior_citizen_medical_records as scmr', 'scmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('scmr.health_worker_id', $staff->id);
+                ->where('scmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
 
         $seniorCitizenCount = $seniorCitizenQuery->count();
@@ -160,11 +175,12 @@ class SendStaffDailySchedule extends Command
             ->whereDate('tdcu.date_of_comeback', $today)
             ->where('p.status', '!=', 'Archived');
 
-        if ($staff->role === 'staff') {
+        if ($isStaff) {
             $tbDotsQuery->join('tb_dots_medical_records as tdmr', 'tdmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('tdmr.health_worker_id', $staff->id);
+                ->where('tdmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
-
         $tbDotsCount = $tbDotsQuery->count();
 
         $scheduleData[] = [
@@ -184,11 +200,12 @@ class SendStaffDailySchedule extends Command
             ->whereDate('fpsbr.date_of_follow_up_visit', $today)
             ->where('p.status', '!=', 'Archived');
 
-        if ($staff->role === 'staff') {
+        if ($isStaff) {
             $familyPlanningQuery->join('family_planning_medical_records as fpmr', 'fpmr.medical_record_case_id', '=', 'mrc.id')
-                ->where('fpmr.health_worker_id', $staff->id);
+                ->where('fpmr.health_worker_id', $staff->id)
+                ->join('patient_addresses as pa', 'pa.patient_id', '=', 'p.id')
+                ->whereIn('pa.purok', $assignedPuroks);
         }
-
         $familyPlanningCount = $familyPlanningQuery->count();
 
         $scheduleData[] = [

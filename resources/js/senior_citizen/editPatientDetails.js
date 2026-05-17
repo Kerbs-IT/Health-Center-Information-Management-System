@@ -27,13 +27,17 @@ fetchHealthworkers().then((result) => {
 });
 
 // load the brgys
-const brgy = document.getElementById("brgy");
-const selectedPurok = brgy.dataset.bsSelectedBrgy;
-const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
-if (healthWorkerAssignedArea) {
-    puroks(brgy, selectedPurok, "staff", healthWorkerAssignedArea);
+const dropdown = document.getElementById("brgy");
+const selected = dropdown.dataset.bsPurok;
+const rawIds = dropdown.dataset.healthWorkerAreaIds;
+const assignedAreaIds = rawIds
+    ? rawIds.split(",").map((id) => parseInt(id)).filter(Boolean)
+    : [];
+
+if (assignedAreaIds.length > 0) {
+    puroks(dropdown, selected, "staff", assignedAreaIds);
 } else {
-    puroks(brgy, selectedPurok);
+    puroks(dropdown, selected);
 }
 
 // update the info

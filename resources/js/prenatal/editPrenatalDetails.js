@@ -34,13 +34,18 @@ for (let option of blood_type.options) {
 }
 
 // load the brgys
-const brgy = document.getElementById("brgy");
-const selectedPurok = brgy.dataset.bsSelectedBrgy;
-const healthWorkerAssignedArea = brgy.dataset.healthWorkerAssignedAreaId;
-if (healthWorkerAssignedArea) {
-    puroks(brgy, selectedPurok, "staff", healthWorkerAssignedArea);
+const dropdown = document.getElementById("brgy");
+// load the current selected address of the patient
+const selected = dropdown.dataset.bsPurok;
+const rawIds = dropdown.dataset.healthWorkerAreaIds;
+const assignedAreaIds = rawIds
+    ? rawIds.split(",").map((id) => parseInt(id)).filter(Boolean)
+    : [];
+
+if (assignedAreaIds.length > 0) {
+    puroks(dropdown, selected, "staff", assignedAreaIds);
 } else {
-    puroks(brgy, selectedPurok);
+    puroks(dropdown, selected);
 }
 
 // disable the philHealth Number if the 'no' is selected

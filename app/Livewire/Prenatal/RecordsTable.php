@@ -3,6 +3,7 @@
 namespace App\Livewire\Prenatal;
 
 use App\Exports\PatientRecordsExport;
+use App\Models\brgy_unit;
 use App\Models\medical_record_cases;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,9 @@ class RecordsTable extends Component
     public $start_date;
     public $end_date;
     public $patient_id = null;
+    public $purok = '';
+    public $availablePuroks = [];
+    public $isHealthWorker = false;
 
     protected $queryString = ['entries', 'sortField', 'sortDirection', 'search', 'patient_id'];
     protected $paginationTheme = 'bootstrap';
@@ -33,9 +37,32 @@ class RecordsTable extends Component
         $this->end_date   = Carbon::now()->format('Y-m-d');
         $this->patient_id = request()->get('patient_id');
         $this->search     = request()->get('search', '');
+
+        if (Auth::check() && Auth::user()->role === 'staff') {
+            $this->isHealthWorker = true;
+
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $this->availablePuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
+        } else {
+            $this->availablePuroks = brgy_unit::where('status', 'Active')
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
+        }
     }
 
     public function updatingEntries()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPurok()
     {
         $this->resetPage();
     }
@@ -72,7 +99,6 @@ class RecordsTable extends Component
 
     public function render()
     {
-        // Step 1: Fetch ALL records (no pagination yet)
         $allRecords = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
             ->where('type_of_case', 'prenatal')
@@ -85,6 +111,22 @@ class RecordsTable extends Component
             ->when(Auth::user()->role == 'staff', function ($query) {
                 $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
                     ->where('prenatal_medical_records.health_worker_id', Auth::id());
+
+                if (!empty($this->purok)) {
+                    $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                        ->where('patient_addresses.purok', $this->purok);
+                } else {
+                    $assignedAreaIds = DB::table('staff_area_assignments')
+                        ->where('staff_id', Auth::id())
+                        ->pluck('area_id');
+                    $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                    $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                        ->whereIn('patient_addresses.purok', $assignedPuroks);
+                }
+            })
+            ->when(Auth::user()->role != 'staff' && !empty($this->purok), function ($query) {
+                $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                    ->where('patient_addresses.purok', $this->purok);
             })
             ->when(empty($this->patient_id), function ($query) {
                 $query->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
@@ -93,18 +135,15 @@ class RecordsTable extends Component
             ->orderBy($this->sortField, $this->sortDirection)
             ->get();
 
-        // Step 2: Calculate checkup status for ALL records
         $allRecords->transform(function ($record) {
             $record->checkup_status_info = $this->calculateCheckupStatus($record);
             return $record;
         });
 
-        // Step 3: Sort ALL records by urgency priority across entire dataset
         $sorted = $allRecords->sortBy(function ($record) {
             return $record->checkup_status_info['sort_priority'] ?? 3;
         })->values();
 
-        // Step 4: Manually paginate the sorted collection
         $currentPage = $this->getPage();
         $perPage     = $this->entries;
         $total       = $sorted->count();
@@ -118,8 +157,8 @@ class RecordsTable extends Component
         );
 
         return view('livewire.prenatal.records-table', [
-            'isActive'      => true,
-            'page'          => 'RECORD',
+            'isActive'       => true,
+            'page'           => 'RECORD',
             'prenatalRecord' => $prenatalRecord,
         ]);
     }
@@ -139,14 +178,30 @@ class RecordsTable extends Component
     {
         $rows = medical_record_cases::select('medical_record_cases.*', 'patients.full_name', 'patients.age', 'patients.sex', 'patients.contact_number')
             ->join('patients', 'patients.id', '=', 'medical_record_cases.patient_id')
-            ->when(Auth::user()->role == 'staff', function ($query) {
-                $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
-                    ->where('prenatal_medical_records.health_worker_id', Auth::id());
-            })
             ->where('type_of_case', 'prenatal')
             ->where('patients.status', '!=', 'Archived')
             ->where('medical_record_cases.status', 'Active')
             ->where('patients.full_name', 'like', '%' . $this->search . '%')
+            ->when(Auth::user()->role == 'staff', function ($query) {
+                $query->join('prenatal_medical_records', 'prenatal_medical_records.medical_record_case_id', '=', 'medical_record_cases.id')
+                    ->where('prenatal_medical_records.health_worker_id', Auth::id());
+
+                if (!empty($this->purok)) {
+                    $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                        ->where('patient_addresses.purok', $this->purok);
+                } else {
+                    $assignedAreaIds = DB::table('staff_area_assignments')
+                        ->where('staff_id', Auth::id())
+                        ->pluck('area_id');
+                    $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                    $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                        ->whereIn('patient_addresses.purok', $assignedPuroks);
+                }
+            })
+            ->when(Auth::user()->role != 'staff' && !empty($this->purok), function ($query) {
+                $query->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
+                    ->where('patient_addresses.purok', $this->purok);
+            })
             ->whereDate('medical_record_cases.date_of_registration', '>=', $this->start_date)
             ->whereDate('medical_record_cases.date_of_registration', '<=', $this->end_date)
             ->orderBy($this->sortField, $this->sortDirection)

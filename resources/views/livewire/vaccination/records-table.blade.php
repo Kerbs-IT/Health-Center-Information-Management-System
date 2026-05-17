@@ -18,7 +18,7 @@
 
     <!-- Rest of your existing table -->
     <div class="filters d-flex justify-content-lg-between  justify-content-end flex-column flex-md-row flex-wrap gap-3 mb-2 mb-md-0">
-        <div class="mb-md-3 mb-0  flex-fill xl:w-[25%]">
+        <div class="mb-md-3 mb-0  flex-fill xl:w-[10%]">
             <label>Show Entries</label>
             <select class="form-select" wire:model.live="entries">
                 <option value="10">10</option>
@@ -31,6 +31,19 @@
         <div class=" flex-fill xl:w-[25%]">
             <small>Search</small>
             <input type="text" class="form-control bg-light border-1 border-black " placeholder="Search here..." wire:model.live.debounce.1000ms="search">
+        </div>
+        <!-- ADD this block -->
+        <div class="flex-fill xl:w-[25%]">
+            <label>Purok / Barangay</label>
+            <select class="form-select bg-light border-1 border-black" wire:model.live="purok">
+                <option value="">{{ $isHealthWorker ? 'All My Puroks' : 'All Puroks' }}</option>
+                @foreach($availablePuroks as $purokValue)
+                <option value="{{ $purokValue }}">{{ $purokValue }}</option>
+                @endforeach
+            </select>
+            @if($isHealthWorker)
+            <small class="text-muted">Showing only your assigned areas</small>
+            @endif
         </div>
         <!-- date range -->
         <div class="date-range-filter  flex-fill xl:w-[25%]">

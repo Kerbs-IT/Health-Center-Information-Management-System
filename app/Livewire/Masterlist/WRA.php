@@ -9,6 +9,7 @@ use App\Models\wra_masterlists;
 use App\Models\brgy_unit;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class WRA extends Component
@@ -30,6 +31,8 @@ class WRA extends Component
     public $selectedYear = ''; // CHANGED: Default to empty string for "All Years"
     public $withUnmetNeed = '';
     public $selectedAge = '';
+    public $isHealthWorker = false;
+    public $availablePuroks = [];
 
     // ADDED: Force re-render on filter changes
     public $refreshKey = 0;
@@ -54,6 +57,24 @@ class WRA extends Component
     {
         if (empty($this->selectedYear)) {
             $this->selectedYear = date('Y');
+        }
+
+        if (Auth::check() && Auth::user()->role === 'staff') {
+            $this->isHealthWorker = true;
+
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $this->availablePuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
+        } else {
+            $this->availablePuroks = brgy_unit::where('status', 'Active')
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
         }
     }
 
@@ -136,9 +157,6 @@ class WRA extends Component
             $query->where('name_of_wra', 'like', '%' . $this->search . '%');
         }
 
-        if (!empty($this->selectedBrgy)) {
-            $query->where('brgy_name', $this->selectedBrgy);
-        }
 
         if (!empty($this->selectedMonth)) {
             $query->whereMonth('created_at', $this->selectedMonth);
@@ -159,8 +177,23 @@ class WRA extends Component
             $query->whereBetween('age', [(int)$min, (int)$max]);
         }
 
+        // WITH this:
         if (Auth::user()->role == 'staff') {
             $query->where('health_worker_id', Auth::id());
+
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            } else {
+                $assignedAreaIds = DB::table('staff_area_assignments')
+                    ->where('staff_id', Auth::id())
+                    ->pluck('area_id');
+                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                $query->whereIn('brgy_name', $assignedPuroks);
+            }
+        } else {
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            }
         }
 
         $query->orderBy($this->sortField, $this->sortDirection);
@@ -208,7 +241,6 @@ class WRA extends Component
         $query = wra_masterlists::where('status', '!=', 'Archived');
 
         if (!empty($this->search))        $query->where('name_of_wra', 'like', '%' . $this->search . '%');
-        if (!empty($this->selectedBrgy))  $query->where('brgy_name', $this->selectedBrgy);
         if (!empty($this->selectedMonth)) $query->whereMonth('created_at', $this->selectedMonth);
         if (!empty($this->selectedYear))  $query->whereYear('created_at', $this->selectedYear);
         if (!empty($this->withUnmetNeed)) $query->where('wra_with_MFP_unmet_need', $this->withUnmetNeed);
@@ -216,7 +248,23 @@ class WRA extends Component
             [$min, $max] = explode('-', $this->selectedAge);
             $query->whereBetween('age', [(int)$min, (int)$max]);
         }
-        if (Auth::user()->role == 'staff') $query->where('health_worker_id', Auth::id());
+        if (Auth::user()->role == 'staff') {
+            $query->where('health_worker_id', Auth::id());
+
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            } else {
+                $assignedAreaIds = DB::table('staff_area_assignments')
+                    ->where('staff_id', Auth::id())
+                    ->pluck('area_id');
+                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                $query->whereIn('brgy_name', $assignedPuroks);
+            }
+        } else {
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            }
+        }
 
         $rows = $query->orderBy('name_of_wra', 'ASC')->get();
 

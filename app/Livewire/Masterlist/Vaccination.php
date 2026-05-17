@@ -7,6 +7,7 @@ use App\Models\brgy_unit;
 use App\Models\vaccination_masterlists;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -30,6 +31,8 @@ class Vaccination extends Component
     public $filterYear = '';
     public $selectedRange = '0-59 Months';
     protected $paginationTheme = 'bootstrap';
+    public $isHealthWorker = false;
+    public $availablePuroks = [];
 
     // ADDED: Force component re-render on filter changes
     public $refreshKey = 0;
@@ -85,6 +88,24 @@ class Vaccination extends Component
     public function mount()
     {
         $this->updateSelectedRange();
+
+        if (Auth::check() && Auth::user()->role === 'staff') {
+            $this->isHealthWorker = true;
+
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $this->availablePuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
+        } else {
+            $this->availablePuroks = brgy_unit::where('status', 'Active')
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit', 'brgy_unit')
+                ->toArray();
+        }
     }
 
     private function updateSelectedRange()
@@ -129,10 +150,6 @@ class Vaccination extends Component
             $query->where('name_of_child', 'like', '%' . $this->search . '%');
         }
 
-        // Barangay filter
-        if (!empty($this->selectedBrgy)) {
-            $query->where('brgy_name', $this->selectedBrgy);
-        }
 
         // Month filter
         if (!empty($this->filterMonth)) {
@@ -145,8 +162,24 @@ class Vaccination extends Component
         }
 
         // if the user is health worker
+        // for staff: scope to assigned areas
         if (Auth::user()->role == 'staff') {
             $query->where('health_worker_id', Auth::id());
+
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            } else {
+                $assignedAreaIds = DB::table('staff_area_assignments')
+                    ->where('staff_id', Auth::id())
+                    ->pluck('area_id');
+                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                $query->whereIn('brgy_name', $assignedPuroks);
+            }
+        } else {
+            // for nurse/admin: optional brgy filter
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            }
         }
 
         // Age range filter
@@ -217,9 +250,23 @@ class Vaccination extends Component
         if (!empty($this->filterYear))
             $query->whereYear('created_at', $this->filterYear);
 
-        if (Auth::user()->role == 'staff')
+        if (Auth::user()->role == 'staff') {
             $query->where('health_worker_id', Auth::id());
 
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            } else {
+                $assignedAreaIds = DB::table('staff_area_assignments')
+                    ->where('staff_id', Auth::id())
+                    ->pluck('area_id');
+                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
+                $query->whereIn('brgy_name', $assignedPuroks);
+            }
+        } else {
+            if (!empty($this->selectedBrgy)) {
+                $query->where('brgy_name', $this->selectedBrgy);
+            }
+        }
         if (!empty($this->ageRange)) {
             switch ($this->ageRange) {
                 case '0-4':

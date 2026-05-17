@@ -238,8 +238,10 @@
                                             </div>
                                             <div class="mb-2 w-full md:w-[50%]">
                                                 <label for="brgy">Purok<span class="text-danger">*</span></label>
-                                                <select name="brgy" id="brgy" class="form-select py-2 bg-light border-dark" data-bs-selected-brgy="{{ $address->purok }}" data-health-worker-assigned-area-id="{{ optional(Auth::user())->staff?->assigned_area_id }}">
-                                                    <option value="">Select a brgy</option>
+                                                <select name="brgy" id="brgy" class="form-select py-2"
+                                                    data-bs-purok="{{ optional($address)->purok ?? 'none' }}"
+                                                    data-health-worker-area-ids="{{ DB::table('staff_area_assignments')->where('staff_id', Auth::id())->pluck('area_id')->implode(',') }}">
+                                                    <option value="" selected disabled>Select a brgy</option>
                                                 </select>
                                                 <small class="text-danger error-text" id="brgy_error"></small>
                                             </div>
@@ -411,7 +413,7 @@
 
                                     <!-- save btn -->
                                     <div class="save-record d-flex justify-content-end w-100">
-                                       
+
                                         <button type="button" id="update-patient-detail-BTN" class="btn btn-success px-4 fs-5" data-bs-id="{{ $prenatalRecord->id }}">
                                             Update Record
                                         </button>

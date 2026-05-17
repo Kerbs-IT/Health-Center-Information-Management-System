@@ -12,6 +12,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 
@@ -51,27 +52,25 @@ class RecordsTable extends Component
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
 
-        // Check if user is health worker (staff)
         if (Auth::check() && Auth::user()->role === 'staff') {
             $this->isHealthWorker = true;
 
-            // Get staff record using user_id
-            $staff = staff::where('user_id', Auth::user()->id)->first();
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
 
-            if ($staff && $staff->assigned_area_id) {
-                $assignedArea = brgy_unit::find($staff->assigned_area_id);
+            $assignedAreas = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->get();
 
-                if ($assignedArea) {
-                    $this->assignedPurok = $assignedArea->brgy_unit;
-                    // For health workers, only show their assigned purok in dropdown
-                    $this->availablePuroks = [$assignedArea->brgy_unit => $assignedArea->brgy_unit];
-                    // Auto-select their assigned purok
-                    $this->purok = $assignedArea->brgy_unit;
-                }
+            if ($assignedAreas->isNotEmpty()) {
+                $this->availablePuroks = $assignedAreas->pluck('brgy_unit', 'brgy_unit')->toArray();
+                // Don't auto-lock to one purok — let them filter within their areas
+                $this->purok = '';
             }
         } else {
-            // For admin/other roles, load all puroks
-            $this->availablePuroks = brgy_unit::where('status','Active')->orderBy('brgy_unit', 'asc')
+            $this->availablePuroks = brgy_unit::where('status', 'Active')
+                ->orderBy('brgy_unit')
                 ->pluck('brgy_unit', 'brgy_unit')
                 ->toArray();
         }
@@ -118,12 +117,15 @@ class RecordsTable extends Component
     private function getQuery()
     {
         $query = patients::with(['medical_record_case' => function ($q) {
-            $q->where("status", 'Active');
+            $q->where('status', 'Active');
+
+            if (!empty($this->type_of_patient)) {
+                $q->where('type_of_case', $this->type_of_patient);
+            }
         }, 'address'])
             ->whereHas('medical_record_case', function ($q) {
                 $q->where('status', 'Active');
 
-                // Filter by type of patient if selected
                 if (!empty($this->type_of_patient)) {
                     $q->where('type_of_case', $this->type_of_patient);
                 }
@@ -133,17 +135,25 @@ class RecordsTable extends Component
             ->whereDate('patients.created_at', '>=', $this->start_date)
             ->whereDate('patients.created_at', '<=', $this->end_date);
 
-        // Health-worker scope - filter by assigned purok
-        if ($this->isHealthWorker && $this->assignedPurok) {
-            $query->whereHas('address', function ($q) {
-                $q->where('purok', $this->assignedPurok);
-            });
-        }
-        // Admin/other roles - filter by selected purok if any
-        elseif (!empty($this->purok)) {
-            $query->whereHas('address', function ($q) {
-                $q->where('purok', $this->purok);
-            });
+        if ($this->isHealthWorker) {
+            // Staff: always scope to their assigned areas
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
+            if (!empty($this->purok)) {
+                // Staff filtered to a specific one of their areas
+                $query->whereHas('address', fn($q) => $q->where('purok', $this->purok));
+            } else {
+                // Staff sees all their assigned areas
+                $query->whereHas('address', fn($q) => $q->whereIn('purok', $assignedPuroks));
+            }
+        } elseif (!empty($this->purok)) {
+            // Nurse/admin filtered to a specific purok
+            $query->whereHas('address', fn($q) => $q->where('purok', $this->purok));
         }
 
         return $query->orderBy($this->sortField, $this->sortDirection)->latest();

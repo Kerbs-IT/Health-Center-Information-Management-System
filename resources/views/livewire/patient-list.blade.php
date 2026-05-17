@@ -36,22 +36,16 @@
                     </div>
 
                     {{-- Purok --}}
+                    {{-- Purok --}}
                     <div class="col-md-2">
                         <label class="fw-bold w-100">Purok:</label>
-                        @if($isStaff)
-                        {{-- Staff: locked to assigned area, no dropdown --}}
-                        <input type="text"
-                            class="form-control border-2 bg-light"
-                            value="{{ $assignedPurok }}"
-                            disabled>
-                        @else
+                        {{-- Both nurse and staff get a dropdown; staff options are scoped to their areas --}}
                         <select wire:model.live="purokFilter" class="form-select border-2">
-                            <option value="all">All Puroks</option>
+                            <option value="all">{{ $isStaff ? 'All My Puroks' : 'All Puroks' }}</option>
                             @foreach($puroks as $purok)
                             <option value="{{ $purok }}">{{ $purok }}</option>
                             @endforeach
                         </select>
-                        @endif
                     </div>
 
                     {{-- Type of Patient --}}
@@ -337,10 +331,6 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Purok / Brgy Subdivision <span class="text-danger">*</span></label>
-                            @if($isStaff)
-                            <input type="text" class="form-control bg-light"
-                                value="{{ $assignedPurok }}" disabled>
-                            @else
                             <select wire:model="edit_brgy"
                                 class="form-select @error('edit_brgy') is-invalid @enderror">
                                 <option value="">-- Select --</option>
@@ -351,7 +341,6 @@
                             @error('edit_brgy')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            @endif
                         </div>
 
                     </div>

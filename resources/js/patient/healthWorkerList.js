@@ -28,26 +28,30 @@ export async function puroks(
     dropdown,
     purok,
     userRole = null,
-    assignedPurok = null,
+    assignedAreaIds = [],
 ) {
     try {
         const response = await fetch("/showBrgyUnit");
         const brgyData = await response.json();
 
-        const isRestrictedStaff =
-            userRole === "staff" && assignedPurok !== null;
+        // Normalize to array — handles both old single-ID calls and new array calls
+        const areaIds = Array.isArray(assignedAreaIds)
+            ? assignedAreaIds
+            : [parseInt(assignedAreaIds)].filter(Boolean);
+
+        const isRestrictedStaff = userRole === "staff" && areaIds.length > 0;
 
         brgyData.forEach((element) => {
             const isSelected = element.brgy_unit == purok;
-            const isAssigned = element.id == assignedPurok;
+            const isAssigned = areaIds.includes(element.id);
 
             if (isRestrictedStaff) {
-                // Only add the assigned purok to the dropdown
                 if (isAssigned) {
-                    dropdown.innerHTML += `<option value="${element.brgy_unit}" selected>${element.brgy_unit}</option>`;
+                    dropdown.innerHTML += `<option value="${element.brgy_unit}" ${
+                        isSelected ? "selected" : ""
+                    }>${element.brgy_unit}</option>`;
                 }
             } else {
-                // Nurse or admin - show all options
                 dropdown.innerHTML += `<option value="${element.brgy_unit}" ${
                     isSelected ? "selected" : ""
                 }>${element.brgy_unit}</option>`;

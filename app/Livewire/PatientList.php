@@ -46,6 +46,7 @@ class PatientList extends Component
     public $edit_civil_status   = '';
     public $edit_nationality    = '';
     public $edit_place_of_birth = '';
+    public $_staffPuroks = []; // holds assigned puroks for staff scoping
     // address — "street" holds "blk 1 lot 2, street name" combined
     public $edit_street = '';  // e.g. "Blk 1 Lot 2, Rizal St"
     public $edit_brgy   = '';  // purok column (e.g. "Gawad Kalinga")
@@ -74,11 +75,18 @@ class PatientList extends Component
         $this->start_date = Carbon::now()->subMonths(6)->format('Y-m-d');
         $this->end_date   = Carbon::now()->format('Y-m-d');
 
-        // Lock purok filter for staff — they can only see their assigned area
+        // Lock purok filter for staff — scope to their assigned areas
         if (Auth::user()->role === 'staff') {
-            $staffRecord       = staff::findOrFail(Auth::user()->id);
-            $assignedArea      = brgy_unit::where('id', $staffRecord->assigned_area_id)->first();
-            $this->purokFilter = $assignedArea->brgy_unit;
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
+            // Default to 'all' — buildQuery will scope it anyway
+            $this->purokFilter = 'all';
+            $this->_staffPuroks = $assignedPuroks->toArray();
         }
     }
 
@@ -104,12 +112,12 @@ class PatientList extends Component
 
     public function updatingPurokFilter()
     {
-        // Staff are locked to their assigned purok — silently re-lock and ignore
         if (Auth::user()->role === 'staff') {
-            $staffRecord       = staff::findOrFail(Auth::user()->id);
-            $assignedArea      = brgy_unit::where('id', $staffRecord->assigned_area_id)->first();
-            $this->purokFilter = $assignedArea->brgy_unit;
-            return;
+            // Staff can only filter within their assigned areas — ignore invalid selection
+            if ($this->purokFilter !== 'all' && !in_array($this->purokFilter, $this->_staffPuroks)) {
+                $this->purokFilter = 'all';
+                return;
+            }
         }
         $this->resetPage();
     }
@@ -178,57 +186,64 @@ class PatientList extends Component
     /* ------------------------------------------------------------------ */
     private function buildQuery()
     {
-        /*
-         * One row per (patient, type_of_case) — achieved with a join on
-         * medical_record_cases. Patients with NO case record appear with
-         * type_of_case = NULL (LEFT JOIN).
-         */
         $query = patients::query()
             ->leftJoin('medical_record_cases', 'medical_record_cases.patient_id', '=', 'patients.id')
             ->join('patient_addresses', 'patient_addresses.patient_id', '=', 'patients.id')
             ->select(
                 'patients.*',
-                'medical_record_cases.id as case_id',        // ← add this
+                'medical_record_cases.id as case_id',
                 'medical_record_cases.type_of_case',
-                'medical_record_cases.status as case_status', // ← add this
+                'medical_record_cases.status as case_status',
                 'patient_addresses.purok'
             );
 
-        // ── Health-worker scope ───────────────────────────────────────────
+        // Staff scope — restrict to their assigned areas
         if (Auth::user()->role === 'staff') {
-            $staff          = staff::findOrFail(Auth::user()->id);
-            $assignedArea   = brgy_unit::where('id', $staff->assigned_area_id)->first();
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
 
-            $query->where('patient_addresses.purok', $assignedArea->brgy_unit);
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)
+                ->pluck('brgy_unit');
+
+            if ($assignedPuroks->isNotEmpty()) {
+                // If staff selected a specific purok within their areas, filter to that
+                // Otherwise scope to all their assigned areas
+                if ($this->purokFilter !== 'all') {
+                    $query->where('patient_addresses.purok', $this->purokFilter);
+                } else {
+                    $query->whereIn('patient_addresses.purok', $assignedPuroks);
+                }
+            }
         }
 
-        // ── Search ────────────────────────────────────────────────────────
+        // Search
         if ($this->search) {
             $term = '%' . str_replace(' ', '%', $this->search) . '%';
             $query->where(function ($q) use ($term) {
-                $q->where('patients.full_name',      'like', $term)
+                $q->where('patients.full_name',        'like', $term)
                     ->orWhere('patients.first_name',   'like', $term)
                     ->orWhere('patients.last_name',    'like', $term)
                     ->orWhere('patients.contact_number', 'like', $term);
             });
         }
 
-        // ── Status filter ─────────────────────────────────────────────────
+        // Status filter
         if ($this->statusFilter !== 'all') {
             $query->where('medical_record_cases.status', ucfirst(strtolower($this->statusFilter)));
         }
 
-        // ── Purok filter ──────────────────────────────────────────────────
-        if ($this->purokFilter !== 'all') {
+        // Purok filter — for nurse only (staff handled above)
+        if ($this->purokFilter !== 'all' && Auth::user()->role !== 'staff') {
             $query->where('patient_addresses.purok', $this->purokFilter);
         }
 
-        // ── Type-of-patient filter ────────────────────────────────────────
+        // Type filter
         if ($this->typeFilter !== 'all') {
             $query->where('medical_record_cases.type_of_case', $this->typeFilter);
         }
 
-        // ── Date range (patients.created_at) ─────────────────────────────
+        // Date range
         $query->whereDate('patients.created_at', '>=', $this->start_date)
             ->whereDate('patients.created_at', '<=', $this->end_date);
 
@@ -257,18 +272,9 @@ class PatientList extends Component
         $this->edit_nationality    = $patient->nationality;
         $this->edit_place_of_birth = $patient->place_of_birth;
 
-        // Reconstruct the combined street field: "house_number, street" or just one of them
-        $streetParts = array_filter([$address->house_number ?? '', $address->street ?? '']);
+        $streetParts      = array_filter([$address->house_number ?? '', $address->street ?? '']);
         $this->edit_street = implode(', ', $streetParts);
-
-        // Staff: always lock brgy (purok) to their assigned area
-        if (Auth::user()->role === 'staff') {
-            $staffRecord      = staff::findOrFail(Auth::user()->id);
-            $assignedArea     = brgy_unit::where('id', $staffRecord->assigned_area_id)->first();
-            $this->edit_brgy  = $assignedArea->brgy_unit;
-        } else {
-            $this->edit_brgy = $address->purok ?? '';
-        }
+        $this->edit_brgy   = $address->purok ?? '';
 
         $this->dispatch('openEditModal');
     }
@@ -553,18 +559,25 @@ class PatientList extends Component
     /* ------------------------------------------------------------------ */
     public function render()
     {
-        $patients = $this->buildQuery()->paginate($this->perPage);
+        $patients  = $this->buildQuery()->paginate($this->perPage);
+        $isStaff   = Auth::user()->role === 'staff';
 
-        $isStaff      = Auth::user()->role === 'staff';
-        $assignedPurok = null;
-
+        // For staff: only show their assigned puroks in the filter dropdown
         if ($isStaff) {
-            $staffRecord   = staff::findOrFail(Auth::user()->id);
-            $assignedArea  = brgy_unit::where('id', $staffRecord->assigned_area_id)->first();
-            $assignedPurok = $assignedArea->brgy_unit;
-        }
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
 
-        $puroks = brgy_unit::where('status','Active')->orderBy('brgy_unit')->pluck('brgy_unit');
+            $puroks        = brgy_unit::where('status', 'Active')
+                ->whereIn('id', $assignedAreaIds)
+                ->orderBy('brgy_unit')
+                ->pluck('brgy_unit');
+
+            $assignedPurok = $puroks->implode(', '); // for display only
+        } else {
+            $puroks        = brgy_unit::where('status', 'Active')->orderBy('brgy_unit')->pluck('brgy_unit');
+            $assignedPurok = null;
+        }
 
         $caseTypes = [
             'vaccination',
