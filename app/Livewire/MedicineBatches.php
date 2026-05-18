@@ -7,7 +7,10 @@ use App\Models\Medicine;
 use App\Models\MedicineBatch;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use \Illuminate\Validation\Rule;
+
 class MedicineBatches extends Component
 {
     public Medicine $medicine;
@@ -26,8 +29,8 @@ class MedicineBatches extends Component
     public $editBatchManufactured = '';
 
     // ─── Archive state ────────────────────────────────────────────
-    public $archiveBatchId = null;
-    public $showArchived   = false;
+    public $archiveBatchId    = null;
+    public $showArchived      = false;
     public $batchErrorMessage = '';
 
     public string $backUrl = '';
@@ -36,14 +39,14 @@ class MedicineBatches extends Component
     {
         $this->resetValidation($propertyName);
     }
-    // ─── Mount ───────────────────────────────────────────────────
+
+    // ─── Mount ────────────────────────────────────────────────────
 
     public function mount(Medicine $medicine): void
     {
         $this->medicine = $medicine;
         $this->backUrl  = request('back', route('medicines'));
     }
-
 
     // ─── Expiry / stock helpers ───────────────────────────────────
 
@@ -84,6 +87,7 @@ class MedicineBatches extends Component
         $latestExpiry = $latestBatch->expiry_date;
         $status       = $this->determineExpiryStatus($latestExpiry);
 
+        // Stock = sum of physical quantities from valid (non-expired) batches only
         $validStock = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
             ->where('expiry_date', '>', now())
             ->where('quantity', '>', 0)
@@ -96,35 +100,57 @@ class MedicineBatches extends Component
             'stock_status'  => $this->determineStockStatus($validStock),
         ]);
 
-        // ── Real-time stock alert after every batch change ─────────
+        // ── Real-time stock alerts ─────────────────────────────────
         if ($validStock <= 0) {
             $this->sendStockNotification('out_of_stock');
         } elseif ($validStock <= 10) {
             $this->sendStockNotification('low_stock');
         }
+
+        // ── Real-time expiry alerts — check ALL active batches ─────
+        // BUG FIX: original code never sent expiry notifications on
+        // add/edit. Now we scan every active batch and fire a
+        // notification for any that are expiring soon or expired.
+        $activeBatches = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
+            ->whereNull('deleted_at')
+            ->get();
+
+        foreach ($activeBatches as $batch) {
+            $expiryStatus = $this->determineExpiryStatus($batch->expiry_date);
+
+            if ($expiryStatus === 'Expiring Soon') {
+                $this->sendExpiryNotification('expiring_soon', $batch);
+            } elseif ($expiryStatus === 'Expired') {
+                $this->sendExpiryNotification('expired', $batch);
+            }
+        }
     }
 
-    // ─── Real-time stock bell + email ────────────────────────────────
+    // ─── Real-time stock bell + email ─────────────────────────────
+
     private function sendStockNotification(string $alertType): void
     {
-        $medicine  = $this->medicine;
-        $message   = match ($alertType) {
+        $medicine = $this->medicine;
+
+        $message = match ($alertType) {
             'out_of_stock' => "{$medicine->medicine_name} ({$medicine->dosage}) is OUT OF STOCK. Current stock: {$medicine->stock}.",
             'low_stock'    => "{$medicine->medicine_name} ({$medicine->dosage}) is running LOW. Current stock: {$medicine->stock}.",
             default        => "Stock alert for {$medicine->medicine_name}.",
         };
+
         $title = match ($alertType) {
             'out_of_stock' => '🔴 Out of Stock Alert',
             'low_stock'    => '🟡 Low Stock Alert',
             default        => '⚠️ Inventory Alert',
         };
 
+        // Re-fetch without select() so generated columns like full_name resolve
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
         foreach ($recipients as $user) {
 
             // ── Bell dedup ─────────────────────────────────────────
-            $bellAlreadySent = \Illuminate\Support\Facades\DB::table('notifications')
+            $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
                 ->where('appointment_type', 'inventory')
@@ -133,7 +159,7 @@ class MedicineBatches extends Component
                 ->exists();
 
             if (! $bellAlreadySent) {
-                \Illuminate\Support\Facades\DB::table('notifications')->insert([
+                DB::table('notifications')->insert([
                     'user_id'          => $user->id,
                     'type'             => $alertType,
                     'title'            => $title,
@@ -147,7 +173,7 @@ class MedicineBatches extends Component
             }
 
             // ── Email dedup ────────────────────────────────────────
-            $emailAlreadySent = \Illuminate\Support\Facades\DB::table('inventory_email_logs')
+            $emailAlreadySent = DB::table('inventory_email_logs')
                 ->where('user_id',     $user->id)
                 ->where('alert_type',  $alertType)
                 ->where('reference',   $message)
@@ -157,16 +183,15 @@ class MedicineBatches extends Component
             if ($emailAlreadySent) continue;
 
             try {
-                \Illuminate\Support\Facades\Mail::to($user->email)
-                    ->send(new \App\Mail\InventoryAlertMail(
-                        $alertType,
-                        $medicine,
-                        null,   // no batch number for stock alerts
-                        null,   // no expiry date for stock alerts
-                        $user
-                    ));
+                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                    $alertType,
+                    $medicine,
+                    null,   // no batch number for stock alerts
+                    null,   // no expiry date for stock alerts
+                    $user
+                ));
 
-                \Illuminate\Support\Facades\DB::table('inventory_email_logs')->insert([
+                DB::table('inventory_email_logs')->insert([
                     'user_id'    => $user->id,
                     'alert_type' => $alertType,
                     'reference'  => $message,
@@ -175,7 +200,88 @@ class MedicineBatches extends Component
                     'updated_at' => now(),
                 ]);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
+                Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
+            }
+        }
+    }
+
+    // ─── Real-time expiry bell + email ────────────────────────────
+    // BUG FIX: this method did not exist before — expiry alerts were
+    // only sent by the 8 AM scheduler, never on real-time batch changes.
+
+    private function sendExpiryNotification(string $alertType, MedicineBatch $batch): void
+    {
+        $medicine = $this->medicine;
+
+        $message = match ($alertType) {
+            'expired'       => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$batch->expiry_date->format('M d, Y')}.",
+            'expiring_soon' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} is expiring on {$batch->expiry_date->format('M d, Y')}.",
+            default         => "Expiry alert for {$medicine->medicine_name}.",
+        };
+
+        $title = match ($alertType) {
+            'expired'       => '⛔ Expired Medicine Alert',
+            'expiring_soon' => '🟠 Expiring Soon Alert',
+            default         => '⚠️ Inventory Alert',
+        };
+
+        // Re-fetch without select() so generated columns like full_name resolve
+        $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
+
+        foreach ($recipients as $user) {
+
+            // ── Bell dedup ─────────────────────────────────────────
+            $bellAlreadySent = DB::table('notifications')
+                ->where('user_id',          $user->id)
+                ->where('type',             $alertType)
+                ->where('appointment_type', 'inventory')
+                ->where('message',          $message)
+                ->whereDate('created_at',   today())
+                ->exists();
+
+            if (! $bellAlreadySent) {
+                DB::table('notifications')->insert([
+                    'user_id'          => $user->id,
+                    'type'             => $alertType,
+                    'title'            => $title,
+                    'message'          => $message,
+                    'appointment_type' => 'inventory',
+                    'link_url'         => '/medicines?filter=' . $alertType,
+                    'is_read'          => 0,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]);
+            }
+
+            // ── Email dedup ────────────────────────────────────────
+            $emailAlreadySent = DB::table('inventory_email_logs')
+                ->where('user_id',     $user->id)
+                ->where('alert_type',  $alertType)
+                ->where('reference',   $message)
+                ->whereDate('sent_at', today())
+                ->exists();
+
+            if ($emailAlreadySent) continue;
+
+            try {
+                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                    $alertType,
+                    $medicine,
+                    $batch->batch_number,
+                    $batch->expiry_date->format('M d, Y'),
+                    $user
+                ));
+
+                DB::table('inventory_email_logs')->insert([
+                    'user_id'    => $user->id,
+                    'alert_type' => $alertType,
+                    'reference'  => $message,
+                    'sent_at'    => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Expiry alert mail failed for {$user->email}: " . $e->getMessage());
             }
         }
     }
@@ -185,21 +291,23 @@ class MedicineBatches extends Component
     public function addBatch(): void
     {
         $this->validate([
-            'newBatchQty'         => 'required|integer|min:1',
-            'newBatchExpiry'      => 'required|date|after:today',
-            'newBatchNumber'      => [
+            'newBatchQty'          => 'required|integer|min:1',
+            'newBatchExpiry'       => 'required|date|after:today',
+            'newBatchNumber'       => [
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->whereNull('deleted_at'),
+                Rule::unique('medicine_batches', 'batch_number')
+                    ->where('medicine_id', $this->medicine->medicine_id)
+                    ->whereNull('deleted_at'),
             ],
-            'newBatchManufactured'=> 'nullable|date|before_or_equal:today',
+            'newBatchManufactured' => 'nullable|date|before_or_equal:today',
         ], [
-            'newBatchQty.required'    => 'Quantity is required.',
-            'newBatchExpiry.required' => 'Expiry date is required.',
-            'newBatchExpiry.after'    => 'Expiry date must be in the future.',
-            'newBatchNumber.required' => 'Batch number is required.',
-            'newBatchNumber.unique'   => 'This batch number already exists.',
+            'newBatchQty.required'     => 'Quantity is required.',
+            'newBatchExpiry.required'  => 'Expiry date is required.',
+            'newBatchExpiry.after'     => 'Expiry date must be in the future.',
+            'newBatchNumber.required'  => 'Batch number is required.',
+            'newBatchNumber.unique'    => 'This batch number already exists.',
             'newBatchManufactured.before_or_equal' => 'Manufactured date cannot be in the future.',
         ]);
 
@@ -263,7 +371,9 @@ class MedicineBatches extends Component
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('medicine_batches', 'batch_number')->where('medicine_id', $this->medicine->medicine_id)->ignore($this->editBatchId),
+                Rule::unique('medicine_batches', 'batch_number')
+                    ->where('medicine_id', $this->medicine->medicine_id)
+                    ->ignore($this->editBatchId),
             ],
             'editBatchQty'          => ['required', 'integer', 'min:1'],
             'editBatchExpiry'       => 'required|date',
@@ -273,16 +383,13 @@ class MedicineBatches extends Component
             'editBatchExpiry.required' => 'Expiry date is required.',
             'editBatchNumber.required' => 'Batch number is required.',
             'editBatchNumber.unique'   => 'This batch number already exists.',
-            'editBatchExpiry.after' => 'Expiry date must be in the future.',
+            'editBatchExpiry.after'    => 'Expiry date must be in the future.',
             'editBatchManufactured.before_or_equal' => 'Manufactured date cannot be in the future.',
-
         ]);
 
         $newQty = (int) $this->editBatchQty;
 
         // ── RESERVATION GUARD ──────────────────────────────────────
-        // Prevent reducing quantity below what is already reserved by
-        // approved-but-not-yet-dispensed requests.
         if ($newQty < $batch->reserved_quantity) {
             $this->addError(
                 'editBatchQty',
@@ -340,9 +447,6 @@ class MedicineBatches extends Component
     {
         $batch = MedicineBatch::findOrFail($this->archiveBatchId);
 
-        // Warn if this batch has reserved units — archiving removes the physical
-        // stock so any pending reservations on it would be unfulfillable.
-        // In a real system you'd want to cancel those requests first.
         if ($batch->reserved_quantity > 0) {
             session()->flash('batch_error', "Warning: this batch has {$batch->reserved_quantity} units reserved for approved requests. Those requests may fail to dispense. Cancel or dispense them before archiving.");
             $this->archiveBatchId = null;
@@ -365,7 +469,7 @@ class MedicineBatches extends Component
     {
         $batch = MedicineBatch::withTrashed()->findOrFail($batchId);
 
-        // ── DUPLICATE GUARD ──────────────────────────────────────────
+        // ── DUPLICATE GUARD ───────────────────────────────────────
         $conflict = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
             ->where('batch_number', $batch->batch_number)
             ->whereNull('deleted_at')
