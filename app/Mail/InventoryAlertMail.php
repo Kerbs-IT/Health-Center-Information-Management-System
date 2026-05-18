@@ -25,7 +25,7 @@ class InventoryAlertMail extends Mailable
         ?string  $batchNumber,
         ?string  $expiryDate,
         ?User    $recipient     // add ? here too
-    ) { {
+    ) {
         $this->alertType   = $alertType;
         $this->medicine    = $medicine;
         $this->batchNumber = $batchNumber;
