@@ -56,7 +56,7 @@ class MedicineBatches extends Component
         $today  = now('Asia/Manila')->startOfDay();
 
         if ($expiry->lte($today)) return 'Expired';
-        if ($expiry->lte($today->copy()->addDays(30))) return 'Expiring Soon';
+        if ($expiry->lte($today->copy()->addDays(30)->startOfDay())) return 'Expiring Soon';
         return 'Valid';
     }
 
@@ -212,9 +212,11 @@ class MedicineBatches extends Component
 
     private function sendExpiryNotification(string $alertType, MedicineBatch $batch, Medicine $medicine): void
     {
+        $expiryDate = \Carbon\Carbon::parse($batch->expiry_date)->setTimezone('Asia/Manila');
+
         $message = match ($alertType) {
-            'expired'       => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$batch->expiry_date->format('M d, Y')}.",
-            'expiring_soon' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} is expiring on {$batch->expiry_date->format('M d, Y')}.",
+            'expired'       => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$expiryDate->format('M d, Y')}.",
+            'expiring_soon' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} is expiring on {$expiryDate->format('M d, Y')}.",
             default         => "Expiry alert for {$medicine->medicine_name}.",
         };
 
@@ -228,7 +230,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification (always fire) ───────────────────────
+            // ── Bell notification ──────────────────────────────────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -241,13 +243,13 @@ class MedicineBatches extends Component
                 'updated_at'       => now(),
             ]);
 
-            // ── Email notification (always fire) ──────────────────────
+            // ── Email notification ─────────────────────────────────
             try {
                 Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     $batch->batch_number,
-                    $batch->expiry_date->format('M d, Y'),
+                    $expiryDate->format('M d, Y'),
                     $user
                 ));
 
@@ -264,7 +266,6 @@ class MedicineBatches extends Component
             }
         }
     }
-
     // ─── Add batch ────────────────────────────────────────────────
 
     public function addBatch(): void

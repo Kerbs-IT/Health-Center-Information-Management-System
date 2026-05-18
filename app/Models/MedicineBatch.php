@@ -22,9 +22,10 @@ class MedicineBatch extends Model
         'expiry_status',
     ];
 
+
     protected $casts = [
-        'expiry_date'       => 'date',
-        'manufactured_date' => 'date',
+        'expiry_date'       => 'datetime',
+        'manufactured_date' => 'datetime',
     ];
 
     // ─── Relationships ───────────────────────────────────────────
