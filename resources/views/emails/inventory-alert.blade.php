@@ -169,11 +169,11 @@
         <div class="header">
             <div class="icon">
                 @switch($alertType)
-                @case('out_of_stock') 🔴 @break
-                @case('low_stock') 🟡 @break
-                @case('expiring_soon') 🟠 @break
-                @case('expired') ⛔ @break
-                @default ⚠️
+                    @case('out_of_stock') 🔴 @break
+                    @case('low_stock')    🟡 @break
+                    @case('expiring_soon') 🟠 @break
+                    @case('expired')      ⛔ @break
+                    @default              ⚠️
                 @endswitch
             </div>
             <h1>{{ $title }}</h1>
@@ -181,37 +181,39 @@
 
         <div class="content" style="padding: 20px 0;">
 
-            {{-- BUG FIXED: was using nurses/staff relationship chain that could
-             resolve to wrong person. Now uses $recipient->name directly
-             from the users table — always correct since each email is
-             sent individually per user in CheckInventoryExpiry.php --}}
-            
-            <p class="greeting">Hello, Health Center Staff!</p>
+            {{--
+                FIX: Use the $recipient passed from InventoryAlertMail.
+                Falls back gracefully to "Health Center Staff" if somehow
+                the mailable was called without a user (e.g. legacy callers).
+            --}}
+            <p class="greeting">
+                Hello, {{ $recipient?->full_name ?? 'Health Center Staff' }}!
+            </p>
 
             <p>This is an automated inventory alert from the Hugo Perez Health Center Information Management System.</p>
 
             {{-- Alert type banner --}}
             @switch($alertType)
-            @case('out_of_stock')
-            <div class="alert-box-red">
-                <strong>🔴 This medicine is completely OUT OF STOCK and needs immediate restocking.</strong>
-            </div>
-            @break
-            @case('low_stock')
-            <div class="alert-box-yellow">
-                <strong>🟡 Stock level is critically LOW. Please arrange restocking soon.</strong>
-            </div>
-            @break
-            @case('expiring_soon')
-            <div class="alert-box-orange">
-                <strong>🟠 A batch is expiring within 30 days. Please take action.</strong>
-            </div>
-            @break
-            @case('expired')
-            <div class="alert-box-dark">
-                <strong>⛔ A batch has EXPIRED. It must be removed from the inventory immediately.</strong>
-            </div>
-            @break
+                @case('out_of_stock')
+                    <div class="alert-box-red">
+                        <strong>🔴 This medicine is completely OUT OF STOCK and needs immediate restocking.</strong>
+                    </div>
+                    @break
+                @case('low_stock')
+                    <div class="alert-box-yellow">
+                        <strong>🟡 Stock level is critically LOW. Please arrange restocking soon.</strong>
+                    </div>
+                    @break
+                @case('expiring_soon')
+                    <div class="alert-box-orange">
+                        <strong>🟠 A batch is expiring within 30 days. Please take action.</strong>
+                    </div>
+                    @break
+                @case('expired')
+                    <div class="alert-box-dark">
+                        <strong>⛔ A batch has EXPIRED. It must be removed from the inventory immediately.</strong>
+                    </div>
+                    @break
             @endswitch
 
             {{-- Medicine details --}}
@@ -222,10 +224,10 @@
                 <p><strong>Current Stock:</strong> {{ $medicine->stock }} unit(s)</p>
                 <p><strong>Stock Status:</strong> {{ $medicine->stock_status }}</p>
                 @if($batchNumber)
-                <p><strong>Batch Number:</strong> {{ $batchNumber }}</p>
+                    <p><strong>Batch Number:</strong> {{ $batchNumber }}</p>
                 @endif
                 @if($expiryDate)
-                <p><strong>Expiry Date:</strong> {{ $expiryDate }}</p>
+                    <p><strong>Expiry Date:</strong> {{ $expiryDate }}</p>
                 @endif
             </div>
 
@@ -233,26 +235,26 @@
             <p><strong>Recommended Action:</strong></p>
             <ul>
                 @switch($alertType)
-                @case('out_of_stock')
-                <li>Immediately request or procure new stock</li>
-                <li>Inform the nurse-in-charge about the shortage</li>
-                <li>Check if any other batches can substitute</li>
-                @break
-                @case('low_stock')
-                <li>Plan restocking before stock reaches zero</li>
-                <li>Prioritize dispensing of this medicine carefully</li>
-                <li>Add a new batch via Batch Management</li>
-                @break
-                @case('expiring_soon')
-                <li>Prioritize dispensing this batch (FEFO order)</li>
-                <li>Avoid ordering large quantities until this batch is consumed</li>
-                <li>Notify concerned health workers</li>
-                @break
-                @case('expired')
-                <li>Remove expired batch from active inventory immediately</li>
-                <li>Archive the batch in the system</li>
-                <li>Document the disposal per health center protocol</li>
-                @break
+                    @case('out_of_stock')
+                        <li>Immediately request or procure new stock</li>
+                        <li>Inform the nurse-in-charge about the shortage</li>
+                        <li>Check if any other batches can substitute</li>
+                        @break
+                    @case('low_stock')
+                        <li>Plan restocking before stock reaches zero</li>
+                        <li>Prioritize dispensing of this medicine carefully</li>
+                        <li>Add a new batch via Batch Management</li>
+                        @break
+                    @case('expiring_soon')
+                        <li>Prioritize dispensing this batch (FEFO order)</li>
+                        <li>Avoid ordering large quantities until this batch is consumed</li>
+                        <li>Notify concerned health workers</li>
+                        @break
+                    @case('expired')
+                        <li>Remove expired batch from active inventory immediately</li>
+                        <li>Archive the batch in the system</li>
+                        <li>Document the disposal per health center protocol</li>
+                        @break
                 @endswitch
             </ul>
 
@@ -267,5 +269,4 @@
         </div>
     </div>
 </body>
-
 </html>

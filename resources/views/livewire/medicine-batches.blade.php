@@ -193,14 +193,20 @@
                             <td class="text-center">{{ $batch->initial_quantity }}</td>
                             <td class="text-center">
                                 @php
-                                    $statusClass = match($batch->expiry_status) {
+                                    $expiry     = $batch->expiry_date->copy()->startOfDay();
+                                    $today      = now('Asia/Manila')->startOfDay();
+                                    $liveStatus = $expiry->lte($today)
+                                        ? 'Expired'
+                                        : ($expiry->lte($today->copy()->addDays(30)) ? 'Expiring Soon' : 'Valid');
+
+                                    $statusClass = match($liveStatus) {
                                         'Valid'         => 'bg-success',
                                         'Expiring Soon' => 'bg-warning text-dark',
                                         'Expired'       => 'bg-danger',
                                         default         => 'bg-secondary',
                                     };
                                 @endphp
-                                <span class="badge {{ $statusClass }}">{{ $batch->expiry_status }}</span>
+                                <span class="badge {{ $statusClass }}">{{ $liveStatus }}</span>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex gap-1 justify-content-center">
