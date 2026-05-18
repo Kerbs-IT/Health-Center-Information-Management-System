@@ -169,67 +169,22 @@ class MedicineBatches extends Component
 
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
-        // Use Manila midnight as the dedup window so the server timezone
-        // never causes bell/email checks to land on the wrong date.
-        $manilaToday = now('Asia/Manila')->startOfDay();
-
         foreach ($recipients as $user) {
 
-            // ── Bell notification ──────────────────────────────────
-            // BUG FIX: was ->whereDate('created_at', today()) which uses
-            // the server's local timezone. Replaced with an explicit Manila
-            // boundary so dedup is consistent regardless of server tz.
-            $bellAlreadySent = DB::table('notifications')
-                ->where('user_id',          $user->id)
-                ->where('type',             $alertType)
-                ->where('appointment_type', 'inventory')
-                ->where('message',          $message)
-                ->where('created_at',       '>=', $manilaToday)
-                ->exists();
+            // ── Bell notification (always fire) ───────────────────────
+            DB::table('notifications')->insert([
+                'user_id'          => $user->id,
+                'type'             => $alertType,
+                'title'            => $title,
+                'message'          => $message,
+                'appointment_type' => 'inventory',
+                'link_url'         => '/medicines?filter=' . $alertType,
+                'is_read'          => 0,
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ]);
 
-            if (! $bellAlreadySent) {
-                DB::table('notifications')->insert([
-                    'user_id'          => $user->id,
-                    'type'             => $alertType,
-                    'title'            => $title,
-                    'message'          => $message,
-                    'appointment_type' => 'inventory',
-                    'link_url'         => '/medicines?filter=' . $alertType,
-                    'is_read'          => 0,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
-                ]);
-            }
-
-            // ── Email notification ─────────────────────────────────
-            // BUG FIX: previous version used Mail::send() (synchronous).
-            // That blocked the Livewire request on SMTP and — critically —
-            // an unhandled Swift/Symfony transport exception thrown inside
-            // send() propagated past the catch in some Laravel versions,
-            // killing the foreach and preventing all subsequent bell inserts
-            // for remaining recipients. Reverted to Mail::queue() so the
-            // HTTP request is never held hostage by SMTP.
-            //
-            // BUG FIX: dedup was ->whereDate('sent_at', today()) — same
-            // server-tz issue as the bell check. Fixed to Manila boundary.
-            //
-            // BUG FIX: stale inventory_email_logs rows written by the old
-            // Mail::queue() + immediate-log pattern were permanently blocking
-            // new sends. The log is still written at queue-time (not
-            // delivery-time) as a dispatch-dedup guard, but the timezone
-            // fix means tomorrow's window opens correctly, and new rows from
-            // this version will match this same query.
-            $emailAlreadySent = DB::table('inventory_email_logs')
-                ->where('user_id',    $user->id)
-                ->where('alert_type', $alertType)
-                ->where('reference',  $message)
-                ->where('sent_at',    '>=', $manilaToday)
-                ->exists();
-
-            if ($emailAlreadySent) {
-                continue;
-            }
-
+            // ── Email notification (always fire) ──────────────────────
             try {
                 Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
@@ -269,47 +224,24 @@ class MedicineBatches extends Component
             default         => '⚠️ Inventory Alert',
         };
 
-        $manilaToday = now('Asia/Manila')->startOfDay();
-
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification ──────────────────────────────────
-            $bellAlreadySent = DB::table('notifications')
-                ->where('user_id',          $user->id)
-                ->where('type',             $alertType)
-                ->where('appointment_type', 'inventory')
-                ->where('message',          $message)
-                ->where('created_at',       '>=', $manilaToday)
-                ->exists();
+            // ── Bell notification (always fire) ───────────────────────
+            DB::table('notifications')->insert([
+                'user_id'          => $user->id,
+                'type'             => $alertType,
+                'title'            => $title,
+                'message'          => $message,
+                'appointment_type' => 'inventory',
+                'link_url'         => '/medicines?filter=' . $alertType,
+                'is_read'          => 0,
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ]);
 
-            if (! $bellAlreadySent) {
-                DB::table('notifications')->insert([
-                    'user_id'          => $user->id,
-                    'type'             => $alertType,
-                    'title'            => $title,
-                    'message'          => $message,
-                    'appointment_type' => 'inventory',
-                    'link_url'         => '/medicines?filter=' . $alertType,
-                    'is_read'          => 0,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
-                ]);
-            }
-
-            // ── Email notification ─────────────────────────────────
-            $emailAlreadySent = DB::table('inventory_email_logs')
-                ->where('user_id',    $user->id)
-                ->where('alert_type', $alertType)
-                ->where('reference',  $message)
-                ->where('sent_at',    '>=', $manilaToday)
-                ->exists();
-
-            if ($emailAlreadySent) {
-                continue;
-            }
-
+            // ── Email notification (always fire) ──────────────────────
             try {
                 Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
