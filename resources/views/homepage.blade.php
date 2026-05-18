@@ -323,7 +323,13 @@
                 </div>
                 @endif
                 <h3 class="slide-title">{{ $worker->first_name }} {{ $worker->last_name }}</h3>
-                <p class="slide-text fw-bold">{{ $worker->assigned_area?->brgy_unit ?? '—' }}</p>
+                <div class="slide-text fw-bold">
+                    @if($worker->assigned_areas->isNotEmpty())
+                    <p class="mb-0 fs-6">{{ $worker->assigned_areas->pluck('brgy_unit')->join(', ') }}</p>
+                    @else
+                    <p class="mb-0">—</p>
+                    @endif
+                </div>
                 <p class="slide-text">{{ $worker->role ?? 'Health Worker' }}</p>
             </div>
             @empty
