@@ -232,13 +232,11 @@ class MedicineBatches extends Component
             default        => '⚠️ Inventory Alert',
         };
 
-        // FIX: Build reference ONCE, use in both cooldown check and log insert.
         $reference  = $this->buildAlertReference($alertType, $message);
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
+        // ── Bell notifications — always fire per user ──────────────
         foreach ($recipients as $user) {
-
-            // ── Bell notification — always insert, no cooldown ─────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -250,34 +248,35 @@ class MedicineBatches extends Component
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);
+        }
 
-            // ── Email — skip if sent recently (cooldown guard) ─────
-            if ($this->hasRecentEmailAlert($user->id, $alertType, $message)) {
-                continue;
-            }
+        // ── Email — ONE batch send, cooldown checked globally ──────
+        if ($this->hasRecentEmailAlert(0, $alertType, $message)) {
+            return;
+        }
 
-            try {
-                // FIX: Mail::send() not Mail::queue() — synchronous delivery.
-                // queue() silently drops emails if no worker is running.
-                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
-                    $alertType,
-                    $medicine,
-                    null,
-                    null,
-                    $user
-                ));
+        $emails = $recipients->pluck('email')->filter()->values()->toArray();
+        if (empty($emails)) return;
 
-                DB::table('inventory_email_logs')->insert([
-                    'user_id'    => $user->id,
-                    'alert_type' => $alertType,
-                    'reference'  => $reference, // FIX: same hash as the lookup above
-                    'sent_at'    => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            } catch (\Exception $e) {
-                Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
-            }
+        try {
+            Mail::to($emails)->send(new \App\Mail\InventoryAlertMail(
+                $alertType,
+                $medicine,
+                null,
+                null,
+                null
+            ));
+
+            DB::table('inventory_email_logs')->insert([
+                'user_id'    => 0,
+                'alert_type' => $alertType,
+                'reference'  => $reference,
+                'sent_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Stock alert mail failed: " . $e->getMessage());
         }
     }
 
@@ -299,13 +298,11 @@ class MedicineBatches extends Component
             default         => '⚠️ Inventory Alert',
         };
 
-        // FIX: Build reference ONCE, use in both cooldown check and log insert.
         $reference  = $this->buildAlertReference($alertType, $message);
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
+        // ── Bell notifications — always fire per user ──────────────
         foreach ($recipients as $user) {
-
-            // ── Bell notification — always insert, no cooldown ─────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -317,34 +314,35 @@ class MedicineBatches extends Component
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);
+        }
 
-            // ── Email — skip if sent recently (cooldown guard) ─────
-            if ($this->hasRecentEmailAlert($user->id, $alertType, $message)) {
-                continue;
-            }
+        // ── Email — ONE batch send, cooldown checked globally ──────
+        if ($this->hasRecentEmailAlert(0, $alertType, $message)) {
+            return;
+        }
 
-            try {
-                // FIX: Mail::send() not Mail::queue() — synchronous delivery.
-                // queue() silently drops emails if no worker is running.
-                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
-                    $alertType,
-                    $medicine,
-                    $batch->batch_number,
-                    $expiryDate->format('M d, Y'),
-                    $user
-                ));
+        $emails = $recipients->pluck('email')->filter()->values()->toArray();
+        if (empty($emails)) return;
 
-                DB::table('inventory_email_logs')->insert([
-                    'user_id'    => $user->id,
-                    'alert_type' => $alertType,
-                    'reference'  => $reference, // FIX: same hash as the lookup above
-                    'sent_at'    => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            } catch (\Exception $e) {
-                Log::error("Expiry alert mail failed for {$user->email}: " . $e->getMessage());
-            }
+        try {
+            Mail::to($emails)->send(new \App\Mail\InventoryAlertMail(
+                $alertType,
+                $medicine,
+                $batch->batch_number,
+                $expiryDate->format('M d, Y'),
+                null
+            ));
+
+            DB::table('inventory_email_logs')->insert([
+                'user_id'    => 0,
+                'alert_type' => $alertType,
+                'reference'  => $reference,
+                'sent_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Expiry alert mail failed: " . $e->getMessage());
         }
     }
 
