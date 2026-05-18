@@ -68,16 +68,13 @@ class MedicineBatches extends Component
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Syncs medicine stock/expiry from its batches.
-    // Returns a $pendingAlerts array to be dispatched AFTER the
-    // transaction commits — never dispatch notifications inside
-    // a transaction or queue jobs may fire on rolled-back data.
+    // Only syncs medicine stock + expiry columns.
+    // Does NOT trigger any notifications — kept pure for use inside
+    // transactions where no side effects should happen.
     // ─────────────────────────────────────────────────────────────
-    private function syncMedicineExpiryFromBatches(): array
+    private function syncMedicineExpiryFromBatches(): void
     {
         $allActiveBatches = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)->get();
-
-        $pendingAlerts = [];
 
         if ($allActiveBatches->isEmpty()) {
             $this->medicine->update([
@@ -86,9 +83,7 @@ class MedicineBatches extends Component
                 'stock'         => 0,
                 'stock_status'  => 'Out of Stock',
             ]);
-
-            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'out_of_stock', 'batch' => null];
-            return $pendingAlerts;
+            return;
         }
 
         $latestBatch  = $allActiveBatches->sortByDesc('expiry_date')->first();
@@ -106,16 +101,26 @@ class MedicineBatches extends Component
             'stock'         => $validStock,
             'stock_status'  => $this->determineStockStatus($validStock),
         ]);
+    }
 
-        // ── Collect stock alerts ───────────────────────────────────
-        if ($validStock <= 0) {
+    // ─────────────────────────────────────────────────────────────
+    // Builds the list of alerts to fire based on committed DB state.
+    // Called OUTSIDE the transaction so queries see committed data.
+    // ─────────────────────────────────────────────────────────────
+    private function collectAlerts(): array
+    {
+        $medicine      = $this->medicine->fresh();
+        $pendingAlerts = [];
+
+        // ── Stock alerts ───────────────────────────────────────────
+        if ($medicine->stock <= 0) {
             $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'out_of_stock', 'batch' => null];
-        } elseif ($validStock <= 10) {
+        } elseif ($medicine->stock <= 10) {
             $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'low_stock', 'batch' => null];
         }
 
-        // ── Collect expiry alerts for each active batch ────────────
-        $activeBatches = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
+        // ── Expiry alerts — scan all committed active batches ──────
+        $activeBatches = MedicineBatch::where('medicine_id', $medicine->medicine_id)
             ->whereNull('deleted_at')
             ->get();
 
@@ -133,8 +138,7 @@ class MedicineBatches extends Component
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Dispatch all collected alerts AFTER DB transaction commits.
-    // Called outside the transaction block in every action method.
+    // Dispatches all collected alerts after transaction commits.
     // ─────────────────────────────────────────────────────────────
     private function dispatchAlerts(array $pendingAlerts): void
     {
@@ -151,7 +155,7 @@ class MedicineBatches extends Component
 
     private function sendStockNotification(string $alertType): void
     {
-        $medicine = $this->medicine->fresh(); // re-fetch after transaction
+        $medicine = $this->medicine->fresh();
 
         $message = match ($alertType) {
             'out_of_stock' => "{$medicine->medicine_name} ({$medicine->dosage}) is OUT OF STOCK. Current stock: {$medicine->stock}.",
@@ -169,7 +173,6 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell dedup ─────────────────────────────────────────
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
@@ -192,7 +195,6 @@ class MedicineBatches extends Component
                 ]);
             }
 
-            // ── Email dedup ────────────────────────────────────────
             $emailAlreadySent = DB::table('inventory_email_logs')
                 ->where('user_id',     $user->id)
                 ->where('alert_type',  $alertType)
@@ -229,7 +231,7 @@ class MedicineBatches extends Component
 
     private function sendExpiryNotification(string $alertType, MedicineBatch $batch): void
     {
-        $medicine = $this->medicine->fresh(); // re-fetch after transaction
+        $medicine = $this->medicine->fresh();
 
         $message = match ($alertType) {
             'expired'       => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$batch->expiry_date->format('M d, Y')}.",
@@ -247,7 +249,6 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell dedup ─────────────────────────────────────────
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
@@ -270,7 +271,6 @@ class MedicineBatches extends Component
                 ]);
             }
 
-            // ── Email dedup ────────────────────────────────────────
             $emailAlreadySent = DB::table('inventory_email_logs')
                 ->where('user_id',     $user->id)
                 ->where('alert_type',  $alertType)
@@ -328,10 +328,10 @@ class MedicineBatches extends Component
             'newBatchManufactured.before_or_equal' => 'Manufactured date cannot be in the future.',
         ]);
 
-        $expiryStatus  = $this->determineExpiryStatus($this->newBatchExpiry);
-        $pendingAlerts = [];
+        $expiryStatus = $this->determineExpiryStatus($this->newBatchExpiry);
 
-        DB::transaction(function () use ($expiryStatus, &$pendingAlerts) {
+        // ── Step 1: save to DB ─────────────────────────────────────
+        DB::transaction(function () use ($expiryStatus) {
             MedicineBatch::create([
                 'medicine_id'       => $this->medicine->medicine_id,
                 'batch_number'      => $this->newBatchNumber,
@@ -343,11 +343,14 @@ class MedicineBatches extends Component
                 'expiry_status'     => $expiryStatus,
             ]);
 
-            $pendingAlerts = $this->syncMedicineExpiryFromBatches();
+            $this->syncMedicineExpiryFromBatches(); // pure DB sync only
             $this->medicine->refresh();
         });
 
-        // ── Fire notifications AFTER transaction commits ───────────
+        // ── Step 2: collect alerts from committed DB state ─────────
+        $pendingAlerts = $this->collectAlerts();
+
+        // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
 
         $this->reset(['newBatchNumber', 'newBatchQty', 'newBatchExpiry', 'newBatchManufactured']);
@@ -410,7 +413,6 @@ class MedicineBatches extends Component
 
         $newQty = (int) $this->editBatchQty;
 
-        // ── RESERVATION GUARD ──────────────────────────────────────
         if ($newQty < $batch->reserved_quantity) {
             $this->addError(
                 'editBatchQty',
@@ -419,10 +421,10 @@ class MedicineBatches extends Component
             return;
         }
 
-        $expiryStatus  = $this->determineExpiryStatus($this->editBatchExpiry);
-        $pendingAlerts = [];
+        $expiryStatus = $this->determineExpiryStatus($this->editBatchExpiry);
 
-        DB::transaction(function () use ($batch, $expiryStatus, $newQty, &$pendingAlerts) {
+        // ── Step 1: save to DB ─────────────────────────────────────
+        DB::transaction(function () use ($batch, $expiryStatus, $newQty) {
             $batch->update([
                 'batch_number'      => $this->editBatchNumber,
                 'quantity'          => $newQty,
@@ -431,11 +433,14 @@ class MedicineBatches extends Component
                 'expiry_status'     => $expiryStatus,
             ]);
 
-            $pendingAlerts = $this->syncMedicineExpiryFromBatches();
+            $this->syncMedicineExpiryFromBatches(); // pure DB sync only
             $this->medicine->refresh();
         });
 
-        // ── Fire notifications AFTER transaction commits ───────────
+        // ── Step 2: collect alerts from committed DB state ─────────
+        $pendingAlerts = $this->collectAlerts();
+
+        // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
 
         $this->resetEditFields();
@@ -477,15 +482,17 @@ class MedicineBatches extends Component
             return;
         }
 
-        $pendingAlerts = [];
-
-        DB::transaction(function () use ($batch, &$pendingAlerts) {
+        // ── Step 1: save to DB ─────────────────────────────────────
+        DB::transaction(function () use ($batch) {
             $batch->delete();
             $this->medicine->refresh();
-            $pendingAlerts = $this->syncMedicineExpiryFromBatches();
+            $this->syncMedicineExpiryFromBatches();
         });
 
-        // ── Fire notifications AFTER transaction commits ───────────
+        // ── Step 2: collect alerts from committed DB state ─────────
+        $pendingAlerts = $this->collectAlerts();
+
+        // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
         $this->medicine->refresh();
 
@@ -497,7 +504,6 @@ class MedicineBatches extends Component
     {
         $batch = MedicineBatch::withTrashed()->findOrFail($batchId);
 
-        // ── DUPLICATE GUARD ───────────────────────────────────────
         $conflict = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
             ->where('batch_number', $batch->batch_number)
             ->whereNull('deleted_at')
@@ -508,15 +514,17 @@ class MedicineBatches extends Component
             return;
         }
 
-        $pendingAlerts = [];
-
-        DB::transaction(function () use ($batch, &$pendingAlerts) {
+        // ── Step 1: save to DB ─────────────────────────────────────
+        DB::transaction(function () use ($batch) {
             $batch->restore();
             $this->medicine->refresh();
-            $pendingAlerts = $this->syncMedicineExpiryFromBatches();
+            $this->syncMedicineExpiryFromBatches();
         });
 
-        // ── Fire notifications AFTER transaction commits ───────────
+        // ── Step 2: collect alerts from committed DB state ─────────
+        $pendingAlerts = $this->collectAlerts();
+
+        // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
         $this->medicine->refresh();
 
