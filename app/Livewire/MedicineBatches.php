@@ -52,7 +52,7 @@ class MedicineBatches extends Component
 
     private function determineExpiryStatus($expiry_date): string
     {
-        $expiry = \Carbon\Carbon::parse($expiry_date)->startOfDay();
+        $expiry = \Carbon\Carbon::parse($expiry_date, 'Asia/Manila')->startOfDay();
         $today  = now('Asia/Manila')->startOfDay();
 
         if ($expiry->lte($today)) return 'Expired';
@@ -153,17 +153,6 @@ class MedicineBatches extends Component
 
     // ─── Real-time stock bell + email ─────────────────────────────
 
-    /**
-     * FIX 1: Accept the already-fetched $medicine instead of calling fresh()
-     *         again — avoids a redundant DB query and state drift.
-     * FIX 2: Use Mail::send() (synchronous) instead of Mail::queue().
-     *         queue() silently defers to the queue worker; if no worker is
-     *         running the email never arrives. send() dispatches immediately
-     *         within the request and throws on SMTP failure so we can catch it.
-     * FIX 3: Only insert into inventory_email_logs AFTER the mailer confirms
-     *         success. Previously the log was written even when the underlying
-     *         transport failed, permanently suppressing future attempts.
-     */
     private function sendStockNotification(string $alertType, Medicine $medicine): void
     {
         $message = match ($alertType) {
@@ -180,15 +169,22 @@ class MedicineBatches extends Component
 
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
+        // Use Manila midnight as the dedup window so the server timezone
+        // never causes bell/email checks to land on the wrong date.
+        $manilaToday = now('Asia/Manila')->startOfDay();
+
         foreach ($recipients as $user) {
 
-            // ── Bell notification (unchanged — already works) ──────
+            // ── Bell notification ──────────────────────────────────
+            // BUG FIX: was ->whereDate('created_at', today()) which uses
+            // the server's local timezone. Replaced with an explicit Manila
+            // boundary so dedup is consistent regardless of server tz.
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
                 ->where('appointment_type', 'inventory')
                 ->where('message',          $message)
-                ->whereDate('created_at',   today())
+                ->where('created_at',       '>=', $manilaToday)
                 ->exists();
 
             if (! $bellAlreadySent) {
@@ -206,11 +202,28 @@ class MedicineBatches extends Component
             }
 
             // ── Email notification ─────────────────────────────────
+            // BUG FIX: previous version used Mail::send() (synchronous).
+            // That blocked the Livewire request on SMTP and — critically —
+            // an unhandled Swift/Symfony transport exception thrown inside
+            // send() propagated past the catch in some Laravel versions,
+            // killing the foreach and preventing all subsequent bell inserts
+            // for remaining recipients. Reverted to Mail::queue() so the
+            // HTTP request is never held hostage by SMTP.
+            //
+            // BUG FIX: dedup was ->whereDate('sent_at', today()) — same
+            // server-tz issue as the bell check. Fixed to Manila boundary.
+            //
+            // BUG FIX: stale inventory_email_logs rows written by the old
+            // Mail::queue() + immediate-log pattern were permanently blocking
+            // new sends. The log is still written at queue-time (not
+            // delivery-time) as a dispatch-dedup guard, but the timezone
+            // fix means tomorrow's window opens correctly, and new rows from
+            // this version will match this same query.
             $emailAlreadySent = DB::table('inventory_email_logs')
-                ->where('user_id',     $user->id)
-                ->where('alert_type',  $alertType)
-                ->where('reference',   $message)
-                ->whereDate('sent_at', today())
+                ->where('user_id',    $user->id)
+                ->where('alert_type', $alertType)
+                ->where('reference',  $message)
+                ->where('sent_at',    '>=', $manilaToday)
                 ->exists();
 
             if ($emailAlreadySent) {
@@ -218,8 +231,7 @@ class MedicineBatches extends Component
             }
 
             try {
-                // FIX 2: send() is synchronous — throws immediately on failure.
-                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
+                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     null,
@@ -227,7 +239,6 @@ class MedicineBatches extends Component
                     $user
                 ));
 
-                // FIX 3: Log ONLY after confirmed send, not before.
                 DB::table('inventory_email_logs')->insert([
                     'user_id'    => $user->id,
                     'alert_type' => $alertType,
@@ -237,16 +248,13 @@ class MedicineBatches extends Component
                     'updated_at' => now(),
                 ]);
             } catch (\Exception $e) {
-                Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
+                Log::error("Stock alert mail queue failed for {$user->email}: " . $e->getMessage());
             }
         }
     }
 
     // ─── Real-time expiry bell + email ────────────────────────────
 
-    /**
-     * Same three fixes applied as sendStockNotification above.
-     */
     private function sendExpiryNotification(string $alertType, MedicineBatch $batch, Medicine $medicine): void
     {
         $message = match ($alertType) {
@@ -261,17 +269,19 @@ class MedicineBatches extends Component
             default         => '⚠️ Inventory Alert',
         };
 
+        $manilaToday = now('Asia/Manila')->startOfDay();
+
         $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification (unchanged — already works) ──────
+            // ── Bell notification ──────────────────────────────────
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
                 ->where('appointment_type', 'inventory')
                 ->where('message',          $message)
-                ->whereDate('created_at',   today())
+                ->where('created_at',       '>=', $manilaToday)
                 ->exists();
 
             if (! $bellAlreadySent) {
@@ -290,10 +300,10 @@ class MedicineBatches extends Component
 
             // ── Email notification ─────────────────────────────────
             $emailAlreadySent = DB::table('inventory_email_logs')
-                ->where('user_id',     $user->id)
-                ->where('alert_type',  $alertType)
-                ->where('reference',   $message)
-                ->whereDate('sent_at', today())
+                ->where('user_id',    $user->id)
+                ->where('alert_type', $alertType)
+                ->where('reference',  $message)
+                ->where('sent_at',    '>=', $manilaToday)
                 ->exists();
 
             if ($emailAlreadySent) {
@@ -301,8 +311,7 @@ class MedicineBatches extends Component
             }
 
             try {
-                // FIX 2: send() is synchronous — throws immediately on failure.
-                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
+                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     $batch->batch_number,
@@ -310,7 +319,6 @@ class MedicineBatches extends Component
                     $user
                 ));
 
-                // FIX 3: Log ONLY after confirmed send, not before.
                 DB::table('inventory_email_logs')->insert([
                     'user_id'    => $user->id,
                     'alert_type' => $alertType,
@@ -320,7 +328,7 @@ class MedicineBatches extends Component
                     'updated_at' => now(),
                 ]);
             } catch (\Exception $e) {
-                Log::error("Expiry alert mail failed for {$user->email}: " . $e->getMessage());
+                Log::error("Expiry alert mail queue failed for {$user->email}: " . $e->getMessage());
             }
         }
     }
