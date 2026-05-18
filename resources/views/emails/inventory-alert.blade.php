@@ -185,7 +185,7 @@
              resolve to wrong person. Now uses $recipient->name directly
              from the users table — always correct since each email is
              sent individually per user in CheckInventoryExpiry.php --}}
-            <!-- <p class="greeting">Hello, {{ $recipient->full_name }}!</p> -->
+            
             <p class="greeting">Hello, Health Center Staff!</p>
 
             <p>This is an automated inventory alert from the Hugo Perez Health Center Information Management System.</p>
