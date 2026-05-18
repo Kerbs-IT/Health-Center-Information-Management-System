@@ -114,9 +114,9 @@ class MedicineBatches extends Component
 
         // ── Stock alerts ───────────────────────────────────────────
         if ($medicine->stock <= 0) {
-            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'out_of_stock', 'batch' => null];
+            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'out_of_stock', 'batch' => null, 'medicine' => $medicine];
         } elseif ($medicine->stock <= 10) {
-            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'low_stock', 'batch' => null];
+            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'low_stock', 'batch' => null, 'medicine' => $medicine];
         }
 
         // ── Expiry alerts — scan all committed active batches ──────
@@ -128,9 +128,9 @@ class MedicineBatches extends Component
             $expiryStatus = $this->determineExpiryStatus($batch->expiry_date);
 
             if ($expiryStatus === 'Expiring Soon') {
-                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expiring_soon', 'batch' => $batch];
+                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expiring_soon', 'batch' => $batch, 'medicine' => $medicine];
             } elseif ($expiryStatus === 'Expired') {
-                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expired', 'batch' => $batch];
+                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expired', 'batch' => $batch, 'medicine' => $medicine];
             }
         }
 
@@ -144,19 +144,28 @@ class MedicineBatches extends Component
     {
         foreach ($pendingAlerts as $alert) {
             if ($alert['type'] === 'stock') {
-                $this->sendStockNotification($alert['alertType']);
+                $this->sendStockNotification($alert['alertType'], $alert['medicine']);
             } else {
-                $this->sendExpiryNotification($alert['alertType'], $alert['batch']);
+                $this->sendExpiryNotification($alert['alertType'], $alert['batch'], $alert['medicine']);
             }
         }
     }
 
     // ─── Real-time stock bell + email ─────────────────────────────
 
-    private function sendStockNotification(string $alertType): void
+    /**
+     * FIX 1: Accept the already-fetched $medicine instead of calling fresh()
+     *         again — avoids a redundant DB query and state drift.
+     * FIX 2: Use Mail::send() (synchronous) instead of Mail::queue().
+     *         queue() silently defers to the queue worker; if no worker is
+     *         running the email never arrives. send() dispatches immediately
+     *         within the request and throws on SMTP failure so we can catch it.
+     * FIX 3: Only insert into inventory_email_logs AFTER the mailer confirms
+     *         success. Previously the log was written even when the underlying
+     *         transport failed, permanently suppressing future attempts.
+     */
+    private function sendStockNotification(string $alertType, Medicine $medicine): void
     {
-        $medicine = $this->medicine->fresh();
-
         $message = match ($alertType) {
             'out_of_stock' => "{$medicine->medicine_name} ({$medicine->dosage}) is OUT OF STOCK. Current stock: {$medicine->stock}.",
             'low_stock'    => "{$medicine->medicine_name} ({$medicine->dosage}) is running LOW. Current stock: {$medicine->stock}.",
@@ -173,6 +182,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
+            // ── Bell notification (unchanged — already works) ──────
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
@@ -195,6 +205,7 @@ class MedicineBatches extends Component
                 ]);
             }
 
+            // ── Email notification ─────────────────────────────────
             $emailAlreadySent = DB::table('inventory_email_logs')
                 ->where('user_id',     $user->id)
                 ->where('alert_type',  $alertType)
@@ -202,10 +213,13 @@ class MedicineBatches extends Component
                 ->whereDate('sent_at', today())
                 ->exists();
 
-            if ($emailAlreadySent) continue;
+            if ($emailAlreadySent) {
+                continue;
+            }
 
             try {
-                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                // FIX 2: send() is synchronous — throws immediately on failure.
+                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     null,
@@ -213,6 +227,7 @@ class MedicineBatches extends Component
                     $user
                 ));
 
+                // FIX 3: Log ONLY after confirmed send, not before.
                 DB::table('inventory_email_logs')->insert([
                     'user_id'    => $user->id,
                     'alert_type' => $alertType,
@@ -229,10 +244,11 @@ class MedicineBatches extends Component
 
     // ─── Real-time expiry bell + email ────────────────────────────
 
-    private function sendExpiryNotification(string $alertType, MedicineBatch $batch): void
+    /**
+     * Same three fixes applied as sendStockNotification above.
+     */
+    private function sendExpiryNotification(string $alertType, MedicineBatch $batch, Medicine $medicine): void
     {
-        $medicine = $this->medicine->fresh();
-
         $message = match ($alertType) {
             'expired'       => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$batch->expiry_date->format('M d, Y')}.",
             'expiring_soon' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} is expiring on {$batch->expiry_date->format('M d, Y')}.",
@@ -249,6 +265,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
+            // ── Bell notification (unchanged — already works) ──────
             $bellAlreadySent = DB::table('notifications')
                 ->where('user_id',          $user->id)
                 ->where('type',             $alertType)
@@ -271,6 +288,7 @@ class MedicineBatches extends Component
                 ]);
             }
 
+            // ── Email notification ─────────────────────────────────
             $emailAlreadySent = DB::table('inventory_email_logs')
                 ->where('user_id',     $user->id)
                 ->where('alert_type',  $alertType)
@@ -278,10 +296,13 @@ class MedicineBatches extends Component
                 ->whereDate('sent_at', today())
                 ->exists();
 
-            if ($emailAlreadySent) continue;
+            if ($emailAlreadySent) {
+                continue;
+            }
 
             try {
-                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                // FIX 2: send() is synchronous — throws immediately on failure.
+                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     $batch->batch_number,
@@ -289,6 +310,7 @@ class MedicineBatches extends Component
                     $user
                 ));
 
+                // FIX 3: Log ONLY after confirmed send, not before.
                 DB::table('inventory_email_logs')->insert([
                     'user_id'    => $user->id,
                     'alert_type' => $alertType,
@@ -343,7 +365,7 @@ class MedicineBatches extends Component
                 'expiry_status'     => $expiryStatus,
             ]);
 
-            $this->syncMedicineExpiryFromBatches(); // pure DB sync only
+            $this->syncMedicineExpiryFromBatches();
             $this->medicine->refresh();
         });
 
@@ -433,7 +455,7 @@ class MedicineBatches extends Component
                 'expiry_status'     => $expiryStatus,
             ]);
 
-            $this->syncMedicineExpiryFromBatches(); // pure DB sync only
+            $this->syncMedicineExpiryFromBatches();
             $this->medicine->refresh();
         });
 
