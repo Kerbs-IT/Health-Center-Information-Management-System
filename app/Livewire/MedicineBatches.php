@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use \Illuminate\Validation\Rule;
 class MedicineBatches extends Component
@@ -74,6 +75,8 @@ class MedicineBatches extends Component
                 'stock'         => 0,
                 'stock_status'  => 'Out of Stock',
             ]);
+
+            $this->sendStockNotification('out_of_stock');
             return;
         }
 
@@ -81,7 +84,6 @@ class MedicineBatches extends Component
         $latestExpiry = $latestBatch->expiry_date;
         $status       = $this->determineExpiryStatus($latestExpiry);
 
-        // Stock = sum of physical quantities from valid batches only
         $validStock = MedicineBatch::where('medicine_id', $this->medicine->medicine_id)
             ->where('expiry_date', '>', now())
             ->where('quantity', '>', 0)
@@ -93,6 +95,89 @@ class MedicineBatches extends Component
             'stock'         => $validStock,
             'stock_status'  => $this->determineStockStatus($validStock),
         ]);
+
+        // ── Real-time stock alert after every batch change ─────────
+        if ($validStock <= 0) {
+            $this->sendStockNotification('out_of_stock');
+        } elseif ($validStock <= 10) {
+            $this->sendStockNotification('low_stock');
+        }
+    }
+
+    // ─── Real-time stock bell + email ────────────────────────────────
+    private function sendStockNotification(string $alertType): void
+    {
+        $medicine  = $this->medicine;
+        $message   = match ($alertType) {
+            'out_of_stock' => "{$medicine->medicine_name} ({$medicine->dosage}) is OUT OF STOCK. Current stock: {$medicine->stock}.",
+            'low_stock'    => "{$medicine->medicine_name} ({$medicine->dosage}) is running LOW. Current stock: {$medicine->stock}.",
+            default        => "Stock alert for {$medicine->medicine_name}.",
+        };
+        $title = match ($alertType) {
+            'out_of_stock' => '🔴 Out of Stock Alert',
+            'low_stock'    => '🟡 Low Stock Alert',
+            default        => '⚠️ Inventory Alert',
+        };
+
+        $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
+
+        foreach ($recipients as $user) {
+
+            // ── Bell dedup ─────────────────────────────────────────
+            $bellAlreadySent = \Illuminate\Support\Facades\DB::table('notifications')
+                ->where('user_id',          $user->id)
+                ->where('type',             $alertType)
+                ->where('appointment_type', 'inventory')
+                ->where('message',          $message)
+                ->whereDate('created_at',   today())
+                ->exists();
+
+            if (! $bellAlreadySent) {
+                \Illuminate\Support\Facades\DB::table('notifications')->insert([
+                    'user_id'          => $user->id,
+                    'type'             => $alertType,
+                    'title'            => $title,
+                    'message'          => $message,
+                    'appointment_type' => 'inventory',
+                    'link_url'         => '/medicines?filter=' . $alertType,
+                    'is_read'          => 0,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]);
+            }
+
+            // ── Email dedup ────────────────────────────────────────
+            $emailAlreadySent = \Illuminate\Support\Facades\DB::table('inventory_email_logs')
+                ->where('user_id',     $user->id)
+                ->where('alert_type',  $alertType)
+                ->where('reference',   $message)
+                ->whereDate('sent_at', today())
+                ->exists();
+
+            if ($emailAlreadySent) continue;
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->email)
+                    ->send(new \App\Mail\InventoryAlertMail(
+                        $alertType,
+                        $medicine,
+                        null,   // no batch number for stock alerts
+                        null,   // no expiry date for stock alerts
+                        $user
+                    ));
+
+                \Illuminate\Support\Facades\DB::table('inventory_email_logs')->insert([
+                    'user_id'    => $user->id,
+                    'alert_type' => $alertType,
+                    'reference'  => $message,
+                    'sent_at'    => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
+            }
+        }
     }
 
     // ─── Add batch ────────────────────────────────────────────────
