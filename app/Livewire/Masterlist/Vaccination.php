@@ -164,15 +164,14 @@ class Vaccination extends Component
         // if the user is health worker
         // for staff: scope to assigned areas
         if (Auth::user()->role == 'staff') {
-            $query->where('health_worker_id', Auth::id());
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
 
             if (!empty($this->selectedBrgy)) {
                 $query->where('brgy_name', $this->selectedBrgy);
             } else {
-                $assignedAreaIds = DB::table('staff_area_assignments')
-                    ->where('staff_id', Auth::id())
-                    ->pluck('area_id');
-                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
                 $query->whereIn('brgy_name', $assignedPuroks);
             }
         } else {
@@ -219,15 +218,15 @@ class Vaccination extends Component
     public function exportPdf()
     {
         $params = [
-            'search' => $this->search,
-            'selectedBrgy' => $this->selectedBrgy,
-            'ageRange' => $this->ageRange,
-            'filterMonth' => $this->filterMonth,
-            'filterYear' => $this->filterYear,
+            'search'        => $this->search,
+            'selectedBrgy'  => $this->selectedBrgy,
+            'ageRange'      => $this->ageRange,
+            'filterMonth'   => $this->filterMonth,
+            'filterYear'    => $this->filterYear,
             'selectedRange' => $this->selectedRange,
-            'sortField' => $this->sortField,
+            'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'entries' => $this->entries
+            'entries'       => $this->entries,
         ];
 
         $url = route('vaccination-masterlist.pdf', $params);
@@ -241,9 +240,6 @@ class Vaccination extends Component
         if (!empty($this->search))
             $query->where('name_of_child', 'like', '%' . $this->search . '%');
 
-        if (!empty($this->selectedBrgy))
-            $query->where('brgy_name', $this->selectedBrgy);
-
         if (!empty($this->filterMonth))
             $query->whereMonth('created_at', $this->filterMonth);
 
@@ -251,15 +247,14 @@ class Vaccination extends Component
             $query->whereYear('created_at', $this->filterYear);
 
         if (Auth::user()->role == 'staff') {
-            $query->where('health_worker_id', Auth::id());
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
 
             if (!empty($this->selectedBrgy)) {
                 $query->where('brgy_name', $this->selectedBrgy);
             } else {
-                $assignedAreaIds = DB::table('staff_area_assignments')
-                    ->where('staff_id', Auth::id())
-                    ->pluck('area_id');
-                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
                 $query->whereIn('brgy_name', $assignedPuroks);
             }
         } else {
@@ -267,6 +262,7 @@ class Vaccination extends Component
                 $query->where('brgy_name', $this->selectedBrgy);
             }
         }
+
         if (!empty($this->ageRange)) {
             switch ($this->ageRange) {
                 case '0-4':
@@ -297,30 +293,30 @@ class Vaccination extends Component
         ];
 
         $columns = [
-            ['label' => '#',            'key' => fn($r) => $rows->search(fn($i) => $i->id === $r->id) + 1],
+            ['label' => '#',             'key' => fn($r) => $rows->search(fn($i) => $i->id === $r->id) + 1],
             ['label' => 'Name of Child', 'key' => 'name_of_child'],
-            ['label' => 'Address',      'key' => 'Address'],
-            ['label' => 'Sex',          'key' => 'sex'],
-            ['label' => 'Age',          'key' => fn($r) => $r->age_display ?? $r->age],
+            ['label' => 'Address',       'key' => 'Address'],
+            ['label' => 'Sex',           'key' => 'sex'],
+            ['label' => 'Age',           'key' => fn($r) => $r->age_display ?? $r->age],
             ['label' => 'Date of Birth', 'key' => fn($r) => $r->date_of_birth
                 ? \Carbon\Carbon::parse($r->date_of_birth)->format('Y-m-d') : '—'],
-            ['label' => 'SE Status',    'key' => 'SE_status'],
-            ['label' => 'BCG',          'key' => 'BCG'],
-            ['label' => 'Hepa B',       'key' => fn($r) => $r->{'Hepatitis B'} ?? ''],
-            ['label' => 'PENTA 1',      'key' => 'PENTA_1'],
-            ['label' => 'PENTA 2',      'key' => 'PENTA_2'],
-            ['label' => 'PENTA 3',      'key' => 'PENTA_3'],
-            ['label' => 'OPV 1',        'key' => 'OPV_1'],
-            ['label' => 'OPV 2',        'key' => 'OPV_2'],
-            ['label' => 'OPV 3',        'key' => 'OPV_3'],
-            ['label' => 'PCV 1',        'key' => 'PCV_1'],
-            ['label' => 'PCV 2',        'key' => 'PCV_2'],
-            ['label' => 'PCV 3',        'key' => 'PCV_3'],
-            ['label' => 'IPV 1',        'key' => 'IPV_1'],
-            ['label' => 'IPV 2',        'key' => 'IPV_2'],
-            ['label' => 'MCV 1',        'key' => 'MCV_1'],
-            ['label' => 'MCV 2',        'key' => 'MCV_2'],
-            ['label' => 'Remarks',      'key' => 'remarks'],
+            ['label' => 'SE Status',     'key' => 'SE_status'],
+            ['label' => 'BCG',           'key' => 'BCG'],
+            ['label' => 'Hepa B',        'key' => fn($r) => $r->{'Hepatitis B'} ?? ''],
+            ['label' => 'PENTA 1',       'key' => 'PENTA_1'],
+            ['label' => 'PENTA 2',       'key' => 'PENTA_2'],
+            ['label' => 'PENTA 3',       'key' => 'PENTA_3'],
+            ['label' => 'OPV 1',         'key' => 'OPV_1'],
+            ['label' => 'OPV 2',         'key' => 'OPV_2'],
+            ['label' => 'OPV 3',         'key' => 'OPV_3'],
+            ['label' => 'PCV 1',         'key' => 'PCV_1'],
+            ['label' => 'PCV 2',         'key' => 'PCV_2'],
+            ['label' => 'PCV 3',         'key' => 'PCV_3'],
+            ['label' => 'IPV 1',         'key' => 'IPV_1'],
+            ['label' => 'IPV 2',         'key' => 'IPV_2'],
+            ['label' => 'MCV 1',         'key' => 'MCV_1'],
+            ['label' => 'MCV 2',         'key' => 'MCV_2'],
+            ['label' => 'Remarks',       'key' => 'remarks'],
         ];
 
         return Excel::download(
