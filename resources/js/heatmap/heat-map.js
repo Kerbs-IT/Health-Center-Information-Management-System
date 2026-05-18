@@ -479,7 +479,12 @@ class HealthHeatmap {
 
         if (!filterEl) return;
 
-        filterEl.textContent = purok === "all" ? "All Areas" : purok;
+        const purokLabels = {
+            all: "All Areas",
+            assigned_all: "All Assigned Areas",
+        };
+
+        filterEl.textContent = purokLabels[purok] ?? purok;
         statusText.textContent =
             caseType === "all"
                 ? "All Types"
