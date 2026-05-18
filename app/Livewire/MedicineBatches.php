@@ -35,6 +35,11 @@ class MedicineBatches extends Component
 
     public string $backUrl = '';
 
+    // ─── Cooldown in minutes — prevents duplicate alerts ──────────
+    // Change this value to control how often the same alert re-fires.
+    // Set to 0 to always send on every action (no cooldown).
+    private const ALERT_COOLDOWN_MINUTES = 60;
+
     public function updated($propertyName): void
     {
         $this->resetValidation($propertyName);
@@ -68,9 +73,8 @@ class MedicineBatches extends Component
     }
 
     // ─────────────────────────────────────────────────────────────
-    // Only syncs medicine stock + expiry columns.
-    // Does NOT trigger any notifications — kept pure for use inside
-    // transactions where no side effects should happen.
+    // Syncs medicine stock + expiry columns from active batches.
+    // Pure — no side effects. Safe to call inside transactions.
     // ─────────────────────────────────────────────────────────────
     private function syncMedicineExpiryFromBatches(): void
     {
@@ -114,12 +118,22 @@ class MedicineBatches extends Component
 
         // ── Stock alerts ───────────────────────────────────────────
         if ($medicine->stock <= 0) {
-            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'out_of_stock', 'batch' => null, 'medicine' => $medicine];
+            $pendingAlerts[] = [
+                'type'      => 'stock',
+                'alertType' => 'out_of_stock',
+                'batch'     => null,
+                'medicine'  => $medicine,
+            ];
         } elseif ($medicine->stock <= 10) {
-            $pendingAlerts[] = ['type' => 'stock', 'alertType' => 'low_stock', 'batch' => null, 'medicine' => $medicine];
+            $pendingAlerts[] = [
+                'type'      => 'stock',
+                'alertType' => 'low_stock',
+                'batch'     => null,
+                'medicine'  => $medicine,
+            ];
         }
 
-        // ── Expiry alerts — scan all committed active batches ──────
+        // ── Expiry alerts — scan all active batches ────────────────
         $activeBatches = MedicineBatch::where('medicine_id', $medicine->medicine_id)
             ->whereNull('deleted_at')
             ->get();
@@ -128,9 +142,19 @@ class MedicineBatches extends Component
             $expiryStatus = $this->determineExpiryStatus($batch->expiry_date);
 
             if ($expiryStatus === 'Expiring Soon') {
-                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expiring_soon', 'batch' => $batch, 'medicine' => $medicine];
+                $pendingAlerts[] = [
+                    'type'      => 'expiry',
+                    'alertType' => 'expiring_soon',
+                    'batch'     => $batch,
+                    'medicine'  => $medicine,
+                ];
             } elseif ($expiryStatus === 'Expired') {
-                $pendingAlerts[] = ['type' => 'expiry', 'alertType' => 'expired', 'batch' => $batch, 'medicine' => $medicine];
+                $pendingAlerts[] = [
+                    'type'      => 'expiry',
+                    'alertType' => 'expired',
+                    'batch'     => $batch,
+                    'medicine'  => $medicine,
+                ];
             }
         }
 
@@ -149,6 +173,29 @@ class MedicineBatches extends Component
                 $this->sendExpiryNotification($alert['alertType'], $alert['batch'], $alert['medicine']);
             }
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Checks whether a recent alert of the same type + reference
+    // was already sent within the cooldown window.
+    //
+    // FIX: Prevents duplicate emails from spamming recipients on
+    //      every single batch action (add/edit/archive/restore).
+    //      The bell notification is still always inserted because
+    //      in-app bells are cheap and expected every time.
+    // ─────────────────────────────────────────────────────────────
+    private function hasRecentEmailAlert(int $userId, string $alertType, string $reference): bool
+    {
+        if (self::ALERT_COOLDOWN_MINUTES === 0) {
+            return false; // Cooldown disabled — always send
+        }
+
+        return DB::table('inventory_email_logs')
+            ->where('user_id', $userId)
+            ->where('alert_type', $alertType)
+            ->where('reference', $reference)
+            ->where('sent_at', '>=', now()->subMinutes(self::ALERT_COOLDOWN_MINUTES))
+            ->exists();
     }
 
     // ─── Real-time stock bell + email ─────────────────────────────
@@ -171,7 +218,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification ──────────────────────────────────
+            // ── Bell notification — always insert, no cooldown ─────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -184,9 +231,16 @@ class MedicineBatches extends Component
                 'updated_at'       => now(),
             ]);
 
-            // ── Email — no dedup, fires every action ───────────────
+            // ── Email — skip if sent recently (cooldown guard) ─────
+            // FIX: was Mail::queue() which silently drops when the
+            //      queue worker is not running. Changed to Mail::send()
+            //      for immediate, synchronous delivery.
+            if ($this->hasRecentEmailAlert($user->id, $alertType, $message)) {
+                continue;
+            }
+
             try {
-                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     null,
@@ -203,7 +257,7 @@ class MedicineBatches extends Component
                     'updated_at' => now(),
                 ]);
             } catch (\Exception $e) {
-                Log::error("Stock alert mail queue failed for {$user->email}: " . $e->getMessage());
+                Log::error("Stock alert mail failed for {$user->email}: " . $e->getMessage());
             }
         }
     }
@@ -230,7 +284,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification ──────────────────────────────────
+            // ── Bell notification — always insert, no cooldown ─────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -243,9 +297,16 @@ class MedicineBatches extends Component
                 'updated_at'       => now(),
             ]);
 
-            // ── Email — no dedup, fires every action ───────────────
+            // ── Email — skip if sent recently (cooldown guard) ─────
+            // FIX: was Mail::queue() which silently drops when the
+            //      queue worker is not running. Changed to Mail::send()
+            //      for immediate, synchronous delivery.
+            if ($this->hasRecentEmailAlert($user->id, $alertType, $message)) {
+                continue;
+            }
+
             try {
-                Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
+                Mail::to($user->email)->send(new \App\Mail\InventoryAlertMail(
                     $alertType,
                     $medicine,
                     $batch->batch_number,
@@ -262,10 +323,11 @@ class MedicineBatches extends Component
                     'updated_at' => now(),
                 ]);
             } catch (\Exception $e) {
-                Log::error("Expiry alert mail queue failed for {$user->email}: " . $e->getMessage());
+                Log::error("Expiry alert mail failed for {$user->email}: " . $e->getMessage());
             }
         }
     }
+
     // ─── Add batch ────────────────────────────────────────────────
 
     public function addBatch(): void
@@ -307,8 +369,11 @@ class MedicineBatches extends Component
             ]);
 
             $this->syncMedicineExpiryFromBatches();
-            $this->medicine->refresh();
         });
+
+        // FIX: Single refresh OUTSIDE the transaction ensures
+        //      collectAlerts() reads fully committed data.
+        $this->medicine->refresh();
 
         // ── Step 2: collect alerts from committed DB state ─────────
         $pendingAlerts = $this->collectAlerts();
@@ -397,8 +462,11 @@ class MedicineBatches extends Component
             ]);
 
             $this->syncMedicineExpiryFromBatches();
-            $this->medicine->refresh();
         });
+
+        // FIX: Single refresh OUTSIDE the transaction ensures
+        //      collectAlerts() reads fully committed data.
+        $this->medicine->refresh();
 
         // ── Step 2: collect alerts from committed DB state ─────────
         $pendingAlerts = $this->collectAlerts();
@@ -448,16 +516,18 @@ class MedicineBatches extends Component
         // ── Step 1: save to DB ─────────────────────────────────────
         DB::transaction(function () use ($batch) {
             $batch->delete();
-            $this->medicine->refresh();
             $this->syncMedicineExpiryFromBatches();
         });
+
+        // FIX: Single refresh OUTSIDE the transaction — removed the
+        //      duplicate refresh that was inside the transaction block.
+        $this->medicine->refresh();
 
         // ── Step 2: collect alerts from committed DB state ─────────
         $pendingAlerts = $this->collectAlerts();
 
         // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
-        $this->medicine->refresh();
 
         $this->archiveBatchId = null;
         session()->flash('batch_success', 'Batch archived successfully.');
@@ -480,16 +550,18 @@ class MedicineBatches extends Component
         // ── Step 1: save to DB ─────────────────────────────────────
         DB::transaction(function () use ($batch) {
             $batch->restore();
-            $this->medicine->refresh();
             $this->syncMedicineExpiryFromBatches();
         });
+
+        // FIX: Single refresh OUTSIDE the transaction — removed the
+        //      duplicate refresh that was inside the transaction block.
+        $this->medicine->refresh();
 
         // ── Step 2: collect alerts from committed DB state ─────────
         $pendingAlerts = $this->collectAlerts();
 
         // ── Step 3: dispatch notifications ────────────────────────
         $this->dispatchAlerts($pendingAlerts);
-        $this->medicine->refresh();
 
         session()->flash('batch_success', 'Batch restored successfully.');
     }
