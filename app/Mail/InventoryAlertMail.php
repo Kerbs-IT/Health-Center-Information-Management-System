@@ -17,15 +17,15 @@ class InventoryAlertMail extends Mailable
     public Medicine $medicine;
     public ?string $batchNumber;
     public ?string $expiryDate;
-    public User    $recipient;
+    public ?User   $recipient;  // line 16 — add ?
 
     public function __construct(
         string   $alertType,
         Medicine $medicine,
         ?string  $batchNumber,
         ?string  $expiryDate,
-        User     $recipient
-    ) {
+        ?User    $recipient     // add ? here too
+    ) { {
         $this->alertType   = $alertType;
         $this->medicine    = $medicine;
         $this->batchNumber = $batchNumber;
