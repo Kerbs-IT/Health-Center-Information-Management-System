@@ -179,18 +179,17 @@ class WRA extends Component
 
         // WITH this:
         if (Auth::user()->role == 'staff') {
-            $query->where('health_worker_id', Auth::id());
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
 
             if (!empty($this->selectedBrgy)) {
                 $query->where('brgy_name', $this->selectedBrgy);
             } else {
-                $assignedAreaIds = DB::table('staff_area_assignments')
-                    ->where('staff_id', Auth::id())
-                    ->pluck('area_id');
-                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
                 $query->whereIn('brgy_name', $assignedPuroks);
             }
-        } else {
+        }else {
             if (!empty($this->selectedBrgy)) {
                 $query->where('brgy_name', $this->selectedBrgy);
             }
