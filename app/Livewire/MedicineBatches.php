@@ -171,7 +171,7 @@ class MedicineBatches extends Component
 
         foreach ($recipients as $user) {
 
-            // ── Bell notification (always fire) ───────────────────────
+            // ── Bell notification ──────────────────────────────────
             DB::table('notifications')->insert([
                 'user_id'          => $user->id,
                 'type'             => $alertType,
@@ -184,7 +184,7 @@ class MedicineBatches extends Component
                 'updated_at'       => now(),
             ]);
 
-            // ── Email notification (always fire) ──────────────────────
+            // ── Email — no dedup, fires every action ───────────────
             try {
                 Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
@@ -243,7 +243,7 @@ class MedicineBatches extends Component
                 'updated_at'       => now(),
             ]);
 
-            // ── Email notification ─────────────────────────────────
+            // ── Email — no dedup, fires every action ───────────────
             try {
                 Mail::to($user->email)->queue(new \App\Mail\InventoryAlertMail(
                     $alertType,
