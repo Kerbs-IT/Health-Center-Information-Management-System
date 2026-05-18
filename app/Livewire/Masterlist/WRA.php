@@ -220,16 +220,16 @@ class WRA extends Component
     public function exportPdf()
     {
         $params = [
-            'search' => $this->search,
-            'selectedBrgy' => $this->selectedBrgy,
+            'search'        => $this->search,
+            'selectedBrgy'  => $this->selectedBrgy,
             'selectedMonth' => $this->selectedMonth,
-            'monthName' => $this->monthName($this->selectedMonth),
-            'selectedYear' => $this->selectedYear,
-            'sortField' => $this->sortField,
+            'monthName'     => $this->monthName($this->selectedMonth),
+            'selectedYear'  => $this->selectedYear,
+            'sortField'     => $this->sortField,
             'sortDirection' => $this->sortDirection,
-            'entries' => $this->entries,
+            'entries'       => $this->entries,
             'withUnmetNeed' => $this->withUnmetNeed,
-            'selectedAge' => $this->selectedAge,
+            'selectedAge'   => $this->selectedAge,
         ];
 
         $url = route('wra-masterlist.pdf', $params);
@@ -247,16 +247,17 @@ class WRA extends Component
             [$min, $max] = explode('-', $this->selectedAge);
             $query->whereBetween('age', [(int)$min, (int)$max]);
         }
+
+        // ↓ Replace the old staff block with this
         if (Auth::user()->role == 'staff') {
-            $query->where('health_worker_id', Auth::id());
+            $assignedAreaIds = DB::table('staff_area_assignments')
+                ->where('staff_id', Auth::id())
+                ->pluck('area_id');
+            $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
 
             if (!empty($this->selectedBrgy)) {
                 $query->where('brgy_name', $this->selectedBrgy);
             } else {
-                $assignedAreaIds = DB::table('staff_area_assignments')
-                    ->where('staff_id', Auth::id())
-                    ->pluck('area_id');
-                $assignedPuroks = brgy_unit::whereIn('id', $assignedAreaIds)->pluck('brgy_unit');
                 $query->whereIn('brgy_name', $assignedPuroks);
             }
         } else {
@@ -267,18 +268,18 @@ class WRA extends Component
 
         $rows = $query->orderBy('name_of_wra', 'ASC')->get();
 
-        $midwife = User::where('role','nurse')->first();
+        $midwife = User::where('role', 'nurse')->first();
         $midwifeName = $midwife?->nurses?->full_name;
 
         $filters = [
-            'search'       => $this->search,
-            'selectedBrgy' => $this->selectedBrgy,
+            'search'        => $this->search,
+            'selectedBrgy'  => $this->selectedBrgy,
             'selectedMonth' => $this->selectedMonth,
-            'monthName'    => $this->monthName($this->selectedMonth),
-            'selectedYear' => $this->selectedYear,
+            'monthName'     => $this->monthName($this->selectedMonth),
+            'selectedYear'  => $this->selectedYear,
             'withUnmetNeed' => $this->withUnmetNeed,
-            'selectedAge'  => $this->selectedAge,
-            'midwifeName'  => $midwifeName,
+            'selectedAge'   => $this->selectedAge,
+            'midwifeName'   => $midwifeName,
         ];
 
         return Excel::download(
