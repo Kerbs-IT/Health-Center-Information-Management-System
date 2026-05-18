@@ -7,9 +7,13 @@ use Livewire\Attributes\Url;
 use App\Models\Medicine;
 use App\Models\Category;
 use App\Models\MedicineBatch;
+use App\Models\User;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\InventoryAlertMail;
 use \Illuminate\Validation\Rule;
 
 class Medicines extends Component
@@ -36,7 +40,6 @@ class Medicines extends Component
     public $archiveMedicineId;
     public $showArchived  = false;
     public string $backUrl = '';
-    // ── Bound to ?filter= query string automatically ──────────────
     public string $filterStatus = '';
 
     public function mount(): void
@@ -170,7 +173,9 @@ class Medicines extends Component
         return 'Valid';
     }
 
-    // ─── CRUD ────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // CRUD
+    // ─────────────────────────────────────────────────────────────
 
     public function storeMedicineData(): void
     {
@@ -191,13 +196,22 @@ class Medicines extends Component
         if (!$this->validateAgeRange())          return;
         if (!$this->validateMedicineUniqueness()) return;
 
-        $min_age_months = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
-        $max_age_months = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
-        $stockStatus    = $this->determineStockStatus($this->stock);
-        $expiryStatus   = $this->determineExpiryStatus($this->expiry_date);
+        $min_age_months  = $this->convertToMonths($this->min_age_value, $this->min_age_unit);
+        $max_age_months  = $this->convertToMonths($this->max_age_value, $this->max_age_unit);
+        $stockStatus     = $this->determineStockStatus($this->stock);
+        $expiryStatus    = $this->determineExpiryStatus($this->expiry_date);
 
-        DB::transaction(function () use ($min_age_months, $max_age_months, $stockStatus, $expiryStatus) {
-            $medicine = Medicine::create([
+        // Hold references outside the closure so we can pass them
+        // to sendNewMedicineAlerts() after the transaction commits.
+        $createdMedicine = null;
+        $createdBatch    = null;
+
+        DB::transaction(function () use (
+            $min_age_months, $max_age_months,
+            $stockStatus, $expiryStatus,
+            &$createdMedicine, &$createdBatch
+        ) {
+            $createdMedicine = Medicine::create([
                 'medicine_name'  => trim($this->medicine_name),
                 'category_id'    => $this->category_id,
                 'dosage'         => $this->dosage,
@@ -209,16 +223,25 @@ class Medicines extends Component
                 'max_age_months' => $max_age_months,
             ]);
 
-            MedicineBatch::create([
-                'medicine_id'       => $medicine->medicine_id,
+            $createdBatch = MedicineBatch::create([
+                'medicine_id'       => $createdMedicine->medicine_id,
                 'batch_number'      => $this->batch_number,
-                'quantity'          => (int)$this->stock,
-                'initial_quantity'  => (int)$this->stock,
+                'quantity'          => (int) $this->stock,
+                'initial_quantity'  => (int) $this->stock,
                 'manufactured_date' => $this->manufactured_date ?: null,
                 'expiry_date'       => $this->expiry_date,
                 'expiry_status'     => $expiryStatus,
             ]);
         });
+
+        // ── Fire alerts AFTER the transaction commits so all rows
+        //    are visible to the dedup queries inside the mailer ────
+        if ($createdMedicine && $createdBatch) {
+            // refresh() ensures Carbon-cast dates are hydrated
+            // properly before we call ->format() in the alert builder
+            $createdBatch->refresh();
+            $this->sendNewMedicineAlerts($createdMedicine, $createdBatch);
+        }
 
         $this->dispatch('medicine-addedModal');
         $this->dispatch('close-addMedicineModal');
@@ -228,6 +251,138 @@ class Medicines extends Component
         $this->batch_number      = '';
         $this->manufactured_date = '';
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // ALERT HELPER — called after storeMedicineData() transaction
+    //
+    // Sends bell notifications + individual emails for any alert
+    // condition that applies to a newly added medicine/batch.
+    //
+    // Dedup pattern matches CheckInventoryExpiry exactly so the
+    // 8 AM scheduler will never double-send on the same day.
+    // ─────────────────────────────────────────────────────────────
+
+    private function sendNewMedicineAlerts(
+        Medicine      $medicine,
+        MedicineBatch $batch
+    ): void {
+        $recipients = User::whereIn('role', ['nurse', 'staff'])->get();
+        if ($recipients->isEmpty()) return;
+
+        // Build the list of applicable alert types for this entry.
+        // A medicine can trigger more than one (e.g. low stock AND
+        // expiring soon), so we collect all that apply.
+        $alerts = [];
+
+        // ── Stock alerts ───────────────────────────────────────────
+        if ($medicine->stock <= 0) {
+            $alerts[] = [
+                'type'    => 'out_of_stock',
+                'title'   => '🔴 Out of Stock Alert',
+                'message' => "{$medicine->medicine_name} ({$medicine->dosage}) is OUT OF STOCK. Current stock: {$medicine->stock}.",
+                'batch'   => null,
+                'expiry'  => null,
+            ];
+        } elseif ($medicine->stock <= 10) {
+            $alerts[] = [
+                'type'    => 'low_stock',
+                'title'   => '🟡 Low Stock Alert',
+                'message' => "{$medicine->medicine_name} ({$medicine->dosage}) is running LOW. Current stock: {$medicine->stock}.",
+                'batch'   => null,
+                'expiry'  => null,
+            ];
+        }
+
+        // ── Expiry alerts ──────────────────────────────────────────
+        if ($batch->expiry_status === 'Expired') {
+            $alerts[] = [
+                'type'    => 'expired',
+                'title'   => '⛔ Expired Medicine Alert',
+                'message' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} has EXPIRED as of {$batch->expiry_date->format('M d, Y')}.",
+                'batch'   => $batch->batch_number,
+                'expiry'  => $batch->expiry_date->format('M d, Y'),
+            ];
+        } elseif ($batch->expiry_status === 'Expiring Soon') {
+            $alerts[] = [
+                'type'    => 'expiring_soon',
+                'title'   => '🟠 Expiring Soon Alert',
+                'message' => "{$medicine->medicine_name} ({$medicine->dosage}) batch {$batch->batch_number} is expiring on {$batch->expiry_date->format('M d, Y')}.",
+                'batch'   => $batch->batch_number,
+                'expiry'  => $batch->expiry_date->format('M d, Y'),
+            ];
+        }
+
+        // Nothing to flag — stock is fine and expiry is valid
+        if (empty($alerts)) return;
+
+        foreach ($alerts as $alert) {
+            foreach ($recipients as $user) {
+
+                // ── Bell dedup ─────────────────────────────────────
+                // Same columns checked as CheckInventoryExpiry so the
+                // scheduler won't insert a duplicate bell today.
+                $bellAlreadySent = DB::table('notifications')
+                    ->where('user_id',          $user->id)
+                    ->where('type',             $alert['type'])
+                    ->where('appointment_type', 'inventory')
+                    ->where('message',          $alert['message'])
+                    ->whereDate('created_at',   today())
+                    ->exists();
+
+                if (! $bellAlreadySent) {
+                    DB::table('notifications')->insert([
+                        'user_id'          => $user->id,
+                        'type'             => $alert['type'],
+                        'title'            => $alert['title'],
+                        'message'          => $alert['message'],
+                        'appointment_type' => 'inventory',
+                        'link_url'         => '/medicines?filter=' . $alert['type'],
+                        'is_read'          => 0,
+                        'created_at'       => now(),
+                        'updated_at'       => now(),
+                    ]);
+                }
+
+                // ── Email dedup ────────────────────────────────────
+                // Independent check so a bell-already-sent today does
+                // NOT suppress the email (they can get out of sync if
+                // the bell was created by a different code path).
+                $emailAlreadySent = DB::table('inventory_email_logs')
+                    ->where('user_id',     $user->id)
+                    ->where('alert_type',  $alert['type'])
+                    ->where('reference',   $alert['message'])
+                    ->whereDate('sent_at', today())
+                    ->exists();
+
+                if ($emailAlreadySent) continue;
+
+                try {
+                    Mail::to($user->email)->send(new InventoryAlertMail(
+                        $alert['type'],
+                        $medicine,
+                        $alert['batch'],  // null for stock alerts
+                        $alert['expiry'], // null for stock alerts
+                        $user             // individual greeting per recipient
+                    ));
+
+                    DB::table('inventory_email_logs')->insert([
+                        'user_id'    => $user->id,
+                        'alert_type' => $alert['type'],
+                        'reference'  => $alert['message'],
+                        'sent_at'    => now(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("New medicine alert mail failed for {$user->email}: " . $e->getMessage());
+                }
+            }
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // EDIT
+    // ─────────────────────────────────────────────────────────────
 
     public function editMedicineData($id): mixed
     {
@@ -365,7 +520,6 @@ class Medicines extends Component
     {
         $validFilters = ['out_of_stock', 'low_stock', 'expiring_soon', 'expired'];
 
-        // Sanitize — ignore anything not in the allowed list
         $activeFilter = in_array($this->filterStatus, $validFilters)
             ? $this->filterStatus
             : '';
@@ -419,13 +573,13 @@ class Medicines extends Component
         } elseif ($activeFilter === 'expiring_soon') {
             $query->whereHas('allBatches', function ($b) {
                 $b->whereNull('deleted_at')
-                ->where('expiry_status', 'Expiring Soon');
+                  ->where('expiry_status', 'Expiring Soon');
             });
 
         } elseif ($activeFilter === 'expired') {
             $query->whereHas('allBatches', function ($b) {
                 $b->whereNull('deleted_at')
-                ->where('expiry_status', 'Expired');
+                  ->where('expiry_status', 'Expired');
             });
         }
 
@@ -452,7 +606,7 @@ class Medicines extends Component
             'categories'   => Category::orderBy('category_name')->get(),
             'medicines'    => $medicines,
             'activeFilter' => $activeFilter,
-               'filterStatus' => $activeFilter,
+            'filterStatus' => $activeFilter,
         ])->layout('livewire.layouts.base', ['page' => 'MEDICINE INVENTORY']);
     }
 }

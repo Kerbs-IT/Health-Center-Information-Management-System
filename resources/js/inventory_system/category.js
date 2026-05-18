@@ -1,24 +1,26 @@
-
-
 document.addEventListener('livewire:initialized', () => {
 
-
+    // ── Add Category Modal ─────────────────────────────────────
     const addModalEl = document.getElementById('addCategoryModal');
-    const addModal = new bootstrap.Modal(addModalEl);
+    if (addModalEl) {
+        const addModal = new bootstrap.Modal(addModalEl);
 
-    document.getElementById('openAddCategoryModal').addEventListener('click', () => {
-        addModal.show();
-    });
+        const openBtn = document.getElementById('openAddCategoryModal');
+        if (openBtn) {
+            openBtn.addEventListener('click', () => addModal.show());
+        }
 
-    Livewire.on('close-addCategoryModal', () => addModal.hide());
+        Livewire.on('close-addCategoryModal', () => addModal.hide());
 
-    addModalEl.addEventListener('hidden.bs.modal', () => {
-        document.body.classList.remove('modal-open');
-        document.body.style = '';
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-    });
+        addModalEl.addEventListener('hidden.bs.modal', () => {
+            document.body.classList.remove('modal-open');
+            document.body.style = '';
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    }
 
-    window.addEventListener('category-added', event => {
+    // ── Category Added Toast ───────────────────────────────────
+    window.addEventListener('category-added', () => {
         Swal.fire({
             title: "Success!",
             text: "Category has been added successfully.",
@@ -28,22 +30,24 @@ document.addEventListener('livewire:initialized', () => {
         });
     });
 
-
+    // ── Edit Category Modal ────────────────────────────────────
     const editModalEl = document.getElementById('editCategoryModal');
-    const editModal = new bootstrap.Modal(editModalEl);
+    if (editModalEl) {
+        const editModal = new bootstrap.Modal(editModalEl);
 
-    Livewire.on('show-edit-category-modal', () => editModal.show());
-    Livewire.on('hide-edit-category-modal', () => editModal.hide());
+        Livewire.on('show-edit-category-modal', () => editModal.show());
+        Livewire.on('hide-edit-category-modal', () => editModal.hide());
 
-    editModalEl.addEventListener('hidden.bs.modal', () => {
-        document.body.classList.remove('modal-open');
-        document.body.style = '';
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-    });
+        editModalEl.addEventListener('hidden.bs.modal', () => {
+            document.body.classList.remove('modal-open');
+            document.body.style = '';
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    }
 
 });
 
-// Archive Confirmation Dialog
+// ── Archive Confirmation Dialog ────────────────────────────────
 window.addEventListener('show-archive-confirmation', () => {
     Swal.fire({
         title: "Archive this category?",
@@ -55,13 +59,15 @@ window.addEventListener('show-archive-confirmation', () => {
         confirmButtonText: "Yes, archive it!",
     }).then((result) => {
         if (result.isConfirmed) {
-            // Call Livewire method to archive
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).archiveCategory();
+            const wireEl = document.querySelector('[wire\\:id]');
+            if (wireEl) {
+                Livewire.find(wireEl.getAttribute('wire:id')).archiveCategory();
+            }
         }
     });
 });
 
-// Archive Success
+// ── Archive Success ────────────────────────────────────────────
 window.addEventListener('archive-success', () => {
     Swal.fire({
         title: "Archived!",
@@ -72,7 +78,7 @@ window.addEventListener('archive-success', () => {
     });
 });
 
-// Restore Success
+// ── Restore Success ────────────────────────────────────────────
 window.addEventListener('restore-success', () => {
     Swal.fire({
         title: "Restored!",
@@ -83,7 +89,7 @@ window.addEventListener('restore-success', () => {
     });
 });
 
-// Category Updated
+// ── Category Updated ───────────────────────────────────────────
 window.addEventListener('category-updated', () => {
     Swal.fire({
         title: "Updated!",
@@ -94,19 +100,20 @@ window.addEventListener('category-updated', () => {
     });
 });
 
+// ── Vaccine Modals ─────────────────────────────────────────────
+document.addEventListener('livewire:init', () => {
 
-document.addEventListener('livewire:init', function(){
-    Livewire.on('show-editVaccine-modal',() => {
-        const modal = new bootstrap.Modal(document.getElementById('EditVaccineModal'));
-        modal.show();
+    Livewire.on('show-editVaccine-modal', () => {
+        const el = document.getElementById('EditVaccineModal');
+        if (el) new bootstrap.Modal(el).show();
     });
 
     Livewire.on('close-editVaccine-modal', () => {
         setTimeout(() => {
-            bootstrap.Modal.getInstance(
-                document.getElementById('EditVaccineModal')
-            )?.hide();
+            const el = document.getElementById('EditVaccineModal');
+            if (el) bootstrap.Modal.getInstance(el)?.hide();
         }, 1500);
+
         Swal.fire({
             title: "Success!",
             text: "Vaccine has been updated successfully.",
@@ -115,5 +122,5 @@ document.addEventListener('livewire:init', function(){
             timer: 1500
         });
     });
-});
 
+});
