@@ -55,8 +55,6 @@
     </div>
 
     <div class="content" style="padding: 20px 0;">
-        <p class="greeting">Hello, {{ $recipient->nurses?->full_name ?? $recipient->staff?->full_name ?? $recipient->first_name }}!</p>
-
         <p>This is an automated inventory alert from the Hugo Perez Health Center Information Management System.</p>
 
         {{-- Alert type banner --}}

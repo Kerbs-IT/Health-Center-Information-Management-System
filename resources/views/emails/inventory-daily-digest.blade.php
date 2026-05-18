@@ -377,7 +377,6 @@
 
         {{-- Greeting --}}
         <p class="greeting">
-            Good morning, {{ $recipient->nurses?->full_name ?? $recipient->staff?->full_name ?? $recipient->first_name }}!
         </p>
 
         <div class="intro">
